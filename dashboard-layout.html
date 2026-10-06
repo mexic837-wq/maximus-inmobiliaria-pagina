@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAXIMUS | Panel de Asesores Inmobiliarios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                        'maximus-bg': '#F4F7F6', /* Un fondo gris-verdoso muy sutil y elegante */
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'], /* Tipografía muy moderna y Premium */
+                    },
+                    boxShadow: {
+                        'premium': '0 4px 20px -2px rgba(11, 74, 63, 0.05)',
+                        'premium-hover': '0 10px 30px -5px rgba(11, 74, 63, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Nueva Tipografía: Plus Jakarta Sans (Muy usada en SaaS Premium y FinTech/PropTech) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Nuevos Iconos: Phosphor Icons (Líneas limpias, aspecto moderno y profesional) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Librería GSAP para animaciones fluidas y cinéticas de alto nivel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    
+    <!-- Arquitectura Backend / Supabase & Mock Services -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/services.js"></script>
+    
+    <style>
+        body { background-color: #F4F7F6; }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        /* Scrollbar elegante */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0B4A3F; }
+    </style>
+</head>
+<body class="font-sans text-maximus-black flex h-screen overflow-hidden antialiased selection:bg-maximus-dark selection:text-white">
+
+    <!-- ==========================================
+         1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
+         ========================================== -->
+    <aside class="w-[280px] bg-white border-r border-maximus-silver/30 flex flex-col justify-between flex-shrink-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative">
+        <div>
+            <!-- Logo -->
+            <div class="h-24 flex items-center px-8 border-b border-maximus-silver/20">
+                <span class="text-[28px] font-extrabold tracking-tight text-maximus-dark flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-maximus-dark flex items-center justify-center text-white shadow-md">
+                        <i class="ph-fill ph-buildings text-xl"></i>
+                    </div>
+                    MAXIMUS<span class="text-maximus-accent">.</span>
+                </span>
+            </div>
+            
+            <!-- Menú de Navegación -->
+            <nav class="p-6 space-y-2 overflow-y-auto max-h-[calc(100vh-180px)]">
+                <!-- Principal -->
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4">Plataforma</p>
+                <a href="#" data-target="view-resumen" class="nav-link bg-emerald-50/70 text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all">
+                    <i class="ph-fill ph-squares-four text-xl text-maximus-accent"></i> Resumen
+                </a>
+                <a href="#" data-target="view-inmuebles" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-house-line text-xl"></i> Mis Inmuebles
+                </a>
+                <a href="#" data-target="view-metricas" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-chart-line-up text-xl"></i> Métricas
+                </a>
+                
+                <!-- Gestión -->
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
+                <a href="#" data-target="view-cotizador" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-calculator text-xl"></i> Cotizador Express
+                </a>
+                <a href="#" data-target="view-pagos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-credit-card text-xl"></i> Pagos / Renovar
+                </a>
+                <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-handshake text-xl"></i> Histórico Global
+                </a>
+                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent"></i> Precios m² (Admin)
+                </a>
+
+                <!-- Recursos -->
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Soporte & Recursos</p>
+                <a href="#" class="text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-whatsapp-logo text-xl"></i> Bot Whatsapp
+                </a>
+                <a href="#" data-target="view-tutoriales" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-play-circle text-xl"></i> Tutoriales VIP
+                </a>
+                <a href="#" class="text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-headset text-xl"></i> Soporte 24/7
+                </a>
+            </nav>
+        </div>
+
+        <!-- Botón Cerrar Sesión -->
+        <div class="p-6">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3.5 text-[15px] font-bold rounded-2xl text-gray-500 border border-maximus-silver/50 hover:text-red-500 hover:bg-red-50 hover:border-red-100 transition-all">
+                <i class="ph ph-sign-out text-lg"></i> Cerrar Sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- Contenedor Principal -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <!-- ==========================================
+             2. TOP BAR (BARRA SUPERIOR)
+             ========================================== -->
+        <header class="h-24 bg-maximus-bg flex items-center justify-between px-10 z-10 flex-shrink-0">
+            <!-- Izquierda: Título Dinámico o Breadcrumb -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:block">
+                    <p class="text-sm font-semibold text-gray-500">Panel Central / <span class="text-maximus-dark font-bold">Vista Actual</span></p>
+                </div>
+            </div>
+            
+            <!-- Derecha: Ubicación & Perfil -->
+            <div class="flex items-center gap-6">
+                <!-- Ubicación Dropdown (Interactivo con animación) -->
+                <div class="hidden sm:block relative" id="locationDropdownWrapper">
+                    <button onclick="toggleLocationDropdown()" class="flex items-center gap-2 bg-white shadow-premium rounded-full px-5 py-2.5 cursor-pointer hover:shadow-premium-hover transition-all group">
+                        <i class="ph-fill ph-map-pin text-maximus-accent text-lg"></i>
+                        <span id="selectedLocationLabel" class="text-sm font-bold text-maximus-dark">Todas las zonas</span>
+                        <i id="locationCaret" class="ph ph-caret-down text-sm text-gray-400 ml-1 transition-transform duration-300"></i>
+                    </button>
+                    
+                    <!-- Panel Desplegable de Ubicaciones con animación suave de apertura y cierre -->
+                    <div id="locationDropdownPanel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top-right absolute right-0 top-14 w-[380px] bg-white rounded-3xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                        <!-- Buscador -->
+                        <div class="p-4 border-b border-gray-100 bg-gray-50/50">
+                            <div class="flex items-center gap-2 bg-white border border-gray-200/80 rounded-xl px-4 py-2.5 focus-within:border-maximus-accent focus-within:ring-2 focus-within:ring-maximus-accent/10 transition-all">
+                                <i class="ph ph-magnifying-glass text-gray-400"></i>
+                                <input type="text" id="locationSearch" oninput="filterLocations(this.value)" placeholder="Buscar zona o municipio..." class="bg-transparent w-full text-sm font-medium outline-none placeholder-gray-400 text-maximus-dark">
+                            </div>
+                        </div>
+                        
+                        <!-- Lista de Ubicaciones -->
+                        <div class="max-h-[420px] overflow-y-auto p-2" id="locationList">
+                            <!-- Se genera dinámicamente por JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Separador -->
+                <div class="h-8 w-px bg-maximus-silver/50 hidden md:block"></div>
+
+                <!-- Notificaciones -->
+                <button class="relative w-10 h-10 flex items-center justify-center text-maximus-dark hover:bg-white rounded-full transition-colors">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-maximus-bg"></span>
+                </button>
+                
+                <!-- Perfil Card -->
+                <div class="flex items-center gap-3 cursor-pointer group bg-white px-3 py-2 rounded-full shadow-premium hover:shadow-premium-hover transition-all">
+                    <img id="userAvatar" class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Agente&background=0B4A3F&color=fff" alt="Avatar">
+                    <div class="text-left hidden md:block pr-3">
+                        <p id="userName" class="text-sm font-bold text-maximus-dark leading-tight">Cargando...</p>
+                        <p id="userTitle" class="text-[11px] font-semibold text-gray-500">Agente Premium</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             3. ÁREA DE CONTENIDO (MAIN)
+             ========================================== -->
+        <main class="flex-1 overflow-y-auto px-10 pb-12 relative">
+            
+            <!-- A. VISTA: RESUMEN (INICIO) -->
+            <section id="view-resumen" class="view-section active max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4 flex justify-between items-end">
+                    <div>
+                        <h1 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Panorama Inmobiliario</h1>
+                        <p id="resumenSubtitle" class="text-gray-500 mt-2 text-base font-medium">Un vistazo rápido al rendimiento de tu portafolio.</p>
+                    </div>
+                    <!-- Botones de Temporalidad (Funcionales) -->
+                    <div class="hidden sm:flex bg-white rounded-full p-1 shadow-premium" id="timePeriodButtons">
+                        <button onclick="setTimePeriod('hoy')" data-period="hoy" class="time-btn px-5 py-2 text-sm font-bold text-maximus-dark bg-emerald-50 rounded-full transition-all">Hoy</button>
+                        <button onclick="setTimePeriod('mes')" data-period="mes" class="time-btn px-5 py-2 text-sm font-bold text-gray-500 hover:text-maximus-dark rounded-full transition-all">Mes</button>
+                        <button onclick="setTimePeriod('anio')" data-period="anio" class="time-btn px-5 py-2 text-sm font-bold text-gray-500 hover:text-maximus-dark rounded-full transition-all">Año</button>
+                    </div>
+                </div>
+
+                <!-- KPIs (Dinámicos) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-7 rounded-[24px] shadow-premium relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-maximus-dark/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-[13px] font-bold text-gray-400 uppercase tracking-widest">Total Portafolio</p>
+                            <div class="w-12 h-12 rounded-2xl bg-maximus-dark text-white flex items-center justify-center text-2xl shadow-lg">
+                                <i class="ph-fill ph-buildings"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <h3 id="kpi-total" class="text-5xl font-extrabold text-maximus-dark tracking-tighter transition-all">45</h3>
+                            <span id="kpi-total-badge" class="text-sm font-bold text-maximus-accent mb-1 flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-lg">
+                                <i class="ph-bold ph-trend-up"></i> <span id="kpi-total-change">+3 hoy</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-7 rounded-[24px] shadow-premium relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-[13px] font-bold text-gray-400 uppercase tracking-widest">En Venta</p>
+                            <div class="w-12 h-12 rounded-2xl bg-maximus-accent text-white flex items-center justify-center text-2xl shadow-lg">
+                                <i class="ph-fill ph-tag"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <h3 id="kpi-venta" class="text-5xl font-extrabold text-maximus-dark tracking-tighter transition-all">32</h3>
+                            <span id="kpi-venta-label" class="text-sm font-bold text-gray-400 mb-1">Propiedades activas</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-7 rounded-[24px] shadow-premium relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-[13px] font-bold text-gray-400 uppercase tracking-widest">En Alquiler</p>
+                            <div class="w-12 h-12 rounded-2xl bg-blue-500 text-white flex items-center justify-center text-2xl shadow-lg">
+                                <i class="ph-fill ph-key"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <h3 id="kpi-alquiler" class="text-5xl font-extrabold text-maximus-dark tracking-tighter transition-all">13</h3>
+                            <span id="kpi-alquiler-label" class="text-sm font-bold text-gray-400 mb-1">Propiedades activas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Rendimiento -->
+                <div class="bg-white rounded-[24px] shadow-premium p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h3 class="font-extrabold text-xl text-maximus-dark tracking-tight">Actividad de Mercado</h3>
+                            <p class="text-sm text-gray-500 font-medium mt-1">Interacciones y vistas de tu portafolio</p>
+                        </div>
+                        <button class="flex items-center gap-2 text-sm font-bold text-maximus-accent hover:text-maximus-dark transition-colors">
+                            Descargar Reporte <i class="ph-bold ph-download-simple"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Simulación de Gráfico SVG Elegante -->
+                    <div class="h-[320px] w-full relative flex items-end justify-between px-4 pb-8">
+                        <!-- Líneas guía -->
+                        <div class="absolute inset-0 flex flex-col justify-between pb-8">
+                            <div class="border-b border-gray-100 w-full h-0"></div>
+                            <div class="border-b border-gray-100 w-full h-0"></div>
+                            <div class="border-b border-gray-100 w-full h-0"></div>
+                            <div class="border-b border-gray-100 w-full h-0"></div>
+                            <div class="border-b border-gray-100 w-full h-0"></div>
+                        </div>
+                        <!-- SVG Curva Suave (Spline) -->
+                        <svg class="absolute inset-0 h-[320px] w-full pb-8" preserveAspectRatio="none" viewBox="0 0 1000 300">
+                            <defs>
+                                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.2" />
+                                    <stop offset="100%" style="stop-color:#10B981;stop-opacity:0" />
+                                </linearGradient>
+                            </defs>
+                            <path d="M0,250 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,140 950,50 1000,20 L1000,300 L0,300 Z" fill="url(#grad1)"></path>
+                            <path d="M0,250 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,140 950,50 1000,20" fill="none" stroke="#10B981" stroke-width="4" stroke-linecap="round"></path>
+                        </svg>
+                        
+                        <!-- Puntos de datos simulados -->
+                        <div class="absolute inset-0 pb-8 flex justify-between items-end px-[10%]">
+                            <!-- Eje X -->
+                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 10%">Lun</span>
+                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 30%">Mar</span>
+                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 50%">Mié</span>
+                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 70%">Jue</span>
+                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 90%">Vie</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- B. VISTA: MIS INMUEBLES -->
+            <section id="view-inmuebles" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
+                    <div>
+                        <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Catálogo Propio</h2>
+                        <p class="text-gray-500 mt-1 text-base font-medium">Gestiona tus propiedades activas.</p>
+                    </div>
+                    <button class="bg-maximus-dark hover:bg-[#07362e] text-white px-8 py-3.5 rounded-full text-[15px] font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                        <i class="ph-bold ph-plus"></i> Cargar Inmueble
+                    </button>
+                </div>
+
+                <!-- Barra de Filtros Premium -->
+                <div class="bg-white rounded-full shadow-premium p-2 flex justify-between items-center border border-maximus-silver/20">
+                    <div class="flex-1 flex items-center gap-3 px-4">
+                        <i class="ph ph-magnifying-glass text-gray-400 text-xl"></i>
+                        <input type="text" placeholder="Buscar por código, zona o título..." class="w-full bg-transparent border-none text-sm font-medium outline-none placeholder-gray-400 text-maximus-dark">
+                    </div>
+                    <div class="flex items-center gap-3 border-l border-gray-100 pl-4">
+                        <button class="flex items-center gap-2 px-6 py-2.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-sm font-bold rounded-full transition-colors">
+                            <i class="ph-fill ph-faders"></i> Filtros Avanzados
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grilla de Inmuebles (Estilo Luxury Real Estate) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Tarjeta Luxury 1 -->
+                    <div class="bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group">
+                        <div class="relative h-[260px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">VENTA</span>
+                                <span class="bg-white text-maximus-dark text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">OFERTA</span>
+                            </div>
+                            
+                            <!-- Precio sobre la imagen -->
+                            <div class="absolute bottom-4 left-5 text-white">
+                                <h3 class="text-3xl font-extrabold drop-shadow-md">270.000 <span class="text-sm font-bold opacity-80">USD</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-maximus-accent bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-widest">CASA</span>
+                                <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Urb. Guaparo</span>
+                            </div>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Quinta moderna con piscina y jardín</h4>
+                            
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 4</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 3</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 350 m²</span>
+                                <div class="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Sin Foto -->
+                    <div class="bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30">
+                        <div class="relative h-[260px] w-full bg-gray-100 flex flex-col items-center justify-center">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                                <i class="ph-light ph-image text-3xl text-gray-300"></i>
+                            </div>
+                            <span class="text-gray-400 font-bold tracking-[0.2em] text-[11px] uppercase">Falta Fotografía</span>
+                            
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-blue-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">ALQUILER</span>
+                            </div>
+                            <div class="absolute bottom-4 left-5 text-maximus-dark">
+                                <h3 class="text-3xl font-extrabold">1.500 <span class="text-sm font-bold opacity-60">USD/mes</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest">LOCAL</span>
+                                <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> C.C Sambil</span>
+                            </div>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Local comercial Nivel Feria</h4>
+                            
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-door-open text-xl text-gray-400"></i> 1 Amb</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 1</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 80 m²</span>
+                                <div class="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-camera-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Luxury 3 -->
+                    <div class="bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group">
+                        <div class="relative h-[260px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">VENTA</span>
+                            </div>
+                            <div class="absolute bottom-4 left-5 text-white">
+                                <h3 class="text-3xl font-extrabold drop-shadow-md">120.000 <span class="text-sm font-bold opacity-80">USD</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 uppercase tracking-widest">APTO</span>
+                                <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Res. El Bosque</span>
+                            </div>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Apartamento amoblado piso medio</h4>
+                            
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 2</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 2</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 110 m²</span>
+                                <div class="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- C. VISTA: VENDIDOS GLOBAL -->
+            <section id="view-vendidos" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4">
+                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Historial de éxito global.</p>
+                </div>
+
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-maximus-dark text-white p-6 rounded-[20px] shadow-premium">
+                        <p class="text-[11px] font-bold text-maximus-silver uppercase tracking-[0.2em] mb-1">Total Cerrados</p>
+                        <h3 class="text-4xl font-extrabold tracking-tight">1,240</h3>
+                    </div>
+                    <div class="bg-white border border-maximus-silver/30 p-6 rounded-[20px] shadow-sm">
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Total Vendidos</p>
+                        <h3 class="text-4xl font-extrabold text-maximus-accent tracking-tight">850</h3>
+                    </div>
+                    <div class="bg-white border border-maximus-silver/30 p-6 rounded-[20px] shadow-sm">
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Total Alquilados</p>
+                        <h3 class="text-4xl font-extrabold text-blue-500 tracking-tight">390</h3>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="bg-white rounded-[20px] shadow-sm border border-maximus-silver/30 p-3 flex flex-col lg:flex-row gap-3 items-center justify-between">
+                    <div class="relative w-full lg:w-1/3">
+                        <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                        <input type="text" placeholder="Buscar zona o ciudad..." class="w-full bg-gray-50 border border-gray-100 rounded-xl pl-12 pr-4 py-3 text-sm font-medium outline-none focus:border-maximus-accent focus:bg-white transition-colors">
+                    </div>
+                    <div class="flex gap-2 w-full lg:w-auto p-1 bg-gray-50 rounded-xl border border-gray-100">
+                        <button class="flex-1 lg:flex-none px-6 py-2 bg-white text-maximus-dark shadow-sm text-sm font-bold rounded-lg">Todos</button>
+                        <button class="flex-1 lg:flex-none px-6 py-2 text-gray-500 hover:text-maximus-dark text-sm font-bold rounded-lg transition-colors">Vendidos</button>
+                        <button class="flex-1 lg:flex-none px-6 py-2 text-gray-500 hover:text-maximus-dark text-sm font-bold rounded-lg transition-colors">Alquilados</button>
+                    </div>
+                    <div class="flex items-center gap-3 w-full lg:w-auto px-4 py-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
+                        <i class="ph ph-calendar-blank text-maximus-accent text-lg"></i>
+                        <span class="text-sm font-bold text-gray-600">Este Año</span>
+                        <i class="ph ph-caret-down text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Grilla -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Tarjeta Vendido -->
+                    <div class="bg-white rounded-[24px] shadow-sm border border-maximus-silver/30 overflow-hidden relative group">
+                        <!-- Superposición "VENDIDO" (Luxury Watermark) -->
+                        <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-maximus-accent text-white font-black text-2xl tracking-widest px-8 py-3 rounded-xl shadow-2xl rotate-[-12deg] border-4 border-white/50 backdrop-blur-md">
+                                ✅ VENDIDO
+                            </div>
+                        </div>
+
+                        <div class="h-[200px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=600&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Precio Final</p>
+                                    <h3 class="text-2xl font-extrabold text-maximus-dark leading-none">410.000 <span class="text-[11px] font-bold text-gray-400">USD</span></h3>
+                                </div>
+                                <div class="bg-gray-100 px-3 py-1 rounded-md">
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase">Cierre</p>
+                                    <p class="text-xs font-bold text-maximus-black">15 Oct</p>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-base text-maximus-black mb-1 truncate">Quinta en Paramillo</h4>
+                            <p class="text-sm font-medium text-gray-500 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> San Cristóbal, Táchira</p>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta Alquilado -->
+                    <div class="bg-white rounded-[24px] shadow-sm border border-maximus-silver/30 overflow-hidden relative group">
+                        <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-blue-600 text-white font-black text-2xl tracking-widest px-8 py-3 rounded-xl shadow-2xl rotate-[-12deg] border-4 border-white/50 backdrop-blur-md">
+                                ✅ ALQUILADO
+                            </div>
+                        </div>
+
+                        <div class="h-[200px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Precio Mensual</p>
+                                    <h3 class="text-2xl font-extrabold text-maximus-dark leading-none">1.100 <span class="text-[11px] font-bold text-gray-400">USD</span></h3>
+                                </div>
+                                <div class="bg-gray-100 px-3 py-1 rounded-md">
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase">Cierre</p>
+                                    <p class="text-xs font-bold text-maximus-black">02 Sep</p>
+                                </div>
+                            </div>
+                            <h4 class="font-bold text-base text-maximus-black mb-1 truncate">Apto Las Pilas</h4>
+                            <p class="text-sm font-medium text-gray-500 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Pueblo Nuevo</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- D. VISTA: MÉTRICAS -->
+            <section id="view-metricas" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4">
+                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Inteligencia de Datos</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Estadísticas avanzadas de tu cuenta.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Tarjeta 1: Pie Chart Elegante -->
+                    <div class="bg-white rounded-[24px] shadow-premium p-10 flex flex-col">
+                        <h3 class="font-extrabold text-xl text-maximus-dark tracking-tight mb-10">Distribución de Inmuebles</h3>
+                        <div class="flex-1 flex items-center justify-center gap-12 flex-col sm:flex-row">
+                            <!-- Pie Moderno (CSS) -->
+                            <div class="relative w-56 h-56 rounded-full shrink-0 shadow-inner" style="background: conic-gradient(#10B981 0% 55%, #3B82F6 55% 80%, #F1F5F9 80% 100%);">
+                                <div class="absolute inset-0 m-auto w-36 h-36 bg-white rounded-full flex flex-col items-center justify-center shadow-sm">
+                                    <span class="text-3xl font-black text-maximus-dark">45</span>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total</span>
+                                </div>
+                            </div>
+                            <!-- Leyenda Limpia -->
+                            <div class="space-y-5 w-full sm:w-auto">
+                                <div class="flex items-center justify-between gap-6 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-maximus-accent shadow-sm"></div>
+                                        <span class="text-sm font-bold text-maximus-dark">Casas</span>
+                                    </div>
+                                    <span class="text-sm font-extrabold text-maximus-accent">55%</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-6 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
+                                        <span class="text-sm font-bold text-maximus-dark">Apartamentos</span>
+                                    </div>
+                                    <span class="text-sm font-extrabold text-blue-500">25%</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-6 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-gray-200 shadow-sm"></div>
+                                        <span class="text-sm font-bold text-maximus-dark">Locales</span>
+                                    </div>
+                                    <span class="text-sm font-extrabold text-gray-400">20%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Line Chart Area -->
+                    <div class="bg-white rounded-[24px] shadow-premium p-10 flex flex-col">
+                        <div class="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 class="font-extrabold text-xl text-maximus-dark tracking-tight">Evolución de Publicaciones</h3>
+                                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">ÚLTIMOS 30 DÍAS</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-maximus-dark cursor-pointer hover:bg-maximus-accent hover:text-white transition-colors">
+                                <i class="ph-bold ph-dots-three"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Gráfico de barras moderno -->
+                        <div class="flex-1 w-full rounded-2xl bg-gray-50/50 flex items-end justify-between gap-3 relative px-4 pb-4 pt-12 min-h-[220px]">
+                            <!-- Líneas de fondo -->
+                            <div class="absolute inset-0 flex flex-col justify-between px-4 py-4 z-0">
+                                <div class="border-b border-gray-100/80 w-full"></div>
+                                <div class="border-b border-gray-100/80 w-full"></div>
+                                <div class="border-b border-gray-100/80 w-full"></div>
+                                <div class="border-b border-gray-100/80 w-full"></div>
+                            </div>
+                            
+                            <!-- Barras con gradiente -->
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[30%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[50%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[40%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-dark to-[#0f6052] rounded-t-lg h-[80%] relative z-10 shadow-lg cursor-pointer transform -translate-y-2">
+                                <!-- Tooltip destacado -->
+                                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-maximus-black text-white text-[10px] font-bold py-1 px-2 rounded-md shadow-md">MAX</div>
+                            </div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[60%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[90%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                        </div>
+                        <div class="flex justify-between text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-4 px-2">
+                            <span>Semana 1</span>
+                            <span>Semana 2</span>
+                            <span>Semana 3</span>
+                            <span>Semana 4</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- E. VISTA: PAGOS / RENOVAR -->
+            <section id="view-pagos" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4 flex justify-between items-end">
+                    <div>
+                        <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Facturación</h2>
+                        <p class="text-gray-500 mt-1 text-base font-medium">Historial de pagos y renovación de plan.</p>
+                    </div>
+                    <button class="bg-maximus-dark text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg hover:shadow-xl hover:bg-[#07362e] transition-all">
+                        Renovar Plan Actual
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-[24px] shadow-premium border border-maximus-silver/20 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h3 class="font-bold text-maximus-dark">Últimas transacciones</h3>
+                        <button class="text-sm font-bold text-gray-500 hover:text-maximus-dark flex items-center gap-1"><i class="ph-bold ph-download-simple"></i> Bajar PDF</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left whitespace-nowrap">
+                            <thead class="bg-white border-b border-gray-100 text-gray-400 font-bold uppercase tracking-widest text-[10px]">
+                                <tr>
+                                    <th class="px-8 py-5">Fecha de Pago</th>
+                                    <th class="px-8 py-5">Método Usado</th>
+                                    <th class="px-8 py-5">N° Referencia</th>
+                                    <th class="px-8 py-5 text-right">Monto</th>
+                                    <th class="px-8 py-5 text-center">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                                <tr class="hover:bg-gray-50/50 transition-colors group">
+                                    <td class="px-8 py-5 font-bold text-maximus-dark">01 Oct 2024</td>
+                                    <td class="px-8 py-5 text-sm font-medium text-gray-600 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-lg"><i class="ph-fill ph-money"></i></div> Efectivo
+                                    </td>
+                                    <td class="px-8 py-5 text-gray-400 font-mono text-xs">REF-00123</td>
+                                    <td class="px-8 py-5 font-black text-maximus-dark text-lg text-right">$25.00</td>
+                                    <td class="px-8 py-5 text-center">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 text-maximus-accent font-bold text-[10px] uppercase tracking-widest">
+                                            <div class="w-1.5 h-1.5 bg-maximus-accent rounded-full"></div> Acreditado
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50/50 transition-colors group">
+                                    <td class="px-8 py-5 font-bold text-maximus-dark">01 Sep 2024</td>
+                                    <td class="px-8 py-5 text-sm font-medium text-gray-600 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-lg"><i class="ph-fill ph-currency-btc"></i></div> USDT (Crypto)
+                                    </td>
+                                    <td class="px-8 py-5 text-gray-400 font-mono text-xs">TX-99881A</td>
+                                    <td class="px-8 py-5 font-black text-maximus-dark text-lg text-right">$25.00</td>
+                                    <td class="px-8 py-5 text-center">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 text-maximus-accent font-bold text-[10px] uppercase tracking-widest">
+                                            <div class="w-1.5 h-1.5 bg-maximus-accent rounded-full"></div> Acreditado
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50/50 transition-colors group">
+                                    <td class="px-8 py-5 font-bold text-maximus-dark">01 Ago 2024</td>
+                                    <td class="px-8 py-5 text-sm font-medium text-gray-600 flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg"><i class="ph-fill ph-bank"></i></div> Transferencia
+                                    </td>
+                                    <td class="px-8 py-5 text-gray-400 font-mono text-xs">001299994</td>
+                                    <td class="px-8 py-5 font-black text-maximus-dark text-lg text-right">$25.00</td>
+                                    <td class="px-8 py-5 text-center">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 text-maximus-accent font-bold text-[10px] uppercase tracking-widest">
+                                            <div class="w-1.5 h-1.5 bg-maximus-accent rounded-full"></div> Acreditado
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- F. VISTA: VIDEO TUTORIALES -->
+            <section id="view-tutoriales" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4">
+                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Academia MAXIMUS</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Domina la plataforma con nuestros tutoriales en video.</p>
+                </div>
+
+                <!-- Filtros Pills Estilo Premium -->
+                <div class="flex items-center gap-3 overflow-x-auto hide-scrollbar py-2">
+                    <button class="shrink-0 bg-maximus-dark text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-md">Todos</button>
+                    <button class="shrink-0 bg-white border border-gray-200 text-maximus-dark hover:bg-gray-50 px-6 py-2.5 rounded-full text-sm font-bold transition-colors">Primeros pasos</button>
+                    <button class="shrink-0 bg-white border border-gray-200 text-maximus-dark hover:bg-gray-50 px-6 py-2.5 rounded-full text-sm font-bold transition-colors">Inmuebles</button>
+                    <button class="shrink-0 bg-white border border-gray-200 text-maximus-dark hover:bg-gray-50 px-6 py-2.5 rounded-full text-sm font-bold transition-colors">Métricas</button>
+                </div>
+
+                <!-- Grilla de Videos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pt-2">
+                    <!-- Video Card Premium -->
+                    <div class="group cursor-pointer">
+                        <div class="relative w-full aspect-video rounded-[20px] overflow-hidden mb-4 shadow-sm group-hover:shadow-premium-hover transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" class="w-full h-full object-cover">
+                            <!-- Overlay Oscuro Suave -->
+                            <div class="absolute inset-0 bg-maximus-dark/20 group-hover:bg-maximus-dark/40 transition-colors"></div>
+                            
+                            <!-- Botón Play Central -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/90 backdrop-blur rounded-full text-maximus-accent flex items-center justify-center text-2xl shadow-xl transform group-hover:scale-110 transition-transform duration-300">
+                                    <i class="ph-fill ph-play ml-1"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Badges Esquinas -->
+                            <span class="absolute bottom-4 right-4 bg-black/70 backdrop-blur text-white text-[11px] font-bold px-2.5 py-1 rounded-md">05:24</span>
+                            <span class="absolute top-4 left-4 bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">PASO 1</span>
+                        </div>
+                        <div class="px-2">
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors">Cargar tu primer inmueble sin errores</h4>
+                            <p class="text-sm text-gray-500 font-medium line-clamp-2">Aprende los conceptos básicos para subir propiedades con fotos HD y optimizar tu título.</p>
+                        </div>
+                    </div>
+
+                    <!-- Video Card Premium 2 -->
+                    <div class="group cursor-pointer">
+                        <div class="relative w-full aspect-video rounded-[20px] overflow-hidden mb-4 shadow-sm group-hover:shadow-premium-hover transition-all duration-300">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-maximus-dark/20 group-hover:bg-maximus-dark/40 transition-colors"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-16 h-16 bg-white/90 backdrop-blur rounded-full text-maximus-accent flex items-center justify-center text-2xl shadow-xl transform group-hover:scale-110 transition-transform duration-300">
+                                    <i class="ph-fill ph-play ml-1"></i>
+                                </div>
+                            </div>
+                            <span class="absolute bottom-4 right-4 bg-black/70 backdrop-blur text-white text-[11px] font-bold px-2.5 py-1 rounded-md">12:10</span>
+                            <span class="absolute top-4 left-4 bg-blue-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">ANÁLISIS</span>
+                        </div>
+                        <div class="px-2">
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors">Lectura avanzada del panel de métricas</h4>
+                            <p class="text-sm text-gray-500 font-medium line-clamp-2">Una guía para leer los gráficos del sistema y tomar decisiones basadas 100% en datos.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- G. VISTA: COTIZADOR EXPRESS (Agente) -->
+            <section id="view-cotizador" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
+                            <i class="ph-bold ph-calculator"></i> Herramienta de Estimación Rápida
+                        </div>
+                        <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Cotizador Inmobiliario Express</h2>
+                        <p class="text-gray-500 mt-1 text-base font-medium">Calcula en segundos el precio estimado de mercado según la superficie en m² y la zona en Táchira.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="resetCotizador()" class="px-5 py-2.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-bold transition-all flex items-center gap-2">
+                            <i class="ph ph-arrow-counter-clockwise"></i> Reiniciar Valores
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenedor 2 Columnas: Formulario de Parámetros + Tarjeta de Resultados -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Columna Izquierda: Entradas de cálculo -->
+                    <div class="lg:col-span-7 bg-white rounded-[28px] p-8 shadow-premium border border-maximus-silver/20 space-y-6">
+                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2">
+                            <i class="ph-fill ph-sliders text-maximus-accent"></i> Parámetros de la Propiedad
+                        </h3>
+
+                        <!-- 1. Medida en Metros Cuadrados (m²) -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Superficie Total (Metros Cuadrados - m²)</label>
+                            <div class="relative">
+                                <i class="ph ph-ruler absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
+                                <input type="number" id="cot-m2" min="1" step="1" placeholder="Ej: 150" value="150" oninput="calcularCotizacionEnVivo()" 
+                                    class="w-full pl-12 pr-16 py-4 bg-gray-50 border border-gray-200 rounded-2xl text-2xl font-black text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition-all shadow-inner">
+                                <span class="absolute right-5 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-lg">m²</span>
+                            </div>
+                            <!-- Botones rápidos de metraje -->
+                            <div class="flex items-center gap-2 mt-3 overflow-x-auto pb-1">
+                                <span class="text-xs font-semibold text-gray-400 shrink-0">Comunes:</span>
+                                <button type="button" onclick="setM2Rapido(60)" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-maximus-dark text-xs font-bold text-gray-600 transition-colors">60 m²</button>
+                                <button type="button" onclick="setM2Rapido(100)" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-maximus-dark text-xs font-bold text-gray-600 transition-colors">100 m²</button>
+                                <button type="button" onclick="setM2Rapido(150)" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-maximus-dark text-xs font-bold text-gray-600 transition-colors">150 m²</button>
+                                <button type="button" onclick="setM2Rapido(250)" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-maximus-dark text-xs font-bold text-gray-600 transition-colors">250 m²</button>
+                                <button type="button" onclick="setM2Rapido(400)" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-maximus-dark text-xs font-bold text-gray-600 transition-colors">400 m²</button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Selección de Zona / Sector -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Zona o Sector del Táchira</label>
+                            <div class="relative">
+                                <i class="ph ph-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
+                                <select id="cot-zona" onchange="calcularCotizacionEnVivo()" 
+                                    class="w-full pl-12 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-base font-bold text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition-all appearance-none cursor-pointer">
+                                    <!-- Se puebla dinámicamente -->
+                                </select>
+                                <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
+                                <i class="ph-bold ph-info"></i> Valor base configurado para esta zona: <span class="text-maximus-accent font-bold" id="cot-valor-base-tag">$780 / m²</span>
+                            </p>
+                        </div>
+
+                        <!-- 3. Tipo de Inmueble -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo de Inmueble</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="cot-tipo-group">
+                                <button type="button" onclick="setTipoInmuebleCot('apartamento')" data-tipo="apartamento" class="cot-tipo-btn p-3.5 rounded-2xl border-2 border-maximus-accent bg-emerald-50 text-maximus-dark flex flex-col items-center gap-1 text-xs font-bold transition-all shadow-sm">
+                                    <i class="ph-fill ph-buildings text-xl text-maximus-accent"></i>
+                                    Apartamento
+                                </button>
+                                <button type="button" onclick="setTipoInmuebleCot('casa')" data-tipo="casa" class="cot-tipo-btn p-3.5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-xs font-bold transition-all">
+                                    <i class="ph ph-house text-xl text-gray-400"></i>
+                                    Casa / Quinta
+                                </button>
+                                <button type="button" onclick="setTipoInmuebleCot('local')" data-tipo="local" class="cot-tipo-btn p-3.5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-xs font-bold transition-all">
+                                    <i class="ph ph-storefront text-xl text-gray-400"></i>
+                                    Local Comercial
+                                </button>
+                                <button type="button" onclick="setTipoInmuebleCot('terreno')" data-tipo="terreno" class="cot-tipo-btn p-3.5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-xs font-bold transition-all">
+                                    <i class="ph ph-plant text-xl text-gray-400"></i>
+                                    Terreno / Lote
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Tarjeta de Cotización Estimada (Resumen Premium) -->
+                    <div class="lg:col-span-5 bg-gradient-to-br from-maximus-dark to-[#07362e] rounded-[28px] p-8 text-white shadow-2xl relative overflow-hidden flex flex-col justify-between min-h-[460px]">
+                        <!-- Círculos de luz decorativos -->
+                        <div class="absolute -right-10 -top-10 w-48 h-48 bg-maximus-accent/20 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-6">
+                                <span class="px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-[11px] font-extrabold tracking-widest uppercase border border-white/10 text-emerald-300">
+                                    Estimación en Tiempo Real
+                                </span>
+                                <i class="ph-fill ph-calculator text-2xl text-maximus-accent"></i>
+                            </div>
+
+                            <p class="text-xs uppercase font-bold tracking-widest text-gray-300 mb-1">Precio Estimado de Mercado</p>
+                            <div class="flex items-baseline gap-2 mb-4">
+                                <h3 id="cot-resultado-total" class="text-5xl sm:text-6xl font-black text-white tracking-tight">$117,000</h3>
+                                <span class="text-xl font-bold text-emerald-300">USD</span>
+                            </div>
+
+                            <!-- Rango sugerido de negociación -->
+                            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 mb-6 space-y-2">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-gray-300 font-medium">Rango sugerido de negociación:</span>
+                                    <span class="font-extrabold text-white" id="cot-rango-tag">$105,000 - $135,000 USD</span>
+                                </div>
+                                <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden flex">
+                                    <div class="bg-emerald-400 h-full w-[70%] rounded-full"></div>
+                                </div>
+                                <p class="text-[10px] text-gray-300">Calculado multiplicando los m² por el valor medio de la zona y el factor tipológico.</p>
+                            </div>
+
+                            <!-- Desglose de la Fórmula -->
+                            <div class="space-y-2.5 text-xs border-t border-white/10 pt-4">
+                                <div class="flex justify-between text-gray-300">
+                                    <span>Superficie introducida:</span>
+                                    <span class="font-bold text-white" id="cot-desglose-m2">150 m²</span>
+                                </div>
+                                <div class="flex justify-between text-gray-300">
+                                    <span>Zona seleccionada:</span>
+                                    <span class="font-bold text-white" id="cot-desglose-zona">Pueblo Nuevo</span>
+                                </div>
+                                <div class="flex justify-between text-gray-300">
+                                    <span>Valor por m² ajustado:</span>
+                                    <span class="font-bold text-emerald-300" id="cot-desglose-valorm2">$780 USD / m²</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de acción para el agente -->
+                        <div class="relative z-10 pt-6">
+                            <button onclick="copiarCotizacionWhatsApp()" class="w-full py-4 rounded-2xl bg-maximus-accent hover:bg-emerald-400 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-xl hover:shadow-2xl transition-all">
+                                <i class="ph-fill ph-whatsapp-logo text-xl"></i> Copiar Cotización para WhatsApp
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- H. VISTA: CONFIGURACIÓN DE PRECIOS POR ZONA (Panel Admin) -->
+            <section id="view-admin-cotizador" class="view-section max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
+                            <i class="ph-bold ph-shield-check"></i> Exclusivo Administradores
+                        </div>
+                        <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Gestión de Precios por Metro Cuadrado</h2>
+                        <p class="text-gray-500 mt-1 text-base font-medium">Define los precios base por m² para cada sector del Táchira. Todos los agentes usan estos valores en tiempo real.</p>
+                    </div>
+                    <button onclick="abrirModalNuevaZona()" class="bg-maximus-dark hover:bg-[#07362e] text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2">
+                        <i class="ph-bold ph-plus"></i> Nueva Zona
+                    </button>
+                </div>
+
+                <!-- Tabla de Zonas y Precios -->
+                <div class="bg-white rounded-[24px] shadow-premium border border-maximus-silver/20 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50/50">
+                        <div class="relative w-full sm:w-80">
+                            <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="admin-search-zona" oninput="filtrarTablaZonas(this.value)" placeholder="Buscar zona..." class="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium outline-none focus:border-maximus-accent">
+                        </div>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest" id="admin-total-zonas-tag">12 Zonas registradas</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left whitespace-nowrap">
+                            <thead class="bg-white border-b border-gray-100 text-gray-400 font-bold uppercase tracking-widest text-[10px]">
+                                <tr>
+                                    <th class="px-8 py-5">Sector / Zona</th>
+                                    <th class="px-8 py-5">Municipio</th>
+                                    <th class="px-8 py-5">Precio Base / m²</th>
+                                    <th class="px-8 py-5">Rango Mín - Máx</th>
+                                    <th class="px-8 py-5 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50" id="admin-tabla-zonas-body">
+                                <!-- Filas generadas dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODAL: EDITAR O CREAR ZONA (Admin) -->
+            <div id="modalEditarZona" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div class="bg-white rounded-[28px] max-w-md w-full p-8 shadow-2xl space-y-6 relative border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-extrabold text-xl text-maximus-dark" id="modalZonaTitulo">Modificar Precio por m²</h3>
+                        <button onclick="cerrarModalZona()" class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors">
+                            <i class="ph ph-x text-lg"></i>
+                        </button>
+                    </div>
+
+                    <input type="hidden" id="modal-zona-id">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nombre de la Zona / Sector</label>
+                            <input type="text" id="modal-zona-nombre" placeholder="Ej: Pueblo Nuevo" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Municipio</label>
+                            <input type="text" id="modal-zona-municipio" placeholder="Ej: San Cristóbal" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Precio Base por m² (USD)</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">$</span>
+                                <input type="number" id="modal-zona-precio" min="1" step="10" placeholder="780" class="w-full pl-8 pr-16 py-3 bg-gray-50 border border-gray-200 rounded-xl text-base font-extrabold text-maximus-dark outline-none focus:border-maximus-accent">
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs">USD / m²</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Mínimo sugerido</label>
+                                <input type="number" id="modal-zona-min" placeholder="700" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Máximo sugerido</label>
+                                <input type="number" id="modal-zona-max" placeholder="900" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold outline-none focus:border-maximus-accent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <button onclick="cerrarModalZona()" class="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition-colors">
+                            Cancelar
+                        </button>
+                        <button onclick="guardarModalZona()" class="flex-1 py-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-colors">
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ==========================================
+         4. LÓGICA JAVASCRIPT
+         ========================================== -->
+    <script>
+        // ==========================================
+        // DATOS DE UBICACIONES DEL ESTADO TÁCHIRA
+        // ==========================================
+        const UBICACIONES_TACHIRA = {
+            'todas': { label: 'Todas las zonas', icon: 'ph-globe-hemisphere-west' },
+            // --- MUNICIPIO SAN CRISTÓBAL ---
+            '_sep_sc': { separator: true, label: 'Municipio San Cristóbal' },
+            'centro':      { label: 'Centro de San Cristóbal', municipio: 'San Cristóbal' },
+            'barrio-obrero': { label: 'Barrio Obrero', municipio: 'San Cristóbal' },
+            'pueblo-nuevo': { label: 'Pueblo Nuevo', municipio: 'San Cristóbal' },
+            'pirineos':    { label: 'Los Pirineos', municipio: 'San Cristóbal' },
+            'la-concordia': { label: 'La Concordia', municipio: 'San Cristóbal' },
+            'las-lomas':   { label: 'Las Lomas', municipio: 'San Cristóbal' },
+            'la-romera':   { label: 'La Romera', municipio: 'San Cristóbal' },
+            'paramillo':   { label: 'Paramillo', municipio: 'San Cristóbal' },
+            'urb-guaparo': { label: 'Urb. Guaparo', municipio: 'San Cristóbal' },
+            'urb-pirineos': { label: 'Urb. Pirineos II', municipio: 'San Cristóbal' },
+            'el-lobo':     { label: 'El Lobo', municipio: 'San Cristóbal' },
+            'la-ermita':   { label: 'La Ermita', municipio: 'San Cristóbal' },
+            'la-castellana': { label: 'La Castellana', municipio: 'San Cristóbal' },
+            'san-carlos':  { label: 'San Carlos', municipio: 'San Cristóbal' },
+            'la-popita':   { label: 'La Popita', municipio: 'San Cristóbal' },
+            // --- MUNICIPIO CÁRDENAS (Táriba) ---
+            '_sep_card': { separator: true, label: 'Municipio Cárdenas' },
+            'tariba':      { label: 'Táriba', municipio: 'Cárdenas' },
+            'palmira':     { label: 'Palmira', municipio: 'Cárdenas' },
+            // --- MUNICIPIO GUÁSIMOS (Palmira) ---
+            '_sep_guas': { separator: true, label: 'Municipio Guásimos' },
+            'palmira-centro': { label: 'Palmira Centro', municipio: 'Guásimos' },
+            // --- MUNICIPIO JÁUREGUI (La Grita) ---
+            '_sep_jaur': { separator: true, label: 'Municipio Jáuregui' },
+            'la-grita':    { label: 'La Grita', municipio: 'Jáuregui' },
+            // --- MUNICIPIO JUNÍN (Rubio) ---
+            '_sep_junin': { separator: true, label: 'Municipio Junín' },
+            'rubio':       { label: 'Rubio', municipio: 'Junín' },
+            // --- MUNICIPIO INDEPENDENCIA (Capacho) ---
+            '_sep_indep': { separator: true, label: 'Municipio Independencia' },
+            'capacho-nuevo': { label: 'Capacho Nuevo', municipio: 'Independencia' },
+            'capacho-viejo': { label: 'Capacho Viejo', municipio: 'Independencia' },
+            // --- MUNICIPIO BOLÍVAR (San Antonio) ---
+            '_sep_bol': { separator: true, label: 'Municipio Bolívar' },
+            'san-antonio': { label: 'San Antonio del Táchira', municipio: 'Bolívar' },
+            // --- MUNICIPIO LOBATERA ---
+            '_sep_lob': { separator: true, label: 'Municipio Lobatera' },
+            'lobatera':    { label: 'Lobatera', municipio: 'Lobatera' },
+            // --- MUNICIPIO MICHELENA ---
+            '_sep_mich': { separator: true, label: 'Municipio Michelena' },
+            'michelena':   { label: 'Michelena', municipio: 'Michelena' },
+            // --- MUNICIPIO CÓRDOBA ---
+            '_sep_cord': { separator: true, label: 'Municipio Córdoba' },
+            'santa-ana':   { label: 'Santa Ana del Táchira', municipio: 'Córdoba' },
+            // --- OTROS ---
+            '_sep_otros': { separator: true, label: 'Otros Municipios' },
+            'tucape':      { label: 'Tucapé', municipio: 'Fernández Feo' },
+            'coloncito':   { label: 'Coloncito', municipio: 'Panamericano' },
+            'la-fria':     { label: 'La Fría', municipio: 'García de Hevia' },
+            'el-piñal':    { label: 'El Piñal', municipio: 'Fernández Feo' },
+            'pregonero':   { label: 'Pregonero', municipio: 'Uribante' },
+        };
+
+        let selectedLocation = 'todas';
+        let selectedPeriod = 'hoy';
+
+        // ==========================================
+        // DATOS MOCK POR PERÍODO Y UBICACIÓN
+        // (En producción, estos vendrán de Supabase)
+        // ==========================================
+        const DATOS_POR_PERIODO = {
+            hoy: {
+                todas:           { total: 45, venta: 32, alquiler: 13, cambio: '+3 hoy', subtitle: 'Métricas de hoy, ' + new Date().toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' }), chartLabels: ['6AM','9AM','12PM','3PM','6PM','9PM'], chartPath: 'M0,280 C100,270 200,250 350,220 C500,190 650,180 800,160 C900,150 950,130 1000,120' },
+                'centro':        { total: 12, venta: 9, alquiler: 3, cambio: '+1 hoy', subtitle: 'Centro de San Cristóbal — Hoy' },
+                'pueblo-nuevo':  { total: 8, venta: 5, alquiler: 3, cambio: '+0 hoy', subtitle: 'Pueblo Nuevo — Hoy' },
+                'barrio-obrero': { total: 6, venta: 4, alquiler: 2, cambio: '+1 hoy', subtitle: 'Barrio Obrero — Hoy' },
+                'paramillo':     { total: 4, venta: 3, alquiler: 1, cambio: '+1 hoy', subtitle: 'Paramillo — Hoy' },
+                'tariba':        { total: 3, venta: 2, alquiler: 1, cambio: '+0 hoy', subtitle: 'Táriba — Hoy' },
+                'la-grita':      { total: 2, venta: 2, alquiler: 0, cambio: '+0 hoy', subtitle: 'La Grita — Hoy' },
+                'rubio':         { total: 3, venta: 2, alquiler: 1, cambio: '+0 hoy', subtitle: 'Rubio — Hoy' },
+            },
+            mes: {
+                todas:           { total: 45, venta: 32, alquiler: 13, cambio: '+8 este mes', subtitle: 'Acumulado de Octubre 2024', chartLabels: ['Sem 1','Sem 2','Sem 3','Sem 4'], chartPath: 'M0,260 C100,240 250,200 400,160 C550,120 700,100 850,60 C920,40 970,30 1000,20' },
+                'centro':        { total: 12, venta: 9, alquiler: 3, cambio: '+4 este mes', subtitle: 'Centro — Octubre 2024' },
+                'pueblo-nuevo':  { total: 8, venta: 5, alquiler: 3, cambio: '+2 este mes', subtitle: 'Pueblo Nuevo — Octubre 2024' },
+                'barrio-obrero': { total: 6, venta: 4, alquiler: 2, cambio: '+1 este mes', subtitle: 'Barrio Obrero — Octubre 2024' },
+                'paramillo':     { total: 4, venta: 3, alquiler: 1, cambio: '+1 este mes', subtitle: 'Paramillo — Octubre 2024' },
+                'tariba':        { total: 3, venta: 2, alquiler: 1, cambio: '+0 este mes', subtitle: 'Táriba — Octubre 2024' },
+            },
+            anio: {
+                todas:           { total: 312, venta: 215, alquiler: 97, cambio: '+45 este año', subtitle: 'Resumen anual — 2024', chartLabels: ['Ene','Mar','May','Jul','Sep','Oct'], chartPath: 'M0,280 C80,260 160,220 300,180 C450,140 550,100 700,70 C800,50 900,30 1000,10' },
+                'centro':        { total: 74, venta: 52, alquiler: 22, cambio: '+12 este año', subtitle: 'Centro — 2024' },
+                'pueblo-nuevo':  { total: 48, venta: 30, alquiler: 18, cambio: '+8 este año', subtitle: 'Pueblo Nuevo — 2024' },
+                'barrio-obrero': { total: 35, venta: 24, alquiler: 11, cambio: '+5 este año', subtitle: 'Barrio Obrero — 2024' },
+                'paramillo':     { total: 28, venta: 20, alquiler: 8, cambio: '+4 este año', subtitle: 'Paramillo — 2024' },
+                'tariba':        { total: 22, venta: 16, alquiler: 6, cambio: '+3 este año', subtitle: 'Táriba — 2024' },
+            },
+        };
+
+        // ==========================================
+        // 1. AUTENTICACIÓN
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = localStorage.getItem('maximus_user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0B4A3F&color=fff&bold=true`;
+                if (user.title) {
+                    document.getElementById('userTitle').textContent = user.title;
+                }
+            }
+
+            // Renderizar dropdown de ubicaciones
+            renderLocationList();
+
+            // Cerrar dropdown si clic fuera con animación fluida
+            document.addEventListener('click', (e) => {
+                const wrapper = document.getElementById('locationDropdownWrapper');
+                if (wrapper && !wrapper.contains(e.target)) {
+                    closeLocationDropdown();
+                }
+            });
+
+            // Cargar datos iniciales
+            updateDashboard();
+
+            // Inicializar Cotizador y catálogo de zonas
+            inicializarCotizador();
+
+            // Restaurar la última sección guardada (por URL hash o localStorage)
+            const savedHash = window.location.hash ? window.location.hash.substring(1) : null;
+            const savedTab = (savedHash && document.getElementById(savedHash)) 
+                ? savedHash 
+                : (localStorage.getItem('maximus_active_tab') || 'view-resumen');
+
+            setTimeout(() => {
+                activateTab(savedTab, true);
+            }, 40);
+        });
+
+        function logout() {
+            localStorage.removeItem('maximus_user');
+            window.location.href = 'login.html';
+        }
+
+        // ==========================================
+        // 2. DROPDOWN DE UBICACIONES CON ANIMACIÓN
+        // ==========================================
+        let isLocationDropdownOpen = false;
+
+        function openLocationDropdown() {
+            const panel = document.getElementById('locationDropdownPanel');
+            const caret = document.getElementById('locationCaret');
+            isLocationDropdownOpen = true;
+
+            panel.classList.remove('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+            panel.classList.add('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+            
+            if (caret) {
+                caret.classList.add('rotate-180', 'text-maximus-accent');
+                caret.classList.remove('text-gray-400');
+            }
+
+            setTimeout(() => {
+                const input = document.getElementById('locationSearch');
+                if (input) input.focus();
+            }, 80);
+        }
+
+        function closeLocationDropdown() {
+            const panel = document.getElementById('locationDropdownPanel');
+            const caret = document.getElementById('locationCaret');
+            isLocationDropdownOpen = false;
+
+            panel.classList.remove('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+            panel.classList.add('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+
+            if (caret) {
+                caret.classList.remove('rotate-180', 'text-maximus-accent');
+                caret.classList.add('text-gray-400');
+            }
+        }
+
+        function toggleLocationDropdown() {
+            if (isLocationDropdownOpen) {
+                closeLocationDropdown();
+            } else {
+                openLocationDropdown();
+            }
+        }
+
+        function renderLocationList(filter = '') {
+            const container = document.getElementById('locationList');
+            let html = '';
+            const filterLower = filter.toLowerCase();
+
+            for (const [key, loc] of Object.entries(UBICACIONES_TACHIRA)) {
+                if (loc.separator) {
+                    if (!filter || Object.entries(UBICACIONES_TACHIRA).some(([k, v]) => 
+                        !v.separator && v.municipio === loc.label.replace('Municipio ', '') && 
+                        (v.label.toLowerCase().includes(filterLower) || v.municipio?.toLowerCase().includes(filterLower))
+                    )) {
+                        html += `<p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] px-4 pt-4 pb-1">${loc.label}</p>`;
+                    }
+                    continue;
+                }
+
+                // Filtrar
+                const matchesFilter = !filter || 
+                    loc.label.toLowerCase().includes(filterLower) || 
+                    (loc.municipio && loc.municipio.toLowerCase().includes(filterLower));
+                
+                if (!matchesFilter) continue;
+
+                const isActive = key === selectedLocation;
+                const activeClasses = isActive 
+                    ? 'bg-emerald-50 text-maximus-dark border-maximus-accent/30 shadow-sm font-bold' 
+                    : 'text-gray-700 border-transparent hover:bg-gray-50/80 hover:text-maximus-dark font-medium';
+
+                html += `
+                    <button onclick="selectLocation('${key}')" 
+                        class="w-full text-left px-4 py-3 rounded-2xl text-sm flex items-center justify-between border transition-all duration-150 ${activeClasses}">
+                        <div class="flex items-center gap-3">
+                            <i class="ph-fill ph-map-pin ${isActive ? 'text-maximus-accent text-lg' : 'text-gray-400'}"></i>
+                            <span>${loc.label}</span>
+                        </div>
+                        ${isActive ? '<i class="ph-bold ph-check text-maximus-accent"></i>' : ''}
+                        ${loc.municipio ? `<span class="text-[10px] font-bold text-gray-400 ml-auto mr-2">${loc.municipio}</span>` : ''}
+                    </button>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function filterLocations(query) {
+            renderLocationList(query);
+        }
+
+        function selectLocation(key) {
+            selectedLocation = key;
+            const loc = UBICACIONES_TACHIRA[key];
+            document.getElementById('selectedLocationLabel').textContent = loc.label;
+            closeLocationDropdown();
+            setTimeout(() => {
+                document.getElementById('locationSearch').value = '';
+                renderLocationList();
+            }, 250);
+            updateDashboard();
+        }
+
+        // ==========================================
+        // 3. BOTONES DE TEMPORALIDAD
+        // ==========================================
+        function setTimePeriod(period) {
+            selectedPeriod = period;
+
+            // Actualizar estilos de botones
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.classList.remove('text-maximus-dark', 'bg-emerald-50');
+                btn.classList.add('text-gray-500');
+            });
+            const activeBtn = document.querySelector(`.time-btn[data-period="${period}"]`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-500');
+                activeBtn.classList.add('text-maximus-dark', 'bg-emerald-50');
+            }
+
+            updateDashboard();
+        }
+
+        // ==========================================
+        // 4. ACTUALIZAR DASHBOARD (Motor Central)
+        // ==========================================
+        function updateDashboard() {
+            const periodData = DATOS_POR_PERIODO[selectedPeriod];
+            // Buscar datos de la ubicación seleccionada, o usar "todas" como fallback
+            const data = periodData[selectedLocation] || periodData['todas'];
+
+            // Animar los números con conteo
+            animateNumber('kpi-total', data.total);
+            animateNumber('kpi-venta', data.venta);
+            animateNumber('kpi-alquiler', data.alquiler);
+
+            // Actualizar badge de cambio
+            document.getElementById('kpi-total-change').textContent = data.cambio;
+
+            // Actualizar subtítulo
+            if (data.subtitle) {
+                document.getElementById('resumenSubtitle').textContent = data.subtitle;
+            }
+
+            // Actualizar labels
+            const periodLabels = { hoy: 'hoy', mes: 'este mes', anio: 'este año' };
+            document.getElementById('kpi-venta-label').textContent = `Activas ${periodLabels[selectedPeriod]}`;
+            document.getElementById('kpi-alquiler-label').textContent = `Activas ${periodLabels[selectedPeriod]}`;
+
+            // Actualizar gráfico SVG si hay datos de curva
+            if (data.chartPath) {
+                updateChart(data.chartPath, data.chartLabels);
+            }
+        }
+
+        // ==========================================
+        // 5. ANIMACIÓN DE CONTEO (Número sube suavemente)
+        // ==========================================
+        function animateNumber(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const currentValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+            const duration = 600; // ms
+            const startTime = performance.now();
+
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing: ease-out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(currentValue + (targetValue - currentValue) * eased);
+                
+                element.textContent = current.toLocaleString('es-VE');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // ==========================================
+        // 6. ACTUALIZAR GRÁFICO SVG
+        // ==========================================
+        function updateChart(pathD, labels) {
+            // Actualizar la curva
+            const svgContainer = document.querySelector('#view-resumen svg');
+            if (svgContainer) {
+                const paths = svgContainer.querySelectorAll('path');
+                // path[0] = área con gradiente, path[1] = línea
+                if (paths[0]) paths[0].setAttribute('d', pathD + ' L1000,300 L0,300 Z');
+                if (paths[1]) paths[1].setAttribute('d', pathD);
+            }
+
+            // Actualizar etiquetas del eje X
+            if (labels) {
+                const labelContainer = document.querySelector('#view-resumen .absolute.inset-0.pb-8');
+                if (labelContainer) {
+                    const spans = labelContainer.querySelectorAll('span');
+                    labels.forEach((label, i) => {
+                        if (spans[i]) spans[i].textContent = label;
+                    });
+                    // Ocultar extras si hay menos labels
+                    for (let i = labels.length; i < spans.length; i++) {
+                        spans[i].textContent = '';
+                    }
+                }
+            }
+        }
+
+        // ==========================================
+        // 7. ANIMACIÓN FLUIDA DE SECCIÓN (GSAP)
+        // ==========================================
+        function animateSection(targetView) {
+            if (!targetView || !window.gsap) return;
+
+            // Colectar los elementos internos para animarlos en cascada (stagger)
+            const elementsToAnimate = [];
+            const directChildren = Array.from(targetView.children);
+
+            directChildren.forEach(child => {
+                // Si el contenedor es una grilla (como las tarjetas de inmuebles o KPIs), animar cada tarjeta individualmente
+                if (child.classList.contains('grid') && child.children.length > 0) {
+                    elementsToAnimate.push(...Array.from(child.children));
+                } else {
+                    elementsToAnimate.push(child);
+                }
+            });
+
+            if (elementsToAnimate.length === 0) return;
+
+            // Animación limpia, ultra nítida y fluida (Sin blur pesado, 60fps suave)
+            gsap.fromTo(elementsToAnimate,
+                {
+                    opacity: 0,
+                    y: 14,
+                },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.32,
+                    stagger: 0.035,
+                    ease: 'power2.out',
+                    clearProps: 'transform,opacity'
+                }
+            );
+        }
+
+        // ==========================================
+        // 8. NAVEGACIÓN Y PERSISTENCIA DE PESTAÑAS (Sidebar)
+        // ==========================================
+        const navLinks = document.querySelectorAll('.nav-link');
+        const views = document.querySelectorAll('.view-section');
+
+        function activateTab(targetId, animate = true) {
+            if (!targetId || !document.getElementById(targetId)) {
+                targetId = 'view-resumen';
+            }
+
+            // 1. Persistir en localStorage
+            localStorage.setItem('maximus_active_tab', targetId);
+
+            // 2. Actualizar hash de la URL sin recargar la página
+            if (window.location.hash !== '#' + targetId) {
+                history.replaceState(null, null, '#' + targetId);
+            }
+
+            // 3. Ocultar todas las vistas
+            views.forEach(view => view.classList.remove('active'));
+
+            // 4. Mostrar vista seleccionada
+            const targetView = document.getElementById(targetId);
+            if (targetView) {
+                targetView.classList.add('active');
+                if (animate) {
+                    animateSection(targetView);
+                }
+            }
+
+            // 5. Actualizar estilos visuales del menú lateral (Sidebar)
+            navLinks.forEach(link => {
+                const isMatch = link.getAttribute('data-target') === targetId;
+                const icon = link.querySelector('i');
+
+                if (isMatch) {
+                    link.classList.remove('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold');
+                    link.classList.add('bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
+                    if (icon) {
+                        icon.classList.remove('ph');
+                        icon.classList.add('ph-fill', 'text-maximus-accent');
+                    }
+                } else {
+                    link.classList.remove('bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
+                    link.classList.add('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold');
+                    if (icon) {
+                        icon.classList.remove('ph-fill', 'text-maximus-accent');
+                        icon.classList.add('ph');
+                    }
+                }
+            });
+        }
+
+        // Listener de clic en los enlaces del menú
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+                if (targetId) activateTab(targetId, true);
+            });
+        });
+
+        // Soporte para botones adelante/atrás del navegador
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash ? window.location.hash.substring(1) : 'view-resumen';
+            activateTab(hash, true);
+        });
+
+        // ==========================================
+        // 9. LÓGICA DEL COTIZADOR INMOBILIARIO
+        // ==========================================
+        let listaZonasCotizador = [];
+        let tipoInmuebleSeleccionado = 'apartamento';
+
+        async function inicializarCotizador() {
+            try {
+                if (window.CotizadorService) {
+                    const res = await CotizadorService.getZonas();
+                    if (res && res.data) {
+                        listaZonasCotizador = res.data;
+                        poblarSelectZonas();
+                        renderAdminTablaZonas();
+                        calcularCotizacionEnVivo();
+                    }
+                }
+            } catch (err) {
+                console.error('Error inicializando cotizador:', err);
+            }
+        }
+
+        function poblarSelectZonas() {
+            const select = document.getElementById('cot-zona');
+            if (!select) return;
+            select.innerHTML = '';
+
+            listaZonasCotizador.forEach((zona, idx) => {
+                const opt = document.createElement('option');
+                opt.value = zona.id;
+                opt.textContent = `${zona.nombre} (${zona.municipio}) — $${zona.precio_m2_base}/m²`;
+                if (idx === 0) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function setM2Rapido(m2) {
+            const input = document.getElementById('cot-m2');
+            if (input) {
+                input.value = m2;
+                calcularCotizacionEnVivo();
+            }
+        }
+
+        function setTipoInmuebleCot(tipo) {
+            tipoInmuebleSeleccionado = tipo;
+            document.querySelectorAll('.cot-tipo-btn').forEach(btn => {
+                const isSelected = btn.getAttribute('data-tipo') === tipo;
+                const icon = btn.querySelector('i');
+                if (isSelected) {
+                    btn.className = 'cot-tipo-btn p-3.5 rounded-2xl border-2 border-maximus-accent bg-emerald-50 text-maximus-dark flex flex-col items-center gap-1 text-xs font-bold transition-all shadow-sm';
+                    if (icon) {
+                        icon.className = icon.className.replace('ph ', 'ph-fill ').replace('text-gray-400', 'text-maximus-accent');
+                    }
+                } else {
+                    btn.className = 'cot-tipo-btn p-3.5 rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-xs font-bold transition-all';
+                    if (icon) {
+                        icon.className = icon.className.replace('ph-fill ', 'ph ').replace('text-maximus-accent', 'text-gray-400');
+                    }
+                }
+            });
+            calcularCotizacionEnVivo();
+        }
+
+        function resetCotizador() {
+            document.getElementById('cot-m2').value = 150;
+            setTipoInmuebleCot('apartamento');
+            if (listaZonasCotizador.length > 0) {
+                document.getElementById('cot-zona').value = listaZonasCotizador[0].id;
+            }
+            calcularCotizacionEnVivo();
+        }
+
+        function calcularCotizacionEnVivo() {
+            const m2Input = document.getElementById('cot-m2');
+            const zonaSelect = document.getElementById('cot-zona');
+            if (!m2Input || !zonaSelect || !window.CotizadorService) return;
+
+            const m2 = parseFloat(m2Input.value) || 0;
+            const zonaId = zonaSelect.value;
+            const zona = listaZonasCotizador.find(z => z.id === zonaId) || listaZonasCotizador[0];
+
+            if (!zona) return;
+
+            // Actualizar etiqueta del valor base
+            const valorTag = document.getElementById('cot-valor-base-tag');
+            if (valorTag) valorTag.textContent = `$${zona.precio_m2_base} / m²`;
+
+            // Calcular con servicio
+            const resultado = CotizadorService.calcular({
+                m2: m2,
+                zona: zona,
+                tipo: tipoInmuebleSeleccionado
+            });
+
+            if (!resultado) return;
+
+            // Actualizar interfaz
+            document.getElementById('cot-resultado-total').textContent = '$' + resultado.precioEstimado.toLocaleString('es-VE');
+            document.getElementById('cot-rango-tag').textContent = `$${resultado.rangoMin.toLocaleString('es-VE')} - $${resultado.rangoMax.toLocaleString('es-VE')} USD`;
+            document.getElementById('cot-desglose-m2').textContent = `${resultado.m2} m²`;
+            document.getElementById('cot-desglose-zona').textContent = `${resultado.zonaNombre} (${resultado.municipio})`;
+            document.getElementById('cot-desglose-valorm2').textContent = `$${resultado.precioM2Ajustado} USD / m²`;
+        }
+
+        function copiarCotizacionWhatsApp() {
+            const m2 = document.getElementById('cot-desglose-m2').textContent;
+            const zona = document.getElementById('cot-desglose-zona').textContent;
+            const tipo = tipoInmuebleSeleccionado.toUpperCase();
+            const total = document.getElementById('cot-resultado-total').textContent;
+            const rango = document.getElementById('cot-rango-tag').textContent;
+            const valorm2 = document.getElementById('cot-desglose-valorm2').textContent;
+
+            const mensaje = `🏠 *ESTIMACIÓN INMOBILIARIA - MAXIMUS* 🏠\n\n` +
+                `📍 *Zona:* ${zona}\n` +
+                `📐 *Superficie:* ${m2}\n` +
+                `🏢 *Tipo:* ${tipo}\n` +
+                `📊 *Valor estimado / m²:* ${valorm2}\n\n` +
+                `💰 *PRECIO ESTIMADO DE MERCADO:* ${total} USD\n` +
+                `🎯 *Rango de Negociación Sugerido:* ${rango}\n\n` +
+                `_Cotización generada por MAXIMUS Inmobiliaria Táchira._`;
+
+            navigator.clipboard.writeText(mensaje).then(() => {
+                alert('✅ ¡Cotización copiada al portapapeles! Ya puedes pegarla en WhatsApp.');
+            }).catch(() => {
+                prompt('Copia tu cotización para WhatsApp:', mensaje);
+            });
+        }
+
+        // ==========================================
+        // 10. PANEL DE ADMINISTRACIÓN DE PRECIOS POR ZONA
+        // ==========================================
+        function renderAdminTablaZonas(filtro = '') {
+            const tbody = document.getElementById('admin-tabla-zonas-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const filtroLower = filtro.toLowerCase();
+            const filtradas = listaZonasCotizador.filter(z => 
+                !filtro || z.nombre.toLowerCase().includes(filtroLower) || z.municipio.toLowerCase().includes(filtroLower)
+            );
+
+            const totalTag = document.getElementById('admin-total-zonas-tag');
+            if (totalTag) totalTag.textContent = `${filtradas.length} Zonas registradas`;
+
+            filtradas.forEach(zona => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50/70 transition-colors group';
+                tr.innerHTML = `
+                    <td class="px-8 py-4 font-bold text-maximus-dark text-sm flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center font-bold text-xs">
+                            <i class="ph-fill ph-map-pin"></i>
+                        </div>
+                        ${zona.nombre}
+                    </td>
+                    <td class="px-8 py-4 text-sm text-gray-500 font-semibold">${zona.municipio}</td>
+                    <td class="px-8 py-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-maximus-dark font-black text-sm">
+                            $${zona.precio_m2_base} <span class="text-[10px] text-gray-400 font-normal">USD/m²</span>
+                        </span>
+                    </td>
+                    <td class="px-8 py-4 text-xs font-bold text-gray-400">
+                        $${zona.precio_min_m2 || Math.round(zona.precio_m2_base*0.9)} - $${zona.precio_max_m2 || Math.round(zona.precio_m2_base*1.15)} USD
+                    </td>
+                    <td class="px-8 py-4 text-right">
+                        <button onclick="abrirModalEditarZona('${zona.id}')" class="px-4 py-2 bg-gray-100 hover:bg-maximus-dark hover:text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5">
+                            <i class="ph-bold ph-pencil-simple"></i> Editar Precio
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filtrarTablaZonas(val) {
+            renderAdminTablaZonas(val);
+        }
+
+        function abrirModalEditarZona(id) {
+            const zona = listaZonasCotizador.find(z => z.id === id);
+            if (!zona) return;
+            document.getElementById('modalZonaTitulo').textContent = 'Editar Precio de Zona';
+            document.getElementById('modal-zona-id').value = zona.id;
+            document.getElementById('modal-zona-nombre').value = zona.nombre;
+            document.getElementById('modal-zona-municipio').value = zona.municipio;
+            document.getElementById('modal-zona-precio').value = zona.precio_m2_base;
+            document.getElementById('modal-zona-min').value = zona.precio_min_m2 || Math.round(zona.precio_m2_base * 0.9);
+            document.getElementById('modal-zona-max').value = zona.precio_max_m2 || Math.round(zona.precio_m2_base * 1.15);
+            document.getElementById('modalEditarZona').classList.remove('hidden');
+        }
+
+        function abrirModalNuevaZona() {
+            document.getElementById('modalZonaTitulo').textContent = 'Agregar Nueva Zona';
+            document.getElementById('modal-zona-id').value = '';
+            document.getElementById('modal-zona-nombre').value = '';
+            document.getElementById('modal-zona-municipio').value = 'San Cristóbal';
+            document.getElementById('modal-zona-precio').value = 500;
+            document.getElementById('modal-zona-min').value = 450;
+            document.getElementById('modal-zona-max').value = 600;
+            document.getElementById('modalEditarZona').classList.remove('hidden');
+        }
+
+        function cerrarModalZona() {
+            document.getElementById('modalEditarZona').classList.add('hidden');
+        }
+
+        async function guardarModalZona() {
+            const id = document.getElementById('modal-zona-id').value;
+            const nombre = document.getElementById('modal-zona-nombre').value.trim();
+            const municipio = document.getElementById('modal-zona-municipio').value.trim();
+            const precio = parseFloat(document.getElementById('modal-zona-precio').value) || 0;
+            const min = parseFloat(document.getElementById('modal-zona-min').value) || Math.round(precio * 0.9);
+            const max = parseFloat(document.getElementById('modal-zona-max').value) || Math.round(precio * 1.15);
+
+            if (!nombre || precio <= 0) {
+                alert('Por favor introduce un nombre válido y un precio por m² mayor a cero.');
+                return;
+            }
+
+            if (id) {
+                await CotizadorService.updateZona(id, {
+                    nombre, municipio, precio_m2_base: precio, precio_min_m2: min, precio_max_m2: max
+                });
+            } else {
+                await CotizadorService.createZona({
+                    nombre, municipio, precio_m2_base: precio, precio_min_m2: min, precio_max_m2: max
+                });
+            }
+
+            cerrarModalZona();
+            await inicializarCotizador();
+            alert('✅ ¡Precio por metro cuadrado actualizado correctamente! Ya está sincronizado con el cotizador.');
+        }
+    </script>
+</body>
+</html>

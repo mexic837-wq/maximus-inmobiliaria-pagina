@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAXIMUS Inmobiliaria | Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP & Lenis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+    <!-- Arquitectura Backend / Supabase & Mock Services -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/services.js"></script>
+
+    <style>
+        /* Lenis Smooth Scroll CSS */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        /* Marquee continuo e infinito 100% fluido (sin saltos ni espacios en blanco) */
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+        .marquee-group {
+            display: flex;
+            gap: 1.5rem;
+            padding-right: 1.5rem;
+            flex-shrink: 0;
+            animation: marqueeScroll 45s linear infinite;
+            will-change: transform;
+        }
+        .marquee-wrapper:hover .marquee-group {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="font-sans text-maximus-black antialiased bg-gray-50">
+
+
+
+    <!-- Navbar Flotante -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/70 backdrop-blur-md border-b border-maximus-silver/30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-2xl font-bold text-maximus-dark tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="text-gray-700 hover:text-maximus-accent font-medium transition">Inicio</a>
+                    <a href="#propiedades" class="text-gray-700 hover:text-maximus-accent font-medium transition">Propiedades</a>
+                    <a href="#nosotros" class="text-gray-700 hover:text-maximus-accent font-medium transition">Nosotros</a>
+                </div>
+                <div class="hidden md:flex items-center">
+                    <a href="login.html" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-6 py-2.5 rounded-full font-medium transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <!-- Imagen 120% alto para permitir parallax sin mostrar bordes vacíos -->
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" alt="Casa moderna" class="hero-bg absolute w-full h-[120%] -top-[10%] object-cover" />
+            <div class="absolute inset-0 bg-maximus-dark/70 mix-blend-multiply"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto mt-24 flex flex-col items-center">
+            <!-- OSS Hero: Título con revelación de líneas enmascaradas -->
+            <h1 class="hero-title text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-6 leading-[1.12] tracking-tight">
+                <span class="hero-line block overflow-hidden"><span class="inline-block">Encuentra el hogar</span></span>
+                <span class="hero-line block overflow-hidden"><span class="inline-block">de tus <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">sueños.</span></span></span>
+            </h1>
+
+            <!-- OSS Hero: Subtítulo con lectura limpia -->
+            <p class="hero-desc text-lg sm:text-xl text-gray-200/90 mb-8 max-w-2xl mx-auto font-light leading-relaxed">
+                Experiencia, exclusividad y un servicio personalizado para llevarte a tu próxima gran inversión.
+            </p>
+
+            <!-- OSS Hero: Botones de Acción (CTAs) -->
+            <div class="hero-ctas flex flex-col sm:flex-row justify-center gap-4 mb-12 w-full sm:w-auto">
+                <a href="#propiedades" class="magnetic-btn inline-flex items-center justify-center gap-2 bg-maximus-accent hover:bg-emerald-400 text-white px-8 py-4 rounded-full font-bold text-base sm:text-lg transition-colors shadow-2xl shadow-maximus-accent/40 group">
+                    Ver Catálogo <i class="fas fa-arrow-right text-sm transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <a href="#contacto" class="magnetic-btn inline-flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-bold text-base sm:text-lg transition-colors shadow-lg">
+                    Contáctanos
+                </a>
+            </div>
+
+            <!-- Dock de Métricas (Conectado a la arquitectura de datos Supabase / Mock) -->
+            <div class="hero-dock inline-flex items-center gap-5 sm:gap-8 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/15 text-white shadow-2xl">
+                <div class="text-left">
+                    <p id="stat-inmuebles" class="text-xl sm:text-2xl font-extrabold text-white leading-none">45+</p>
+                    <p class="text-[11px] sm:text-xs text-gray-300 font-medium mt-1">Inmuebles Activos</p>
+                </div>
+                <div class="w-px h-8 bg-white/20"></div>
+                <div class="text-left">
+                    <p id="stat-garantia" class="text-xl sm:text-2xl font-extrabold text-emerald-400 leading-none">100%</p>
+                    <p class="text-[11px] sm:text-xs text-gray-300 font-medium mt-1">Garantía Legal</p>
+                </div>
+                <div class="w-px h-8 bg-white/20"></div>
+                <div class="text-left">
+                    <p id="stat-trayectoria" class="text-xl sm:text-2xl font-extrabold text-white leading-none">15+</p>
+                    <p class="text-[11px] sm:text-xs text-gray-300 font-medium mt-1">Años de Trayectoria</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Destacados -->
+    <section id="propiedades" class="py-24 bg-gray-50 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <div id="propiedades-header" class="text-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-maximus-dark mb-4">Propiedades Destacadas</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto">Nuestra selección exclusiva de las mejores propiedades disponibles en el mercado.</p>
+            </div>
+        </div>
+        
+        <!-- Carrusel Marquee Horizontal 100% Seamless -->
+        <div class="marquee-wrapper relative flex overflow-hidden w-full select-none py-4">
+            <!-- Sombras difuminadas en los extremos para efecto infinito suave -->
+            <div class="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-36 bg-gradient-to-r from-gray-50 via-gray-50/70 to-transparent z-10"></div>
+            <div class="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-36 bg-gradient-to-l from-gray-50 via-gray-50/70 to-transparent z-10"></div>
+            
+            <!-- Grupo 1 -->
+            <div class="marquee-group">
+                <!-- Tarjeta 1 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Villa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$450,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Villa Moderna San Cristóbal</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Urb. El Parral, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 250 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 2 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Apartamento" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Alquiler</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$1,200 / mes</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Apartamento Luxury Downtown</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Centro, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 2 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 120 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 3 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$850,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Residencia Exclusiva Altos</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Altos de Paramillo, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 5 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 4.5 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 450 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 4 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Penthouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$340,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Penthouse Panorámico</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pueblo Nuevo, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 220 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 5 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Townhouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$220,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Townhouse Minimalista</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pirineos, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2.5 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 180 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 6 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Quinta Campestre" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$185,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Quinta Campestre Cordero</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Cordero, Táchira</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 500 m²</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Grupo 2: Duplicado idéntico para crear el loop infinito 100% fluido -->
+            <div class="marquee-group" aria-hidden="true">
+                <!-- Tarjeta 1 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Villa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$450,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Villa Moderna San Cristóbal</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Urb. El Parral, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 250 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 2 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Apartamento" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Alquiler</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$1,200 / mes</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Apartamento Luxury Downtown</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Centro, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 2 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 120 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 3 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$850,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Residencia Exclusiva Altos</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Altos de Paramillo, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 5 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 4.5 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 450 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 4 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Penthouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$340,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Penthouse Panorámico</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pueblo Nuevo, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 220 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 5 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Townhouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$220,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Townhouse Minimalista</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pirineos, San Cristóbal</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2.5 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 180 m²</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Tarjeta 6 -->
+                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                    <div class="relative h-60 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Quinta Campestre" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-2xl font-bold text-maximus-dark mb-1">$185,000</div>
+                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Quinta Campestre Cordero</h3>
+                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Cordero, Táchira</p>
+                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
+                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
+                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 500 m²</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="catalog.html" class="inline-flex items-center text-maximus-dark font-semibold hover:text-maximus-accent transition-colors group">
+                Ver catálogo completo <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Beneficios / Confianza -->
+    <section id="nosotros" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-maximus-dark mb-4">¿Por qué elegir MAXIMUS?</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto">Revolucionamos la experiencia inmobiliaria con un enfoque moderno y transparente.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="benefit-card text-center">
+                    <div class="w-20 h-20 mx-auto bg-maximus-dark/5 rounded-2xl flex items-center justify-center mb-6 text-maximus-accent transform transition-transform hover:scale-110 hover:-rotate-3 duration-300">
+                        <i class="fas fa-handshake text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Gestión Integral</h3>
+                    <p class="text-gray-500">Nos encargamos de todo el proceso, desde la valoración inicial hasta la firma notarial, sin estrés para ti.</p>
+                </div>
+                
+                <div class="benefit-card text-center">
+                    <div class="w-20 h-20 mx-auto bg-maximus-dark/5 rounded-2xl flex items-center justify-center mb-6 text-maximus-accent transform transition-transform hover:scale-110 hover:rotate-3 duration-300">
+                        <i class="fas fa-bolt text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Procesos Ágiles</h3>
+                    <p class="text-gray-500">Utilizamos la última tecnología para acelerar cierres, filtrar compradores y optimizar el tiempo de todos.</p>
+                </div>
+                
+                <div class="benefit-card text-center">
+                    <div class="w-20 h-20 mx-auto bg-maximus-dark/5 rounded-2xl flex items-center justify-center mb-6 text-maximus-accent transform transition-transform hover:scale-110 hover:-rotate-3 duration-300">
+                        <i class="fas fa-star text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Exclusividad</h3>
+                    <p class="text-gray-500">Un portafolio seleccionado de las mejores propiedades y un trato VIP garantizado para cada uno de nuestros clientes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto" class="bg-maximus-black text-white pt-16 pb-8 border-t-4 border-maximus-accent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <span class="text-3xl font-bold text-white tracking-tighter block mb-4">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                    <p class="text-gray-400 mb-6">Tu aliado estratégico en inversiones inmobiliarias. Confianza, seguridad y exclusividad.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-maximus-accent hover:-translate-y-1 transition-all"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-maximus-accent hover:-translate-y-1 transition-all"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-maximus-accent hover:-translate-y-1 transition-all"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Enlaces Rápidos</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Inicio</a></li>
+                        <li><a href="#propiedades" class="text-gray-400 hover:text-white transition">Catálogo de Propiedades</a></li>
+                        <li><a href="#nosotros" class="text-gray-400 hover:text-white transition">Sobre Nosotros</a></li>
+                        <li><a href="login.html" class="text-gray-400 hover:text-maximus-accent transition">Iniciar Sesión</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-6">Contacto de Dirección</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-user-tie mt-1 mr-3 text-maximus-accent"></i>
+                            <div>
+                                <p class="font-medium">Lic. Eva Camargo</p>
+                                <p class="text-gray-400 text-sm">Directora Comercial</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-gavel mt-1 mr-3 text-maximus-accent"></i>
+                            <div>
+                                <p class="font-medium">Abg. José Guerrero</p>
+                                <p class="text-gray-400 text-sm">Director Legal</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start mt-4">
+                            <i class="fas fa-envelope mt-1 mr-3 text-maximus-accent"></i>
+                            <p class="text-gray-400">contacto@maximus.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 text-center text-gray-500 text-sm">
+                &copy; 2024 MAXIMUS Inmobiliaria. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Animaciones y Scripts JS -->
+    <script>
+        // 1. Lenis Smooth Scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time)=>{
+          lenis.raf(time * 1000)
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // 2. Smooth Scrolling en Enlaces Ancla (Header y Footer)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = this.getAttribute('href');
+                if (target === "#") {
+                    lenis.scrollTo(0, {
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                } else if (target) {
+                    lenis.scrollTo(target, {
+                        offset: -80, // Para compensar la altura del navbar fijo
+                        duration: 1.5,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                    });
+                }
+            });
+        });
+
+
+
+        // 3. Animaciones GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // A. Animación "OSS Hero" (Staggered Spring Physics Reveal)
+        const ossHeroTl = gsap.timeline({ delay: 0.2 });
+
+        // 1. Título de líneas enmascaradas: revelación escalonada elegante
+        ossHeroTl.from(".hero-line span", {
+            y: 80,
+            opacity: 0,
+            duration: 0.95,
+            stagger: 0.12,
+            ease: "power3.out"
+        });
+
+        // 2. Subtítulo: desvanecimiento suave
+        ossHeroTl.from(".hero-desc", {
+            y: 24,
+            opacity: 0,
+            duration: 0.75,
+            ease: "power2.out"
+        }, "-=0.55");
+
+        // 3. Botones CTAs: entrada táctil con sutil resorte
+        ossHeroTl.from(".hero-ctas > *", {
+            y: 28,
+            opacity: 0,
+            scale: 0.94,
+            duration: 0.7,
+            stagger: 0.1,
+            ease: "back.out(1.5)"
+        }, "-=0.45");
+
+        // 4. Dock de estadísticas: entrada limpia, firme y estable (sin loops de reinicio)
+        ossHeroTl.from(".hero-dock", {
+            y: 32,
+            opacity: 0,
+            scale: 0.96,
+            duration: 0.8,
+            ease: "power2.out",
+            clearProps: "transform,opacity"
+        }, "-=0.35");
+
+        // 5. Cargar estadísticas reales desde la arquitectura de servicios (Supabase / Mock)
+        async function cargarEstadisticasHero() {
+            try {
+                if (window.MetricaService) {
+                    const res = await MetricaService.getResumen();
+                    if (res && res.data) {
+                        const total = res.data.total_propiedades || 45;
+                        const statEl = document.getElementById('stat-inmuebles');
+                        if (statEl) statEl.textContent = total + '+';
+                    }
+                }
+            } catch (err) {
+                console.log('MAXIMUS: Cargando estadísticas por defecto...', err);
+            }
+        }
+        cargarEstadisticasHero();
+
+        // B. Hero: Parallax de Fondo y desvanecimiento progresivo
+        gsap.to(".hero-bg", {
+            yPercent: 25,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        gsap.to(".hero-section .relative.z-10", {
+            y: -60,
+            opacity: 0.2,
+            scale: 0.94,
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom 30%",
+                scrub: true
+            }
+        });
+
+        // C. Scroll Reveal Estilo Canva (Kinetic Blur & Scale Reveal)
+        gsap.from("#propiedades", {
+            y: 100,
+            opacity: 0,
+            duration: 1.2,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#propiedades",
+                start: "top 90%",
+            }
+        });
+
+        gsap.from("#propiedades-header h2", {
+            y: 50,
+            opacity: 0,
+            filter: "blur(12px)",
+            duration: 1.1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#propiedades",
+                start: "top 85%",
+            }
+        });
+
+        gsap.from("#propiedades-header p", {
+            y: 30,
+            opacity: 0,
+            filter: "blur(8px)",
+            duration: 1,
+            delay: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#propiedades",
+                start: "top 85%",
+            }
+        });
+
+        gsap.from(".marquee-wrapper", {
+            scale: 0.95,
+            opacity: 0,
+            duration: 1.2,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: "#propiedades",
+                start: "top 80%",
+            }
+        });
+
+        // D. Scroll Reveal: Benefit Cards
+        gsap.from(".benefit-card", {
+            y: 80,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.15,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: "#nosotros",
+                start: "top 80%",
+            }
+        });
+
+        // E. Microinteracción: Magnetic Hover para Botones del Hero
+        const magneticBtns = document.querySelectorAll('.magnetic-btn');
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', function(e) {
+                const position = btn.getBoundingClientRect();
+                // Calcular posición del ratón respecto al centro del botón
+                const x = e.clientX - position.left - position.width / 2;
+                const y = e.clientY - position.top - position.height / 2;
+                
+                gsap.to(btn, {
+                    x: x * 0.3, // Intensidad del magnetismo
+                    y: y * 0.3,
+                    duration: 0.5,
+                    ease: "power3.out"
+                });
+            });
+            
+            btn.addEventListener('mouseleave', function(e) {
+                // Volver al lugar original con rebote
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.7,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo | MAXIMUS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 p-6 font-sans text-maximus-black">
+    <!-- Este contenido iría dentro del <main> de dashboard-layout.html -->
+    <div class="max-w-7xl mx-auto">
+        
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Catálogo de Propiedades</h1>
+                <p class="text-gray-500 mt-1">Explora 1,204 propiedades disponibles</p>
+            </div>
+            <button class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm flex items-center transition-colors">
+                <i class="fas fa-plus mr-2"></i> Añadir Inmueble
+            </button>
+        </div>
+
+        <!-- Barra de Filtros -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-wrap gap-4 items-center justify-between">
+            <div class="flex flex-wrap gap-4 w-full lg:w-auto">
+                <select class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-maximus-accent focus:border-maximus-accent block px-4 py-2.5 outline-none">
+                    <option>Operación: Todas</option>
+                    <option>Venta</option>
+                    <option>Alquiler</option>
+                </select>
+                <select class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-maximus-accent focus:border-maximus-accent block px-4 py-2.5 outline-none">
+                    <option>Tipo: Todos</option>
+                    <option>Casa</option>
+                    <option>Apartamento</option>
+                    <option>Local Comercial</option>
+                </select>
+                <select class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-maximus-accent focus:border-maximus-accent block px-4 py-2.5 outline-none">
+                    <option>Precio: Cualquiera</option>
+                    <option>< $100,000</option>
+                    <option>$100k - $500k</option>
+                    <option>> $500,000</option>
+                </select>
+                <select class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-maximus-accent focus:border-maximus-accent block px-4 py-2.5 outline-none">
+                    <option>Ubicación: San Cristóbal</option>
+                    <option>Centro</option>
+                    <option>Barrio Obrero</option>
+                    <option>Pueblo Nuevo</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button class="text-gray-500 hover:text-maximus-dark p-2"><i class="fas fa-filter"></i> Más filtros</button>
+            </div>
+        </div>
+
+        <!-- Grilla de Propiedades (Estilo Airbnb) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            
+            <!-- Property Card 1 -->
+            <a href="property-detail.html" class="group block">
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 group-hover:shadow-xl relative">
+                    <!-- Etiqueta Estatus -->
+                    <div class="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-sm text-maximus-dark text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                        Disponible
+                    </div>
+                    <!-- Carrusel (Simulado en hover) -->
+                    <div class="relative aspect-[4/3] overflow-hidden bg-gray-200 rounded-t-2xl">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        
+                        <!-- Overlay controls (solo visible en hover) -->
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-between items-center px-2">
+                            <button class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-gray-800 shadow-sm transition"><i class="fas fa-chevron-left text-xs"></i></button>
+                            <button class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-gray-800 shadow-sm transition"><i class="fas fa-chevron-right text-xs"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-semibold text-gray-900 truncate pr-2">Villa en Barrio Obrero</h3>
+                            <span class="font-semibold text-maximus-dark">$450,000</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2 truncate">San Cristóbal, Táchira</p>
+                        <p class="text-gray-500 text-sm">4 <i class="fas fa-bed text-gray-400 mx-1"></i> &middot; 3 <i class="fas fa-bath text-gray-400 mx-1"></i> &middot; 250 m²</p>
+                        
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+                            <span>ID: MX-8492</span>
+                            <span class="bg-gray-100 px-2 py-1 rounded-md text-gray-600 font-medium">Venta</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Property Card 2 -->
+            <a href="property-detail.html" class="group block">
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 group-hover:shadow-xl relative">
+                    <div class="absolute top-3 left-3 z-10 bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                        Reservado
+                    </div>
+                    <div class="relative aspect-[4/3] overflow-hidden bg-gray-200 rounded-t-2xl">
+                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Apto" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-semibold text-gray-900 truncate pr-2">Apartamento Pueblo Nuevo</h3>
+                            <span class="font-semibold text-maximus-dark">$1,200/m</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2 truncate">San Cristóbal, Táchira</p>
+                        <p class="text-gray-500 text-sm">2 <i class="fas fa-bed text-gray-400 mx-1"></i> &middot; 2 <i class="fas fa-bath text-gray-400 mx-1"></i> &middot; 120 m²</p>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+                            <span>ID: MX-7731</span>
+                            <span class="bg-blue-50 px-2 py-1 rounded-md text-blue-600 font-medium">Alquiler</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Property Card 3 -->
+            <a href="property-detail.html" class="group block">
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 group-hover:shadow-xl relative">
+                    <div class="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-sm text-maximus-dark text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                        Disponible
+                    </div>
+                    <div class="relative aspect-[4/3] overflow-hidden bg-gray-200 rounded-t-2xl">
+                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-semibold text-gray-900 truncate pr-2">Casa Moderna El Parral</h3>
+                            <span class="font-semibold text-maximus-dark">$320,000</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2 truncate">San Cristóbal, Táchira</p>
+                        <p class="text-gray-500 text-sm">3 <i class="fas fa-bed text-gray-400 mx-1"></i> &middot; 4 <i class="fas fa-bath text-gray-400 mx-1"></i> &middot; 310 m²</p>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+                            <span>ID: MX-5120</span>
+                            <span class="bg-gray-100 px-2 py-1 rounded-md text-gray-600 font-medium">Venta</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            
+             <!-- Property Card 4 -->
+            <a href="property-detail.html" class="group block">
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 transition-all duration-300 group-hover:shadow-xl relative opacity-60">
+                    <div class="absolute top-3 left-3 z-10 bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                        Vendido
+                    </div>
+                    <div class="relative aspect-[4/3] overflow-hidden bg-gray-200 rounded-t-2xl grayscale">
+                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-semibold text-gray-900 truncate pr-2">Mansión Altos Paramillo</h3>
+                            <span class="font-semibold text-gray-500 line-through">$850,000</span>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-2 truncate">San Cristóbal, Táchira</p>
+                        <p class="text-gray-500 text-sm">5 <i class="fas fa-bed text-gray-400 mx-1"></i> &middot; 5 <i class="fas fa-bath text-gray-400 mx-1"></i> &middot; 600 m²</p>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+                            <span>ID: MX-9921</span>
+                            <span class="bg-gray-100 px-2 py-1 rounded-md text-gray-600 font-medium">Venta</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+        
+        <!-- Paginación -->
+        <div class="mt-12 flex justify-center">
+            <nav class="flex items-center gap-2">
+                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled><i class="fas fa-chevron-left"></i></button>
+                <button class="w-10 h-10 rounded-full bg-maximus-dark text-white flex items-center justify-center font-medium">1</button>
+                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 font-medium transition">2</button>
+                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 font-medium transition">3</button>
+                <span class="text-gray-400 mx-1">...</span>
+                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-700 hover:bg-gray-50 font-medium transition">12</button>
+                <button class="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition"><i class="fas fa-chevron-right"></i></button>
+            </nav>
+        </div>
+    </div>
+</body>
+</html>

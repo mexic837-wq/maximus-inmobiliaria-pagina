@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Propiedad | MAXIMUS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 p-4 md:p-8 font-sans text-maximus-black">
+    <!-- Este contenido iría dentro del <main> de dashboard-layout.html -->
+    <div class="max-w-7xl mx-auto">
+        
+        <div class="mb-6 flex justify-between items-center">
+            <a href="catalog.html" class="inline-flex items-center text-gray-500 hover:text-maximus-dark transition bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+                <i class="fas fa-arrow-left mr-2"></i> Volver al catálogo
+            </a>
+            <div class="flex gap-2">
+                <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 text-gray-600 hover:text-maximus-accent transition"><i class="far fa-heart mr-2"></i>Guardar</button>
+                <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 text-gray-600 hover:text-maximus-accent transition"><i class="fas fa-share-alt mr-2"></i>Compartir</button>
+                <button class="bg-maximus-dark text-white px-4 py-2 rounded-lg shadow-sm hover:bg-maximus-dark/90 transition"><i class="fas fa-edit mr-2"></i>Editar</button>
+            </div>
+        </div>
+
+        <!-- Header: Galería estilo Collage Moderno -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 h-[50vh] min-h-[400px] mb-10 relative rounded-2xl overflow-hidden">
+            <div class="h-full">
+                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Principal" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer">
+            </div>
+            <div class="hidden md:grid grid-cols-2 grid-rows-2 gap-4 h-full">
+                <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <div class="relative w-full h-full">
+                    <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover brightness-50">
+                    <button class="absolute inset-0 flex items-center justify-center text-white font-medium hover:underline text-lg">
+                        Ver todas las fotos (12)
+                    </button>
+                </div>
+            </div>
+            <!-- Etiqueta status sobre imagen -->
+            <div class="absolute top-4 left-4 bg-maximus-accent text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-sm">
+                En Venta
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
+            
+            <!-- Columna Izquierda (Info Pública) -->
+            <div class="lg:col-span-2">
+                <div class="flex flex-wrap justify-between items-start mb-6">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Villa Moderna en Barrio Obrero</h1>
+                        <p class="text-lg text-gray-600 flex items-center"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i> Av. Principal, Barrio Obrero, San Cristóbal, Táchira</p>
+                    </div>
+                </div>
+
+                <!-- Lista de Características Rapidas -->
+                <div class="flex flex-wrap gap-6 py-6 border-y border-gray-200 mb-8">
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
+                        <i class="fas fa-bed text-2xl text-maximus-dark mb-2"></i>
+                        <span class="font-semibold">4</span>
+                        <span class="text-xs text-gray-500">Habitaciones</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
+                        <i class="fas fa-bath text-2xl text-maximus-dark mb-2"></i>
+                        <span class="font-semibold">3</span>
+                        <span class="text-xs text-gray-500">Baños</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
+                        <i class="fas fa-ruler-combined text-2xl text-maximus-dark mb-2"></i>
+                        <span class="font-semibold">250</span>
+                        <span class="text-xs text-gray-500">m² Totales</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
+                        <i class="fas fa-car text-2xl text-maximus-dark mb-2"></i>
+                        <span class="font-semibold">2</span>
+                        <span class="text-xs text-gray-500">Puestos</span>
+                    </div>
+                </div>
+
+                <!-- Descripción Completa -->
+                <div class="mb-10">
+                    <h2 class="text-2xl font-bold mb-4">Acerca de la propiedad</h2>
+                    <div class="prose prose-lg text-gray-600">
+                        <p class="mb-4">Espectacular villa de diseño contemporáneo ubicada en una de las zonas más exclusivas de la ciudad. Completamente remodelada con acabados de lujo, iluminación inteligente y sistema de seguridad 24/7 integrado.</p>
+                        <p class="mb-4">La planta baja ofrece un concepto abierto con sala a doble altura, ventanales panorámicos que integran el jardín interior, cocina estilo italiano con tope de cuarzo y electrodomésticos de alta gama.</p>
+                        <p>En el segundo nivel se encuentran las habitaciones, destacando la master suite con walk-in closet inmenso y baño tipo spa con jacuzzi y ducha de hidromasajes.</p>
+                    </div>
+                </div>
+
+                <!-- Amenities -->
+                <div class="mb-10">
+                    <h2 class="text-2xl font-bold mb-4">Comodidades</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="flex items-center text-gray-600"><i class="fas fa-wifi w-6 text-center text-maximus-accent mr-2"></i> Internet Fibra Óptica</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-swimming-pool w-6 text-center text-maximus-accent mr-2"></i> Piscina Privada</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-snowflake w-6 text-center text-maximus-accent mr-2"></i> Aire Acondicionado</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-shield-alt w-6 text-center text-maximus-accent mr-2"></i> Vigilancia 24/7</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-fire-burner w-6 text-center text-maximus-accent mr-2"></i> Área de Parrilla</div>
+                        <div class="flex items-center text-gray-600"><i class="fas fa-bolt w-6 text-center text-maximus-accent mr-2"></i> Planta Eléctrica</div>
+                    </div>
+                </div>
+
+                <!-- Mapa -->
+                <div class="mb-10">
+                    <h2 class="text-2xl font-bold mb-4">Ubicación</h2>
+                    <div class="w-full h-64 bg-gray-200 rounded-2xl overflow-hidden relative border border-gray-100">
+                        <!-- Mapa simulado con iframe de gmaps o placeholder -->
+                        <div class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-400">
+                            <div class="text-center">
+                                <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
+                                <p>Vista de Mapa Integrado</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha (Panel de Agente - Tarjeta Flotante) -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24 space-y-6">
+                    
+                    <!-- Tarjeta Principal Info Venta -->
+                    <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
+                        <div class="mb-4">
+                            <span class="text-sm text-gray-500 font-medium uppercase tracking-wider block mb-1">Precio de Venta</span>
+                            <span class="text-4xl font-bold text-maximus-dark">$450,000</span>
+                        </div>
+                        
+                        <div class="space-y-4 mb-6">
+                            <button class="w-full bg-maximus-accent hover:bg-emerald-400 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-md shadow-maximus-accent/30 flex justify-center items-center">
+                                <i class="fab fa-whatsapp mr-2 text-lg"></i> Compartir con Cliente
+                            </button>
+                            <button class="w-full bg-white hover:bg-gray-50 text-maximus-dark font-semibold py-3 px-4 rounded-xl border border-gray-200 transition duration-200">
+                                <i class="far fa-calendar-alt mr-2"></i> Agendar Visita
+                            </button>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <p class="text-xs text-gray-400 text-center">ID del Inmueble: <span class="font-mono text-gray-700">MX-8492</span></p>
+                        </div>
+                    </div>
+
+                    <!-- CRUCIAL: Notas Privadas del Agente -->
+                    <div class="bg-amber-50 p-6 rounded-2xl border-2 border-dashed border-amber-200 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-bl-lg">
+                            <i class="fas fa-lock mr-1"></i> PRIVADO
+                        </div>
+                        
+                        <h3 class="text-amber-900 font-bold text-lg mb-4 flex items-center">
+                            <i class="fas fa-user-secret mr-2"></i> Notas del Agente
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-white/60 p-3 rounded-lg border border-amber-100">
+                                <p class="text-xs text-amber-700 font-semibold mb-1 uppercase tracking-wider">Estructura de Comisión</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-xl text-amber-900">5%</span>
+                                    <span class="text-sm text-amber-800 font-medium">($22,500 est.)</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-xs text-amber-700 font-semibold mb-1 uppercase tracking-wider">Datos del Propietario</p>
+                                <p class="font-medium text-amber-900">Sr. Roberto Mendoza</p>
+                                <p class="text-sm text-amber-800 flex items-center mt-1"><i class="fas fa-phone-alt text-amber-600 mr-2"></i> +58 414-1234567</p>
+                            </div>
+                            
+                            <div class="pt-3 border-t border-amber-200/50">
+                                <p class="text-xs text-amber-700 font-semibold mb-1 uppercase tracking-wider">Instrucciones de Visita</p>
+                                <p class="text-sm text-amber-900 bg-amber-100/50 p-2 rounded leading-relaxed">
+                                    Avisar con 24h de anticipación. Las llaves están en la conserjería del edf contiguo. El perro (Golden Retriever) es amigable pero dejarlo en el patio trasero durante la visita. Negociable hasta $420,000.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

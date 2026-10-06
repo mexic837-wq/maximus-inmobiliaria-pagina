@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAXIMUS | Portal Inmobiliario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="font-sans text-maximus-black antialiased bg-[#0B4A3F] min-h-screen relative flex items-center justify-center p-4 sm:p-6 overflow-x-hidden selection:bg-maximus-accent selection:text-white">
+
+    <!-- Fondo de Arquitectura con Tono Bosque Verde Corporativo #0B4A3F -->
+    <div class="fixed inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
+             alt="Residencia Maximus" 
+             class="w-full h-full object-cover object-center filter">
+        <!-- Overlay oficial en #0B4A3F con gradiente sutil y desenfoque suave -->
+        <div class="absolute inset-0 bg-[#0B4A3F]/88 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#08362e] via-[#0B4A3F]/85 to-[#0e5c4e]/70 backdrop-blur-[2px]"></div>
+    </div>
+
+    <!-- Barra Superior / Acciones Rápidas -->
+    <div class="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-5 max-w-7xl mx-auto">
+        <a href="index.html" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-semibold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5">
+            <i class="fas fa-arrow-left text-maximus-accent"></i>
+            <span>Volver a la Web</span>
+        </a>
+
+        <!-- Badge Corporativo Inmobiliario -->
+        <div class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-medium backdrop-blur-md shadow-sm">
+            <i class="fas fa-shield-alt text-maximus-accent"></i>
+            <span>Acceso Exclusivo para Asesores</span>
+        </div>
+    </div>
+
+    <!-- Tarjeta Principal: Minimalista, Equilibrada y Fiel a la Identidad MAXIMUS -->
+    <div class="relative z-10 w-full max-w-3xl bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden grid grid-cols-1 md:grid-cols-12 my-10 border border-gray-100">
+        
+        <!-- Columna Izquierda: Minimalista, Limpia y Elegante (5 columnas) -->
+        <div class="md:col-span-5 relative p-8 sm:p-10 flex flex-col justify-between bg-[#0B4A3F] text-white overflow-hidden">
+            <!-- Destello diagonal cromado/plateado sutil inspirado en la agenda -->
+            <div class="absolute -right-16 -top-16 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-maximus-accent/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Cabecera Minimalista Tipográfica -->
+            <div class="relative z-10 text-center md:text-left">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 border border-white/20 text-maximus-accent mb-5 text-xl">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tight text-white">
+                    MAXIMUS<span class="text-maximus-accent">.</span>
+                </h1>
+                <p class="text-[11px] font-semibold uppercase tracking-widest text-emerald-300 mt-1">Inmobiliaria & Bienes Raíces</p>
+                
+                <p class="text-xs text-gray-200 mt-4 leading-relaxed font-light">
+                    Portal privado de gestión comercial y catálogo exclusivo de propiedades.
+                </p>
+            </div>
+
+            <!-- Ubicación institucional real extraída de la propuesta oficial -->
+            <div class="relative z-10 pt-6 mt-6 border-t border-white/15 text-[11px] text-gray-200 space-y-1 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-1.5 text-white font-medium">
+                    <i class="fas fa-map-marker-alt text-maximus-accent"></i>
+                    <span>San Cristóbal, Edo. Táchira</span>
+                </div>
+                <p class="text-[10px] text-gray-300 font-light">Av. Ferrero Tamayo</p>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario Limpio, Espacioso y Comercial (7 columnas) -->
+        <div class="md:col-span-7 p-8 sm:p-10 flex flex-col justify-center bg-white">
+            <div class="w-full">
+                
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-maximus-black">Iniciar Sesión</h2>
+                    <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa tus credenciales autorizadas.</p>
+                </div>
+
+                <!-- Formulario -->
+                <form id="loginForm" class="space-y-4">
+                    
+                    <!-- Campo Correo -->
+                    <div>
+                        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Correo Electrónico</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-envelope text-sm"></i>
+                            </div>
+                            <input type="email" id="email" required
+                                   class="block w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                   placeholder="agente@maximus.com">
+                        </div>
+                    </div>
+
+                    <!-- Campo Contraseña -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">Contraseña</label>
+                            <a href="#" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition">¿Olvidaste tu clave?</a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-lock text-sm"></i>
+                            </div>
+                            <input type="password" id="password" required
+                                   class="block w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                   placeholder="••••••••••••">
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
+                                <i class="fas fa-eye text-sm" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recordar credenciales -->
+                    <div class="flex items-center pt-1">
+                        <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
+                        <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
+                            Recordar mis datos en este equipo
+                        </label>
+                    </div>
+
+                    <!-- Botón Principal con el Verde Corporativo Maximus Dark #0B4A3F -->
+                    <div class="pt-2">
+                        <button type="submit" 
+                                class="w-full py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
+                            <span>Ingresar al Portal Inmobiliario</span>
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Pie de contacto directo con Lic. Eva Camargo & Abg. José Guerrero -->
+                <div class="mt-6 pt-5 border-t border-gray-100 text-center">
+                    <p class="text-xs text-gray-500">
+                        ¿Requieres acceso como nuevo asesor?
+                        <a href="https://wa.me/584247835697" target="_blank" class="text-maximus-dark hover:text-maximus-accent font-semibold inline-flex items-center gap-1 ml-1 transition">
+                            <i class="fab fa-whatsapp text-maximus-accent"></i> Contactar a Dirección
+                        </a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para interactividad y mock login -->
+    <script>
+        const toggleBtn = document.getElementById('togglePassword');
+        const passInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        toggleBtn.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        });
+
+        // Lógica de Mock Login para Administrador y Agente
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passInput.value;
+
+            if (email === 'admin@maximus.com' && password === 'admin123') {
+                localStorage.setItem('maximus_user', JSON.stringify({
+                    name: 'José Guerrero',
+                    role: 'admin',
+                    title: 'Director / Administrador'
+                }));
+                window.location.href = 'dashboard-layout.html';
+            } else if (email === 'agente@maximus.com' && password === 'agente123') {
+                localStorage.setItem('maximus_user', JSON.stringify({
+                    name: 'Carlos Pérez',
+                    role: 'agente',
+                    title: 'Asesor Inmobiliario'
+                }));
+                window.location.href = 'dashboard-layout.html';
+            } else {
+                alert('Credenciales incorrectas. Intente con admin@maximus.com (clave: admin123) o agente@maximus.com (clave: agente123).');
+            }
+        });
+    </script>
+</body>
+</html>
