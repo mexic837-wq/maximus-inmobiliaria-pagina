@@ -79,7 +79,7 @@
                 <a href="#" data-target="view-resumen" class="nav-link bg-emerald-50/70 text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all">
                     <i class="ph-fill ph-squares-four text-xl text-maximus-accent"></i> Resumen
                 </a>
-                <a href="#" data-target="view-inmuebles" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <a href="#" data-target="view-inmuebles" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-house-line text-xl"></i> Mis Inmuebles
                 </a>
                 <a href="#" data-target="view-metricas" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
@@ -88,28 +88,31 @@
                 
                 <!-- Gestión -->
                 <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
-                <a href="#" data-target="view-cotizador" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <a href="#" data-target="view-cotizador" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-calculator text-xl"></i> Cotizador Express
                 </a>
-                <a href="#" data-target="view-pagos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <a href="#" data-target="view-pagos" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-credit-card text-xl"></i> Pagos / Renovar
                 </a>
                 <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-handshake text-xl"></i> Histórico Global
                 </a>
-                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent"></i> Precios m² (Admin)
+                </a>
+                <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph-fill ph-users-three text-xl text-maximus-accent"></i> Configurar Agentes (Admin)
                 </a>
 
                 <!-- Recursos -->
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Soporte & Recursos</p>
-                <a href="#" class="text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8 agente-only">Soporte & Recursos</p>
+                <a href="#" class="agente-only text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-whatsapp-logo text-xl"></i> Bot Whatsapp
                 </a>
-                <a href="#" data-target="view-tutoriales" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <a href="#" data-target="view-tutoriales" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-play-circle text-xl"></i> Tutoriales VIP
                 </a>
-                <a href="#" class="text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <a href="#" class="agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-headset text-xl"></i> Soporte 24/7
                 </a>
             </nav>
@@ -299,7 +302,7 @@
             </section>
 
             <!-- B. VISTA: MIS INMUEBLES -->
-            <section id="view-inmuebles" class="view-section max-w-[1400px] mx-auto space-y-8">
+            <section id="view-inmuebles" class="view-section agente-only max-w-[1400px] mx-auto space-y-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
                     <div>
                         <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Catálogo Propio</h2>
@@ -616,7 +619,7 @@
             </section>
 
             <!-- E. VISTA: PAGOS / RENOVAR -->
-            <section id="view-pagos" class="view-section max-w-[1400px] mx-auto space-y-8">
+            <section id="view-pagos" class="view-section agente-only max-w-[1400px] mx-auto space-y-8">
                 <div class="pt-4 flex justify-between items-end">
                     <div>
                         <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Facturación</h2>
@@ -690,7 +693,7 @@
             </section>
 
             <!-- F. VISTA: VIDEO TUTORIALES -->
-            <section id="view-tutoriales" class="view-section max-w-[1400px] mx-auto space-y-8">
+            <section id="view-tutoriales" class="view-section agente-only max-w-[1400px] mx-auto space-y-8">
                 <div class="pt-4">
                     <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Academia MAXIMUS</h2>
                     <p class="text-gray-500 mt-1 text-base font-medium">Domina la plataforma con nuestros tutoriales en video.</p>
@@ -752,7 +755,7 @@
             </section>
 
             <!-- G. VISTA: COTIZADOR EXPRESS (Agente) -->
-            <section id="view-cotizador" class="view-section max-w-[1400px] mx-auto space-y-8">
+            <section id="view-cotizador" class="view-section agente-only max-w-[1400px] mx-auto space-y-8">
                 <div class="pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
@@ -898,7 +901,7 @@
             </section>
 
             <!-- H. VISTA: CONFIGURACIÓN DE PRECIOS POR ZONA (Panel Admin) -->
-            <section id="view-admin-cotizador" class="view-section max-w-[1400px] mx-auto space-y-8">
+            <section id="view-admin-cotizador" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
                 <div class="pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
                         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
@@ -992,6 +995,82 @@
                     </div>
                 </div>
             </div>
+
+            <!-- I. VISTA: CONFIGURAR AGENTES (Admin) -->
+            <section id="view-admin-config" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
+                        <i class="ph-bold ph-shield-check"></i> Exclusivo Administradores
+                    </div>
+                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Personalizar Experiencia del Agente</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Configura los accesos, notificaciones y límites que ven los agentes en su plataforma.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Tarjeta de Configuración de Permisos -->
+                    <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
+                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
+                            <i class="ph-fill ph-lock-key text-maximus-accent"></i> Permisos Globales
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+                                <div>
+                                    <h4 class="text-sm font-bold text-maximus-dark">Publicación Directa</h4>
+                                    <p class="text-[11px] text-gray-500 font-medium">Permitir a los agentes publicar sin revisión</p>
+                                </div>
+                                <div class="w-11 h-6 bg-maximus-accent rounded-full relative shadow-inner">
+                                    <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+                                <div>
+                                    <h4 class="text-sm font-bold text-maximus-dark">Acceso al Histórico</h4>
+                                    <p class="text-[11px] text-gray-500 font-medium">Pueden ver las ventas de otros agentes</p>
+                                </div>
+                                <div class="w-11 h-6 bg-gray-300 rounded-full relative shadow-inner">
+                                    <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
+                                <div>
+                                    <h4 class="text-sm font-bold text-maximus-dark">Descargar Reportes</h4>
+                                    <p class="text-[11px] text-gray-500 font-medium">Habilitar el botón de exportar en Métricas</p>
+                                </div>
+                                <div class="w-11 h-6 bg-maximus-accent rounded-full relative shadow-inner">
+                                    <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta de Límites -->
+                    <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
+                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
+                            <i class="ph-fill ph-chart-bar text-maximus-accent"></i> Límites de Portafolio
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Máximo de inmuebles activos</label>
+                                <input type="number" value="50" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                <p class="text-[10px] text-gray-400 mt-1">Aplica para todos los agentes estándar</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Fotos por inmueble</label>
+                                <input type="number" value="15" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            
+                            <button class="w-full py-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-colors">
+                                Guardar Configuraciones
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
         </main>
     </div>
@@ -1101,13 +1180,25 @@
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
             const userData = localStorage.getItem('maximus_user');
+            let userRole = 'agente';
             if (userData) {
                 const user = JSON.parse(userData);
+                userRole = user.role || 'agente';
                 document.getElementById('userName').textContent = user.name;
                 document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0B4A3F&color=fff&bold=true`;
                 if (user.title) {
                     document.getElementById('userTitle').textContent = user.title;
                 }
+            }
+
+            // Aplicar visibilidad basada en roles
+            const adminElements = document.querySelectorAll('.admin-only');
+            const agenteElements = document.querySelectorAll('.agente-only');
+
+            if (userRole === 'admin') {
+                agenteElements.forEach(el => el.style.display = 'none');
+            } else {
+                adminElements.forEach(el => el.style.display = 'none');
             }
 
             // Renderizar dropdown de ubicaciones
@@ -1129,9 +1220,19 @@
 
             // Restaurar la última sección guardada (por URL hash o localStorage)
             const savedHash = window.location.hash ? window.location.hash.substring(1) : null;
-            const savedTab = (savedHash && document.getElementById(savedHash)) 
+            let savedTab = (savedHash && document.getElementById(savedHash)) 
                 ? savedHash 
                 : (localStorage.getItem('maximus_active_tab') || 'view-resumen');
+
+            const tabElement = document.getElementById(savedTab);
+            if (tabElement) {
+                if (userRole === 'admin' && tabElement.classList.contains('agente-only')) {
+                    savedTab = 'view-resumen';
+                }
+                if (userRole !== 'admin' && tabElement.classList.contains('admin-only')) {
+                    savedTab = 'view-resumen';
+                }
+            }
 
             setTimeout(() => {
                 activateTab(savedTab, true);
