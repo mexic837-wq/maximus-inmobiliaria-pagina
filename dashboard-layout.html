@@ -99,7 +99,7 @@
                     <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent"></i> Precios m²
                 </a>
                 <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-users-three text-xl text-maximus-accent"></i> Configurar Agentes
+                    <i class="ph-fill ph-users-three text-xl text-maximus-accent"></i> Gestión de Agentes
                 </a>
 
                 <!-- Recursos -->
@@ -768,158 +768,8 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Asesor 1 -->
-                        <div class="bg-white rounded-[20px] p-4 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="relative">
-                                    <img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-12 h-12 rounded-2xl object-cover shadow-md">
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] shadow-sm ring-2 ring-white">
-                                        <i class="ph-bold ph-check"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-sm text-maximus-dark group-hover:text-maximus-accent transition-colors">José Guerrero</h4>
-                                    <p class="text-[10px] font-bold text-gray-400">Director / Captador Principal</p>
-                                    <div class="flex items-center gap-1 mt-0.5 text-amber-500 text-[10px]">
-                                        <i class="ph-fill ph-star"></i>
-                                        <span class="font-extrabold text-gray-700">5.0 (28 Cierres)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5 py-2.5 border-y border-gray-100 text-[11px] text-gray-600 font-medium">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
-                                    <span class="font-extrabold text-maximus-dark">6 Inmuebles</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Especialidad:</span>
-                                    <span class="font-bold text-emerald-700">Luxury & Residencial</span>
-                                </div>
-                            </div>
-                            <div class="mt-3 flex gap-2">
-                                <a href="https://wa.me/584241234567?text=Hola%20Jos%C3%A9,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
-                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i> WhatsApp
-                                </a>
-                                <button onclick="filtrarPorAsesor('José Guerrero')" class="px-3 py-2 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-[11px] font-bold transition-all" title="Ver captaciones">
-                                    <i class="ph-bold ph-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Asesor 2 -->
-                        <div class="bg-white rounded-[20px] p-4 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="relative">
-                                    <img src="https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true" class="w-12 h-12 rounded-2xl object-cover shadow-md">
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] shadow-sm ring-2 ring-white">
-                                        <i class="ph-bold ph-check"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-sm text-maximus-dark group-hover:text-maximus-accent transition-colors">Valeria Méndez</h4>
-                                    <p class="text-[10px] font-bold text-gray-400">Top Producer Residencial</p>
-                                    <div class="flex items-center gap-1 mt-0.5 text-amber-500 text-[10px]">
-                                        <i class="ph-fill ph-star"></i>
-                                        <span class="font-extrabold text-gray-700">4.9 (19 Cierres)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5 py-2.5 border-y border-gray-100 text-[11px] text-gray-600 font-medium">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
-                                    <span class="font-extrabold text-maximus-dark">5 Inmuebles</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Especialidad:</span>
-                                    <span class="font-bold text-emerald-700">Apartamentos & Pisos</span>
-                                </div>
-                            </div>
-                            <div class="mt-3 flex gap-2">
-                                <a href="https://wa.me/584147654321?text=Hola%20Valeria,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
-                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i> WhatsApp
-                                </a>
-                                <button onclick="filtrarPorAsesor('Valeria Méndez')" class="px-3 py-2 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-[11px] font-bold transition-all" title="Ver captaciones">
-                                    <i class="ph-bold ph-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Asesor 3 -->
-                        <div class="bg-white rounded-[20px] p-4 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="relative">
-                                    <img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=072D25&color=fff&bold=true" class="w-12 h-12 rounded-2xl object-cover shadow-md">
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] shadow-sm ring-2 ring-white">
-                                        <i class="ph-bold ph-check"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-sm text-maximus-dark group-hover:text-maximus-accent transition-colors">Carlos Santander</h4>
-                                    <p class="text-[10px] font-bold text-gray-400">Especialista Inversiones</p>
-                                    <div class="flex items-center gap-1 mt-0.5 text-amber-500 text-[10px]">
-                                        <i class="ph-fill ph-star"></i>
-                                        <span class="font-extrabold text-gray-700">4.9 (15 Cierres)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5 py-2.5 border-y border-gray-100 text-[11px] text-gray-600 font-medium">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
-                                    <span class="font-extrabold text-maximus-dark">4 Inmuebles</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Especialidad:</span>
-                                    <span class="font-bold text-emerald-700">Penthouses & Terrenos</span>
-                                </div>
-                            </div>
-                            <div class="mt-3 flex gap-2">
-                                <a href="https://wa.me/584129876543?text=Hola%20Carlos,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
-                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i> WhatsApp
-                                </a>
-                                <button onclick="filtrarPorAsesor('Carlos Santander')" class="px-3 py-2 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-[11px] font-bold transition-all" title="Ver captaciones">
-                                    <i class="ph-bold ph-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Asesor 4 -->
-                        <div class="bg-white rounded-[20px] p-4 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="relative">
-                                    <img src="https://ui-avatars.com/api/?name=Andrea+Colmenares&background=06241E&color=fff&bold=true" class="w-12 h-12 rounded-2xl object-cover shadow-md">
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] shadow-sm ring-2 ring-white">
-                                        <i class="ph-bold ph-check"></i>
-                                    </span>
-                                </div>
-                                <div>
-                                    <h4 class="font-extrabold text-sm text-maximus-dark group-hover:text-maximus-accent transition-colors">Andrea Colmenares</h4>
-                                    <p class="text-[10px] font-bold text-gray-400">Comercial & Industrial</p>
-                                    <div class="flex items-center gap-1 mt-0.5 text-amber-500 text-[10px]">
-                                        <i class="ph-fill ph-star"></i>
-                                        <span class="font-extrabold text-gray-700">4.8 (14 Cierres)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="space-y-1.5 py-2.5 border-y border-gray-100 text-[11px] text-gray-600 font-medium">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
-                                    <span class="font-extrabold text-maximus-dark">3 Inmuebles</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-400 font-normal">Especialidad:</span>
-                                    <span class="font-bold text-emerald-700">Galpones & Locales</span>
-                                </div>
-                            </div>
-                            <div class="mt-3 flex gap-2">
-                                <a href="https://wa.me/584163334455?text=Hola%20Andrea,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
-                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i> WhatsApp
-                                </a>
-                                <button onclick="filtrarPorAsesor('Andrea Colmenares')" class="px-3 py-2 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-[11px] font-bold transition-all" title="Ver captaciones">
-                                    <i class="ph-bold ph-eye"></i>
-                                </button>
-                            </div>
-                        </div>
+                    <div id="grid-asesores-maximus" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Generado vía JS -->
                     </div>
                 </div>
 
@@ -930,7 +780,7 @@
                             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] uppercase tracking-wider mb-2">
                                 <i class="ph-fill ph-buildings"></i> Portafolio Directo MAXIMUS
                             </div>
-                            <h3 class="text-2xl font-extrabold tracking-tight">Inmuebles Captados por la Red</h3>
+                            <h3 class="text-2xl font-extrabold tracking-tight">Inmuebles Captados por MAXIMUS</h3>
                             <p class="text-emerald-100/70 text-sm font-medium mt-1">Disponibles de inmediato para presentar a tus clientes con comisión protegida.</p>
                         </div>
                         <div class="flex items-center gap-3">
@@ -1529,79 +1379,62 @@
                 </div>
             </div>
 
-            <!-- I. VISTA: CONFIGURAR AGENTES (Admin) -->
-            <section id="view-admin-config" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
+            <!-- I. VISTA: CONFIGURAR AGENTES MAXIMUS (Admin) -->
+            <section id="view-admin-config" class="view-section admin-only max-w-[1000px] mx-auto space-y-8">
                 <div class="pt-4">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
                         <i class="ph-bold ph-shield-check"></i> Exclusivo Administradores
                     </div>
-                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Personalizar Experiencia del Agente</h2>
-                    <p class="text-gray-500 mt-1 text-base font-medium">Configura los accesos, notificaciones y límites que ven los agentes en su plataforma.</p>
+                    <h2 class="text-3xl font-extrabold text-maximus-dark tracking-tight">Gestión de Agentes MAXIMUS</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Crea y configura los perfiles de los asesores oficiales que aparecerán en la sección de Captaciones MAXIMUS.</p>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <!-- Tarjeta de Configuración de Permisos -->
-                    <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
-                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
-                            <i class="ph-fill ph-lock-key text-maximus-accent"></i> Permisos Globales
-                        </h3>
-                        
-                        <div class="space-y-4">
-                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
-                                <div>
-                                    <h4 class="text-sm font-bold text-maximus-dark">Publicación Directa</h4>
-                                    <p class="text-[11px] text-gray-500 font-medium">Permitir a los agentes publicar sin revisión</p>
-                                </div>
-                                <div class="w-11 h-6 bg-maximus-accent rounded-full relative shadow-inner">
-                                    <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
-                                </div>
-                            </label>
-                            
-                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
-                                <div>
-                                    <h4 class="text-sm font-bold text-maximus-dark">Acceso al Histórico</h4>
-                                    <p class="text-[11px] text-gray-500 font-medium">Pueden ver las ventas de otros agentes</p>
-                                </div>
-                                <div class="w-11 h-6 bg-gray-300 rounded-full relative shadow-inner">
-                                    <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
-                                </div>
-                            </label>
-                            
-                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
-                                <div>
-                                    <h4 class="text-sm font-bold text-maximus-dark">Descargar Reportes</h4>
-                                    <p class="text-[11px] text-gray-500 font-medium">Habilitar el botón de exportar en Métricas</p>
-                                </div>
-                                <div class="w-11 h-6 bg-maximus-accent rounded-full relative shadow-inner">
-                                    <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
-                                </div>
-                            </label>
+                <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
+                    <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
+                        <i class="ph-fill ph-user-plus text-maximus-accent"></i> Crear Nuevo Perfil de Asesor
+                    </h3>
+                    
+                    <form id="form-crear-asesor" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre Completo</label>
+                                <input type="text" id="asesor-nombre" placeholder="Ej: Carlos Santander" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Cargo</label>
+                                <input type="text" id="asesor-cargo" placeholder="Ej: Especialista Inversiones" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Especialidad</label>
+                                <input type="text" id="asesor-especialidad" placeholder="Ej: Penthouses & Terrenos" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Teléfono (WhatsApp)</label>
+                                <input type="text" id="asesor-telefono" placeholder="Ej: 58412345678" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Tarjeta de Límites -->
-                    <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
-                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
-                            <i class="ph-fill ph-chart-bar text-maximus-accent"></i> Límites de Portafolio
-                        </h3>
+                        <div class="pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rating</label>
+                                <input type="text" id="asesor-rating" value="5.0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Número de Cierres</label>
+                                <input type="number" id="asesor-cierres" value="0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL Avatar (Opcional)</label>
+                                <input type="text" id="asesor-avatar" placeholder="Dejar vacío para avatar automático" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                        </div>
                         
-                        <div class="space-y-6">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Máximo de inmuebles activos</label>
-                                <input type="number" value="50" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                <p class="text-[10px] text-gray-400 mt-1">Aplica para todos los agentes estándar</p>
-                            </div>
-                            
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Fotos por inmueble</label>
-                                <input type="number" value="15" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                            </div>
-                            
-                            <button class="w-full py-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-colors">
-                                Guardar Configuraciones
+                        <div class="pt-4 flex justify-end">
+                            <button type="button" onclick="guardarAsesorMaximus()" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-floppy-disk text-lg"></i> Guardar Asesor
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </section>
 
@@ -1808,11 +1641,45 @@
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
                                     <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Asesor</h3>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Asesor Asignado</label>
-                                    <select id="inm-asesor" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                        <option value="Jose Guerrero">José Guerrero - Director & Captador Principal</option>
-                                        <option value="Carlos Santander">Carlos Santander - Asesor Premium</option>
-                                    </select>
+                                    
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="tipo_asesor" value="maximus" checked onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4">
+                                            <span class="text-sm font-bold text-maximus-dark">Asesor MAXIMUS</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="tipo_asesor" value="externo" onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4">
+                                            <span class="text-sm font-bold text-maximus-dark">Asesor Externo (Manual)</span>
+                                        </label>
+                                    </div>
+
+                                    <!-- Select para Asesor MAXIMUS -->
+                                    <div id="container-asesor-maximus">
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Seleccionar Asesor Oficial</label>
+                                        <select id="inm-asesor-select" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                            <!-- Poblado via JS -->
+                                        </select>
+                                    </div>
+
+                                    <!-- Campos manuales para Asesor Externo -->
+                                    <div id="container-asesor-externo" style="display: none;" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre Completo</label>
+                                            <input type="text" id="inm-asesor-nombre" placeholder="Ej: Juan Pérez" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Teléfono / WhatsApp</label>
+                                            <input type="text" id="inm-asesor-telefono" placeholder="Ej: +58 414 1234567" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Cargo / Inmobiliaria</label>
+                                            <input type="text" id="inm-asesor-cargo" placeholder="Ej: Asesor Independiente" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL Avatar (Opcional)</label>
+                                            <input type="text" id="inm-asesor-avatar" placeholder="Dejar vacío para genérico" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Descripción Larga</h3>
@@ -2708,8 +2575,9 @@
             }
 
             // Lógica específica para cada vista
-            if (targetId === 'view-exclusivas-maximus' && typeof renderExclusivasMaximus === 'function') {
-                renderExclusivasMaximus();
+            if (targetId === 'view-exclusivas-maximus') {
+                if (typeof renderAsesoresMaximus === 'function') renderAsesoresMaximus();
+                if (typeof renderExclusivasMaximus === 'function') renderExclusivasMaximus();
             }
         }
 
@@ -3248,6 +3116,56 @@
         // ==========================================
         // 12. DETALLE DE INMUEBLE ESTILO AIRBNB
         // ==========================================
+        // ==========================================
+        // BASE DE DATOS DE ASESORES MAXIMUS
+        // ==========================================
+        let ASESORES_MAXIMUS_DATA = [
+            {
+                id: 'asesor-1',
+                nombre: 'José Guerrero',
+                cargo: 'Director / Captador Principal',
+                avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
+                especialidad: 'Luxury & Residencial',
+                telefono: '584241234567',
+                rating: '5.0',
+                cierres: 28,
+                captacionesActivas: 6
+            },
+            {
+                id: 'asesor-2',
+                nombre: 'Valeria Méndez',
+                cargo: 'Top Producer Residencial',
+                avatar: 'https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true',
+                especialidad: 'Apartamentos & Pisos',
+                telefono: '584147654321',
+                rating: '4.9',
+                cierres: 19,
+                captacionesActivas: 5
+            },
+            {
+                id: 'asesor-3',
+                nombre: 'Carlos Santander',
+                cargo: 'Especialista Inversiones',
+                avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=072D25&color=fff&bold=true',
+                especialidad: 'Penthouses & Terrenos',
+                telefono: '584129876543',
+                rating: '4.9',
+                cierres: 15,
+                captacionesActivas: 4
+            },
+            {
+                id: 'asesor-4',
+                nombre: 'Andrea Colmenares',
+                cargo: 'Comercial & Industrial',
+                avatar: 'https://ui-avatars.com/api/?name=Andrea+Colmenares&background=06241E&color=fff&bold=true',
+                especialidad: 'Galpones & Locales',
+                telefono: '584163334455',
+                rating: '4.8',
+                cierres: 14,
+                captacionesActivas: 3
+            }
+        ];
+
         const INMUEBLES_DETALLE_DATA = {
             'inm-1': {
                 id: 'inm-1',
@@ -3857,6 +3775,60 @@
             }
         });
 
+        function renderAsesoresMaximus() {
+            const container = document.getElementById('grid-asesores-maximus');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (ASESORES_MAXIMUS_DATA.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 col-span-full">No hay asesores configurados.</p>';
+                return;
+            }
+
+            ASESORES_MAXIMUS_DATA.forEach(asesor => {
+                const cardHTML = `
+                    <div class="bg-white rounded-[20px] p-4 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="relative">
+                                <img src="${asesor.avatar}" class="w-12 h-12 rounded-2xl object-cover shadow-md">
+                                <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] shadow-sm ring-2 ring-white">
+                                    <i class="ph-bold ph-check"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-sm text-maximus-dark group-hover:text-maximus-accent transition-colors">${asesor.nombre}</h4>
+                                <p class="text-[10px] font-bold text-gray-400">${asesor.cargo}</p>
+                                <div class="flex items-center gap-1 mt-0.5 text-amber-500 text-[10px]">
+                                    <i class="ph-fill ph-star"></i>
+                                    <span class="font-extrabold text-gray-700">${asesor.rating} (${asesor.cierres} Cierres)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5 py-2.5 border-y border-gray-100 text-[11px] text-gray-600 font-medium">
+                            <div class="flex justify-between">
+                                <span class="text-gray-400 font-normal">Captaciones Activas:</span>
+                                <span class="font-extrabold text-maximus-dark">${asesor.captacionesActivas} Inmuebles</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-400 font-normal">Especialidad:</span>
+                                <span class="font-bold text-emerald-700">${asesor.especialidad}</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex gap-2">
+                            <a href="https://wa.me/${asesor.telefono}?text=Hola%20${asesor.nombre.split(' ')[0]},%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
+                                <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i> WhatsApp
+                            </a>
+                            <button onclick="filtrarPorAsesor('${asesor.nombre}')" class="px-3 py-2 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-[11px] font-bold transition-all" title="Ver captaciones">
+                                <i class="ph-bold ph-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
         function renderExclusivasMaximus() {
             const container = document.getElementById('grid-exclusivas-maximus');
             if (!container) return;
@@ -3902,6 +3874,77 @@
             });
         }
 
+        function guardarAsesorMaximus() {
+            const nombre = document.getElementById('asesor-nombre').value;
+            const cargo = document.getElementById('asesor-cargo').value;
+            const especialidad = document.getElementById('asesor-especialidad').value;
+            const telefono = document.getElementById('asesor-telefono').value;
+            const rating = document.getElementById('asesor-rating').value;
+            const cierres = document.getElementById('asesor-cierres').value;
+            let avatar = document.getElementById('asesor-avatar').value;
+
+            if (!nombre || !cargo || !especialidad || !telefono) {
+                mostrarToast('Por favor, complete todos los campos obligatorios.', 'error');
+                return;
+            }
+
+            if (!avatar) {
+                const nombreFormateado = nombre.replace(/\s+/g, '+');
+                avatar = `https://ui-avatars.com/api/?name=${nombreFormateado}&background=0B4A3F&color=fff&bold=true`;
+            }
+
+            const nuevoId = 'asesor-' + (ASESORES_MAXIMUS_DATA.length + 1);
+
+            const nuevoAsesor = {
+                id: nuevoId,
+                nombre,
+                cargo,
+                especialidad,
+                telefono,
+                rating,
+                cierres: parseInt(cierres) || 0,
+                captacionesActivas: 0,
+                avatar
+            };
+
+            ASESORES_MAXIMUS_DATA.push(nuevoAsesor);
+            
+            // Re-render if we are in that view
+            renderAsesoresMaximus();
+            // Actualizar select de cargar inmueble
+            popularSelectAsesores();
+
+            mostrarToast('Asesor MAXIMUS guardado correctamente');
+            document.getElementById('form-crear-asesor').reset();
+        }
+
+        function toggleTipoAsesor() {
+            const isMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]').checked;
+            const containerMaximus = document.getElementById('container-asesor-maximus');
+            const containerExterno = document.getElementById('container-asesor-externo');
+            
+            if (containerMaximus && containerExterno) {
+                containerMaximus.style.display = isMaximus ? 'block' : 'none';
+                containerExterno.style.display = isMaximus ? 'none' : 'grid';
+            }
+        }
+
+        function popularSelectAsesores() {
+            const select = document.getElementById('inm-asesor-select');
+            if (!select) return;
+            select.innerHTML = '';
+            ASESORES_MAXIMUS_DATA.forEach(asesor => {
+                const option = document.createElement('option');
+                option.value = asesor.id;
+                option.textContent = `${asesor.nombre} - ${asesor.cargo}`;
+                select.appendChild(option);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            popularSelectAsesores();
+        });
+
         function guardarInmuebleAdmin() {
             // Recolectar datos del formulario
             const titulo = document.getElementById('inm-titulo').value;
@@ -3921,7 +3964,43 @@
             const m2 = document.getElementById('inm-m2').value;
             const isMaximus = document.getElementById('inm-ismaximus').checked;
             const descripcion = document.getElementById('inm-descripcion').value;
-            const asesorSeleccionado = document.getElementById('inm-asesor').value;
+            
+            // Lógica de Asesor
+            const tipoAsesor = document.querySelector('input[name="tipo_asesor"]:checked').value;
+            let asesor = {};
+            
+            if (tipoAsesor === 'maximus') {
+                const asesorId = document.getElementById('inm-asesor-select').value;
+                const asesorBuscado = ASESORES_MAXIMUS_DATA.find(a => a.id === asesorId);
+                if (asesorBuscado) {
+                    asesor = {
+                        nombre: asesorBuscado.nombre,
+                        cargo: asesorBuscado.cargo,
+                        telefono: asesorBuscado.telefono,
+                        avatar: asesorBuscado.avatar,
+                        rating: `${asesorBuscado.rating} (${asesorBuscado.cierres} Cierres)`,
+                        experiencia: 'Asesor Oficial MAXIMUS'
+                    };
+                }
+            } else {
+                const nombreExt = document.getElementById('inm-asesor-nombre').value || 'Asesor Externo';
+                const telefonoExt = document.getElementById('inm-asesor-telefono').value || '';
+                const cargoExt = document.getElementById('inm-asesor-cargo').value || 'Asesor Independiente';
+                let avatarExt = document.getElementById('inm-asesor-avatar').value;
+                if (!avatarExt) {
+                    const nomFormateado = nombreExt.replace(/\s+/g, '+');
+                    avatarExt = `https://ui-avatars.com/api/?name=${nomFormateado}&background=475569&color=fff&bold=true`;
+                }
+                
+                asesor = {
+                    nombre: nombreExt,
+                    cargo: cargoExt,
+                    telefono: telefonoExt,
+                    avatar: avatarExt,
+                    rating: 'Nuevo',
+                    experiencia: 'Asesor Externo'
+                };
+            }
 
             // Fotos (URLs separadas por comas)
             const fotosStr = document.getElementById('inm-fotos').value;
@@ -3944,26 +4023,6 @@
                 if (tit && desc) {
                     aspectosDestacados.push({ icono: icono || 'ph-star', titulo: tit, desc });
                 }
-            }
-
-            // Asesor info (mocked based on selection for now)
-            let asesor = {
-                nombre: 'José Guerrero',
-                cargo: 'Director & Captador Principal MAXIMUS',
-                telefono: '+58 424-1234567',
-                avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
-                rating: '5.0 (28 Cierres)',
-                experiencia: '4 años en la red'
-            };
-            if (asesorSeleccionado === 'Carlos Santander') {
-                asesor = {
-                    nombre: 'Carlos Santander',
-                    cargo: 'Asesor Premium MAXIMUS',
-                    telefono: '+58 424-9876543',
-                    avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=10b981&color=fff&bold=true',
-                    rating: '4.8 (15 Cierres)',
-                    experiencia: '2 años en la red'
-                };
             }
 
             // BadgeTipo calculation
