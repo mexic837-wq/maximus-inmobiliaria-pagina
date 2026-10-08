@@ -423,7 +423,7 @@
                             <p id="userName" class="text-sm font-bold text-maximus-dark leading-tight">Cargando...</p>
                             <p id="userTitle" class="text-[11px] font-semibold text-gray-500">Agente Premium</p>
                         </div>
-                        <i class="ph-bold ph-caret-down text-gray-400 group-hover:text-maximus-accent transition-colors hidden md:block mr-1"></i>
+                        <i class="ph-bold ph-caret-down text-gray-400 group-hover:text-maximus-accent transition-colors text-xs ml-0.5"></i>
                     </div>
 
                     <!-- Menú Desplegable -->
@@ -442,10 +442,21 @@
                                 <i class="ph-fill ph-user-circle text-lg"></i> Mi Perfil
                             </button>
                             
-                            <button onclick="activateTab('view-pagos'); toggleProfileMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                            <!-- Opción exclusiva para Agente -->
+                            <button onclick="activateTab('view-pagos'); toggleProfileMenu();" class="agente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
                                 <i class="ph-fill ph-credit-card text-lg"></i> Pagos / Renovar
                             </button>
 
+                            <!-- Opciones exclusivas para Administrador -->
+                            <button onclick="activateTab('view-admin-config'); toggleProfileMenu();" class="admin-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                                <i class="ph-fill ph-users-three text-lg"></i> Gestión de Agentes
+                            </button>
+
+                            <button onclick="activateTab('view-admin-cargar-inmueble'); toggleProfileMenu();" class="admin-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                                <i class="ph-fill ph-house-line text-lg"></i> Cargar Inmueble
+                            </button>
+
+                            <!-- Soporte General -->
                             <button class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
                                 <i class="ph-fill ph-headset text-lg"></i> Soporte 24/7
                             </button>
