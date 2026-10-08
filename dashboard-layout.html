@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -46,7 +47,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #0B4A3F; }
     </style>
 </head>
-<body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg">
+<body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-gray-900 transition-colors duration-300">
 
     <!-- ==========================================
          1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
@@ -86,9 +87,9 @@
                 <a href="#" data-target="view-cotizador" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-calculator text-xl"></i> Cotizador Express
                 </a>
-                <a href="#" data-target="view-pagos" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <!-- <a href="#" data-target="view-pagos" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-credit-card text-xl"></i> Pagos / Renovar
-                </a>
+                </a> -->
                 <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-handshake text-xl"></i> Histórico Global
                 </a>
@@ -113,9 +114,9 @@
                 <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph-fill ph-video-camera text-xl text-maximus-accent"></i> Subir Tutoriales
                 </a>
-                <a href="#" class="agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                <!-- <a href="#" class="agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-headset text-xl"></i> Soporte 24/7
-                </a>
+                </a> -->
             </nav>
         </div>
 
@@ -177,12 +178,61 @@
                     <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-maximus-bg"></span>
                 </button>
                 
-                <!-- Perfil Card -->
-                <div class="flex items-center gap-3 cursor-pointer group bg-white px-3 py-2 rounded-full shadow-premium hover:shadow-premium-hover transition-all">
-                    <img id="userAvatar" class="h-10 w-10 rounded-full object-cover" src="https://ui-avatars.com/api/?name=Agente&background=0B4A3F&color=fff" alt="Avatar">
-                    <div class="text-left hidden md:block pr-3">
-                        <p id="userName" class="text-sm font-bold text-maximus-dark leading-tight">Cargando...</p>
-                        <p id="userTitle" class="text-[11px] font-semibold text-gray-500">Agente Premium</p>
+                <!-- Perfil Card con Dropdown -->
+                <div class="relative">
+                    <div id="btn-profile-menu" onclick="toggleProfileMenu()" class="flex items-center gap-3 cursor-pointer group bg-white px-3 py-2 rounded-full shadow-premium hover:shadow-premium-hover transition-all border border-transparent hover:border-gray-100">
+                        <img id="userAvatar" class="h-10 w-10 rounded-full object-cover shadow-sm" src="https://ui-avatars.com/api/?name=Agente&background=0B4A3F&color=fff" alt="Avatar">
+                        <div class="text-left hidden md:block pr-2">
+                            <p id="userName" class="text-sm font-bold text-maximus-dark leading-tight">Cargando...</p>
+                            <p id="userTitle" class="text-[11px] font-semibold text-gray-500">Agente Premium</p>
+                        </div>
+                        <i class="ph-bold ph-caret-down text-gray-400 group-hover:text-maximus-accent transition-colors hidden md:block mr-1"></i>
+                    </div>
+
+                    <!-- Menú Desplegable -->
+                    <div id="dropdown-profile" class="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 pointer-events-none transform translate-y-[-10px] transition-all duration-300 z-50 overflow-hidden">
+                        
+                        <!-- Header del Dropdown -->
+                        <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Mi Cuenta</p>
+                            <p class="text-sm font-extrabold text-maximus-dark" id="dropdown-userName">Cargando...</p>
+                            <p class="text-[11px] text-gray-500 font-medium truncate" id="dropdown-userEmail">asesor@maximus.com</p>
+                        </div>
+
+                        <!-- Opciones -->
+                        <div class="p-2 space-y-1">
+                            <button class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                                <i class="ph-fill ph-user-circle text-lg"></i> Mi Perfil
+                            </button>
+                            
+                            <button onclick="activateTab('view-pagos'); toggleProfileMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                                <i class="ph-fill ph-credit-card text-lg"></i> Pagos / Renovar
+                            </button>
+
+                            <button class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                                <i class="ph-fill ph-headset text-lg"></i> Soporte 24/7
+                            </button>
+
+                            <div class="h-px w-full bg-gray-100 my-1"></div>
+                            
+                            <!-- Toggle Modo Oscuro -->
+                            <div class="px-3 py-2.5 flex items-center justify-between group cursor-pointer rounded-xl hover:bg-gray-50 transition-colors" onclick="toggleTheme()">
+                                <div class="flex items-center gap-3">
+                                    <i id="theme-icon" class="ph-fill ph-moon text-lg text-gray-600 group-hover:text-maximus-dark transition-colors"></i>
+                                    <span class="text-sm font-bold text-gray-600 group-hover:text-maximus-dark transition-colors">Modo Oscuro</span>
+                                </div>
+                                <div class="w-9 h-5 bg-gray-200 rounded-full relative transition-colors" id="theme-toggle-bg">
+                                    <div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm transition-transform" id="theme-toggle-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="p-2 bg-gray-50 border-t border-gray-100">
+                            <button class="w-full text-left px-3 py-2 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3">
+                                <i class="ph-bold ph-sign-out text-lg"></i> Cerrar Sesión
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2507,6 +2557,55 @@
                     clearProps: 'transform,opacity'
                 }
             );
+        }
+
+        // ==========================================
+        // PROFILE DROPDOWN Y MODO OSCURO
+        // ==========================================
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('dropdown-profile');
+            if (dropdown.classList.contains('opacity-0')) {
+                dropdown.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                dropdown.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                dropdown.classList.remove('opacity-100', 'translate-y-0');
+                dropdown.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+            }
+        }
+
+        // Cerrar menú si se hace clic fuera
+        document.addEventListener('click', (event) => {
+            const btn = document.getElementById('btn-profile-menu');
+            const dropdown = document.getElementById('dropdown-profile');
+            if (btn && dropdown) {
+                if (!btn.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove('opacity-100', 'translate-y-0');
+                    dropdown.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-10px]');
+                }
+            }
+        });
+
+        // Configuración de Modo Oscuro (Básico)
+        let isDarkMode = false;
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const icon = document.getElementById('theme-icon');
+            const dot = document.getElementById('theme-toggle-dot');
+            const bg = document.getElementById('theme-toggle-bg');
+            
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+                icon.classList.remove('ph-moon');
+                icon.classList.add('ph-sun', 'text-amber-400');
+                bg.classList.add('bg-maximus-accent');
+                dot.style.transform = 'translateX(16px)';
+            } else {
+                document.documentElement.classList.remove('dark');
+                icon.classList.remove('ph-sun', 'text-amber-400');
+                icon.classList.add('ph-moon');
+                bg.classList.remove('bg-maximus-accent');
+                dot.style.transform = 'translateX(0px)';
+            }
         }
 
         // ==========================================
