@@ -1363,18 +1363,32 @@
                         </div>
 
                         <!-- 2. Selección de Zona / Sector -->
-                        <div>
+                        <div class="relative z-20">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Zona o Sector del Táchira</label>
-                            <div class="relative">
-                                <i class="ph ph-map-pin absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
-                                <select id="cot-zona" onchange="calcularCotizacionEnVivo()" 
-                                    class="w-full pl-12 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-base font-bold text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition-all appearance-none cursor-pointer">
-                                    <!-- Se puebla dinámicamente -->
-                                </select>
-                                <i class="ph ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            
+                            <div class="relative" id="cotZonaDropdownWrapper">
+                                <button type="button" onclick="toggleCotZonaDropdown()" class="w-full pl-12 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-left text-base font-bold text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white hover:bg-white hover:border-maximus-accent transition-all flex items-center justify-between shadow-sm">
+                                    <i class="ph ph-map-pin absolute left-4 text-xl text-gray-400"></i>
+                                    <span id="cotZonaSelectedLabel" class="truncate">Seleccionando zona...</span>
+                                    <i id="cotZonaCaret" class="ph ph-caret-down text-gray-400 transition-transform duration-300"></i>
+                                </button>
+                                
+                                <!-- Panel Desplegable -->
+                                <div id="cotZonaDropdownPanel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top absolute left-0 right-0 top-[110%] bg-white rounded-2xl shadow-premium border border-gray-100 z-50 overflow-hidden flex flex-col">
+                                    <div class="p-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
+                                        <div class="flex items-center gap-2 bg-white border border-gray-200/80 rounded-xl px-3 py-2 focus-within:border-maximus-accent transition-all">
+                                            <i class="ph ph-magnifying-glass text-gray-400"></i>
+                                            <input type="text" id="cotZonaSearch" oninput="filterCotZonas(this.value)" placeholder="Buscar zona..." class="bg-transparent w-full text-sm font-medium outline-none text-maximus-dark">
+                                        </div>
+                                    </div>
+                                    <div class="max-h-[240px] overflow-y-auto p-1.5 scroll-smooth" id="cotZonaList">
+                                        <!-- Elementos generados por JS -->
+                                    </div>
+                                </div>
                             </div>
+
                             <p class="text-xs text-gray-400 mt-2 font-medium flex items-center gap-1">
-                                <i class="ph-bold ph-info"></i> Valor base configurado para esta zona: <span class="text-maximus-accent font-bold" id="cot-valor-base-tag">$780 / m²</span>
+                                <i class="ph-bold ph-info"></i> Valor base configurado para esta zona: <span class="text-maximus-accent font-bold" id="cot-valor-base-tag">$0 / m²</span>
                             </p>
                         </div>
 
@@ -2368,18 +2382,97 @@
             }
         }
 
-        function poblarSelectZonas() {
-            const select = document.getElementById('cot-zona');
-            if (!select) return;
-            select.innerHTML = '';
+        let cotZonaSeleccionadaId = null;
+        let isCotZonaDropdownOpen = false;
+
+        function toggleCotZonaDropdown() {
+            const panel = document.getElementById('cotZonaDropdownPanel');
+            const caret = document.getElementById('cotZonaCaret');
+            
+            if (isCotZonaDropdownOpen) {
+                // Cerrar
+                isCotZonaDropdownOpen = false;
+                panel.classList.remove('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+                panel.classList.add('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+                if (caret) {
+                    caret.classList.remove('rotate-180', 'text-maximus-accent');
+                    caret.classList.add('text-gray-400');
+                }
+            } else {
+                // Abrir
+                isCotZonaDropdownOpen = true;
+                panel.classList.remove('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+                panel.classList.add('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+                if (caret) {
+                    caret.classList.add('rotate-180', 'text-maximus-accent');
+                    caret.classList.remove('text-gray-400');
+                }
+                setTimeout(() => {
+                    document.getElementById('cotZonaSearch').focus();
+                }, 100);
+            }
+        }
+
+        function filterCotZonas(query) {
+            poblarSelectZonas(query);
+        }
+
+        function seleccionarCotZona(zonaId) {
+            cotZonaSeleccionadaId = zonaId;
+            const zona = listaZonasCotizador.find(z => z.id === zonaId);
+            if (zona) {
+                document.getElementById('cotZonaSelectedLabel').textContent = `${zona.nombre} (${zona.municipio}) — $${zona.precio_m2_base}/m²`;
+            }
+            if (isCotZonaDropdownOpen) toggleCotZonaDropdown();
+            
+            // Limpiar buscador y renderizar de nuevo
+            document.getElementById('cotZonaSearch').value = '';
+            poblarSelectZonas();
+            calcularCotizacionEnVivo();
+        }
+
+        // Cerrar al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('cotZonaDropdownWrapper');
+            if (wrapper && !wrapper.contains(e.target) && isCotZonaDropdownOpen) {
+                toggleCotZonaDropdown();
+            }
+        });
+
+        function poblarSelectZonas(filter = '') {
+            const listContainer = document.getElementById('cotZonaList');
+            if (!listContainer) return;
+            
+            let html = '';
+            const filterLower = filter.toLowerCase();
 
             listaZonasCotizador.forEach((zona, idx) => {
-                const opt = document.createElement('option');
-                opt.value = zona.id;
-                opt.textContent = `${zona.nombre} (${zona.municipio}) — $${zona.precio_m2_base}/m²`;
-                if (idx === 0) opt.selected = true;
-                select.appendChild(opt);
+                if (idx === 0 && !cotZonaSeleccionadaId) {
+                    cotZonaSeleccionadaId = zona.id;
+                    document.getElementById('cotZonaSelectedLabel').textContent = `${zona.nombre} (${zona.municipio}) — $${zona.precio_m2_base}/m²`;
+                }
+
+                const textoVisible = `${zona.nombre} (${zona.municipio})`;
+                if (filter && !textoVisible.toLowerCase().includes(filterLower)) return;
+
+                const isActive = zona.id === cotZonaSeleccionadaId;
+                const activeClasses = isActive 
+                    ? 'bg-emerald-50 text-maximus-dark font-bold' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-maximus-dark font-medium';
+
+                html += `
+                    <button type="button" onclick="seleccionarCotZona('${zona.id}')" 
+                        class="w-full text-left px-4 py-2.5 rounded-xl text-sm flex items-center justify-between transition-colors ${activeClasses}">
+                        <span>${textoVisible}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold ${isActive ? 'text-maximus-accent' : 'text-gray-400'}">$${zona.precio_m2_base}/m²</span>
+                            ${isActive ? '<i class="ph-bold ph-check text-maximus-accent"></i>' : ''}
+                        </div>
+                    </button>
+                `;
             });
+
+            listContainer.innerHTML = html;
         }
 
         function setM2Rapido(m2) {
@@ -2414,19 +2507,18 @@
             document.getElementById('cot-m2').value = 150;
             setTipoInmuebleCot('apartamento');
             if (listaZonasCotizador.length > 0) {
-                document.getElementById('cot-zona').value = listaZonasCotizador[0].id;
+                seleccionarCotZona(listaZonasCotizador[0].id);
+            } else {
+                calcularCotizacionEnVivo();
             }
-            calcularCotizacionEnVivo();
         }
 
         function calcularCotizacionEnVivo() {
             const m2Input = document.getElementById('cot-m2');
-            const zonaSelect = document.getElementById('cot-zona');
-            if (!m2Input || !zonaSelect || !window.CotizadorService) return;
+            if (!m2Input || !window.CotizadorService) return;
 
             const m2 = parseFloat(m2Input.value) || 0;
-            const zonaId = zonaSelect.value;
-            const zona = listaZonasCotizador.find(z => z.id === zonaId) || listaZonasCotizador[0];
+            const zona = listaZonasCotizador.find(z => z.id === cotZonaSeleccionadaId) || listaZonasCotizador[0];
 
             if (!zona) return;
 
