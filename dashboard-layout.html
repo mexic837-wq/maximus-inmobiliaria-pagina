@@ -137,7 +137,7 @@
             <!-- Izquierda: Título Dinámico o Breadcrumb -->
             <div class="flex items-center gap-4">
                 <div class="hidden md:block">
-                    <p class="text-sm font-semibold text-gray-500">Panel Central / <span class="text-maximus-dark font-bold">Vista Actual</span></p>
+                    <p class="text-sm font-semibold text-gray-500">Panel Central / <span id="breadcrumbSectionName" class="text-maximus-dark font-bold">Vista Actual</span></p>
                 </div>
             </div>
             
@@ -2290,7 +2290,8 @@
                 }
             }
 
-            // 5. Actualizar estilos visuales del menú lateral (Sidebar)
+            // 5. Actualizar estilos visuales del menú lateral (Sidebar) y breadcrumb
+            let sectionName = 'Resumen';
             navLinks.forEach(link => {
                 const isMatch = link.getAttribute('data-target') === targetId;
                 const icon = link.querySelector('i');
@@ -2302,6 +2303,7 @@
                         icon.classList.remove('ph');
                         icon.classList.add('ph-fill', 'text-maximus-accent');
                     }
+                    sectionName = link.textContent.trim();
                 } else {
                     link.classList.remove('bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
                     link.classList.add('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold');
@@ -2311,6 +2313,22 @@
                     }
                 }
             });
+
+            // Actualizar breadcrumb
+            const breadcrumb = document.getElementById('breadcrumbSectionName');
+            if (breadcrumb) {
+                breadcrumb.textContent = sectionName;
+            }
+
+            // Ocultar/Mostrar filtro de zonas solo en Inmuebles
+            const locationWrapper = document.getElementById('locationDropdownWrapper');
+            if (locationWrapper) {
+                if (targetId === 'view-inmuebles') {
+                    locationWrapper.style.display = '';
+                } else {
+                    locationWrapper.style.display = 'none';
+                }
+            }
         }
 
         // Listener de clic en los enlaces del menú
