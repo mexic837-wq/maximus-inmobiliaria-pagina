@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full bg-[#F4F7F6]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,10 +14,10 @@
                         'maximus-accent': '#10B981',
                         'maximus-silver': '#D1D5DB',
                         'maximus-black': '#111827',
-                        'maximus-bg': '#F4F7F6', /* Un fondo gris-verdoso muy sutil y elegante */
+                        'maximus-bg': '#F4F7F6',
                     },
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'], /* Tipografía muy moderna y Premium */
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
                     boxShadow: {
                         'premium': '0 4px 20px -2px rgba(11, 74, 63, 0.05)',
@@ -27,35 +27,26 @@
             }
         }
     </script>
-    <!-- Nueva Tipografía: Plus Jakarta Sans (Muy usada en SaaS Premium y FinTech/PropTech) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Nuevos Iconos: Phosphor Icons (Líneas limpias, aspecto moderno y profesional) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Librería GSAP para animaciones fluidas y cinéticas de alto nivel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    
-    <!-- Arquitectura Backend / Supabase & Mock Services -->
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/services.js"></script>
     
     <style>
-        html, body { background-color: #F4F7F6; height: 100%; margin: 0; overflow: hidden; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        /* Scrollbar elegante */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0B4A3F; }
     </style>
 </head>
-<body class="font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white">
+<body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg">
 
     <!-- ==========================================
          1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
