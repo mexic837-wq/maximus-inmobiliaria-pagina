@@ -1771,34 +1771,72 @@
                 </div>
 
                 <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20 max-w-4xl mx-auto">
-                    <form class="space-y-8">
+                    <form class="space-y-8" id="form-cargar-inmueble">
                         <!-- Info Básica -->
                         <div>
                             <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Información Básica</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Título del Inmueble</label>
-                                    <input type="text" placeholder="Ej: Quinta de lujo con piscina..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    <input type="text" id="inm-titulo" placeholder="Ej: Quinta de lujo con piscina..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Subtítulo</label>
+                                    <input type="text" id="inm-subtitulo" placeholder="Ej: Exclusiva residencia..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo de Inmueble</label>
-                                    <select class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                        <option value="casa">Casa</option>
-                                        <option value="apartamento">Apartamento</option>
-                                        <option value="townhouse">Townhouse</option>
-                                        <option value="local">Local Comercial</option>
+                                    <select id="inm-tipo" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                        <option value="Casa / Quinta">Casa / Quinta</option>
+                                        <option value="Apartamento">Apartamento</option>
+                                        <option value="Townhouse">Townhouse</option>
+                                        <option value="Local Comercial">Local Comercial</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Operación</label>
-                                    <select class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                        <option value="venta">Venta</option>
-                                        <option value="alquiler">Alquiler</option>
+                                    <select id="inm-operacion" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                        <option value="VENTA">Venta</option>
+                                        <option value="ALQUILER">Alquiler</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio (USD)</label>
-                                    <input type="number" placeholder="Ej: 150000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio</label>
+                                    <input type="text" id="inm-precio" placeholder="Ej: $150.000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Moneda</label>
+                                    <select id="inm-moneda" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                        <option value="USD">USD</option>
+                                        <option value="USD/mes">USD/mes</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio m² (Opcional)</label>
+                                    <input type="text" id="inm-preciom2" placeholder="Ej: $771 USD / m²" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Comisión</label>
+                                    <input type="text" id="inm-comision" placeholder="Ej: 50/50 o 5%" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ubicación -->
+                        <div>
+                            <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Ubicación</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ubicación General</label>
+                                    <input type="text" id="inm-ubicacion" placeholder="Ej: Urbanización Guaparo, San Cristóbal..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre del Sector</label>
+                                    <input type="text" id="inm-sectornombre" placeholder="Ej: Urbanización Guaparo" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Descripción del Sector</label>
+                                    <textarea id="inm-sectordesc" rows="2" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1809,19 +1847,108 @@
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Habitaciones</label>
-                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                    <input type="text" id="inm-habs" placeholder="Ej: 4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Baños</label>
-                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                    <input type="text" id="inm-banos" placeholder="Ej: 3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Puestos de Est.</label>
-                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                    <input type="text" id="inm-estac" placeholder="Ej: 3 Puestos" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Área (m²)</label>
-                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                    <input type="text" id="inm-m2" placeholder="Ej: 350 m²" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asesor y Descripción -->
+                        <div>
+                            <div class="grid grid-cols-1 gap-6">
+                                <div>
+                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Asesor</h3>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Asesor Asignado</label>
+                                    <select id="inm-asesor" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                        <option value="Jose Guerrero">José Guerrero - Director & Captador Principal</option>
+                                        <option value="Carlos Santander">Carlos Santander - Asesor Premium</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Descripción Larga</h3>
+                                    <textarea id="inm-descripcion" rows="5" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aspectos Destacados -->
+                        <div>
+                            <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Aspectos Destacados (4)</h3>
+                            <div class="space-y-4" id="aspectos-container">
+                                <!-- Aspecto 1 -->
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-ico-1" placeholder="Icono (ej: ph-star)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-tit-1" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                    </div>
+                                    <div class="sm:col-span-6">
+                                        <input type="text" id="asp-desc-1" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                </div>
+                                <!-- Aspecto 2 -->
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-ico-2" placeholder="Icono (ej: ph-drop)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-tit-2" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                    </div>
+                                    <div class="sm:col-span-6">
+                                        <input type="text" id="asp-desc-2" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                </div>
+                                <!-- Aspecto 3 -->
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-ico-3" placeholder="Icono (ej: ph-shield-check)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-tit-3" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                    </div>
+                                    <div class="sm:col-span-6">
+                                        <input type="text" id="asp-desc-3" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                </div>
+                                <!-- Aspecto 4 -->
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-ico-4" placeholder="Icono (ej: ph-car)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                    <div class="sm:col-span-3">
+                                        <input type="text" id="asp-tit-4" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                    </div>
+                                    <div class="sm:col-span-6">
+                                        <input type="text" id="asp-desc-4" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Amenidades y Fotos -->
+                        <div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Amenidades (Separadas por coma)</h3>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ej: Piscina, Cancha, Vigilancia</label>
+                                    <textarea id="inm-amenidades" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400"></textarea>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Fotos (URLs separadas por coma)</h3>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URLs de las imágenes</label>
+                                    <textarea id="inm-fotos" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1832,7 +1959,7 @@
                                 <i class="ph-fill ph-buildings text-maximus-accent"></i> Captación MAXIMUS
                             </h3>
                             <label class="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100 cursor-pointer hover:bg-emerald-100/50 transition-colors">
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-maximus-accent focus:ring-maximus-accent">
+                                <input type="checkbox" id="inm-ismaximus" class="w-5 h-5 rounded border-gray-300 text-maximus-accent focus:ring-maximus-accent">
                                 <div>
                                     <p class="text-sm font-extrabold text-maximus-dark">Marcar como Captación Directa MAXIMUS</p>
                                     <p class="text-[11px] text-gray-500 font-medium">Esto hará que el inmueble aparezca en la sección exclusiva con la insignia correspondiente.</p>
@@ -1841,7 +1968,7 @@
                         </div>
 
                         <div class="pt-4 flex justify-end">
-                            <button type="button" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                            <button type="button" onclick="guardarInmuebleAdmin()" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
                                 <i class="ph-bold ph-check"></i> Guardar Inmueble
                             </button>
                         </div>
@@ -3785,6 +3912,119 @@
                 if (lightbox && !lightbox.classList.contains('hidden')) cambiarFotoLightbox(1);
             }
         });
+
+        function guardarInmuebleAdmin() {
+            // Recolectar datos del formulario
+            const titulo = document.getElementById('inm-titulo').value;
+            const subtitulo = document.getElementById('inm-subtitulo').value;
+            const tipo = document.getElementById('inm-tipo').value;
+            const operacion = document.getElementById('inm-operacion').value;
+            const precio = document.getElementById('inm-precio').value;
+            const moneda = document.getElementById('inm-moneda').value;
+            const precioM2 = document.getElementById('inm-preciom2').value;
+            const comision = document.getElementById('inm-comision').value;
+            const ubicacion = document.getElementById('inm-ubicacion').value;
+            const sectorNombre = document.getElementById('inm-sectornombre').value;
+            const sectorDesc = document.getElementById('inm-sectordesc').value;
+            const habitaciones = document.getElementById('inm-habs').value;
+            const banos = document.getElementById('inm-banos').value;
+            const estacionamientos = document.getElementById('inm-estac').value;
+            const m2 = document.getElementById('inm-m2').value;
+            const isMaximus = document.getElementById('inm-ismaximus').checked;
+            const descripcion = document.getElementById('inm-descripcion').value;
+            const asesorSeleccionado = document.getElementById('inm-asesor').value;
+
+            // Fotos (URLs separadas por comas)
+            const fotosStr = document.getElementById('inm-fotos').value;
+            const fotos = fotosStr ? fotosStr.split(',').map(f => f.trim()).filter(f => f) : [];
+
+            // Amenidades (Separadas por comas, asignar ícono aleatorio temporalmente)
+            const amenidadesStr = document.getElementById('inm-amenidades').value;
+            const amenidadesNombres = amenidadesStr ? amenidadesStr.split(',').map(a => a.trim()).filter(a => a) : [];
+            const amenidades = amenidadesNombres.map(nombre => ({
+                icono: 'ph-check', // Default icon
+                nombre: nombre
+            }));
+
+            // Aspectos Destacados
+            const aspectosDestacados = [];
+            for (let i = 1; i <= 4; i++) {
+                const icono = document.getElementById('asp-ico-' + i)?.value;
+                const tit = document.getElementById('asp-tit-' + i)?.value;
+                const desc = document.getElementById('asp-desc-' + i)?.value;
+                if (tit && desc) {
+                    aspectosDestacados.push({ icono: icono || 'ph-star', titulo: tit, desc });
+                }
+            }
+
+            // Asesor info (mocked based on selection for now)
+            let asesor = {
+                nombre: 'José Guerrero',
+                cargo: 'Director & Captador Principal MAXIMUS',
+                telefono: '+58 424-1234567',
+                avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
+                rating: '5.0 (28 Cierres)',
+                experiencia: '4 años en la red'
+            };
+            if (asesorSeleccionado === 'Carlos Santander') {
+                asesor = {
+                    nombre: 'Carlos Santander',
+                    cargo: 'Asesor Premium MAXIMUS',
+                    telefono: '+58 424-9876543',
+                    avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=10b981&color=fff&bold=true',
+                    rating: '4.8 (15 Cierres)',
+                    experiencia: '2 años en la red'
+                };
+            }
+
+            // BadgeTipo calculation
+            let badgeTipo = 'CASA';
+            if (tipo.includes('Apartamento')) badgeTipo = 'APARTAMENTO';
+            else if (tipo.includes('Townhouse')) badgeTipo = 'TOWNHOUSE';
+            else if (tipo.includes('Local')) badgeTipo = 'LOCAL';
+
+            // Construir el objeto
+            const nuevoId = 'inm-' + (Object.keys(INMUEBLES_DETALLE_DATA).length + 1);
+            const codigo = '#MAX-' + (100 + Object.keys(INMUEBLES_DETALLE_DATA).length + 1);
+
+            const nuevoInmueble = {
+                id: nuevoId,
+                codigo: codigo,
+                titulo,
+                subtitulo,
+                tipo,
+                badgeTipo,
+                operacion,
+                isMaximus,
+                precio,
+                moneda,
+                precioM2,
+                comision,
+                ubicacion,
+                sectorNombre,
+                sectorDesc,
+                habitaciones,
+                banos,
+                m2,
+                estacionamientos,
+                fotos: fotos.length > 0 ? fotos : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85'],
+                asesor,
+                aspectosDestacados,
+                descripcion,
+                amenidades
+            };
+
+            // Aquí iría la llamada a Supabase insert() en el futuro
+            // const { data, error } = await supabase.from('inmuebles').insert([nuevoInmueble]);
+            
+            // Temporalmente agregarlo al objeto local
+            INMUEBLES_DETALLE_DATA[nuevoId] = nuevoInmueble;
+
+            mostrarToast('Inmueble guardado correctamente');
+            
+            // Limpiar formulario
+            document.getElementById('form-cargar-inmueble').reset();
+        }
     </script>
 </body>
 </html>
