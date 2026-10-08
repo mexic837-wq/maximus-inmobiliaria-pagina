@@ -2042,32 +2042,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Selector de Cita / Visita -->
-                                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                                    <div class="p-2.5 bg-gray-50/70 border-b border-gray-200">
-                                        <label class="block text-[9px] font-black uppercase tracking-wider text-gray-500 mb-0.5">Agendar Visita Guiada</label>
-                                        <input type="date" id="airbnb-visita-fecha" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                    </div>
-                                    <div class="p-2.5 grid grid-cols-2 gap-2 bg-white text-xs font-semibold">
-                                        <div>
-                                            <label class="block text-[9px] font-bold text-gray-400 uppercase">Horario</label>
-                                            <select id="airbnb-visita-horario" class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-0.5">
-                                                <option value="Mañana (9:00 AM - 12:00 PM)">Mañana (9:00 AM)</option>
-                                                <option value="Tarde (2:00 PM - 5:00 PM)">Tarde (2:00 PM)</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-[9px] font-bold text-gray-400 uppercase">Tipo</label>
-                                            <select class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-0.5">
-                                                <option>Presencial</option>
-                                                <option>Video-Llamada</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- Botones de Acción Primaria -->
-                                <div class="space-y-2">
+                                <div class="space-y-2 pt-1">
                                     <button onclick="solicitarVisitaWhatsApp()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 group hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
                                         <i class="ph-fill ph-whatsapp-logo text-base"></i>
                                         <span>Contactar Asesor por WhatsApp</span>
@@ -3639,14 +3615,6 @@
             const elComision = document.getElementById('airbnb-card-comision');
             if (elComision) elComision.innerHTML = `<i class="ph-bold ph-handshake"></i> ${data.comision} Comisión`;
 
-            // Fecha por defecto mañana en selector de visita
-            const fechaInput = document.getElementById('airbnb-visita-fecha');
-            if (fechaInput) {
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                fechaInput.value = tomorrow.toISOString().split('T')[0];
-            }
-
             // 10. Activar Vista Dedicada con animación suave y scroll al inicio
             activateTab('view-detalle-inmueble', true);
             const mainEl = document.querySelector('main');
@@ -3725,9 +3693,7 @@
         // ==========================================
         function solicitarVisitaWhatsApp() {
             if (!currentInmuebleAirbnb) return;
-            const fecha = document.getElementById('airbnb-visita-fecha').value || 'Fecha a convenir';
-            const horario = document.getElementById('airbnb-visita-horario').value || 'Mañana';
-            const msg = encodeURIComponent(`Hola ${currentInmuebleAirbnb.asesor.nombre}, deseo coordinar una visita para la propiedad:\n\n🏡 *${currentInmuebleAirbnb.titulo}*\n📌 Código: ${currentInmuebleAirbnb.codigo}\n💰 Precio: ${currentInmuebleAirbnb.precio} ${currentInmuebleAirbnb.moneda}\n📅 Fecha sugerida: ${fecha}\n⏰ Horario: ${horario}\n\nQuedo atento a tu confirmación.`);
+            const msg = encodeURIComponent(`Hola ${currentInmuebleAirbnb.asesor.nombre}, te contacto desde la plataforma MAXIMUS por la propiedad:\n\n🏡 *${currentInmuebleAirbnb.titulo}*\n📌 Código: ${currentInmuebleAirbnb.codigo}\n💰 Precio: ${currentInmuebleAirbnb.precio} ${currentInmuebleAirbnb.moneda}\n\nMe gustaría recibir más información y coordinar una visita.`);
             const tel = currentInmuebleAirbnb.asesor.telefono.replace(/[^0-9]/g, '');
             window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
         }
