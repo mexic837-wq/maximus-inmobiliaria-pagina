@@ -191,86 +191,86 @@
         <!-- ==========================================
              3. ÁREA DE CONTENIDO (MAIN)
              ========================================== -->
-        <main class="flex-1 overflow-y-auto px-10 pt-16 pb-12 relative">
+        <main class="flex-1 overflow-y-auto px-6 sm:px-10 pt-4 sm:pt-6 pb-6 relative">
             
             <!-- A. VISTA: RESUMEN (INICIO) -->
-            <section id="view-resumen" class="view-section active max-w-[1400px] mx-auto space-y-8">
-                <div class="pt-4 flex justify-between items-end">
+            <section id="view-resumen" class="view-section active max-w-[1400px] mx-auto space-y-4 sm:space-y-5">
+                <div class="flex justify-between items-end">
                     <div>
-                        <h1 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Panorama Inmobiliario</h1>
-                        <p id="resumenSubtitle" class="text-gray-500 mt-2 text-base font-medium">Un vistazo rápido al rendimiento de tu portafolio.</p>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Panorama Inmobiliario</h1>
+                        <p id="resumenSubtitle" class="text-gray-500 mt-1 text-xs sm:text-sm font-medium">Un vistazo rápido al rendimiento de tu portafolio.</p>
                     </div>
                     <!-- Botones de Temporalidad (Funcionales) -->
                     <div class="hidden sm:flex bg-white rounded-full p-1 shadow-premium" id="timePeriodButtons">
-                        <button onclick="setTimePeriod('hoy')" data-period="hoy" class="time-btn px-5 py-2 text-sm font-bold text-maximus-dark bg-emerald-50 rounded-full transition-all">Hoy</button>
-                        <button onclick="setTimePeriod('mes')" data-period="mes" class="time-btn px-5 py-2 text-sm font-bold text-gray-500 hover:text-maximus-dark rounded-full transition-all">Mes</button>
-                        <button onclick="setTimePeriod('anio')" data-period="anio" class="time-btn px-5 py-2 text-sm font-bold text-gray-500 hover:text-maximus-dark rounded-full transition-all">Año</button>
+                        <button onclick="setTimePeriod('hoy')" data-period="hoy" class="time-btn px-4 py-1.5 text-xs font-bold text-maximus-dark bg-emerald-50 rounded-full transition-all">Hoy</button>
+                        <button onclick="setTimePeriod('mes')" data-period="mes" class="time-btn px-4 py-1.5 text-xs font-bold text-gray-500 hover:text-maximus-dark rounded-full transition-all">Mes</button>
+                        <button onclick="setTimePeriod('anio')" data-period="anio" class="time-btn px-4 py-1.5 text-xs font-bold text-gray-500 hover:text-maximus-dark rounded-full transition-all">Año</button>
                     </div>
                 </div>
 
                 <!-- KPIs (Dinámicos) -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-7 rounded-[24px] shadow-premium relative overflow-hidden group">
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-maximus-dark/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                        <div class="flex items-center justify-between mb-4">
-                            <p class="text-[13px] font-bold text-gray-400 uppercase tracking-widest">Total Portafolio</p>
-                            <div class="w-12 h-12 rounded-2xl bg-maximus-dark text-white flex items-center justify-center text-2xl shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4.5 sm:p-5 rounded-[20px] shadow-premium relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-20 h-20 bg-maximus-dark/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Portafolio</p>
+                            <div class="w-10 h-10 rounded-xl bg-maximus-dark text-white flex items-center justify-center text-xl shadow-md">
                                 <i class="ph-fill ph-buildings"></i>
                             </div>
                         </div>
-                        <div class="flex items-end gap-3">
-                            <h3 id="kpi-total" class="text-5xl font-extrabold text-maximus-dark tracking-tighter transition-all">45</h3>
-                            <span id="kpi-total-badge" class="text-sm font-bold text-maximus-accent mb-1 flex items-center gap-1 bg-emerald-50 px-2 py-1 rounded-lg">
+                        <div class="flex items-end gap-2.5">
+                            <h3 id="kpi-total" class="text-3xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight transition-all">45</h3>
+                            <span id="kpi-total-badge" class="text-xs font-bold text-maximus-accent mb-1 flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded-lg">
                                 <i class="ph-bold ph-trend-up"></i> <span id="kpi-total-change">+3 hoy</span>
                             </span>
                         </div>
                     </div>
 
-                    <div class="bg-white p-7 rounded-[24px] shadow-premium relative overflow-hidden group">
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                        <div class="flex items-center justify-between mb-4">
-                            <p class="text-[13px] font-bold text-gray-400 uppercase tracking-widest">En Venta</p>
-                            <div class="w-12 h-12 rounded-2xl bg-maximus-accent text-white flex items-center justify-center text-2xl shadow-lg">
+                    <div class="bg-white p-4.5 sm:p-5 rounded-[20px] shadow-premium relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">En Venta</p>
+                            <div class="w-10 h-10 rounded-xl bg-maximus-accent text-white flex items-center justify-center text-xl shadow-md">
                                 <i class="ph-fill ph-tag"></i>
                             </div>
                         </div>
-                        <div class="flex items-end gap-3">
-                            <h3 id="kpi-venta" class="text-5xl font-extrabold text-maximus-dark tracking-tighter transition-all">32</h3>
-                            <span id="kpi-venta-label" class="text-sm font-bold text-gray-400 mb-1">Propiedades activas</span>
+                        <div class="flex items-end gap-2.5">
+                            <h3 id="kpi-venta" class="text-3xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight transition-all">32</h3>
+                            <span id="kpi-venta-label" class="text-xs font-bold text-gray-400 mb-1">Activas hoy</span>
                         </div>
                     </div>
 
-                    <div class="bg-white p-7 rounded-[24px] shadow-premium relative overflow-hidden group">
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                        <div class="flex items-center justify-between mb-4">
-                            <p class="text-[13px] font-bold text-gray-400 uppercase tracking-widest">En Alquiler</p>
-                            <div class="w-12 h-12 rounded-2xl bg-blue-500 text-white flex items-center justify-center text-2xl shadow-lg">
+                    <div class="bg-white p-4.5 sm:p-5 rounded-[20px] shadow-premium relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-20 h-20 bg-blue-500/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">En Alquiler</p>
+                            <div class="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xl shadow-md">
                                 <i class="ph-fill ph-key"></i>
                             </div>
                         </div>
-                        <div class="flex items-end gap-3">
-                            <h3 id="kpi-alquiler" class="text-5xl font-extrabold text-maximus-dark tracking-tighter transition-all">13</h3>
-                            <span id="kpi-alquiler-label" class="text-sm font-bold text-gray-400 mb-1">Propiedades activas</span>
+                        <div class="flex items-end gap-2.5">
+                            <h3 id="kpi-alquiler" class="text-3xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight transition-all">13</h3>
+                            <span id="kpi-alquiler-label" class="text-xs font-bold text-gray-400 mb-1">Activas hoy</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Gráfico de Rendimiento -->
-                <div class="bg-white rounded-[24px] shadow-premium p-8">
-                    <div class="flex justify-between items-center mb-8">
+                <!-- Gráfico de Rendimiento (Ajustado para no requerir scroll) -->
+                <div class="bg-white rounded-[22px] shadow-premium p-5 sm:p-6">
+                    <div class="flex justify-between items-center mb-4">
                         <div>
-                            <h3 class="font-extrabold text-xl text-maximus-dark tracking-tight">Actividad de Mercado</h3>
-                            <p class="text-sm text-gray-500 font-medium mt-1">Interacciones y vistas de tu portafolio</p>
+                            <h3 class="font-extrabold text-lg text-maximus-dark tracking-tight">Actividad de Mercado</h3>
+                            <p class="text-xs text-gray-500 font-medium mt-0.5">Interacciones y vistas de tu portafolio</p>
                         </div>
-                        <button class="flex items-center gap-2 text-sm font-bold text-maximus-accent hover:text-maximus-dark transition-colors">
+                        <button class="flex items-center gap-1.5 text-xs font-bold text-maximus-accent hover:text-maximus-dark transition-colors">
                             Descargar Reporte <i class="ph-bold ph-download-simple"></i>
                         </button>
                     </div>
                     
                     <!-- Simulación de Gráfico SVG Elegante -->
-                    <div class="h-[320px] w-full relative flex items-end justify-between px-4 pb-8">
+                    <div class="h-[190px] sm:h-[210px] w-full relative flex items-end justify-between px-4 pb-6">
                         <!-- Líneas guía -->
-                        <div class="absolute inset-0 flex flex-col justify-between pb-8">
+                        <div class="absolute inset-0 flex flex-col justify-between pb-6">
                             <div class="border-b border-gray-100 w-full h-0"></div>
                             <div class="border-b border-gray-100 w-full h-0"></div>
                             <div class="border-b border-gray-100 w-full h-0"></div>
@@ -278,7 +278,7 @@
                             <div class="border-b border-gray-100 w-full h-0"></div>
                         </div>
                         <!-- SVG Curva Suave (Spline) -->
-                        <svg class="absolute inset-0 h-[320px] w-full pb-8" preserveAspectRatio="none" viewBox="0 0 1000 300">
+                        <svg class="absolute inset-0 h-[190px] sm:h-[210px] w-full pb-6" preserveAspectRatio="none" viewBox="0 0 1000 300">
                             <defs>
                                 <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
                                     <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.2" />
@@ -286,17 +286,17 @@
                                 </linearGradient>
                             </defs>
                             <path d="M0,250 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,140 950,50 1000,20 L1000,300 L0,300 Z" fill="url(#grad1)"></path>
-                            <path d="M0,250 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,140 950,50 1000,20" fill="none" stroke="#10B981" stroke-width="4" stroke-linecap="round"></path>
+                            <path d="M0,250 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,140 950,50 1000,20" fill="none" stroke="#10B981" stroke-width="3.5" stroke-linecap="round"></path>
                         </svg>
                         
                         <!-- Puntos de datos simulados -->
-                        <div class="absolute inset-0 pb-8 flex justify-between items-end px-[10%]">
+                        <div class="absolute inset-0 pb-6 flex justify-between items-end px-[10%]">
                             <!-- Eje X -->
-                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 10%">Lun</span>
-                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 30%">Mar</span>
-                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 50%">Mié</span>
-                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 70%">Jue</span>
-                            <span class="absolute bottom-0 text-xs font-bold text-gray-400" style="left: 90%">Vie</span>
+                            <span class="absolute bottom-0 text-[11px] font-bold text-gray-400" style="left: 10%">Lun</span>
+                            <span class="absolute bottom-0 text-[11px] font-bold text-gray-400" style="left: 30%">Mar</span>
+                            <span class="absolute bottom-0 text-[11px] font-bold text-gray-400" style="left: 50%">Mié</span>
+                            <span class="absolute bottom-0 text-[11px] font-bold text-gray-400" style="left: 70%">Jue</span>
+                            <span class="absolute bottom-0 text-[11px] font-bold text-gray-400" style="left: 90%">Vie</span>
                         </div>
                     </div>
                 </div>
