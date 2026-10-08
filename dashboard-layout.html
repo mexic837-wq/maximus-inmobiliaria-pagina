@@ -1373,15 +1373,15 @@
                                     <i id="cotZonaCaret" class="ph ph-caret-down text-gray-400 transition-transform duration-300"></i>
                                 </button>
                                 
-                                <!-- Panel Desplegable -->
-                                <div id="cotZonaDropdownPanel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top absolute left-0 right-0 top-[110%] bg-white rounded-2xl shadow-premium border border-gray-100 z-50 overflow-hidden flex flex-col">
-                                    <div class="p-3 border-b border-gray-100 bg-gray-50/50 shrink-0">
-                                        <div class="flex items-center gap-2 bg-white border border-gray-200/80 rounded-xl px-3 py-2 focus-within:border-maximus-accent transition-all">
-                                            <i class="ph ph-magnifying-glass text-gray-400"></i>
-                                            <input type="text" id="cotZonaSearch" oninput="filterCotZonas(this.value)" placeholder="Buscar zona..." class="bg-transparent w-full text-sm font-medium outline-none text-maximus-dark">
+                                <!-- Panel Desplegable (Compacto y con apertura inteligente) -->
+                                <div id="cotZonaDropdownPanel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top absolute left-0 right-0 top-[105%] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden flex flex-col">
+                                    <div class="p-2.5 border-b border-gray-100 bg-gray-50/50 shrink-0">
+                                        <div class="flex items-center gap-2 bg-white border border-gray-200/80 rounded-xl px-3 py-1.5 focus-within:border-maximus-accent transition-all">
+                                            <i class="ph ph-magnifying-glass text-gray-400 text-sm"></i>
+                                            <input type="text" id="cotZonaSearch" oninput="filterCotZonas(this.value)" placeholder="Buscar zona..." class="bg-transparent w-full text-xs font-medium outline-none text-maximus-dark">
                                         </div>
                                     </div>
-                                    <div class="max-h-[240px] overflow-y-auto p-1.5 scroll-smooth" id="cotZonaList">
+                                    <div class="max-h-[175px] overflow-y-auto p-1.5 scroll-smooth" id="cotZonaList">
                                         <!-- Elementos generados por JS -->
                                     </div>
                                 </div>
@@ -2387,6 +2387,7 @@
 
         function toggleCotZonaDropdown() {
             const panel = document.getElementById('cotZonaDropdownPanel');
+            const wrapper = document.getElementById('cotZonaDropdownWrapper');
             const caret = document.getElementById('cotZonaCaret');
             
             if (isCotZonaDropdownOpen) {
@@ -2399,6 +2400,21 @@
                     caret.classList.add('text-gray-400');
                 }
             } else {
+                // Comprobar si cabe debajo o si se posiciona hacia arriba para no cortarse
+                if (wrapper && panel) {
+                    const rect = wrapper.getBoundingClientRect();
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    if (spaceBelow < 250) {
+                        panel.style.top = 'auto';
+                        panel.style.bottom = 'calc(100% + 8px)';
+                        panel.style.transformOrigin = 'bottom';
+                    } else {
+                        panel.style.bottom = 'auto';
+                        panel.style.top = 'calc(100% + 8px)';
+                        panel.style.transformOrigin = 'top';
+                    }
+                }
+
                 // Abrir
                 isCotZonaDropdownOpen = true;
                 panel.classList.remove('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
@@ -2408,7 +2424,8 @@
                     caret.classList.remove('text-gray-400');
                 }
                 setTimeout(() => {
-                    document.getElementById('cotZonaSearch').focus();
+                    const searchInput = document.getElementById('cotZonaSearch');
+                    if (searchInput) searchInput.focus();
                 }, 100);
             }
         }
@@ -2462,11 +2479,11 @@
 
                 html += `
                     <button type="button" onclick="seleccionarCotZona('${zona.id}')" 
-                        class="w-full text-left px-4 py-2.5 rounded-xl text-sm flex items-center justify-between transition-colors ${activeClasses}">
-                        <span>${textoVisible}</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold ${isActive ? 'text-maximus-accent' : 'text-gray-400'}">$${zona.precio_m2_base}/m²</span>
-                            ${isActive ? '<i class="ph-bold ph-check text-maximus-accent"></i>' : ''}
+                        class="w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-colors ${activeClasses}">
+                        <span class="truncate pr-2">${textoVisible}</span>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="text-[11px] font-bold ${isActive ? 'text-maximus-accent' : 'text-gray-400'}">$${zona.precio_m2_base}/m²</span>
+                            ${isActive ? '<i class="ph-bold ph-check text-maximus-accent text-xs"></i>' : ''}
                         </div>
                     </button>
                 `;
