@@ -192,28 +192,48 @@
             border-color: #163830 !important;
         }
 
-        /* 8. Botones de Navegación del Sidebar (Resaltado nítido, sin opacidad) */
+        /* 8. Botones de Navegación del Sidebar (Con Marco Que Resalta, Sin Fondo Blanco) */
+        aside .nav-link {
+            border: 1.5px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        /* Modo Claro: Marco sutil esmeralda */
+        aside .nav-link.active {
+            background-color: rgba(16, 185, 129, 0.06) !important;
+            border: 1.5px solid #10B981 !important;
+            color: #0B4A3F !important;
+            font-weight: 800 !important;
+        }
+
+        /* Modo Oscuro: Marco Verde Esmeralda Luminoso, Fondo Transparente/Sutil, Texto Blanco Nítido */
         html.dark aside .nav-link {
             color: #8BAAA1 !important;
+            background-color: transparent !important;
+            border: 1.5px solid transparent !important;
         }
 
         html.dark aside .nav-link:hover {
-            background-color: #123029 !important;
+            background-color: rgba(16, 185, 129, 0.05) !important;
             color: #FFFFFF !important;
+            border-color: rgba(16, 185, 129, 0.25) !important;
         }
 
+        /* Selección Activa: MARCO QUE RESALTA SIN FONDO BLANCO */
         html.dark aside .nav-link.active,
-        html.dark aside .nav-link.active.bg-emerald-50\/70 {
-            background-color: #0E352C !important;
+        html.dark aside .nav-link.bg-emerald-50\/70 {
+            background-color: rgba(16, 185, 129, 0.08) !important;
             background-image: none !important;
+            border: 2px solid #10B981 !important;
             color: #FFFFFF !important;
             font-weight: 800 !important;
-            border: 1px solid rgba(16, 185, 129, 0.45) !important;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18) !important;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.25), inset 0 0 8px rgba(16, 185, 129, 0.05) !important;
         }
 
         html.dark aside .nav-link.active i,
-        html.dark aside .nav-link.active .ph-fill {
+        html.dark aside .nav-link.active .ph-fill,
+        html.dark aside .nav-link.bg-emerald-50\/70 i,
+        html.dark aside .nav-link.bg-emerald-50\/70 .ph-fill {
             color: #10B981 !important;
         }
 
@@ -459,7 +479,7 @@
             <nav class="p-6 space-y-2 overflow-y-auto max-h-[calc(100vh-180px)]">
                 <!-- Principal -->
                 <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4">Plataforma</p>
-                <a href="#" data-target="view-resumen" class="nav-link bg-emerald-50/70 text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all">
+                <a href="#" data-target="view-resumen" class="nav-link active flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all">
                     <i class="ph-fill ph-squares-four text-xl text-maximus-accent"></i> Resumen
                 </a>
                 <a href="#" data-target="view-inmuebles" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
@@ -3051,15 +3071,15 @@
                 const icon = link.querySelector('i');
 
                 if (isMatch) {
-                    link.classList.remove('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold');
-                    link.classList.add('bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
+                    link.classList.remove('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold', 'bg-emerald-50/70', 'text-maximus-dark');
+                    link.classList.add('active', 'font-bold');
                     if (icon) {
                         icon.classList.remove('ph');
                         icon.classList.add('ph-fill', 'text-maximus-accent');
                     }
                     sectionName = link.textContent.trim();
                 } else {
-                    link.classList.remove('bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
+                    link.classList.remove('active', 'bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
                     link.classList.add('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold');
                     if (icon) {
                         icon.classList.remove('ph-fill', 'text-maximus-accent');
