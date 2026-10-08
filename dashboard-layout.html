@@ -1435,8 +1435,8 @@
                                 <input type="number" id="asesor-cierres" value="0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL Avatar (Opcional)</label>
-                                <input type="text" id="asesor-avatar" placeholder="Dejar vacío para avatar automático" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto de Perfil (Opcional)</label>
+                                <input type="file" id="asesor-avatar-file" accept="image/*" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer outline-none focus:border-maximus-accent">
                             </div>
                         </div>
                         
@@ -1687,8 +1687,8 @@
                                             <input type="text" id="inm-asesor-cargo" placeholder="Ej: Asesor Independiente" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL Avatar (Opcional)</label>
-                                            <input type="text" id="inm-asesor-avatar" placeholder="Dejar vacío para genérico" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto de Perfil (Opcional)</label>
+                                            <input type="file" id="inm-asesor-avatar-file" accept="image/*" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer outline-none focus:border-maximus-accent">
                                         </div>
                                     </div>
                                 </div>
@@ -3892,7 +3892,9 @@
             const telefono = document.getElementById('asesor-telefono').value;
             const rating = document.getElementById('asesor-rating').value;
             const cierres = document.getElementById('asesor-cierres').value;
-            let avatar = document.getElementById('asesor-avatar').value;
+            
+            const fileInput = document.getElementById('asesor-avatar-file');
+            const file = fileInput.files[0];
             
             const correo = document.getElementById('asesor-correo').value;
             const password = document.getElementById('asesor-password').value;
@@ -3902,7 +3904,13 @@
                 return;
             }
 
-            if (!avatar) {
+            let avatar = '';
+            if (file) {
+                // Simulación local de carga de foto. En Supabase se subiría al Storage:
+                // const { data: uploadData } = await supabase.storage.from('avatars').upload(`asesores/${file.name}`, file)
+                // avatar = supabase.storage.from('avatars').getPublicUrl(`asesores/${file.name}`).data.publicUrl;
+                avatar = URL.createObjectURL(file);
+            } else {
                 const nombreFormateado = nombre.replace(/\s+/g, '+');
                 avatar = `https://ui-avatars.com/api/?name=${nombreFormateado}&background=0B4A3F&color=fff&bold=true`;
             }
@@ -4005,8 +4013,14 @@
                 const nombreExt = document.getElementById('inm-asesor-nombre').value || 'Asesor Externo';
                 const telefonoExt = document.getElementById('inm-asesor-telefono').value || '';
                 const cargoExt = document.getElementById('inm-asesor-cargo').value || 'Asesor Independiente';
-                let avatarExt = document.getElementById('inm-asesor-avatar').value;
-                if (!avatarExt) {
+                const fileInputExt = document.getElementById('inm-asesor-avatar-file');
+                const fileExt = fileInputExt ? fileInputExt.files[0] : null;
+                let avatarExt = '';
+                
+                if (fileExt) {
+                    avatarExt = URL.createObjectURL(fileExt);
+                    // Supabase logic: supabase.storage.from('avatars').upload(...)
+                } else {
                     const nomFormateado = nombreExt.replace(/\s+/g, '+');
                     avatarExt = `https://ui-avatars.com/api/?name=${nomFormateado}&background=475569&color=fff&bold=true`;
                 }
