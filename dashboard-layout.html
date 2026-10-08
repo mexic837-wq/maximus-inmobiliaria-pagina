@@ -192,54 +192,202 @@
             border-color: #163830 !important;
         }
 
-        /* 8. Botones de Navegación del Sidebar */
-        html.dark .nav-link {
+        /* 8. Botones de Navegación del Sidebar (Resaltado nítido, sin opacidad) */
+        html.dark aside .nav-link {
             color: #8BAAA1 !important;
         }
 
-        html.dark .nav-link:hover {
+        html.dark aside .nav-link:hover {
             background-color: #123029 !important;
-            color: #EEF8F5 !important;
-        }
-
-        html.dark .nav-link.active {
-            background-color: rgba(16, 185, 129, 0.15) !important;
-            color: #34D399 !important;
-        }
-
-        /* 9. Botones de Acción y Filtros */
-        html.dark .bg-emerald-50,
-        html.dark .bg-emerald-100 {
-            background-color: rgba(16, 185, 129, 0.15) !important;
-            color: #34D399 !important;
-        }
-
-        html.dark .bg-maximus-dark {
-            background-color: #0E3E34 !important;
             color: #FFFFFF !important;
-            border: 1px solid rgba(16, 185, 129, 0.3) !important;
         }
 
-        html.dark .bg-maximus-dark:hover {
-            background-color: #134F42 !important;
+        html.dark aside .nav-link.active,
+        html.dark aside .nav-link.active.bg-emerald-50\/70 {
+            background-color: #0E352C !important;
+            background-image: none !important;
+            color: #FFFFFF !important;
+            font-weight: 800 !important;
+            border: 1px solid rgba(16, 185, 129, 0.45) !important;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.18) !important;
+        }
+
+        html.dark aside .nav-link.active i,
+        html.dark aside .nav-link.active .ph-fill {
+            color: #10B981 !important;
+        }
+
+        /* 9. Barra de Búsqueda y Botones en Inmuebles (Sin franja tosca) */
+        html.dark #view-inmuebles .rounded-full.shadow-premium.border {
+            background-color: #0A1F1B !important;
+            border-color: #163B32 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        html.dark #view-inmuebles .rounded-full.shadow-premium .border-l {
+            border-color: #163B32 !important;
+        }
+
+        /* Botón de Captaciones MAXIMUS en el Buscador (NUNCA BLANCO) */
+        html.dark #btn-filtro-maximus-toggle,
+        html.dark button#btn-filtro-maximus-toggle {
+            background: #0B2B23 !important;
+            background-image: none !important;
+            border: 1px solid rgba(16, 185, 129, 0.5) !important;
+            color: #E2F5EE !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle:hover,
+        html.dark button#btn-filtro-maximus-toggle:hover {
+            background: #103B30 !important;
+            border-color: #10B981 !important;
+            color: #FFFFFF !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle span {
+            color: #E2F5EE !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle i {
+            color: #10B981 !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle .bg-maximus-accent {
+            background-color: #10B981 !important;
+            color: #071714 !important;
+            font-weight: 900 !important;
+        }
+
+        /* Cuando el botón toggle de MAXIMUS está ACTIVO */
+        html.dark #btn-filtro-maximus-toggle.bg-maximus-dark,
+        html.dark button#btn-filtro-maximus-toggle.bg-maximus-dark {
+            background: #10B981 !important;
+            background-image: none !important;
+            border-color: #10B981 !important;
+            color: #071714 !important;
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.4) !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle.bg-maximus-dark span {
+            color: #071714 !important;
+            font-weight: 800 !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle.bg-maximus-dark i {
+            color: #071714 !important;
+        }
+
+        html.dark #btn-filtro-maximus-toggle.bg-maximus-dark .bg-maximus-accent {
+            background-color: #071714 !important;
+            color: #10B981 !important;
+        }
+
+        /* Botón de Filtros desplegable */
+        html.dark #filtrosDropdownWrapper button {
+            background-color: #0B251F !important;
+            border: 1px solid #163B32 !important;
+            color: #C5DDD6 !important;
+        }
+
+        html.dark #filtrosDropdownWrapper button:hover {
+            background-color: #12332B !important;
+            color: #FFFFFF !important;
             border-color: #10B981 !important;
         }
 
+        /* 10. Tarjetas de Inmuebles (Eliminar fondos blancos que opacan) */
+        html.dark .tarjeta-inmueble {
+            background-color: #0A211C !important;
+            border-color: #153B32 !important;
+        }
+
+        html.dark .tarjeta-inmueble:hover {
+            background-color: #0D2822 !important;
+            border-color: #10B981 !important;
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px -5px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        /* Fila del Asesor dentro de la tarjeta */
+        html.dark .tarjeta-inmueble .bg-emerald-50\/70,
+        html.dark .tarjeta-inmueble .bg-emerald-50,
+        html.dark .tarjeta-inmueble .bg-gray-50,
+        html.dark .tarjeta-inmueble .bg-gray-100 {
+            background-color: #061A16 !important;
+            border-color: #12382F !important;
+        }
+
+        /* Badges de comisión (50/50, 1 Mes, 5%, etc.) */
+        html.dark .tarjeta-inmueble .bg-white\/90,
+        html.dark .tarjeta-inmueble .bg-white,
+        html.dark .tarjeta-inmueble .bg-blue-50,
+        html.dark .tarjeta-inmueble .bg-emerald-100 {
+            background-color: #0E352C !important;
+            border-color: rgba(16, 185, 129, 0.35) !important;
+            color: #34D399 !important;
+        }
+
+        /* Badges de tipo de propiedad (CASA, PENTHOUSE, LOCAL, etc.) */
+        html.dark .tarjeta-inmueble span[class*="bg-amber-50"],
+        html.dark .tarjeta-inmueble span[class*="bg-emerald-50"],
+        html.dark .tarjeta-inmueble span[class*="bg-gray-100"] {
+            background-color: #061A16 !important;
+            border-color: #143D33 !important;
+        }
+
+        /* Botón de compartir en la tarjeta */
+        html.dark .tarjeta-inmueble button.bg-gray-50 {
+            background-color: #061A16 !important;
+            border: 1px solid #143D33 !important;
+            color: #8BAAA1 !important;
+        }
+
+        html.dark .tarjeta-inmueble button.bg-gray-50:hover {
+            background-color: #10B981 !important;
+            color: #071714 !important;
+            border-color: #10B981 !important;
+        }
+
+        /* Línea divisoria de especificaciones */
+        html.dark .tarjeta-inmueble .border-t {
+            border-color: #12382F !important;
+        }
+
+        /* Pills de Filtros por Categoría (Todos, MAXIMUS, Venta, Alquiler) */
         html.dark .filtro-pill.bg-white {
-            background-color: #0C221D !important;
-            border-color: #163830 !important;
+            background-color: #0A1F1B !important;
+            border-color: #163B32 !important;
             color: #8BAAA1 !important;
         }
 
         html.dark .filtro-pill.bg-white:hover {
-            background-color: #123029 !important;
-            color: #EEF8F5 !important;
+            background-color: #12332B !important;
+            color: #FFFFFF !important;
+            border-color: #10B981 !important;
+        }
+
+        html.dark .filtro-pill.bg-white span {
+            color: #8BAAA1 !important;
+        }
+
+        html.dark .filtro-pill.bg-white:hover span {
+            color: #C5DDD6 !important;
         }
 
         html.dark .filtro-pill.bg-maximus-dark {
             background-color: #10B981 !important;
-            color: #071714 !important;
             border-color: #10B981 !important;
+            color: #071714 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+        }
+
+        html.dark .filtro-pill.bg-maximus-dark span {
+            color: #071714 !important;
+            opacity: 0.85;
+        }
+
+        html.dark .filtro-pill.bg-maximus-dark i {
+            color: #071714 !important;
         }
 
         /* 10. Botones de Temporalidad (Resumen) */
