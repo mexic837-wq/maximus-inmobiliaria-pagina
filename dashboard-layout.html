@@ -3507,10 +3507,14 @@
             currentInmuebleAirbnb = data;
 
             // 1. Encabezado y badges
-            document.getElementById('airbnb-modal-codigo').textContent = data.codigo;
-            document.getElementById('airbnb-modal-nav-title').textContent = data.titulo;
-            document.getElementById('airbnb-modal-title').textContent = data.titulo;
-            document.getElementById('airbnb-modal-location').innerHTML = `<i class="ph-fill ph-map-pin text-maximus-accent"></i> ${data.ubicacion}`;
+            const elCodigo = document.getElementById('airbnb-modal-codigo');
+            if (elCodigo) elCodigo.textContent = data.codigo;
+
+            const elTitle = document.getElementById('airbnb-modal-title');
+            if (elTitle) elTitle.textContent = data.titulo;
+
+            const elLoc = document.getElementById('airbnb-modal-location');
+            if (elLoc) elLoc.innerHTML = `<i class="ph-fill ph-map-pin text-maximus-accent"></i> ${data.ubicacion}`;
 
             const badgeCaptacion = document.getElementById('airbnb-modal-badge-captacion');
             if (badgeCaptacion) {
@@ -3530,7 +3534,8 @@
 
             // 2. Poblar Fotos en la Galería de 5
             lightboxFotosActuales = data.fotos || [];
-            document.getElementById('airbnb-total-fotos-count').textContent = lightboxFotosActuales.length;
+            const elTotalCount = document.getElementById('airbnb-total-fotos-count');
+            if (elTotalCount) elTotalCount.textContent = lightboxFotosActuales.length;
 
             for (let i = 0; i < 5; i++) {
                 const imgEl = document.getElementById(`airbnb-img-${i}`);
@@ -3540,25 +3545,44 @@
             }
 
             // 3. Asesor / Anfitrión
-            document.getElementById('airbnb-asesor-avatar').src = data.asesor.avatar;
-            document.getElementById('airbnb-asesor-nombre').textContent = data.asesor.nombre;
-            document.getElementById('airbnb-asesor-cargo').textContent = data.asesor.cargo;
-            document.getElementById('airbnb-asesor-rating').innerHTML = `<i class="ph-fill ph-star"></i> ${data.asesor.rating}`;
-            document.getElementById('airbnb-asesor-exp').textContent = data.asesor.experiencia;
+            const elAvatar = document.getElementById('airbnb-asesor-avatar');
+            if (elAvatar) elAvatar.src = data.asesor.avatar;
+
+            const elAsesorNombre = document.getElementById('airbnb-asesor-nombre');
+            if (elAsesorNombre) elAsesorNombre.textContent = data.asesor.nombre;
+
+            const elAsesorCargo = document.getElementById('airbnb-asesor-cargo');
+            if (elAsesorCargo) elAsesorCargo.textContent = data.asesor.cargo;
+
+            const elAsesorRating = document.getElementById('airbnb-asesor-rating');
+            if (elAsesorRating) elAsesorRating.innerHTML = `<i class="ph-fill ph-star"></i> ${data.asesor.rating}`;
+
+            const elAsesorExp = document.getElementById('airbnb-asesor-exp');
+            if (elAsesorExp) elAsesorExp.textContent = data.asesor.experiencia;
             
             const waMsg = encodeURIComponent(`Hola ${data.asesor.nombre}, te escribo desde la plataforma MAXIMUS por la propiedad ${data.codigo} (${data.titulo}). Me gustaría coordinar una visita.`);
-            document.getElementById('airbnb-asesor-whatsapp-btn').href = `https://wa.me/${data.asesor.telefono.replace(/[^0-9]/g, '')}?text=${waMsg}`;
-            document.getElementById('airbnb-asesor-tel-btn').href = `tel:${data.asesor.telefono.replace(/\s+/g, '')}`;
+            const elWaBtn = document.getElementById('airbnb-asesor-whatsapp-btn');
+            if (elWaBtn) elWaBtn.href = `https://wa.me/${data.asesor.telefono.replace(/[^0-9]/g, '')}?text=${waMsg}`;
+
+            const elTelBtn = document.getElementById('airbnb-asesor-tel-btn');
+            if (elTelBtn) elTelBtn.href = `tel:${data.asesor.telefono.replace(/\s+/g, '')}`;
 
             // 4. Especificaciones Rápidas
-            document.getElementById('airbnb-spec-hab').textContent = data.habitaciones;
-            document.getElementById('airbnb-spec-banos').textContent = data.banos;
-            document.getElementById('airbnb-spec-m2').textContent = data.m2;
-            document.getElementById('airbnb-spec-estac').textContent = data.estacionamientos;
+            const elHab = document.getElementById('airbnb-spec-hab');
+            if (elHab) elHab.textContent = data.habitaciones;
+
+            const elBanos = document.getElementById('airbnb-spec-banos');
+            if (elBanos) elBanos.textContent = data.banos;
+
+            const elM2 = document.getElementById('airbnb-spec-m2');
+            if (elM2) elM2.textContent = data.m2;
+
+            const elEstac = document.getElementById('airbnb-spec-estac');
+            if (elEstac) elEstac.textContent = data.estacionamientos;
 
             // 5. Aspectos Destacados
             const aspectosCont = document.getElementById('airbnb-aspectos-container');
-            if (aspectosCont) {
+            if (aspectosCont && data.aspectosDestacados) {
                 let aspHTML = '';
                 data.aspectosDestacados.forEach(asp => {
                     aspHTML += `
@@ -3577,11 +3601,12 @@
             }
 
             // 6. Descripción Larga
-            document.getElementById('airbnb-descripcion-texto').textContent = data.descripcion;
+            const elDesc = document.getElementById('airbnb-descripcion-texto');
+            if (elDesc) elDesc.textContent = data.descripcion;
 
             // 7. Amenidades
             const amenCont = document.getElementById('airbnb-amenidades-container');
-            if (amenCont) {
+            if (amenCont && data.amenidades) {
                 let amenHTML = '';
                 data.amenidades.forEach(am => {
                     amenHTML += `
@@ -3595,14 +3620,24 @@
             }
 
             // 8. Sector y Entorno
-            document.getElementById('airbnb-sector-title').textContent = data.sectorNombre;
-            document.getElementById('airbnb-sector-desc').textContent = data.sectorDesc;
+            const elSecTitle = document.getElementById('airbnb-sector-title');
+            if (elSecTitle) elSecTitle.textContent = data.sectorNombre;
+
+            const elSecDesc = document.getElementById('airbnb-sector-desc');
+            if (elSecDesc) elSecDesc.textContent = data.sectorDesc;
 
             // 9. Tarjeta Flotante Lateral
-            document.getElementById('airbnb-card-precio').textContent = data.precio;
-            document.getElementById('airbnb-card-moneda').textContent = data.moneda;
-            document.getElementById('airbnb-card-preciom2').textContent = data.precioM2;
-            document.getElementById('airbnb-card-comision').innerHTML = `<i class="ph-bold ph-handshake"></i> ${data.comision} Comisión`;
+            const elPrecio = document.getElementById('airbnb-card-precio');
+            if (elPrecio) elPrecio.textContent = data.precio;
+
+            const elMoneda = document.getElementById('airbnb-card-moneda');
+            if (elMoneda) elMoneda.textContent = data.moneda;
+
+            const elPrecioM2 = document.getElementById('airbnb-card-preciom2');
+            if (elPrecioM2) elPrecioM2.textContent = data.precioM2;
+
+            const elComision = document.getElementById('airbnb-card-comision');
+            if (elComision) elComision.innerHTML = `<i class="ph-bold ph-handshake"></i> ${data.comision} Comisión`;
 
             // Fecha por defecto mañana en selector de visita
             const fechaInput = document.getElementById('airbnb-visita-fecha');
