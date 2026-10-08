@@ -428,7 +428,7 @@
                 <!-- Grilla de Inmuebles -->
                 <div id="grilla-inmuebles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Tarjeta 1 (MAXIMUS) -->
-                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                    <div onclick="abrirDetalleInmuebleAirbnb('inm-1')" class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
                          data-maximus="true" data-operacion="venta" data-search="quinta moderna piscina jardin guaparo san cristobal manuel rodriguez jose guerrero maximus">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
@@ -452,7 +452,7 @@
                                 <span class="text-[10px] font-bold text-maximus-accent bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-widest">CASA</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Urb. Guaparo</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Quinta moderna con piscina y jardín</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors">Quinta moderna con piscina y jardín</h4>
                             
                             <!-- Asesor Captador MAXIMUS -->
                             <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
@@ -469,26 +469,24 @@
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 3</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 350 m²</span>
                                 <div class="ml-auto flex gap-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                    <button onclick="event.stopPropagation(); copiarFichaAirbnb('inm-1')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir"><i class="ph-bold ph-share-network"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tarjeta 2 (General) -->
-                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30"
+                    <div onclick="abrirDetalleInmuebleAirbnb('inm-2')" class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30 cursor-pointer"
                          data-maximus="false" data-operacion="alquiler" data-search="local comercial nivel feria cc sambil san cristobal alquiler general">
-                        <div class="relative h-[260px] w-full bg-gray-100 flex flex-col items-center justify-center">
-                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
-                                <i class="ph-light ph-image text-3xl text-gray-300"></i>
-                            </div>
-                            <span class="text-gray-400 font-bold tracking-[0.2em] text-[11px] uppercase">Falta Fotografía</span>
+                        <div class="relative h-[260px] w-full bg-gray-100 flex flex-col items-center justify-center overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                             
                             <div class="absolute top-4 left-4 flex gap-2">
                                 <span class="bg-blue-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">ALQUILER</span>
                             </div>
-                            <div class="absolute bottom-4 left-5 text-maximus-dark">
-                                <h3 class="text-3xl font-extrabold">1.500 <span class="text-sm font-bold opacity-60">USD/mes</span></h3>
+                            <div class="absolute bottom-4 left-5 text-white">
+                                <h3 class="text-3xl font-extrabold drop-shadow-md">1.500 <span class="text-sm font-bold opacity-80">USD/mes</span></h3>
                             </div>
                         </div>
                         <div class="p-6">
@@ -496,21 +494,21 @@
                                 <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest">LOCAL</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> C.C Sambil</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Local comercial Nivel Feria</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors">Local comercial Nivel Feria</h4>
                             
                             <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4 mt-8">
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-door-open text-xl text-gray-400"></i> 1 Amb</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 1</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 80 m²</span>
                                 <div class="ml-auto flex gap-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-camera-plus"></i></button>
+                                    <button onclick="event.stopPropagation(); copiarFichaAirbnb('inm-2')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tarjeta 3 (MAXIMUS) -->
-                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                    <div onclick="abrirDetalleInmuebleAirbnb('inm-3')" class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
                          data-maximus="true" data-operacion="venta" data-search="apartamento amoblado piso medio res el bosque valeria mendez san cristobal venta maximus">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
@@ -531,7 +529,7 @@
                                 <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 uppercase tracking-widest">APTO</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Res. El Bosque</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Apartamento amoblado piso medio</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors">Apartamento amoblado piso medio</h4>
                             
                             <!-- Asesor Captador MAXIMUS -->
                             <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
@@ -548,14 +546,14 @@
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 2</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 110 m²</span>
                                 <div class="ml-auto flex gap-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                    <button onclick="event.stopPropagation(); copiarFichaAirbnb('inm-3')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tarjeta 4 (MAXIMUS) -->
-                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                    <div onclick="abrirDetalleInmuebleAirbnb('inm-4')" class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
                          data-maximus="true" data-operacion="venta" data-search="penthouse duplex terraza 360 pueblo nuevo carlos santander venta maximus">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
@@ -576,7 +574,7 @@
                                 <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100 uppercase tracking-widest">PENTHOUSE</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Pueblo Nuevo</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Penthouse Dúplex con Terraza 360°</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors">Penthouse Dúplex con Terraza 360°</h4>
                             
                             <!-- Asesor Captador MAXIMUS -->
                             <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
@@ -593,14 +591,14 @@
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 4</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 290 m²</span>
                                 <div class="ml-auto flex gap-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                    <button onclick="event.stopPropagation(); copiarFichaAirbnb('inm-4')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tarjeta 5 (General) -->
-                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30"
+                    <div onclick="abrirDetalleInmuebleAirbnb('inm-5')" class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30 cursor-pointer"
                          data-maximus="false" data-operacion="venta" data-search="townhouse estrenar conjunto cerrado paramillo san cristobal venta general">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
@@ -618,21 +616,21 @@
                                 <span class="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest">TOWNHOUSE</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Paramillo</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Townhouse a estrenar en conjunto cerrado</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors">Townhouse a estrenar en conjunto cerrado</h4>
                             
                             <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4 mt-8">
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 3</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 3</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 160 m²</span>
                                 <div class="ml-auto flex gap-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple"></i></button>
+                                    <button onclick="event.stopPropagation(); copiarFichaAirbnb('inm-5')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tarjeta 6 (MAXIMUS) -->
-                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                    <div onclick="abrirDetalleInmuebleAirbnb('inm-6')" class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
                          data-maximus="true" data-operacion="alquiler" data-search="galpon corporativo oficinas industrial barrancas andrea colmenares alquiler maximus">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
@@ -653,7 +651,7 @@
                                 <span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100 uppercase tracking-widest">INDUSTRIAL</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Z.I. Barrancas</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Galpón Corporativo y Oficinas AAA</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors">Galpón Corporativo y Oficinas AAA</h4>
                             
                             <!-- Asesor Captador MAXIMUS -->
                             <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
@@ -670,7 +668,7 @@
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 4</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 820 m²</span>
                                 <div class="ml-auto flex gap-2">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                    <button onclick="event.stopPropagation(); copiarFichaAirbnb('inm-6')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1833,6 +1831,312 @@
         </main>
     </div>
 
+    <!-- ==========================================
+         MODAL DETALLE INMUEBLE ESTILO AIRBNB
+         ========================================== -->
+    <div id="modalDetalleInmuebleAirbnb" class="fixed inset-0 z-[100] bg-black/75 backdrop-blur-md hidden overflow-y-auto p-2 sm:p-4 md:p-6 lg:p-8 flex justify-center items-start transition-opacity duration-300">
+        <div id="modalAirbnbContenedor" class="bg-white w-full max-w-[1280px] my-4 rounded-[32px] shadow-2xl overflow-hidden border border-gray-100 flex flex-col relative transform transition-all duration-300 scale-95 opacity-0">
+            
+            <!-- Barra Superior Fija (Airbnb Style Header) -->
+            <div class="sticky top-0 bg-white/95 backdrop-blur-md z-40 px-6 sm:px-8 py-3.5 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button onclick="cerrarDetalleInmuebleAirbnb()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition-colors shrink-0" title="Volver al catálogo">
+                        <i class="ph-bold ph-arrow-left text-base"></i>
+                    </button>
+                    <span id="airbnb-modal-codigo" class="text-xs font-black px-2.5 py-1 bg-emerald-50 text-maximus-accent rounded-lg shrink-0">#MAX-101</span>
+                    <h2 id="airbnb-modal-nav-title" class="font-extrabold text-sm sm:text-base text-maximus-dark truncate">Quinta moderna con piscina y jardín</h2>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="copiarFichaAirbnb()" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors">
+                        <i class="ph-bold ph-share-network text-base"></i> <span class="hidden sm:inline">Compartir</span>
+                    </button>
+                    <button id="btn-favorito-modal" onclick="toggleFavoritoModal(this)" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-500 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors">
+                        <i class="ph ph-heart text-base"></i> <span class="hidden sm:inline">Guardar</span>
+                    </button>
+                    <button onclick="cerrarDetalleInmuebleAirbnb()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors">
+                        <i class="ph-bold ph-x text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido Principal Desplazable -->
+            <div class="p-5 sm:p-8 md:p-10 space-y-8">
+                
+                <!-- Encabezado de la Propiedad (Título, Ubicación y Badges) -->
+                <div>
+                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                        <span id="airbnb-modal-badge-captacion" class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+                            <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                        </span>
+                        <span id="airbnb-modal-badge-operacion" class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm">VENTA</span>
+                        <span id="airbnb-modal-badge-tipo" class="bg-emerald-50 text-maximus-accent border border-emerald-200 text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full">CASA</span>
+                    </div>
+                    <h1 id="airbnb-modal-title" class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Quinta moderna con piscina y jardín</h1>
+                    <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-gray-500 font-semibold mt-2.5">
+                        <span class="flex items-center gap-1 text-amber-500 font-extrabold">
+                            <i class="ph-fill ph-star"></i> 5.0 <span class="text-gray-400 font-normal underline cursor-pointer">(Inmueble Destacado)</span>
+                        </span>
+                        <span>•</span>
+                        <span id="airbnb-modal-location" class="flex items-center gap-1 text-gray-600 font-bold hover:underline cursor-pointer">
+                            <i class="ph-fill ph-map-pin text-maximus-accent"></i> Urbanización Guaparo, San Cristóbal, Táchira
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Galería de 5 Fotos Estilo Airbnb -->
+                <div class="relative rounded-[24px] sm:rounded-[32px] overflow-hidden grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-2.5 h-[320px] sm:h-[450px] bg-gray-100">
+                    <!-- Foto Principal (50% de ancho en Desktop) -->
+                    <div onclick="abrirGaleriaCompleta(0)" class="md:col-span-2 md:row-span-2 relative overflow-hidden cursor-pointer group h-full">
+                        <img id="airbnb-img-0" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <!-- Foto 2 (Top der 1) -->
+                    <div onclick="abrirGaleriaCompleta(1)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[220px]">
+                        <img id="airbnb-img-1" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <!-- Foto 3 (Top der 2) -->
+                    <div onclick="abrirGaleriaCompleta(2)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[220px]">
+                        <img id="airbnb-img-2" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <!-- Foto 4 (Bottom der 1) -->
+                    <div onclick="abrirGaleriaCompleta(3)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[220px]">
+                        <img id="airbnb-img-3" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <!-- Foto 5 (Bottom der 2) -->
+                    <div onclick="abrirGaleriaCompleta(4)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[220px]">
+                        <img id="airbnb-img-4" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    
+                    <!-- Botón Flotante "Ver todas las fotos" -->
+                    <button onclick="abrirGaleriaCompleta(0)" class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md text-maximus-dark font-black text-xs px-4 py-2.5 rounded-xl shadow-xl border border-gray-200/80 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-2 z-10">
+                        <i class="ph-bold ph-squares-four text-base text-maximus-accent"></i>
+                        <span>Mostrar todas las fotos (<span id="airbnb-total-fotos-count">6</span>)</span>
+                    </button>
+                </div>
+
+                <!-- Grilla 2 Columnas Estilo Airbnb (Detalles a la Izquierda, Tarjeta Flotante a la Derecha) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                    
+                    <!-- Columna Izquierda (Contenido y Especificaciones) -->
+                    <div class="lg:col-span-7 space-y-8">
+                        
+                        <!-- Tarjeta de Asesor / Anfitrión Asignado -->
+                        <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <div class="relative">
+                                    <img id="airbnb-asesor-avatar" src="" class="w-16 h-16 rounded-2xl object-cover shadow-md">
+                                    <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm ring-2 ring-white">
+                                        <i class="ph-bold ph-check"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-lg text-maximus-dark flex items-center gap-2">
+                                        <span id="airbnb-asesor-nombre">José Guerrero</span>
+                                        <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Verificado</span>
+                                    </h3>
+                                    <p id="airbnb-asesor-cargo" class="text-xs font-semibold text-gray-500">Director & Captador Principal MAXIMUS</p>
+                                    <div class="flex items-center gap-2 mt-1 text-xs text-gray-400 font-bold">
+                                        <span id="airbnb-asesor-rating" class="text-amber-500 flex items-center gap-1"><i class="ph-fill ph-star"></i> 5.0 (28 Cierres)</span>
+                                        <span>•</span>
+                                        <span id="airbnb-asesor-exp">4 años en la red</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex sm:flex-col gap-2 shrink-0">
+                                <a id="airbnb-asesor-whatsapp-btn" href="#" target="_blank" class="flex-1 sm:flex-none py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black text-center flex items-center justify-center gap-2 shadow-sm transition-all">
+                                    <i class="ph-fill ph-whatsapp-logo text-base"></i> WhatsApp
+                                </a>
+                                <a id="airbnb-asesor-tel-btn" href="#" class="flex-1 sm:flex-none py-2 px-4 rounded-xl border border-gray-200 hover:bg-white text-gray-700 text-xs font-bold text-center flex items-center justify-center gap-2 transition-all">
+                                    <i class="ph-bold ph-phone text-sm"></i> Llamar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Especificaciones Rápidas -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
+                                <i class="ph-light ph-bed text-2xl text-maximus-accent mb-1 block"></i>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Habitaciones</span>
+                                <span id="airbnb-spec-hab" class="text-base font-extrabold text-maximus-dark">4</span>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
+                                <i class="ph-light ph-shower text-2xl text-maximus-accent mb-1 block"></i>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Baños</span>
+                                <span id="airbnb-spec-banos" class="text-base font-extrabold text-maximus-dark">3</span>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
+                                <i class="ph-light ph-ruler text-2xl text-maximus-accent mb-1 block"></i>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Superficie</span>
+                                <span id="airbnb-spec-m2" class="text-base font-extrabold text-maximus-dark">350 m²</span>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
+                                <i class="ph-light ph-car text-2xl text-maximus-accent mb-1 block"></i>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Estacionamiento</span>
+                                <span id="airbnb-spec-estac" class="text-base font-extrabold text-maximus-dark">3 Puestos</span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-6"></div>
+
+                        <!-- Aspectos Destacados de la Propiedad (Airbnb Key Perks) -->
+                        <div>
+                            <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-5">Aspectos Destacados</h3>
+                            <div id="airbnb-aspectos-container" class="space-y-4">
+                                <!-- Generado por JS -->
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-6"></div>
+
+                        <!-- Acerca de esta Propiedad (Descripción Larga) -->
+                        <div>
+                            <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-4">Acerca de esta propiedad</h3>
+                            <div id="airbnb-descripcion-texto" class="text-gray-600 text-sm leading-relaxed font-medium space-y-4 whitespace-pre-line">
+                                <!-- Texto de descripción -->
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-6"></div>
+
+                        <!-- Lo que ofrece este inmueble (Amenidades estilo Airbnb) -->
+                        <div>
+                            <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-5">Lo que ofrece este inmueble</h3>
+                            <div id="airbnb-amenidades-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <!-- Generado por JS -->
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-100 pt-6"></div>
+
+                        <!-- Ubicación & Sector -->
+                        <div>
+                            <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-3">Ubicación y Entorno</h3>
+                            <p id="airbnb-sector-desc" class="text-sm text-gray-500 font-medium mb-4">
+                                Ubicado en una de las mejores zonas residenciales de San Cristóbal, con acceso inmediato a comercios, colegios de primer nivel y vías principales.
+                            </p>
+                            <div class="rounded-2xl bg-emerald-50/60 border border-emerald-100 p-5 flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-maximus-dark text-white flex items-center justify-center text-2xl shrink-0">
+                                    <i class="ph-fill ph-map-pin"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-sm text-maximus-dark" id="airbnb-sector-title">Urbanización Guaparo</h4>
+                                    <p class="text-xs text-gray-500 font-medium">Municipio San Cristóbal, Estado Táchira, Venezuela</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Tarjeta Flotante de Acción / Reserva Estilo Airbnb -->
+                    <div class="lg:col-span-5">
+                        <div class="sticky top-24 bg-white rounded-[28px] border border-gray-200/80 shadow-2xl p-6 sm:p-7 space-y-6">
+                            
+                            <!-- Precio y Tipo -->
+                            <div class="flex items-baseline justify-between border-b border-gray-100 pb-5">
+                                <div>
+                                    <span class="text-xs uppercase font-extrabold text-gray-400 block tracking-widest mb-1">Precio de Publicación</span>
+                                    <div class="flex items-baseline gap-2">
+                                        <h2 id="airbnb-card-precio" class="text-3xl sm:text-4xl font-black text-maximus-dark leading-none">$270.000</h2>
+                                        <span id="airbnb-card-moneda" class="text-xs font-bold text-gray-500">USD</span>
+                                    </div>
+                                    <span id="airbnb-card-preciom2" class="text-xs font-extrabold text-maximus-accent block mt-1.5">$771 USD / m²</span>
+                                </div>
+                                <div class="text-right">
+                                    <span id="airbnb-card-comision" class="inline-flex items-center gap-1 text-[11px] font-black text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
+                                        <i class="ph-bold ph-handshake"></i> 50/50 Comisión
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Selector de Cita / Visita -->
+                            <div class="border border-gray-200 rounded-2xl overflow-hidden">
+                                <div class="p-3 bg-gray-50/70 border-b border-gray-200">
+                                    <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Agendar Visita Guiada</label>
+                                    <input type="date" id="airbnb-visita-fecha" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                </div>
+                                <div class="p-3 grid grid-cols-2 gap-2 bg-white text-xs font-semibold">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-400 uppercase">Horario</label>
+                                        <select id="airbnb-visita-horario" class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-1">
+                                            <option value="Mañana (9:00 AM - 12:00 PM)">Mañana (9:00 AM)</option>
+                                            <option value="Tarde (2:00 PM - 5:00 PM)">Tarde (2:00 PM)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-gray-400 uppercase">Tipo</label>
+                                        <select class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-1">
+                                            <option>Presencial</option>
+                                            <option>Video-Llamada</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Botones de Acción Primaria -->
+                            <div class="space-y-2.5">
+                                <button onclick="solicitarVisitaWhatsApp()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-sm shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2 group hover:scale-[1.01] active:scale-[0.99]">
+                                    <i class="ph-fill ph-whatsapp-logo text-xl"></i>
+                                    <span>Contactar Asesor por WhatsApp</span>
+                                </button>
+                                
+                                <button onclick="descargarFichaPDF()" class="w-full py-3.5 rounded-2xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                                    <i class="ph-bold ph-file-pdf text-base text-red-500"></i>
+                                    <span>Descargar Ficha Técnica PDF</span>
+                                </button>
+                            </div>
+
+                            <!-- Garantías y Confianza MAXIMUS -->
+                            <div class="space-y-3 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
+                                <div class="flex items-start gap-2.5">
+                                    <i class="ph-bold ph-shield-check text-emerald-600 text-base mt-0.5 shrink-0"></i>
+                                    <span><strong>100% Verificado:</strong> Documentación y título de propiedad revisados por el departamento legal.</span>
+                                </div>
+                                <div class="flex items-start gap-2.5">
+                                    <i class="ph-bold ph-sparkle text-amber-500 text-base mt-0.5 shrink-0"></i>
+                                    <span><strong>Comisión Protegida:</strong> Convenio de corretaje exclusivo firmado con la red MAXIMUS.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIGHTBOX: GALERÍA DE FOTOS PANTALLA COMPLETA -->
+    <div id="modalGaleriaCompletaAirbnb" class="fixed inset-0 z-[110] bg-black/95 backdrop-blur-xl hidden flex flex-col justify-between p-4 sm:p-6 transition-all duration-300">
+        <!-- Top bar del visor -->
+        <div class="flex items-center justify-between text-white px-2 sm:px-4 py-2">
+            <span class="text-xs sm:text-sm font-bold tracking-wider" id="lightbox-counter">Foto 1 de 6</span>
+            <div class="flex items-center gap-3">
+                <button onclick="cerrarGaleriaCompleta()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Contenedor Imagen Central con Flechas -->
+        <div class="relative flex-1 flex items-center justify-center p-2 sm:p-6">
+            <button onclick="cambiarFotoLightbox(-1)" class="absolute left-2 sm:left-6 z-20 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-all hover:scale-110">
+                <i class="ph-bold ph-caret-left text-2xl"></i>
+            </button>
+
+            <img id="lightbox-main-img" src="" class="max-h-[75vh] max-w-[90vw] object-contain rounded-2xl shadow-2xl transition-all duration-300">
+
+            <button onclick="cambiarFotoLightbox(1)" class="absolute right-2 sm:right-6 z-20 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-all hover:scale-110">
+                <i class="ph-bold ph-caret-right text-2xl"></i>
+            </button>
+        </div>
+
+        <!-- Miniaturas inferiores -->
+        <div class="flex items-center justify-center gap-2 overflow-x-auto py-3 px-2" id="lightbox-thumbnails">
+            <!-- Generado por JS -->
+        </div>
+    </div>
+
 
 
     <!-- ==========================================
@@ -2876,6 +3180,618 @@
             if (searchInput) searchInput.value = '';
             setFiltroCategoria('todos');
         }
+
+        // ==========================================
+        // 12. DETALLE DE INMUEBLE ESTILO AIRBNB
+        // ==========================================
+        const INMUEBLES_DETALLE_DATA = {
+            'inm-1': {
+                id: 'inm-1',
+                codigo: '#MAX-101',
+                titulo: 'Quinta moderna con piscina y jardín',
+                subtitulo: 'Exclusiva residencia en urbanismo cerrado con acabados de primera y máxima privacidad',
+                tipo: 'Casa / Quinta',
+                badgeTipo: 'CASA',
+                operacion: 'VENTA',
+                isMaximus: true,
+                precio: '$270.000',
+                moneda: 'USD',
+                precioM2: '$771 USD / m²',
+                comision: '50/50',
+                ubicacion: 'Urbanización Guaparo, San Cristóbal, Táchira',
+                sectorNombre: 'Urbanización Guaparo',
+                sectorDesc: 'Ubicada en una de las zonas residenciales más consolidadas y cotizadas de San Cristóbal, con acceso controlado y cercanía a centros educativos y comerciales.',
+                habitaciones: '4',
+                banos: '3',
+                m2: '350 m²',
+                estacionamientos: '3 Puestos',
+                fotos: [
+                    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85',
+                    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1000&q=80'
+                ],
+                asesor: {
+                    nombre: 'José Guerrero',
+                    cargo: 'Director & Captador Principal MAXIMUS',
+                    telefono: '+58 424-1234567',
+                    avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
+                    rating: '5.0 (28 Cierres)',
+                    experiencia: '4 años en la red'
+                },
+                aspectosDestacados: [
+                    { icono: 'ph-waves', titulo: 'Piscina Privada Climatizada', desc: 'Área de piscina moderna con iluminación LED nocturna, cascada decorativa y solárium antiresbalante.' },
+                    { icono: 'ph-lightning', titulo: 'Autonomía Energética 100%', desc: 'Planta eléctrica automática de alta capacidad que respalda todos los electrodomésticos y aires.' },
+                    { icono: 'ph-drop', titulo: 'Tanque Subterráneo de 18.000 L', desc: 'Sistema hidroneumático de presión constante con filtrado de agua para toda la propiedad.' },
+                    { icono: 'ph-shield-check', titulo: 'Seguridad Integral 24/7', desc: 'Urbanismo privado con control de acceso automatizado, cerco perimetral y cámaras de vigilancia.' }
+                ],
+                descripcion: `Esta imponente quinta contemporánea representa la cúspide del confort y la distinción en la Urbanización Guaparo, San Cristóbal.\n\nConstruida sobre una sólida estructura y diseñada con concepto abierto, la planta baja integra una amplia sala con techos de doble altura, ventanales panorámicos con vista al jardín y un elegante comedor. La cocina de manufactura italiana cuenta con isla central de gran formato, topes de cuarzo blanco calacatta y electrodomésticos empotrados de alta gama.\n\nEn la planta alta se ubica la zona de descanso conformada por 4 amplias habitaciones, cada una con vestier a medida y baño privado con revestimientos en mármol. La habitación máster dispone de terraza privada con vistas espectaculares hacia la serranía andina.\n\nEl exterior cuenta con caney parrillero techado, área de bar, cuarto de servicio independiente con baño, depósito y estacionamiento techado para 3 vehículos con portón eléctrico seccional.`,
+                amenidades: [
+                    { icono: 'ph-snowflake', nombre: 'Aire acondicionado integral en todas las áreas' },
+                    { icono: 'ph-cooking-pot', nombre: 'Cocina italiana de diseñador con isla' },
+                    { icono: 'ph-wifi-high', nombre: 'Fibra óptica dedicada de alta velocidad' },
+                    { icono: 'ph-car', nombre: 'Estacionamiento techado (3 puestos)' },
+                    { icono: 'ph-shield-star', nombre: 'Vigilancia privada y garita 24 horas' },
+                    { icono: 'ph-armchair', nombre: 'Caney y parrillera techada para reuniones' },
+                    { icono: 'ph-television', nombre: 'Sala de estar / Family Room' },
+                    { icono: 'ph-tree', nombre: 'Jardines con paisajismo y riego automático' },
+                    { icono: 'ph-lock-key', nombre: 'Cerraduras digitales de acceso con huella' },
+                    { icono: 'ph-bathtub', nombre: 'Jacuzzi integrado en baño principal' }
+                ]
+            },
+            'inm-2': {
+                id: 'inm-2',
+                codigo: '#MAX-102',
+                titulo: 'Local comercial Nivel Feria',
+                subtitulo: 'Ubicación estratégica de alto flujo peatonal y visibilidad comercial garantizada',
+                tipo: 'Local Comercial',
+                badgeTipo: 'LOCAL',
+                operacion: 'ALQUILER',
+                isMaximus: false,
+                precio: '$1.500',
+                moneda: 'USD/mes',
+                precioM2: '$18.75 USD / m²',
+                comision: '1 Mes',
+                ubicacion: 'C.C. Sambil San Cristóbal, Nivel Feria',
+                sectorNombre: 'C.C. Sambil San Cristóbal',
+                sectorDesc: 'El centro comercial más emblemático del Táchira, con afluencia garantizada todos los días, seguridad bancaria y estacionamiento para más de 1.500 vehículos.',
+                habitaciones: '1 Amb',
+                banos: '1',
+                m2: '80 m²',
+                estacionamientos: 'Libre en CC',
+                fotos: [
+                    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=85',
+                    'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1000&q=80'
+                ],
+                asesor: {
+                    nombre: 'Carlos Santander',
+                    cargo: 'Especialista en Locales & Inversiones MAXIMUS',
+                    telefono: '+58 412-9876543',
+                    avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true',
+                    rating: '4.9 (15 Cierres)',
+                    experiencia: '3 años en la red'
+                },
+                aspectosDestacados: [
+                    { icono: 'ph-trend-up', titulo: 'Alto Tráfico Peatonal', desc: 'Frente directo a pasillo principal y zona de comidas de mayor concentración de visitantes.' },
+                    { icono: 'ph-door', titulo: 'Fachada en Vidrio Templado', desc: 'Santa maría microperforada automatizada y vitrina de cristal para máxima exhibición de marca.' },
+                    { icono: 'ph-snowflake', titulo: 'Climatización Central', desc: 'Conexión al sistema de enfriamiento central del centro comercial sin costos energéticos adicionales.' },
+                    { icono: 'ph-shield-check', titulo: 'Seguridad 24 Horas', desc: 'Circuito cerrado del mall, brigada de bomberos y vigilancia perimetral los 365 días del año.' }
+                ],
+                descripcion: `Extraordinaria oportunidad de alquiler en el centro comercial más cotizado del occidente del país: C.C. Sambil San Cristóbal.\n\nEste local de 80 m² se encuentra estratégicamente situado en el Nivel Feria, garantizando un flujo masivo de clientes potenciales durante todo el día. Dispone de piso de granito pulido de alto impacto, luminarias LED de bajo consumo, punto de gas comercial, baño interno y área posterior para almacenamiento o preparación.\n\nIdeal para franquicias gastronómicas, tiendas de conveniencia, tecnología, moda o servicios. Cuenta con todas las solvencias y normativas al día para inicio de actividades de inmediato.`,
+                amenidades: [
+                    { icono: 'ph-snowflake', nombre: 'Aire acondicionado centralizado' },
+                    { icono: 'ph-wifi-high', nombre: 'Acometida para punto de venta y fibra óptica' },
+                    { icono: 'ph-shield-star', nombre: 'Seguridad bancaria y cámaras 24/7' },
+                    { icono: 'ph-car', nombre: 'Estacionamiento techado para clientes y proveedores' },
+                    { icono: 'ph-lightning', nombre: 'Planta eléctrica continua para áreas comunes y locales' },
+                    { icono: 'ph-drop', nombre: 'Servicio de agua continuo y sistema contra incendios' }
+                ]
+            },
+            'inm-3': {
+                id: 'inm-3',
+                codigo: '#MAX-103',
+                titulo: 'Apartamento amoblado piso medio',
+                subtitulo: 'Moderno apartamento completamente equipado con acabados de primera y vista panorámica',
+                tipo: 'Apartamento',
+                badgeTipo: 'APTO',
+                operacion: 'VENTA',
+                isMaximus: true,
+                precio: '$120.000',
+                moneda: 'USD',
+                precioM2: '$1.090 USD / m²',
+                comision: '50/50',
+                ubicacion: 'Residencias El Bosque, San Cristóbal, Táchira',
+                sectorNombre: 'Residencias El Bosque',
+                sectorDesc: 'Conjunto residencial de prestigio con áreas sociales, excelente mantenimiento y clima fresco de montaña.',
+                habitaciones: '2',
+                banos: '2',
+                m2: '110 m²',
+                estacionamientos: '2 Techados',
+                fotos: [
+                    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=85',
+                    'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1502005229762-ee1b2b8100ff?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&q=80'
+                ],
+                asesor: {
+                    nombre: 'Valeria Méndez',
+                    cargo: 'Top Producer Residencial MAXIMUS',
+                    telefono: '+58 414-7654321',
+                    avatar: 'https://ui-avatars.com/api/?name=Valeria+Mendez&background=0B4A3F&color=fff&bold=true',
+                    rating: '4.9 (19 Cierres)',
+                    experiencia: '3 años en la red'
+                },
+                aspectosDestacados: [
+                    { icono: 'ph-armchair', titulo: '100% Amoblado y Equipado', desc: 'Se entrega exactamente como se aprecia en las fotos, listo para mudarse con mobiliario de alta gama.' },
+                    { icono: 'ph-lightning', titulo: 'Planta Eléctrica en el Edificio', desc: 'Respaldo para ascensores, bombas de agua e iluminación interna del apartamento.' },
+                    { icono: 'ph-eye', titulo: 'Vista Panorámica al Valle', desc: 'Piso medio con excelente ventilación cruzada y balcón con ventanales antirruido.' },
+                    { icono: 'ph-car', titulo: '2 Puestos de Estacionamiento', desc: 'Puestos techados independientes con maletero espacioso al lado del ascensor.' }
+                ],
+                descripcion: `Exclusivo apartamento en Residencias El Bosque, concebido para quienes buscan comodidad, seguridad y buen gusto sin necesidad de remodelaciones.\n\nLa propiedad ofrece un área social decorada con estética minimalista, cocina con tope de granito negro y desayunador, habitación secundaria con clóset y baño externo completo, y habitación principal tipo suite con vestier y baño privado remodelado con piezas sanitarias de lujo.\n\nEl conjunto residencial cuenta con salón de fiestas climatizado, parque infantil, doble portón de seguridad, cámaras perimetrales y administración impecable.`,
+                amenidades: [
+                    { icono: 'ph-snowflake', nombre: 'Aires acondicionados split inverter' },
+                    { icono: 'ph-cooking-pot', nombre: 'Línea blanca completa de acero inoxidable' },
+                    { icono: 'ph-wifi-high', nombre: 'Servicio de internet de fibra óptica activo' },
+                    { icono: 'ph-car', nombre: '2 Puestos de estacionamiento techados' },
+                    { icono: 'ph-elevator', nombre: '2 Ascensores de última generación' },
+                    { icono: 'ph-shield-star', nombre: 'Vigilancia privada 24/7 con control biométrico' },
+                    { icono: 'ph-plant', nombre: 'Áreas verdes y parque infantil privado' }
+                ]
+            },
+            'inm-4': {
+                id: 'inm-4',
+                codigo: '#MAX-104',
+                titulo: 'Penthouse Dúplex con Terraza 360°',
+                subtitulo: 'La propiedad más exclusiva de Pueblo Nuevo: terraza privada, jacuzzi y acabados de mármol',
+                tipo: 'Penthouse',
+                badgeTipo: 'PENTHOUSE',
+                operacion: 'VENTA',
+                isMaximus: true,
+                precio: '$340.000',
+                moneda: 'USD',
+                precioM2: '$1.172 USD / m²',
+                comision: '50/50',
+                ubicacion: 'Pueblo Nuevo, San Cristóbal, Táchira',
+                sectorNombre: 'Pueblo Nuevo',
+                sectorDesc: 'El epicentro gastronómico y residencial de élite en San Cristóbal, con acceso a los mejores clubes y avenidas.',
+                habitaciones: '4',
+                banos: '4',
+                m2: '290 m²',
+                estacionamientos: '4 Techados',
+                fotos: [
+                    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=85',
+                    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1000&q=80'
+                ],
+                asesor: {
+                    nombre: 'Carlos Santander',
+                    cargo: 'Especialista en Inversiones & Penthouses',
+                    telefono: '+58 412-9876543',
+                    avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true',
+                    rating: '4.9 (15 Cierres)',
+                    experiencia: '3 años en la red'
+                },
+                aspectosDestacados: [
+                    { icono: 'ph-sun-horizon', titulo: 'Terraza Panorámica 360°', desc: 'Terraza privada en el segundo nivel con jacuzzi climatizado, bar exterior y vistas despejadas a toda la ciudad.' },
+                    { icono: 'ph-sparkle', titulo: 'Acabados en Mármol Travertino', desc: 'Pisos de mármol importado en ambas plantas, escaleras voladas de vidrio y diseño de iluminación inteligente.' },
+                    { icono: 'ph-lightning', titulo: 'Planta Eléctrica Total 100%', desc: 'Generador a gas con encendido silencioso que abastece todo el Penthouse sin interrupciones.' },
+                    { icono: 'ph-car', titulo: '4 Puestos Techados', desc: 'Área privada de estacionamiento cerrada con portón exclusivo para el Penthouse.' }
+                ],
+                descripcion: `Una joya arquitectónica suspendida en el cielo de Pueblo Nuevo. Este penthouse dúplex redefine el concepto de vida de lujo en el Táchira.\n\nEn su primer nivel ofrece un impresionante salón con triple altura, cocina europea de concepto integrado con electrodomésticos empotrados Smeg, área de cava de vinos climatizada y 3 habitaciones en suite.\n\nEn el nivel superior se despliega la máster suite con vestier de 25 m², spa interno y salida directa a la majestuosa terraza privada con deck de madera teca, jacuzzi con hidromasaje y caney lounge.`,
+                amenidades: [
+                    { icono: 'ph-bathtub', nombre: 'Jacuzzi exterior climatizado para 6 personas' },
+                    { icono: 'ph-snowflake', nombre: 'Sistema de aire acondicionado central inteligente' },
+                    { icono: 'ph-wine', nombre: 'Cava de vinos climatizada empotrada' },
+                    { icono: 'ph-wifi-high', nombre: 'Red mesh wifi 6 en ambas plantas' },
+                    { icono: 'ph-elevator', nombre: 'Ascensor privado con acceso directo por huella' },
+                    { icono: 'ph-shield-star', nombre: 'Seguridad armada y circuito cerrado 24/7' }
+                ]
+            },
+            'inm-5': {
+                id: 'inm-5',
+                codigo: '#MAX-105',
+                titulo: 'Townhouse a estrenar en conjunto cerrado',
+                subtitulo: 'Modernidad y seguridad para tu familia en la fresca zona de Paramillo',
+                tipo: 'Townhouse',
+                badgeTipo: 'TOWNHOUSE',
+                operacion: 'VENTA',
+                isMaximus: false,
+                precio: '$95.000',
+                moneda: 'USD',
+                precioM2: '$593 USD / m²',
+                comision: '5%',
+                ubicacion: 'Paramillo, San Cristóbal, Táchira',
+                sectorNombre: 'Paramillo',
+                sectorDesc: 'Zona de continuo crecimiento residencial, excelente clima de montaña y cercanía a universidades y centros deportivos.',
+                habitaciones: '3',
+                banos: '3',
+                m2: '160 m²',
+                estacionamientos: '2 Puestos',
+                fotos: [
+                    'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1200&q=85',
+                    'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1502005229762-ee1b2b8100ff?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1000&q=80'
+                ],
+                asesor: {
+                    nombre: 'José Guerrero',
+                    cargo: 'Director & Captador Principal MAXIMUS',
+                    telefono: '+58 424-1234567',
+                    avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
+                    rating: '5.0 (28 Cierres)',
+                    experiencia: '4 años en la red'
+                },
+                aspectosDestacados: [
+                    { icono: 'ph-sparkle', titulo: '100% A Estrenar', desc: 'Construcción nueva con pisos de porcelanato pulido y tuberías termo-fusionadas.' },
+                    { icono: 'ph-shield-check', titulo: 'Conjunto Privado de Solo 12 Unidades', desc: 'Privacidad absoluta con portón automático, cerco eléctrico y vigilancia.' },
+                    { icono: 'ph-drop', titulo: 'Tanque Subterráneo Propio de 8.000 L', desc: 'Sistema hidroneumático individual con reserva suficiente de agua.' },
+                    { icono: 'ph-tree', titulo: 'Patio Trasero Privado', desc: 'Espacio ideal para jardín, mascotas o ampliación de área social parrillera.' }
+                ],
+                descripcion: `Townhouse moderno listo para habitar en uno de los conjuntos más nuevos de Paramillo.\n\nConstrucción de dos plantas con acabados de primera: sala y comedor con iluminación LED embutida, cocina moderna con tope de granito, baño de visitas y patio posterior.\n\nEn la planta alta se encuentran 3 habitaciones y 2 baños completos, incluyendo la habitación principal con baño privado y balcón.`,
+                amenidades: [
+                    { icono: 'ph-car', nombre: 'Estacionamiento para 2 vehículos' },
+                    { icono: 'ph-shield-star', nombre: 'Portón eléctrico y cerco perimetral' },
+                    { icono: 'ph-drop', nombre: 'Tanque subterráneo con bomba de 1 HP' },
+                    { icono: 'ph-tree', nombre: 'Áreas verdes internas y caminerías' }
+                ]
+            },
+            'inm-6': {
+                id: 'inm-6',
+                codigo: '#MAX-106',
+                titulo: 'Galpón Corporativo y Oficinas AAA',
+                subtitulo: 'Infraestructura industrial de alto nivel con patio de maniobras y oficinas ejecutivas',
+                tipo: 'Galpón Industrial',
+                badgeTipo: 'INDUSTRIAL',
+                operacion: 'ALQUILER',
+                isMaximus: true,
+                precio: '$3.200',
+                moneda: 'USD/mes',
+                precioM2: '$3.90 USD / m²',
+                comision: '50/50',
+                ubicacion: 'Zona Industrial Barrancas, Municipio Cárdenas, Táchira',
+                sectorNombre: 'Zona Industrial Barrancas',
+                sectorDesc: 'El principal polo logístico e industrial del estado, con acceso directo a la autopista San Cristóbal - La Fría.',
+                habitaciones: 'Oficinas',
+                banos: '4',
+                m2: '820 m²',
+                estacionamientos: '10 Puestos',
+                fotos: [
+                    'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&q=85',
+                    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1000&q=80',
+                    'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1000&q=80'
+                ],
+                asesor: {
+                    nombre: 'Andrea Colmenares',
+                    cargo: 'Especialista Comercial & Industrial MAXIMUS',
+                    telefono: '+58 416-3334455',
+                    avatar: 'https://ui-avatars.com/api/?name=Andrea+Colmenares&background=0B4A3F&color=fff&bold=true',
+                    rating: '4.8 (14 Cierres)',
+                    experiencia: '4 años en la red'
+                },
+                aspectosDestacados: [
+                    { icono: 'ph-truck', titulo: 'Acceso para Gandolas y Contenedores', desc: 'Portón de 6 metros de altura libre y patio de maniobras pavimentado para carga pesada.' },
+                    { icono: 'ph-lightning', titulo: 'Banco de Transformadores Trifásicos', desc: 'Capacidad eléctrica industrial instalada de 75 kVA con tablero de distribución normado.' },
+                    { icono: 'ph-buildings', titulo: '200 m² de Oficinas Corporativas AAA', desc: 'Recepción, sala de juntas climatizada, 4 despachos gerenciales y comedor de empleados.' },
+                    { icono: 'ph-shield-check', titulo: 'Seguridad Perimetral Reforzada', desc: 'Muros de concreto armado de 4 metros, concertina y sistema de alarma industrial con CCTV.' }
+                ],
+                descripcion: `Complejo corporativo e industrial de primera línea en la Zona Industrial de Barrancas.\n\nConsta de 620 m² de nave industrial con piso de concreto pulido de alta resistencia (400 kg/cm²), altura al alero de 7.5 metros y cumbrera de 9 metros, óptima ventilación e iluminación natural. Dispone adicionalmente de 200 m² de oficinas ejecutivas en dos niveles con acabados de primera, baños para personal y clientes, y cableado estructurado.\n\nListo para operaciones logísticas, almacenamiento farmacéutico, manufactura ligera o sede corporativa.`,
+                amenidades: [
+                    { icono: 'ph-truck', nombre: 'Patio de maniobras y rampa de carga' },
+                    { icono: 'ph-lightning', nombre: 'Energía trifásica de 75 kVA' },
+                    { icono: 'ph-snowflake', nombre: 'Oficinas climatizadas con ductos' },
+                    { icono: 'ph-drop', nombre: 'Tanque industrial de 25.000 Litros con sistema hidroneumático' },
+                    { icono: 'ph-fire-extinguisher', nombre: 'Sistema contra incendios certificado por bomberos' },
+                    { icono: 'ph-car', nombre: 'Estacionamiento cerrado para 10 vehículos' }
+                ]
+            }
+        };
+
+        let currentInmuebleAirbnb = null;
+        let lightboxFotosActuales = [];
+        let lightboxFotoIndex = 0;
+
+        function abrirDetalleInmuebleAirbnb(id) {
+            const data = INMUEBLES_DETALLE_DATA[id] || INMUEBLES_DETALLE_DATA['inm-1'];
+            currentInmuebleAirbnb = data;
+
+            // 1. Encabezado y badges
+            document.getElementById('airbnb-modal-codigo').textContent = data.codigo;
+            document.getElementById('airbnb-modal-nav-title').textContent = data.titulo;
+            document.getElementById('airbnb-modal-title').textContent = data.titulo;
+            document.getElementById('airbnb-modal-location').innerHTML = `<i class="ph-fill ph-map-pin text-maximus-accent"></i> ${data.ubicacion}`;
+
+            const badgeCaptacion = document.getElementById('airbnb-modal-badge-captacion');
+            if (badgeCaptacion) {
+                badgeCaptacion.style.display = data.isMaximus ? 'inline-flex' : 'none';
+            }
+
+            const badgeOp = document.getElementById('airbnb-modal-badge-operacion');
+            if (badgeOp) {
+                badgeOp.textContent = data.operacion;
+                badgeOp.className = data.operacion === 'VENTA' 
+                    ? 'bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm'
+                    : 'bg-blue-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm';
+            }
+
+            const badgeTipo = document.getElementById('airbnb-modal-badge-tipo');
+            if (badgeTipo) badgeTipo.textContent = data.badgeTipo;
+
+            // 2. Poblar Fotos en la Galería de 5
+            lightboxFotosActuales = data.fotos || [];
+            document.getElementById('airbnb-total-fotos-count').textContent = lightboxFotosActuales.length;
+
+            for (let i = 0; i < 5; i++) {
+                const imgEl = document.getElementById(`airbnb-img-${i}`);
+                if (imgEl) {
+                    imgEl.src = lightboxFotosActuales[i] || lightboxFotosActuales[0] || '';
+                }
+            }
+
+            // 3. Asesor / Anfitrión
+            document.getElementById('airbnb-asesor-avatar').src = data.asesor.avatar;
+            document.getElementById('airbnb-asesor-nombre').textContent = data.asesor.nombre;
+            document.getElementById('airbnb-asesor-cargo').textContent = data.asesor.cargo;
+            document.getElementById('airbnb-asesor-rating').innerHTML = `<i class="ph-fill ph-star"></i> ${data.asesor.rating}`;
+            document.getElementById('airbnb-asesor-exp').textContent = data.asesor.experiencia;
+            
+            const waMsg = encodeURIComponent(`Hola ${data.asesor.nombre}, te escribo desde la plataforma MAXIMUS por la propiedad ${data.codigo} (${data.titulo}). Me gustaría coordinar una visita.`);
+            document.getElementById('airbnb-asesor-whatsapp-btn').href = `https://wa.me/${data.asesor.telefono.replace(/[^0-9]/g, '')}?text=${waMsg}`;
+            document.getElementById('airbnb-asesor-tel-btn').href = `tel:${data.asesor.telefono.replace(/\s+/g, '')}`;
+
+            // 4. Especificaciones Rápidas
+            document.getElementById('airbnb-spec-hab').textContent = data.habitaciones;
+            document.getElementById('airbnb-spec-banos').textContent = data.banos;
+            document.getElementById('airbnb-spec-m2').textContent = data.m2;
+            document.getElementById('airbnb-spec-estac').textContent = data.estacionamientos;
+
+            // 5. Aspectos Destacados
+            const aspectosCont = document.getElementById('airbnb-aspectos-container');
+            if (aspectosCont) {
+                let aspHTML = '';
+                data.aspectosDestacados.forEach(asp => {
+                    aspHTML += `
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-maximus-accent flex items-center justify-center text-xl shrink-0 mt-0.5">
+                                <i class="ph-bold ${asp.icono}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-sm text-maximus-dark">${asp.titulo}</h4>
+                                <p class="text-xs text-gray-500 font-medium leading-relaxed mt-0.5">${asp.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                aspectosCont.innerHTML = aspHTML;
+            }
+
+            // 6. Descripción Larga
+            document.getElementById('airbnb-descripcion-texto').textContent = data.descripcion;
+
+            // 7. Amenidades
+            const amenCont = document.getElementById('airbnb-amenidades-container');
+            if (amenCont) {
+                let amenHTML = '';
+                data.amenidades.forEach(am => {
+                    amenHTML += `
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50/70 border border-gray-100/80">
+                            <i class="ph-fill ${am.icono} text-xl text-maximus-accent shrink-0"></i>
+                            <span class="text-xs font-bold text-gray-700">${am.nombre}</span>
+                        </div>
+                    `;
+                });
+                amenCont.innerHTML = amenHTML;
+            }
+
+            // 8. Sector y Entorno
+            document.getElementById('airbnb-sector-title').textContent = data.sectorNombre;
+            document.getElementById('airbnb-sector-desc').textContent = data.sectorDesc;
+
+            // 9. Tarjeta Flotante Lateral
+            document.getElementById('airbnb-card-precio').textContent = data.precio;
+            document.getElementById('airbnb-card-moneda').textContent = data.moneda;
+            document.getElementById('airbnb-card-preciom2').textContent = data.precioM2;
+            document.getElementById('airbnb-card-comision').innerHTML = `<i class="ph-bold ph-handshake"></i> ${data.comision} Comisión`;
+
+            // Fecha por defecto mañana en selector de visita
+            const fechaInput = document.getElementById('airbnb-visita-fecha');
+            if (fechaInput) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                fechaInput.value = tomorrow.toISOString().split('T')[0];
+            }
+
+            // 10. Mostrar Modal con animación fluida
+            const modal = document.getElementById('modalDetalleInmuebleAirbnb');
+            const cont = document.getElementById('modalAirbnbContenedor');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            if (window.gsap) {
+                gsap.to(cont, {
+                    scale: 1,
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.35,
+                    ease: 'power3.out'
+                });
+            } else {
+                cont.classList.remove('scale-95', 'opacity-0');
+                cont.classList.add('scale-100', 'opacity-100');
+            }
+        }
+
+        function cerrarDetalleInmuebleAirbnb() {
+            const modal = document.getElementById('modalDetalleInmuebleAirbnb');
+            const cont = document.getElementById('modalAirbnbContenedor');
+            
+            if (window.gsap) {
+                gsap.to(cont, {
+                    scale: 0.96,
+                    opacity: 0,
+                    duration: 0.25,
+                    ease: 'power2.in',
+                    onComplete: () => {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+                });
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // ==========================================
+        // 13. LIGHTBOX VISOR DE FOTOS PANTALLA COMPLETA
+        // ==========================================
+        function abrirGaleriaCompleta(index = 0) {
+            if (!lightboxFotosActuales || lightboxFotosActuales.length === 0) return;
+            lightboxFotoIndex = index;
+            const modal = document.getElementById('modalGaleriaCompletaAirbnb');
+            modal.classList.remove('hidden');
+
+            actualizarFotoLightbox();
+            renderThumbnailsLightbox();
+        }
+
+        function cerrarGaleriaCompleta() {
+            const modal = document.getElementById('modalGaleriaCompletaAirbnb');
+            modal.classList.add('hidden');
+        }
+
+        function cambiarFotoLightbox(delta) {
+            lightboxFotoIndex = (lightboxFotoIndex + delta + lightboxFotosActuales.length) % lightboxFotosActuales.length;
+            actualizarFotoLightbox();
+        }
+
+        function actualizarFotoLightbox() {
+            const imgEl = document.getElementById('lightbox-main-img');
+            const counter = document.getElementById('lightbox-counter');
+            if (imgEl) {
+                imgEl.src = lightboxFotosActuales[lightboxFotoIndex];
+            }
+            if (counter) {
+                counter.textContent = `Foto ${lightboxFotoIndex + 1} de ${lightboxFotosActuales.length} • ${currentInmuebleAirbnb ? currentInmuebleAirbnb.titulo : ''}`;
+            }
+
+            // Actualizar borde de miniatura activa
+            document.querySelectorAll('.lightbox-thumb').forEach((thumb, idx) => {
+                if (idx === lightboxFotoIndex) {
+                    thumb.className = 'lightbox-thumb w-14 h-14 rounded-xl object-cover border-2 border-emerald-400 opacity-100 transition-all cursor-pointer';
+                } else {
+                    thumb.className = 'lightbox-thumb w-14 h-14 rounded-xl object-cover border border-white/20 opacity-50 hover:opacity-100 transition-all cursor-pointer';
+                }
+            });
+        }
+
+        function renderThumbnailsLightbox() {
+            const cont = document.getElementById('lightbox-thumbnails');
+            if (!cont) return;
+            let html = '';
+            lightboxFotosActuales.forEach((foto, idx) => {
+                const isActive = idx === lightboxFotoIndex;
+                html += `
+                    <img src="${foto}" onclick="lightboxFotoIndex = ${idx}; actualizarFotoLightbox();" 
+                        class="lightbox-thumb w-14 h-14 rounded-xl object-cover transition-all cursor-pointer ${isActive ? 'border-2 border-emerald-400 opacity-100' : 'border border-white/20 opacity-50 hover:opacity-100'}">
+                `;
+            });
+            cont.innerHTML = html;
+        }
+
+        // ==========================================
+        // 14. ACCIONES DE CONTACTO Y COMPARTIR
+        // ==========================================
+        function solicitarVisitaWhatsApp() {
+            if (!currentInmuebleAirbnb) return;
+            const fecha = document.getElementById('airbnb-visita-fecha').value || 'Fecha a convenir';
+            const horario = document.getElementById('airbnb-visita-horario').value || 'Mañana';
+            const msg = encodeURIComponent(`Hola ${currentInmuebleAirbnb.asesor.nombre}, deseo coordinar una visita para la propiedad:\n\n🏡 *${currentInmuebleAirbnb.titulo}*\n📌 Código: ${currentInmuebleAirbnb.codigo}\n💰 Precio: ${currentInmuebleAirbnb.precio} ${currentInmuebleAirbnb.moneda}\n📅 Fecha sugerida: ${fecha}\n⏰ Horario: ${horario}\n\nQuedo atento a tu confirmación.`);
+            const tel = currentInmuebleAirbnb.asesor.telefono.replace(/[^0-9]/g, '');
+            window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+        }
+
+        function descargarFichaPDF() {
+            if (!currentInmuebleAirbnb) return;
+            // Notificación elegante
+            mostrarToastNotificacion(`📄 Generando Ficha Técnica PDF de ${currentInmuebleAirbnb.codigo}...`);
+        }
+
+        function copiarFichaAirbnb(id) {
+            const data = id ? INMUEBLES_DETALLE_DATA[id] : currentInmuebleAirbnb;
+            if (!data) return;
+            const texto = `🏡 *${data.titulo}*\n📌 ${data.ubicacion}\n💵 Precio: ${data.precio} ${data.moneda} (${data.precioM2})\n📐 Superficie: ${data.m2} • ${data.habitaciones} Hab • ${data.banos} Baños\n🤝 Asesor: ${data.asesor.nombre} (${data.asesor.telefono})\n\nVerificado en Red Inmobiliaria MAXIMUS.`;
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToastNotificacion(`📋 Ficha de ${data.codigo} copiada al portapapeles.`);
+            });
+        }
+
+        function toggleFavoritoModal(btn) {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('ph-fill')) {
+                icon.className = 'ph ph-heart text-base';
+                btn.classList.remove('text-red-500');
+                btn.classList.add('text-gray-600');
+            } else {
+                icon.className = 'ph-fill ph-heart text-base text-red-500';
+                btn.classList.remove('text-gray-600');
+                btn.classList.add('text-red-500');
+                mostrarToastNotificacion('❤️ Inmueble guardado en favoritos');
+            }
+        }
+
+        function mostrarToastNotificacion(mensaje) {
+            let toast = document.getElementById('maximus-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'maximus-toast';
+                toast.className = 'fixed bottom-6 right-6 z-[200] bg-maximus-dark text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold border border-emerald-400/30 flex items-center gap-2 transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-none';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i class="ph-fill ph-check-circle text-emerald-400 text-base"></i> <span>${mensaje}</span>`;
+            toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // Teclado: Escape cierra modales, Flechas navegan lightbox
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const lightbox = document.getElementById('modalGaleriaCompletaAirbnb');
+                if (lightbox && !lightbox.classList.contains('hidden')) {
+                    cerrarGaleriaCompleta();
+                    return;
+                }
+                const modalAirbnb = document.getElementById('modalDetalleInmuebleAirbnb');
+                if (modalAirbnb && !modalAirbnb.classList.contains('hidden')) {
+                    cerrarDetalleInmuebleAirbnb();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                const lightbox = document.getElementById('modalGaleriaCompletaAirbnb');
+                if (lightbox && !lightbox.classList.contains('hidden')) cambiarFotoLightbox(-1);
+            } else if (e.key === 'ArrowRight') {
+                const lightbox = document.getElementById('modalGaleriaCompletaAirbnb');
+                if (lightbox && !lightbox.classList.contains('hidden')) cambiarFotoLightbox(1);
+            }
+        });
     </script>
 </body>
 </html>
