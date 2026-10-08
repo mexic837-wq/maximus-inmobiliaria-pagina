@@ -1828,42 +1828,42 @@
                     </form>
                 </div>
             </section>
-            <!-- K. VISTA DEDICADA: DETALLE DE INMUEBLE ESTILO AIRBNB -->
-            <section id="view-detalle-inmueble" class="view-section max-w-[1400px] mx-auto space-y-6 pb-12">
+            <!-- K. VISTA DEDICADA: DETALLE DE INMUEBLE ESTILO AIRBNB (Ajustada y Compacta) -->
+            <section id="view-detalle-inmueble" class="view-section max-w-[1240px] mx-auto space-y-3.5 pb-8">
                 <!-- Barra de Navegación y Acciones Superiores -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 pb-1 border-b border-gray-200/80">
-                    <div class="flex items-center gap-3">
-                        <button onclick="volverACatalogoInmuebles()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-gray-200 hover:border-maximus-accent hover:text-maximus-dark text-gray-700 font-extrabold text-xs shadow-sm hover:shadow transition-all group cursor-pointer">
-                            <i class="ph-bold ph-arrow-left text-base group-hover:-translate-x-1 transition-transform text-maximus-accent"></i>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 pb-1 border-b border-gray-200/70">
+                    <div class="flex items-center gap-2.5">
+                        <button onclick="volverACatalogoInmuebles()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-maximus-accent hover:text-maximus-dark text-gray-700 font-extrabold text-xs shadow-sm hover:shadow transition-all group cursor-pointer">
+                            <i class="ph-bold ph-arrow-left text-sm group-hover:-translate-x-0.5 transition-transform text-maximus-accent"></i>
                             <span>Volver a Inmuebles</span>
                         </button>
-                        <span id="airbnb-modal-codigo" class="text-xs font-black px-3 py-1.5 bg-emerald-50 text-maximus-accent rounded-xl border border-emerald-100">#MAX-101</span>
+                        <span id="airbnb-modal-codigo" class="text-xs font-black px-2.5 py-1 bg-emerald-50 text-maximus-accent rounded-lg border border-emerald-100">#MAX-101</span>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <button onclick="copiarFichaAirbnb()" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-4 py-2.5 rounded-2xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer">
-                            <i class="ph-bold ph-share-network text-base"></i> <span class="hidden sm:inline">Compartir Ficha</span>
+                        <button onclick="copiarFichaAirbnb()" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer">
+                            <i class="ph-bold ph-share-network text-sm"></i> <span class="hidden sm:inline">Compartir Ficha</span>
                         </button>
-                        <button id="btn-favorito-modal" onclick="toggleFavoritoModal(this)" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-500 px-4 py-2.5 rounded-2xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer">
-                            <i class="ph ph-heart text-base"></i> <span class="hidden sm:inline">Guardar</span>
+                        <button id="btn-favorito-modal" onclick="toggleFavoritoModal(this)" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-500 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer">
+                            <i class="ph ph-heart text-sm"></i> <span class="hidden sm:inline">Guardar</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Contenedor Principal Blanco Dedicado -->
-                <div class="bg-white rounded-[32px] shadow-premium p-6 sm:p-10 border border-maximus-silver/20 space-y-8">
+                <!-- Contenedor Principal Blanco Dedicado (Ajustado y Cómodo) -->
+                <div class="bg-white rounded-[22px] shadow-premium p-4.5 sm:p-6 border border-maximus-silver/20 space-y-5 sm:space-y-6">
                     
                     <!-- Encabezado de la Propiedad (Título, Ubicación y Badges) -->
                     <div>
-                        <div class="flex flex-wrap items-center gap-2 mb-2.5">
-                            <span id="airbnb-modal-badge-captacion" class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[10px] font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+                        <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                            <span id="airbnb-modal-badge-captacion" class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm flex items-center gap-1">
                                 <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
                             </span>
-                            <span id="airbnb-modal-badge-operacion" class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full shadow-sm">VENTA</span>
-                            <span id="airbnb-modal-badge-tipo" class="bg-emerald-50 text-maximus-accent border border-emerald-200 text-[10px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full">CASA</span>
+                            <span id="airbnb-modal-badge-operacion" class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm">VENTA</span>
+                            <span id="airbnb-modal-badge-tipo" class="bg-emerald-50 text-maximus-accent border border-emerald-200 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">CASA</span>
                         </div>
-                        <h1 id="airbnb-modal-title" class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Quinta moderna con piscina y jardín</h1>
-                        <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-gray-500 font-semibold mt-2.5">
+                        <h1 id="airbnb-modal-title" class="text-xl sm:text-2xl font-extrabold text-maximus-dark tracking-tight leading-tight">Quinta moderna con piscina y jardín</h1>
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500 font-semibold mt-1.5">
                             <span class="flex items-center gap-1 text-amber-500 font-extrabold">
                                 <i class="ph-fill ph-star"></i> 5.0 <span class="text-gray-400 font-normal underline">(Inmueble Destacado)</span>
                             </span>
@@ -1874,148 +1874,148 @@
                         </div>
                     </div>
 
-                    <!-- Galería de 5 Fotos Estilo Airbnb -->
-                    <div class="relative rounded-[24px] sm:rounded-[32px] overflow-hidden grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-2.5 h-[340px] sm:h-[480px] bg-gray-100">
+                    <!-- Galería de 5 Fotos Estilo Airbnb (Compacta y Proporcionada) -->
+                    <div class="relative rounded-[18px] overflow-hidden grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-2 h-[240px] sm:h-[300px] lg:h-[320px] bg-gray-100">
                         <!-- Foto Principal (50% de ancho en Desktop) -->
                         <div onclick="abrirGaleriaCompleta(0)" class="md:col-span-2 md:row-span-2 relative overflow-hidden cursor-pointer group h-full">
                             <img id="airbnb-img-0" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 2 (Top der 1) -->
-                        <div onclick="abrirGaleriaCompleta(1)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[235px]">
+                        <div onclick="abrirGaleriaCompleta(1)" class="hidden md:block relative overflow-hidden cursor-pointer group h-full">
                             <img id="airbnb-img-1" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 3 (Top der 2) -->
-                        <div onclick="abrirGaleriaCompleta(2)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[235px]">
+                        <div onclick="abrirGaleriaCompleta(2)" class="hidden md:block relative overflow-hidden cursor-pointer group h-full">
                             <img id="airbnb-img-2" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 4 (Bottom der 1) -->
-                        <div onclick="abrirGaleriaCompleta(3)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[235px]">
+                        <div onclick="abrirGaleriaCompleta(3)" class="hidden md:block relative overflow-hidden cursor-pointer group h-full">
                             <img id="airbnb-img-3" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 5 (Bottom der 2) -->
-                        <div onclick="abrirGaleriaCompleta(4)" class="hidden md:block relative overflow-hidden cursor-pointer group h-[235px]">
+                        <div onclick="abrirGaleriaCompleta(4)" class="hidden md:block relative overflow-hidden cursor-pointer group h-full">
                             <img id="airbnb-img-4" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         
                         <!-- Botón Flotante "Ver todas las fotos" -->
-                        <button onclick="abrirGaleriaCompleta(0)" class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md text-maximus-dark font-black text-xs px-4 py-2.5 rounded-xl shadow-xl border border-gray-200/80 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-2 z-10 cursor-pointer">
-                            <i class="ph-bold ph-squares-four text-base text-maximus-accent"></i>
-                            <span>Mostrar todas las fotos (<span id="airbnb-total-fotos-count">6</span>)</span>
+                        <button onclick="abrirGaleriaCompleta(0)" class="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md text-maximus-dark font-black text-[11px] px-3 py-1.5 rounded-lg shadow-md border border-gray-200/80 hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 z-10 cursor-pointer">
+                            <i class="ph-bold ph-squares-four text-sm text-maximus-accent"></i>
+                            <span>Mostrar fotos (<span id="airbnb-total-fotos-count">6</span>)</span>
                         </button>
                     </div>
 
                     <!-- Grilla 2 Columnas Estilo Airbnb (Detalles a la Izquierda, Tarjeta Flotante a la Derecha) -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-start">
                         
                         <!-- Columna Izquierda (Contenido y Especificaciones) -->
-                        <div class="lg:col-span-7 space-y-8">
+                        <div class="lg:col-span-7 space-y-5">
                             
                             <!-- Tarjeta de Asesor / Anfitrión Asignado -->
-                            <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div class="flex items-center gap-4">
+                            <div class="p-4 rounded-xl bg-gray-50/80 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
                                     <div class="relative">
-                                        <img id="airbnb-asesor-avatar" src="" class="w-16 h-16 rounded-2xl object-cover shadow-md">
-                                        <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm ring-2 ring-white">
+                                        <img id="airbnb-asesor-avatar" src="" class="w-12 h-12 rounded-xl object-cover shadow-sm">
+                                        <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] shadow-sm ring-1 ring-white">
                                             <i class="ph-bold ph-check"></i>
                                         </span>
                                     </div>
                                     <div>
-                                        <h3 class="font-black text-lg text-maximus-dark flex items-center gap-2">
+                                        <h3 class="font-black text-sm sm:text-base text-maximus-dark flex items-center gap-1.5">
                                             <span id="airbnb-asesor-nombre">José Guerrero</span>
-                                            <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Verificado</span>
+                                            <span class="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full">Verificado</span>
                                         </h3>
-                                        <p id="airbnb-asesor-cargo" class="text-xs font-semibold text-gray-500">Director & Captador Principal MAXIMUS</p>
-                                        <div class="flex items-center gap-2 mt-1 text-xs text-gray-400 font-bold">
+                                        <p id="airbnb-asesor-cargo" class="text-[11px] font-semibold text-gray-500">Director & Captador Principal MAXIMUS</p>
+                                        <div class="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400 font-bold">
                                             <span id="airbnb-asesor-rating" class="text-amber-500 flex items-center gap-1"><i class="ph-fill ph-star"></i> 5.0 (28 Cierres)</span>
                                             <span>•</span>
                                             <span id="airbnb-asesor-exp">4 años en la red</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex sm:flex-col gap-2 shrink-0">
-                                    <a id="airbnb-asesor-whatsapp-btn" href="#" target="_blank" class="flex-1 sm:flex-none py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black text-center flex items-center justify-center gap-2 shadow-sm transition-all">
-                                        <i class="ph-fill ph-whatsapp-logo text-base"></i> WhatsApp
+                                <div class="flex sm:flex-col gap-1.5 shrink-0">
+                                    <a id="airbnb-asesor-whatsapp-btn" href="#" target="_blank" class="flex-1 sm:flex-none py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black text-center flex items-center justify-center gap-1.5 shadow-sm transition-all">
+                                        <i class="ph-fill ph-whatsapp-logo text-sm"></i> WhatsApp
                                     </a>
-                                    <a id="airbnb-asesor-tel-btn" href="#" class="flex-1 sm:flex-none py-2 px-4 rounded-xl border border-gray-200 hover:bg-white text-gray-700 text-xs font-bold text-center flex items-center justify-center gap-2 transition-all">
-                                        <i class="ph-bold ph-phone text-sm"></i> Llamar
+                                    <a id="airbnb-asesor-tel-btn" href="#" class="flex-1 sm:flex-none py-1.5 px-3 rounded-lg border border-gray-200 hover:bg-white text-gray-700 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-all">
+                                        <i class="ph-bold ph-phone text-xs"></i> Llamar
                                     </a>
                                 </div>
                             </div>
 
                             <!-- Barra de Especificaciones Rápidas -->
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
-                                    <i class="ph-light ph-bed text-2xl text-maximus-accent mb-1 block"></i>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Habitaciones</span>
-                                    <span id="airbnb-spec-hab" class="text-base font-extrabold text-maximus-dark">4</span>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                <div class="p-2.5 rounded-xl bg-white border border-gray-100 shadow-sm text-center">
+                                    <i class="ph-light ph-bed text-xl text-maximus-accent mb-0.5 block"></i>
+                                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Habitaciones</span>
+                                    <span id="airbnb-spec-hab" class="text-sm font-extrabold text-maximus-dark">4</span>
                                 </div>
-                                <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
-                                    <i class="ph-light ph-shower text-2xl text-maximus-accent mb-1 block"></i>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Baños</span>
-                                    <span id="airbnb-spec-banos" class="text-base font-extrabold text-maximus-dark">3</span>
+                                <div class="p-2.5 rounded-xl bg-white border border-gray-100 shadow-sm text-center">
+                                    <i class="ph-light ph-shower text-xl text-maximus-accent mb-0.5 block"></i>
+                                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Baños</span>
+                                    <span id="airbnb-spec-banos" class="text-sm font-extrabold text-maximus-dark">3</span>
                                 </div>
-                                <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
-                                    <i class="ph-light ph-ruler text-2xl text-maximus-accent mb-1 block"></i>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Superficie</span>
-                                    <span id="airbnb-spec-m2" class="text-base font-extrabold text-maximus-dark">350 m²</span>
+                                <div class="p-2.5 rounded-xl bg-white border border-gray-100 shadow-sm text-center">
+                                    <i class="ph-light ph-ruler text-xl text-maximus-accent mb-0.5 block"></i>
+                                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Superficie</span>
+                                    <span id="airbnb-spec-m2" class="text-sm font-extrabold text-maximus-dark">350 m²</span>
                                 </div>
-                                <div class="p-4 rounded-2xl bg-white border border-gray-100 shadow-sm text-center">
-                                    <i class="ph-light ph-car text-2xl text-maximus-accent mb-1 block"></i>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Estacionamiento</span>
-                                    <span id="airbnb-spec-estac" class="text-base font-extrabold text-maximus-dark">3 Puestos</span>
+                                <div class="p-2.5 rounded-xl bg-white border border-gray-100 shadow-sm text-center">
+                                    <i class="ph-light ph-car text-xl text-maximus-accent mb-0.5 block"></i>
+                                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block">Estacionamiento</span>
+                                    <span id="airbnb-spec-estac" class="text-sm font-extrabold text-maximus-dark">3 Puestos</span>
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-100 pt-6"></div>
+                            <div class="border-t border-gray-100 pt-4"></div>
 
                             <!-- Aspectos Destacados de la Propiedad (Airbnb Key Perks) -->
                             <div>
-                                <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-5">Aspectos Destacados</h3>
-                                <div id="airbnb-aspectos-container" class="space-y-4">
+                                <h3 class="text-base font-extrabold text-maximus-dark tracking-tight mb-3">Aspectos Destacados</h3>
+                                <div id="airbnb-aspectos-container" class="space-y-3">
                                     <!-- Generado por JS -->
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-100 pt-6"></div>
+                            <div class="border-t border-gray-100 pt-4"></div>
 
                             <!-- Acerca de esta Propiedad (Descripción Larga) -->
                             <div>
-                                <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-4">Acerca de esta propiedad</h3>
-                                <div id="airbnb-descripcion-texto" class="text-gray-600 text-sm leading-relaxed font-medium space-y-4 whitespace-pre-line">
+                                <h3 class="text-base font-extrabold text-maximus-dark tracking-tight mb-2.5">Acerca de esta propiedad</h3>
+                                <div id="airbnb-descripcion-texto" class="text-gray-600 text-xs leading-relaxed font-medium space-y-3 whitespace-pre-line">
                                     <!-- Texto de descripción -->
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-100 pt-6"></div>
+                            <div class="border-t border-gray-100 pt-4"></div>
 
                             <!-- Lo que ofrece este inmueble (Amenidades estilo Airbnb) -->
                             <div>
-                                <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-5">Lo que ofrece este inmueble</h3>
-                                <div id="airbnb-amenidades-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <h3 class="text-base font-extrabold text-maximus-dark tracking-tight mb-3">Lo que ofrece este inmueble</h3>
+                                <div id="airbnb-amenidades-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                                     <!-- Generado por JS -->
                                 </div>
                             </div>
 
-                            <div class="border-t border-gray-100 pt-6"></div>
+                            <div class="border-t border-gray-100 pt-4"></div>
 
                             <!-- Ubicación & Sector -->
                             <div>
-                                <h3 class="text-xl font-extrabold text-maximus-dark tracking-tight mb-3">Ubicación y Entorno</h3>
-                                <p id="airbnb-sector-desc" class="text-sm text-gray-500 font-medium mb-4">
+                                <h3 class="text-base font-extrabold text-maximus-dark tracking-tight mb-2">Ubicación y Entorno</h3>
+                                <p id="airbnb-sector-desc" class="text-xs text-gray-500 font-medium mb-3">
                                     Ubicado en una de las mejores zonas residenciales de San Cristóbal, con acceso inmediato a comercios, colegios de primer nivel y vías principales.
                                 </p>
-                                <div class="rounded-2xl bg-emerald-50/60 border border-emerald-100 p-5 flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-xl bg-maximus-dark text-white flex items-center justify-center text-2xl shrink-0">
+                                <div class="rounded-xl bg-emerald-50/60 border border-emerald-100 p-3.5 flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-maximus-dark text-white flex items-center justify-center text-xl shrink-0">
                                         <i class="ph-fill ph-map-pin"></i>
                                     </div>
                                     <div>
-                                        <h4 class="font-extrabold text-sm text-maximus-dark" id="airbnb-sector-title">Urbanización Guaparo</h4>
-                                        <p class="text-xs text-gray-500 font-medium">Municipio San Cristóbal, Estado Táchira, Venezuela</p>
+                                        <h4 class="font-extrabold text-xs text-maximus-dark" id="airbnb-sector-title">Urbanización Guaparo</h4>
+                                        <p class="text-[11px] text-gray-500 font-medium">Municipio San Cristóbal, Estado Táchira, Venezuela</p>
                                     </div>
                                 </div>
                             </div>
@@ -2023,42 +2023,42 @@
 
                         <!-- Columna Derecha: Tarjeta Flotante de Acción / Reserva Estilo Airbnb -->
                         <div class="lg:col-span-5">
-                            <div class="sticky top-24 bg-white rounded-[28px] border border-gray-200/80 shadow-2xl p-6 sm:p-7 space-y-6">
+                            <div class="sticky top-20 bg-white rounded-[20px] border border-gray-200/80 shadow-xl p-5 space-y-4">
                                 
                                 <!-- Precio y Tipo -->
-                                <div class="flex items-baseline justify-between border-b border-gray-100 pb-5">
+                                <div class="flex items-baseline justify-between border-b border-gray-100 pb-3.5">
                                     <div>
-                                        <span class="text-xs uppercase font-extrabold text-gray-400 block tracking-widest mb-1">Precio de Publicación</span>
-                                        <div class="flex items-baseline gap-2">
-                                            <h2 id="airbnb-card-precio" class="text-3xl sm:text-4xl font-black text-maximus-dark leading-none">$270.000</h2>
+                                        <span class="text-[10px] uppercase font-extrabold text-gray-400 block tracking-widest mb-0.5">Precio de Publicación</span>
+                                        <div class="flex items-baseline gap-1.5">
+                                            <h2 id="airbnb-card-precio" class="text-2xl sm:text-3xl font-black text-maximus-dark leading-none">$270.000</h2>
                                             <span id="airbnb-card-moneda" class="text-xs font-bold text-gray-500">USD</span>
                                         </div>
-                                        <span id="airbnb-card-preciom2" class="text-xs font-extrabold text-maximus-accent block mt-1.5">$771 USD / m²</span>
+                                        <span id="airbnb-card-preciom2" class="text-[11px] font-extrabold text-maximus-accent block mt-1">$771 USD / m²</span>
                                     </div>
                                     <div class="text-right">
-                                        <span id="airbnb-card-comision" class="inline-flex items-center gap-1 text-[11px] font-black text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full">
+                                        <span id="airbnb-card-comision" class="inline-flex items-center gap-1 text-[10px] font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
                                             <i class="ph-bold ph-handshake"></i> 50/50 Comisión
                                         </span>
                                     </div>
                                 </div>
 
                                 <!-- Selector de Cita / Visita -->
-                                <div class="border border-gray-200 rounded-2xl overflow-hidden">
-                                    <div class="p-3 bg-gray-50/70 border-b border-gray-200">
-                                        <label class="block text-[10px] font-black uppercase tracking-wider text-gray-500 mb-1">Agendar Visita Guiada</label>
-                                        <input type="date" id="airbnb-visita-fecha" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                    <div class="p-2.5 bg-gray-50/70 border-b border-gray-200">
+                                        <label class="block text-[9px] font-black uppercase tracking-wider text-gray-500 mb-0.5">Agendar Visita Guiada</label>
+                                        <input type="date" id="airbnb-visita-fecha" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                     </div>
-                                    <div class="p-3 grid grid-cols-2 gap-2 bg-white text-xs font-semibold">
+                                    <div class="p-2.5 grid grid-cols-2 gap-2 bg-white text-xs font-semibold">
                                         <div>
-                                            <label class="block text-[10px] font-bold text-gray-400 uppercase">Horario</label>
-                                            <select id="airbnb-visita-horario" class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-1">
+                                            <label class="block text-[9px] font-bold text-gray-400 uppercase">Horario</label>
+                                            <select id="airbnb-visita-horario" class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-0.5">
                                                 <option value="Mañana (9:00 AM - 12:00 PM)">Mañana (9:00 AM)</option>
                                                 <option value="Tarde (2:00 PM - 5:00 PM)">Tarde (2:00 PM)</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label class="block text-[10px] font-bold text-gray-400 uppercase">Tipo</label>
-                                            <select class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-1">
+                                            <label class="block text-[9px] font-bold text-gray-400 uppercase">Tipo</label>
+                                            <select class="w-full bg-transparent font-bold text-maximus-dark outline-none text-xs mt-0.5">
                                                 <option>Presencial</option>
                                                 <option>Video-Llamada</option>
                                             </select>
@@ -2067,27 +2067,27 @@
                                 </div>
 
                                 <!-- Botones de Acción Primaria -->
-                                <div class="space-y-2.5">
-                                    <button onclick="solicitarVisitaWhatsApp()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-sm shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2 group hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
-                                        <i class="ph-fill ph-whatsapp-logo text-xl"></i>
+                                <div class="space-y-2">
+                                    <button onclick="solicitarVisitaWhatsApp()" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 group hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                                        <i class="ph-fill ph-whatsapp-logo text-base"></i>
                                         <span>Contactar Asesor por WhatsApp</span>
                                     </button>
                                     
-                                    <button onclick="descargarFichaPDF()" class="w-full py-3.5 rounded-2xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-extrabold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
-                                        <i class="ph-bold ph-file-pdf text-base text-red-500"></i>
+                                    <button onclick="descargarFichaPDF()" class="w-full py-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                        <i class="ph-bold ph-file-pdf text-sm text-red-500"></i>
                                         <span>Descargar Ficha Técnica PDF</span>
                                     </button>
                                 </div>
 
                                 <!-- Garantías y Confianza MAXIMUS -->
-                                <div class="space-y-3 pt-3 border-t border-gray-100 text-xs text-gray-500 font-medium">
-                                    <div class="flex items-start gap-2.5">
-                                        <i class="ph-bold ph-shield-check text-emerald-600 text-base mt-0.5 shrink-0"></i>
-                                        <span><strong>100% Verificado:</strong> Documentación y título de propiedad revisados por el departamento legal.</span>
+                                <div class="space-y-2 pt-2.5 border-t border-gray-100 text-[11px] text-gray-500 font-medium">
+                                    <div class="flex items-start gap-2">
+                                        <i class="ph-bold ph-shield-check text-emerald-600 text-sm mt-0.5 shrink-0"></i>
+                                        <span><strong>100% Verificado:</strong> Documentación y título revisados.</span>
                                     </div>
-                                    <div class="flex items-start gap-2.5">
-                                        <i class="ph-bold ph-sparkle text-amber-500 text-base mt-0.5 shrink-0"></i>
-                                        <span><strong>Comisión Protegida:</strong> Convenio de corretaje exclusivo firmado con la red MAXIMUS.</span>
+                                    <div class="flex items-start gap-2">
+                                        <i class="ph-bold ph-sparkle text-amber-500 text-sm mt-0.5 shrink-0"></i>
+                                        <span><strong>Comisión Protegida:</strong> Exclusividad firmada con MAXIMUS.</span>
                                     </div>
                                 </div>
                             </div>
@@ -3586,13 +3586,13 @@
                 let aspHTML = '';
                 data.aspectosDestacados.forEach(asp => {
                     aspHTML += `
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-maximus-accent flex items-center justify-center text-xl shrink-0 mt-0.5">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center text-base shrink-0 mt-0.5">
                                 <i class="ph-bold ${asp.icono}"></i>
                             </div>
                             <div>
-                                <h4 class="font-extrabold text-sm text-maximus-dark">${asp.titulo}</h4>
-                                <p class="text-xs text-gray-500 font-medium leading-relaxed mt-0.5">${asp.desc}</p>
+                                <h4 class="font-extrabold text-xs text-maximus-dark">${asp.titulo}</h4>
+                                <p class="text-[11px] text-gray-500 font-medium leading-relaxed mt-0.5">${asp.desc}</p>
                             </div>
                         </div>
                     `;
@@ -3610,8 +3610,8 @@
                 let amenHTML = '';
                 data.amenidades.forEach(am => {
                     amenHTML += `
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50/70 border border-gray-100/80">
-                            <i class="ph-fill ${am.icono} text-xl text-maximus-accent shrink-0"></i>
+                        <div class="flex items-center gap-2.5 p-2 rounded-lg bg-gray-50/70 border border-gray-100/80">
+                            <i class="ph-fill ${am.icono} text-base text-maximus-accent shrink-0"></i>
                             <span class="text-xs font-bold text-gray-700">${am.nombre}</span>
                         </div>
                     `;
