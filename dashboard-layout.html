@@ -63,7 +63,7 @@
     <aside class="w-[280px] bg-white border-r border-maximus-silver/30 flex flex-col justify-between flex-shrink-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative">
         <div>
             <!-- Logo -->
-            <div class="h-24 flex items-center px-8 border-b border-maximus-silver/20">
+            <div class="h-28 pt-4 flex items-center px-8 border-b border-maximus-silver/20">
                 <span class="text-[28px] font-extrabold tracking-tight text-maximus-dark flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-maximus-dark flex items-center justify-center text-white shadow-md">
                         <i class="ph-fill ph-buildings text-xl"></i>
@@ -79,8 +79,12 @@
                 <a href="#" data-target="view-resumen" class="nav-link bg-emerald-50/70 text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all">
                     <i class="ph-fill ph-squares-four text-xl text-maximus-accent"></i> Resumen
                 </a>
-                <a href="#" data-target="view-inmuebles" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-house-line text-xl"></i> Mis Inmuebles
+                <a href="#" data-target="view-inmuebles" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph ph-house-line text-xl"></i> Inmuebles
+                </a>
+                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all group">
+                    <i class="ph-fill ph-buildings text-xl text-maximus-accent"></i>
+                    <span>Captaciones MAXIMUS</span>
                 </a>
                 <a href="#" data-target="view-metricas" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-chart-line-up text-xl"></i> Métricas
@@ -97,11 +101,14 @@
                 <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-handshake text-xl"></i> Histórico Global
                 </a>
+                <a href="#" id="nav-admin-cargar" data-target="view-admin-cargar-inmueble" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph-fill ph-house-line text-xl text-maximus-accent"></i> Cargar Inmueble
+                </a>
                 <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent"></i> Precios m² (Admin)
+                    <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent"></i> Precios m²
                 </a>
                 <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-users-three text-xl text-maximus-accent"></i> Configurar Agentes (Admin)
+                    <i class="ph-fill ph-users-three text-xl text-maximus-accent"></i> Configurar Agentes
                 </a>
 
                 <!-- Recursos -->
@@ -111,6 +118,9 @@
                 </a>
                 <a href="#" data-target="view-tutoriales" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-play-circle text-xl"></i> Tutoriales VIP
+                </a>
+                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
+                    <i class="ph-fill ph-video-camera text-xl text-maximus-accent"></i> Subir Tutoriales
                 </a>
                 <a href="#" class="agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
                     <i class="ph ph-headset text-xl"></i> Soporte 24/7
@@ -132,7 +142,7 @@
         <!-- ==========================================
              2. TOP BAR (BARRA SUPERIOR)
              ========================================== -->
-        <header class="h-24 bg-maximus-bg flex items-center justify-between px-10 z-10 flex-shrink-0">
+        <header class="h-28 pt-4 bg-maximus-bg flex items-center justify-between px-10 z-10 flex-shrink-0">
             <!-- Izquierda: Título Dinámico o Breadcrumb -->
             <div class="flex items-center gap-4">
                 <div class="hidden md:block">
@@ -190,7 +200,7 @@
         <!-- ==========================================
              3. ÁREA DE CONTENIDO (MAIN)
              ========================================== -->
-        <main class="flex-1 overflow-y-auto px-10 pb-12 relative">
+        <main class="flex-1 overflow-y-auto px-10 pt-16 pb-12 relative">
             
             <!-- A. VISTA: RESUMEN (INICIO) -->
             <section id="view-resumen" class="view-section active max-w-[1400px] mx-auto space-y-8">
@@ -301,43 +311,144 @@
                 </div>
             </section>
 
-            <!-- B. VISTA: MIS INMUEBLES -->
-            <section id="view-inmuebles" class="view-section agente-only max-w-[1400px] mx-auto space-y-8">
+            <!-- B. VISTA: INMUEBLES -->
+            <section id="view-inmuebles" class="view-section max-w-[1400px] mx-auto space-y-8">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4">
                     <div>
-                        <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Catálogo Propio</h2>
-                        <p class="text-gray-500 mt-1 text-base font-medium">Gestiona tus propiedades activas.</p>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
+                            <i class="ph-bold ph-buildings"></i> Catálogo Completo
+                        </div>
+                        <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Inmuebles</h2>
+                        <p class="text-gray-500 mt-1 text-base font-medium">Gestiona y explora las propiedades activas de la plataforma.</p>
                     </div>
-                    <button class="bg-maximus-dark hover:bg-[#07362e] text-white px-8 py-3.5 rounded-full text-[15px] font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                        <i class="ph-bold ph-plus"></i> Cargar Inmueble
-                    </button>
-                </div>
-
-                <!-- Barra de Filtros Premium -->
-                <div class="bg-white rounded-full shadow-premium p-2 flex justify-between items-center border border-maximus-silver/20">
-                    <div class="flex-1 flex items-center gap-3 px-4">
-                        <i class="ph ph-magnifying-glass text-gray-400 text-xl"></i>
-                        <input type="text" placeholder="Buscar por código, zona o título..." class="w-full bg-transparent border-none text-sm font-medium outline-none placeholder-gray-400 text-maximus-dark">
-                    </div>
-                    <div class="flex items-center gap-3 border-l border-gray-100 pl-4">
-                        <button class="flex items-center gap-2 px-6 py-2.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-sm font-bold rounded-full transition-colors">
-                            <i class="ph-fill ph-faders"></i> Filtros Avanzados
+                    <div class="flex items-center gap-3">
+                        <button onclick="activateTab('view-exclusivas-maximus', true)" class="bg-gradient-to-r from-[#06241E] to-[#0A3D33] border border-emerald-500/40 text-emerald-300 hover:text-white px-6 py-3.5 rounded-full text-[14px] font-extrabold shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                            <i class="ph-fill ph-buildings text-emerald-400 text-lg"></i> Captaciones MAXIMUS
                         </button>
                     </div>
                 </div>
 
-                <!-- Grilla de Inmuebles (Estilo Luxury Real Estate) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Tarjeta Luxury 1 -->
-                    <div class="bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group">
+                <!-- Barra de Filtros Premium con Buscador y Filtro MAXIMUS -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-full shadow-premium p-2 flex flex-col md:flex-row justify-between items-center gap-2 border border-maximus-silver/20">
+                        <div class="flex-1 flex items-center gap-3 px-4 w-full">
+                            <i class="ph ph-magnifying-glass text-gray-400 text-xl"></i>
+                            <input type="text" id="buscador-inmuebles" oninput="filtrarCatalogoInmuebles()" placeholder="Buscar por código, zona, título o asesor..." class="w-full bg-transparent border-none text-sm font-medium outline-none placeholder-gray-400 text-maximus-dark">
+                        </div>
+                        <div class="flex items-center gap-2 border-t md:border-t-0 md:border-l border-gray-100 pt-2 md:pt-0 pl-0 md:pl-3 w-full md:w-auto justify-end">
+                            <!-- Botón Filtro Rápido MAXIMUS -->
+                            <button id="btn-filtro-maximus-toggle" onclick="toggleFiltroSoloMaximus()" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-maximus-dark shadow-sm hover:scale-[1.02] cursor-pointer">
+                                <i class="ph-fill ph-buildings text-maximus-accent text-base"></i>
+                                <span>Captaciones MAXIMUS</span>
+                                <span class="bg-maximus-accent text-white text-[10px] px-2 py-0.5 rounded-full font-black ml-0.5">4</span>
+                            </button>
+                            <div class="relative" id="filtrosDropdownWrapper">
+                                <button onclick="toggleFiltrosDropdown()" class="flex items-center gap-2 px-5 py-2.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-xs font-bold rounded-full transition-colors relative z-10">
+                                    <i class="ph-fill ph-faders"></i> Filtros
+                                </button>
+
+                                <div id="dropdown-filtros-panel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top-right absolute right-0 top-12 w-[340px] bg-white rounded-3xl shadow-2xl border border-gray-100 z-50 p-6 text-left">
+                                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                                        <h3 class="text-sm font-extrabold text-maximus-dark">Filtros Avanzados</h3>
+                                        <button onclick="toggleFiltrosDropdown()" class="text-gray-400 hover:text-red-500 transition-colors">
+                                            <i class="ph-bold ph-x text-sm"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="space-y-4">
+                                        <!-- Tipo de Inmueble -->
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tipo de Inmueble</label>
+                                            <select class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-maximus-accent font-medium">
+                                                <option value="">Cualquier tipo</option>
+                                                <option value="casa">Casa</option>
+                                                <option value="apartamento">Apartamento</option>
+                                                <option value="townhouse">Townhouse</option>
+                                                <option value="local">Local Comercial</option>
+                                                <option value="galpon">Galpón</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Rango de Precios -->
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio Mín</label>
+                                                <input type="number" placeholder="Ej: 10000" class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-maximus-accent font-medium">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio Máx</label>
+                                                <input type="number" placeholder="Ej: 500000" class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-maximus-accent font-medium">
+                                            </div>
+                                        </div>
+
+                                        <!-- Habitaciones / Baños -->
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Habitaciones</label>
+                                                <select class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-maximus-accent font-medium">
+                                                    <option value="">Cualquiera</option>
+                                                    <option value="1">1+</option>
+                                                    <option value="2">2+</option>
+                                                    <option value="3">3+</option>
+                                                    <option value="4">4+</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Baños</label>
+                                                <select class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-maximus-accent font-medium">
+                                                    <option value="">Cualquiera</option>
+                                                    <option value="1">1+</option>
+                                                    <option value="2">2+</option>
+                                                    <option value="3">3+</option>
+                                                    <option value="4">4+</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6">
+                                        <button onclick="toggleFiltrosDropdown()" class="w-full py-2.5 rounded-xl text-white text-xs font-bold bg-maximus-dark hover:bg-[#07362e] transition-colors shadow-md">
+                                            Aplicar Filtros
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pills de Filtros por Categoría -->
+                    <div class="flex items-center gap-2.5 overflow-x-auto hide-scrollbar py-1">
+                        <button onclick="setFiltroCategoria('todos', this)" class="filtro-pill shrink-0 bg-maximus-dark text-white px-5 py-2 rounded-full text-xs font-extrabold shadow-sm transition-all">
+                            Todos <span class="opacity-75 font-normal ml-1">(6)</span>
+                        </button>
+                        <button onclick="setFiltroCategoria('maximus', this)" class="filtro-pill shrink-0 bg-white border border-emerald-300 text-maximus-dark hover:bg-emerald-50 px-5 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5">
+                            <i class="ph-fill ph-buildings text-maximus-accent"></i> Captaciones MAXIMUS <span class="text-emerald-700 font-bold ml-1">(4)</span>
+                        </button>
+                        <button onclick="setFiltroCategoria('venta', this)" class="filtro-pill shrink-0 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-5 py-2 rounded-full text-xs font-bold transition-all">
+                            En Venta <span class="text-gray-400 font-normal ml-1">(4)</span>
+                        </button>
+                        <button onclick="setFiltroCategoria('alquiler', this)" class="filtro-pill shrink-0 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-5 py-2 rounded-full text-xs font-bold transition-all">
+                            En Alquiler <span class="text-gray-400 font-normal ml-1">(2)</span>
+                        </button>
+                        <span id="contador-resultados" class="ml-auto text-xs font-bold text-gray-400 hidden sm:inline-block">6 inmuebles disponibles</span>
+                    </div>
+                </div>
+
+                <!-- Grilla de Inmuebles -->
+                <div id="grilla-inmuebles" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Tarjeta 1 (MAXIMUS) -->
+                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                         data-maximus="true" data-operacion="venta" data-search="quinta moderna piscina jardin guaparo san cristobal manuel rodriguez jose guerrero maximus">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                             
                             <!-- Badges -->
-                            <div class="absolute top-4 left-4 flex gap-2">
+                            <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
                                 <span class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">VENTA</span>
-                                <span class="bg-white text-maximus-dark text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">OFERTA</span>
                             </div>
                             
                             <!-- Precio sobre la imagen -->
@@ -346,25 +457,36 @@
                             </div>
                         </div>
                         <div class="p-6">
-                            <div class="flex items-center gap-2 mb-2">
+                            <div class="flex items-center justify-between gap-2 mb-2">
                                 <span class="text-[10px] font-bold text-maximus-accent bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-widest">CASA</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Urb. Guaparo</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Quinta moderna con piscina y jardín</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Quinta moderna con piscina y jardín</h4>
                             
+                            <!-- Asesor Captador MAXIMUS -->
+                            <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
+                                <img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-7 h-7 rounded-full shadow-sm">
+                                <div class="text-xs">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
+                                    <span class="font-extrabold text-maximus-dark">José Guerrero</span>
+                                </div>
+                                <span class="ml-auto text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">50/50</span>
+                            </div>
+
                             <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 4</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 3</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 350 m²</span>
-                                <div class="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple"></i></button>
+                                <div class="ml-auto flex gap-2">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tarjeta Sin Foto -->
-                    <div class="bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30">
+                    <!-- Tarjeta 2 (General) -->
+                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30"
+                         data-maximus="false" data-operacion="alquiler" data-search="local comercial nivel feria cc sambil san cristobal alquiler general">
                         <div class="relative h-[260px] w-full bg-gray-100 flex flex-col items-center justify-center">
                             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
                                 <i class="ph-light ph-image text-3xl text-gray-300"></i>
@@ -379,30 +501,34 @@
                             </div>
                         </div>
                         <div class="p-6">
-                            <div class="flex items-center gap-2 mb-2">
+                            <div class="flex items-center justify-between gap-2 mb-2">
                                 <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest">LOCAL</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> C.C Sambil</span>
                             </div>
                             <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Local comercial Nivel Feria</h4>
                             
-                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4 mt-8">
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-door-open text-xl text-gray-400"></i> 1 Amb</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 1</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 80 m²</span>
-                                <div class="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="ml-auto flex gap-2">
                                     <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-camera-plus"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tarjeta Luxury 3 -->
-                    <div class="bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group">
+                    <!-- Tarjeta 3 (MAXIMUS) -->
+                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                         data-maximus="true" data-operacion="venta" data-search="apartamento amoblado piso medio res el bosque valeria mendez san cristobal venta maximus">
                         <div class="relative h-[260px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                             
-                            <div class="absolute top-4 left-4 flex gap-2">
+                            <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
                                 <span class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">VENTA</span>
                             </div>
                             <div class="absolute bottom-4 left-5 text-white">
@@ -410,24 +536,469 @@
                             </div>
                         </div>
                         <div class="p-6">
-                            <div class="flex items-center gap-2 mb-2">
+                            <div class="flex items-center justify-between gap-2 mb-2">
                                 <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 uppercase tracking-widest">APTO</span>
                                 <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Res. El Bosque</span>
                             </div>
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Apartamento amoblado piso medio</h4>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Apartamento amoblado piso medio</h4>
                             
+                            <!-- Asesor Captador MAXIMUS -->
+                            <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
+                                <img src="https://ui-avatars.com/api/?name=Valeria+Mendez&background=0B4A3F&color=fff&bold=true" class="w-7 h-7 rounded-full shadow-sm">
+                                <div class="text-xs">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block leading-none">Asesora Asignada</span>
+                                    <span class="font-extrabold text-maximus-dark">Valeria Méndez</span>
+                                </div>
+                                <span class="ml-auto text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">50/50</span>
+                            </div>
+
                             <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 2</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 2</span>
                                 <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 110 m²</span>
-                                <div class="ml-auto flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="ml-auto flex gap-2">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4 (MAXIMUS) -->
+                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                         data-maximus="true" data-operacion="venta" data-search="penthouse duplex terraza 360 pueblo nuevo carlos santander venta maximus">
+                        <div class="relative h-[260px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
+                                <span class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">VENTA</span>
+                            </div>
+                            <div class="absolute bottom-4 left-5 text-white">
+                                <h3 class="text-3xl font-extrabold drop-shadow-md">340.000 <span class="text-sm font-bold opacity-80">USD</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100 uppercase tracking-widest">PENTHOUSE</span>
+                                <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Pueblo Nuevo</span>
+                            </div>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Penthouse Dúplex con Terraza 360°</h4>
+                            
+                            <!-- Asesor Captador MAXIMUS -->
+                            <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
+                                <img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true" class="w-7 h-7 rounded-full shadow-sm">
+                                <div class="text-xs">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
+                                    <span class="font-extrabold text-maximus-dark">Carlos Santander</span>
+                                </div>
+                                <span class="ml-auto text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">50/50</span>
+                            </div>
+
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 4</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 4</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 290 m²</span>
+                                <div class="ml-auto flex gap-2">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 5 (General) -->
+                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30"
+                         data-maximus="false" data-operacion="venta" data-search="townhouse estrenar conjunto cerrado paramillo san cristobal venta general">
+                        <div class="relative h-[260px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">VENTA</span>
+                            </div>
+                            <div class="absolute bottom-4 left-5 text-white">
+                                <h3 class="text-3xl font-extrabold drop-shadow-md">95.000 <span class="text-sm font-bold opacity-80">USD</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 uppercase tracking-widest">TOWNHOUSE</span>
+                                <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Paramillo</span>
+                            </div>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-4 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Townhouse a estrenar en conjunto cerrado</h4>
+                            
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4 mt-8">
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-bed text-xl text-gray-400"></i> 3</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 3</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 160 m²</span>
+                                <div class="ml-auto flex gap-2">
                                     <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-pencil-simple"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 6 (MAXIMUS) -->
+                    <div class="tarjeta-inmueble bg-white rounded-[24px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30"
+                         data-maximus="true" data-operacion="alquiler" data-search="galpon corporativo oficinas industrial barrancas andrea colmenares alquiler maximus">
+                        <div class="relative h-[260px] w-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute top-4 left-4 flex flex-wrap gap-2">
+                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
+                                <span class="bg-blue-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">ALQUILER</span>
+                            </div>
+                            <div class="absolute bottom-4 left-5 text-white">
+                                <h3 class="text-3xl font-extrabold drop-shadow-md">3.200 <span class="text-sm font-bold opacity-80">USD/mes</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                <span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100 uppercase tracking-widest">INDUSTRIAL</span>
+                                <span class="text-xs font-semibold text-gray-400 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> Z.I. Barrancas</span>
+                            </div>
+                            <h4 class="font-extrabold text-lg text-maximus-dark mb-3 leading-tight group-hover:text-maximus-accent transition-colors cursor-pointer">Galpón Corporativo y Oficinas AAA</h4>
+                            
+                            <!-- Asesor Captador MAXIMUS -->
+                            <div class="mb-4 p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2.5">
+                                <img src="https://ui-avatars.com/api/?name=Andrea+Colmenares&background=0B4A3F&color=fff&bold=true" class="w-7 h-7 rounded-full shadow-sm">
+                                <div class="text-xs">
+                                    <span class="text-[10px] uppercase font-bold text-gray-400 block leading-none">Asesora Asignada</span>
+                                    <span class="font-extrabold text-maximus-dark">Andrea Colmenares</span>
+                                </div>
+                                <span class="ml-auto text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">50/50</span>
+                            </div>
+
+                            <div class="flex items-center gap-6 text-sm font-bold text-gray-500 border-t border-gray-100 pt-4">
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-warehouse text-xl text-gray-400"></i> Galpón</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-shower text-xl text-gray-400"></i> 4</span>
+                                <span class="flex items-center gap-1.5"><i class="ph-light ph-ruler text-xl text-gray-400"></i> 820 m²</span>
+                                <div class="ml-auto flex gap-2">
+                                    <button class="w-8 h-8 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors"><i class="ph-bold ph-share-network"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado Vacío Cuando el Filtro no Encuentra Resultados -->
+                <div id="inmuebles-empty-state" class="hidden text-center py-16 bg-white rounded-[24px] shadow-sm border border-gray-100">
+                    <div class="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4 text-amber-500 text-3xl">
+                        <i class="ph-fill ph-magnifying-glass"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-maximus-dark mb-1">No se encontraron inmuebles</h3>
+                    <p class="text-gray-400 text-sm max-w-sm mx-auto mb-6">Prueba ajustando el texto de búsqueda o removiendo los filtros activos.</p>
+                    <button onclick="resetearFiltrosInmuebles()" class="px-6 py-2.5 rounded-full bg-maximus-dark text-white text-xs font-bold hover:bg-[#07362e] transition-colors">
+                        Restablecer Filtros
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================================
+                 SECCIÓN EXCLUSIVA: CAPTACIONES & ASESORES ÉLITE MAXIMUS
+                 ======================================================== -->
+            <section id="view-exclusivas-maximus" class="view-section max-w-[1400px] mx-auto space-y-10">
+                <!-- HERO EXCLUSIVO (Fondo y Color Especial Distintivo) -->
+                <div class="relative bg-gradient-to-br from-[#021813] via-[#062D24] to-[#01110E] rounded-[32px] p-8 md:p-12 text-white overflow-hidden shadow-2xl border border-emerald-500/30">
+                    <!-- Efectos de luz y gradientes ambientales -->
+                    <div class="absolute -right-16 -top-16 w-96 h-96 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none"></div>
+                    <div class="absolute -left-12 -bottom-12 w-80 h-80 rounded-full bg-amber-400/10 blur-3xl pointer-events-none"></div>
+                    <div class="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
+
+                    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                        <div class="space-y-3 max-w-2xl">
+                            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-extrabold text-xs uppercase tracking-widest backdrop-blur-md">
+                                <i class="ph-fill ph-buildings text-emerald-400 text-sm"></i> Portafolio Directo • Asesores Oficiales
+                            </div>
+                            <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                                Captaciones <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200 bg-clip-text text-transparent">MAXIMUS</span>
+                            </h2>
+                            <p class="text-emerald-100/80 text-base md:text-lg font-medium leading-relaxed">
+                                Acceso preferencial a propiedades captadas directamente por el equipo fundador y asesores certificados de MAXIMUS. Todas con documentación verificada y 50% de comisión compartida garantizada.
+                            </p>
+                        </div>
+
+                        <!-- Indicadores Clave en Cristal -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3.5 w-full lg:w-auto">
+                            <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl text-center hover:bg-white/10 transition-colors">
+                                <p class="text-[10px] font-extrabold text-emerald-300 uppercase tracking-widest">Captaciones</p>
+                                <h3 class="text-3xl font-black text-white mt-1">18</h3>
+                                <span class="text-[10px] text-emerald-400 font-semibold">100% Directas</span>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl text-center hover:bg-white/10 transition-colors">
+                                <p class="text-[10px] font-extrabold text-emerald-300 uppercase tracking-widest">Asesores MAXIMUS</p>
+                                <h3 class="text-3xl font-black text-white mt-1">4</h3>
+                                <span class="text-[10px] text-emerald-300 font-semibold">Certificados</span>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 backdrop-blur-md p-4 rounded-2xl text-center col-span-2 sm:col-span-1 hover:bg-white/10 transition-colors">
+                                <p class="text-[10px] font-extrabold text-gray-300 uppercase tracking-widest">Comisión</p>
+                                <h3 class="text-3xl font-black text-emerald-300 mt-1">50/50</h3>
+                                <span class="text-[10px] text-emerald-300 font-semibold">Garantizada</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE 1: ASESORES OFICIALES Y CAPTADORES CERTIFICADOS -->
+                <div class="space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-emerald-700 mb-1">
+                                <i class="ph-fill ph-certificate"></i> Equipo Oficial Certificado
+                            </div>
+                            <h3 class="text-2xl font-extrabold text-maximus-dark">Asesores Oficiales MAXIMUS</h3>
+                            <p class="text-gray-500 text-sm font-medium">Contacta directamente a los asesores captadores para coordinar visitas y canjes de comisión.</p>
+                        </div>
+                        <span class="text-xs font-bold text-gray-400 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm">
+                            4 Asesores Activos en Táchira
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Asesor 1 -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="relative">
+                                    <img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-14 h-14 rounded-2xl object-cover shadow-md">
+                                    <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[11px] shadow-sm ring-2 ring-white">
+                                        <i class="ph-bold ph-check"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-base text-maximus-dark group-hover:text-maximus-accent transition-colors">José Guerrero</h4>
+                                    <p class="text-[11px] font-bold text-gray-400">Director / Captador Principal</p>
+                                    <div class="flex items-center gap-1 mt-1 text-amber-500 text-xs">
+                                        <i class="ph-fill ph-star"></i>
+                                        <span class="font-extrabold text-[11px] text-gray-700">5.0 (28 Cierres)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2 py-3 border-y border-gray-100 text-xs text-gray-600 font-medium">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
+                                    <span class="font-extrabold text-maximus-dark">6 Inmuebles</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Especialidad:</span>
+                                    <span class="font-bold text-emerald-700">Luxury & Residencial</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <a href="https://wa.me/584241234567?text=Hola%20Jos%C3%A9,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
+                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-base"></i> WhatsApp
+                                </a>
+                                <button onclick="filtrarPorAsesor('José Guerrero')" class="px-3 py-2.5 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-xs font-bold transition-all" title="Ver captaciones">
+                                    <i class="ph-bold ph-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Asesor 2 -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="relative">
+                                    <img src="https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true" class="w-14 h-14 rounded-2xl object-cover shadow-md">
+                                    <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[11px] shadow-sm ring-2 ring-white">
+                                        <i class="ph-bold ph-check"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-base text-maximus-dark group-hover:text-maximus-accent transition-colors">Valeria Méndez</h4>
+                                    <p class="text-[11px] font-bold text-gray-400">Top Producer Residencial</p>
+                                    <div class="flex items-center gap-1 mt-1 text-amber-500 text-xs">
+                                        <i class="ph-fill ph-star"></i>
+                                        <span class="font-extrabold text-[11px] text-gray-700">4.9 (19 Cierres)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2 py-3 border-y border-gray-100 text-xs text-gray-600 font-medium">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
+                                    <span class="font-extrabold text-maximus-dark">5 Inmuebles</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Especialidad:</span>
+                                    <span class="font-bold text-emerald-700">Apartamentos & Pisos</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <a href="https://wa.me/584147654321?text=Hola%20Valeria,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
+                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-base"></i> WhatsApp
+                                </a>
+                                <button onclick="filtrarPorAsesor('Valeria Méndez')" class="px-3 py-2.5 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-xs font-bold transition-all" title="Ver captaciones">
+                                    <i class="ph-bold ph-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Asesor 3 -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="relative">
+                                    <img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=072D25&color=fff&bold=true" class="w-14 h-14 rounded-2xl object-cover shadow-md">
+                                    <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[11px] shadow-sm ring-2 ring-white">
+                                        <i class="ph-bold ph-check"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-base text-maximus-dark group-hover:text-maximus-accent transition-colors">Carlos Santander</h4>
+                                    <p class="text-[11px] font-bold text-gray-400">Especialista Inversiones</p>
+                                    <div class="flex items-center gap-1 mt-1 text-amber-500 text-xs">
+                                        <i class="ph-fill ph-star"></i>
+                                        <span class="font-extrabold text-[11px] text-gray-700">4.9 (15 Cierres)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2 py-3 border-y border-gray-100 text-xs text-gray-600 font-medium">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
+                                    <span class="font-extrabold text-maximus-dark">4 Inmuebles</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Especialidad:</span>
+                                    <span class="font-bold text-emerald-700">Penthouses & Terrenos</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <a href="https://wa.me/584129876543?text=Hola%20Carlos,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
+                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-base"></i> WhatsApp
+                                </a>
+                                <button onclick="filtrarPorAsesor('Carlos Santander')" class="px-3 py-2.5 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-xs font-bold transition-all" title="Ver captaciones">
+                                    <i class="ph-bold ph-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Asesor 4 -->
+                        <div class="bg-white rounded-[24px] p-6 shadow-premium border border-maximus-silver/20 hover:border-emerald-300 transition-all duration-300 group hover:-translate-y-1">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="relative">
+                                    <img src="https://ui-avatars.com/api/?name=Andrea+Colmenares&background=06241E&color=fff&bold=true" class="w-14 h-14 rounded-2xl object-cover shadow-md">
+                                    <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[11px] shadow-sm ring-2 ring-white">
+                                        <i class="ph-bold ph-check"></i>
+                                    </span>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-base text-maximus-dark group-hover:text-maximus-accent transition-colors">Andrea Colmenares</h4>
+                                    <p class="text-[11px] font-bold text-gray-400">Comercial & Industrial</p>
+                                    <div class="flex items-center gap-1 mt-1 text-amber-500 text-xs">
+                                        <i class="ph-fill ph-star"></i>
+                                        <span class="font-extrabold text-[11px] text-gray-700">4.8 (14 Cierres)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2 py-3 border-y border-gray-100 text-xs text-gray-600 font-medium">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Captaciones Activas:</span>
+                                    <span class="font-extrabold text-maximus-dark">3 Inmuebles</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400 font-normal">Especialidad:</span>
+                                    <span class="font-bold text-emerald-700">Galpones & Locales</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <a href="https://wa.me/584163334455?text=Hola%20Andrea,%20te%20escribo%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20captaciones." target="_blank" class="flex-1 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
+                                    <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-base"></i> WhatsApp
+                                </a>
+                                <button onclick="filtrarPorAsesor('Andrea Colmenares')" class="px-3 py-2.5 rounded-xl bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-600 text-xs font-bold transition-all" title="Ver captaciones">
+                                    <i class="ph-bold ph-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE 2: PORTAFOLIO DE CAPTACIONES EXCLUSIVAS (DISEÑO VIP OSCURO / ESMERALDA) -->
+                <div class="bg-gradient-to-br from-[#06241E] to-[#0A3D33] rounded-[32px] p-8 md:p-10 text-white shadow-xl border border-emerald-500/20 space-y-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-xs uppercase tracking-wider mb-2">
+                                <i class="ph-fill ph-buildings"></i> Portafolio Directo MAXIMUS
+                            </div>
+                            <h3 class="text-3xl font-extrabold tracking-tight">Inmuebles Captados por la Red</h3>
+                            <p class="text-emerald-100/70 text-sm font-medium mt-1">Disponibles de inmediato para presentar a tus clientes con comisión protegida.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-extrabold text-emerald-300 bg-emerald-500/15 px-4 py-2 rounded-full border border-emerald-400/30">
+                                100% Documentación al Día
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Grilla de Tarjetas -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Card 1 -->
+                        <div class="bg-white/5 border border-white/10 rounded-[24px] overflow-hidden backdrop-blur-sm hover:border-emerald-400/50 transition-all duration-300 group">
+                            <div class="relative h-[220px] overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <span class="absolute top-4 left-4 bg-[#0B4A3F] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 border border-emerald-400/40">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
+                                <div class="absolute bottom-3 left-4 text-white">
+                                    <h4 class="text-2xl font-black drop-shadow-md">$270,000 USD</h4>
+                                </div>
+                            </div>
+                            <div class="p-6 space-y-3">
+                                <span class="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-md uppercase tracking-wider">CASA • URB. GUAPARO</span>
+                                <h5 class="text-base font-extrabold text-white leading-tight">Quinta moderna con piscina y jardín</h5>
+                                <div class="flex items-center justify-between text-xs text-gray-300 pt-3 border-t border-white/10">
+                                    <span class="flex items-center gap-1.5 font-bold"><img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-5 h-5 rounded-full"> José Guerrero</span>
+                                    <span class="text-emerald-300 font-extrabold">50/50 Comisión</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="bg-white/5 border border-white/10 rounded-[24px] overflow-hidden backdrop-blur-sm hover:border-emerald-400/50 transition-all duration-300 group">
+                            <div class="relative h-[220px] overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <span class="absolute top-4 left-4 bg-[#0B4A3F] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 border border-emerald-400/40">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
+                                <div class="absolute bottom-3 left-4 text-white">
+                                    <h4 class="text-2xl font-black drop-shadow-md">$120,000 USD</h4>
+                                </div>
+                            </div>
+                            <div class="p-6 space-y-3">
+                                <span class="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-md uppercase tracking-wider">APTO • RES. EL BOSQUE</span>
+                                <h5 class="text-base font-extrabold text-white leading-tight">Apartamento amoblado piso medio</h5>
+                                <div class="flex items-center justify-between text-xs text-gray-300 pt-3 border-t border-white/10">
+                                    <span class="flex items-center gap-1.5 font-bold"><img src="https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true" class="w-5 h-5 rounded-full"> Valeria Méndez</span>
+                                    <span class="text-emerald-300 font-extrabold">50/50 Comisión</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="bg-white/5 border border-white/10 rounded-[24px] overflow-hidden backdrop-blur-sm hover:border-emerald-400/50 transition-all duration-300 group">
+                            <div class="relative h-[220px] overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <span class="absolute top-4 left-4 bg-[#0B4A3F] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 border border-emerald-400/40">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> CAPTACIÓN MAXIMUS
+                                </span>
+                                <div class="absolute bottom-3 left-4 text-white">
+                                    <h4 class="text-2xl font-black drop-shadow-md">$340,000 USD</h4>
+                                </div>
+                            </div>
+                            <div class="p-6 space-y-3">
+                                <span class="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-md uppercase tracking-wider">PENTHOUSE • PUEBLO NUEVO</span>
+                                <h5 class="text-base font-extrabold text-white leading-tight">Penthouse Dúplex con Terraza 360°</h5>
+                                <div class="flex items-center justify-between text-xs text-gray-300 pt-3 border-t border-white/10">
+                                    <span class="flex items-center gap-1.5 font-bold"><img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=072D25&color=fff&bold=true" class="w-5 h-5 rounded-full"> Carlos Santander</span>
+                                    <span class="text-emerald-300 font-extrabold">50/50 Comisión</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             <!-- C. VISTA: VENDIDOS GLOBAL -->
             <section id="view-vendidos" class="view-section max-w-[1400px] mx-auto space-y-8">
@@ -1072,8 +1643,192 @@
                 </div>
             </section>
 
+            <!-- H. VISTA: ADMIN SUBIR TUTORIALES -->
+            <section id="view-admin-tutoriales" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
+                        <i class="ph-bold ph-shield-check"></i> Exclusivo Administradores
+                    </div>
+                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Gestión de Academia MAXIMUS</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Sube y organiza los video tutoriales que verán los agentes en su plataforma.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Formulario de Subida -->
+                    <div class="lg:col-span-2 bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
+                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
+                            <i class="ph-fill ph-upload-simple text-maximus-accent"></i> Nuevo Video Tutorial
+                        </h3>
+                        
+                        <form id="form-subir-tutorial" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Título del Video</label>
+                                    <input type="text" id="tutorial-titulo" placeholder="Ej: Cargar tu primer inmueble" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Categoría</label>
+                                    <select id="tutorial-categoria" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent appearance-none">
+                                        <option value="Primeros pasos">Primeros pasos</option>
+                                        <option value="Inmuebles">Inmuebles</option>
+                                        <option value="Métricas">Métricas</option>
+                                        <option value="Ventas">Ventas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL de YouTube</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <i class="ph-fill ph-youtube-logo text-red-500 text-lg"></i>
+                                    </div>
+                                    <input type="url" id="tutorial-url" placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <p class="text-[11px] text-gray-400 mt-1.5 ml-1">Pega el enlace completo del video de YouTube.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Breve Descripción (Opcional)</label>
+                                <textarea id="tutorial-desc" rows="3" placeholder="Aprende los conceptos básicos para..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400 resize-none"></textarea>
+                            </div>
+                            
+                            <div class="pt-2">
+                                <button type="button" class="w-full md:w-auto px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                    <i class="ph-bold ph-cloud-arrow-up text-lg"></i> Publicar Tutorial
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Panel Lateral Informativo / Vista Previa -->
+                    <div class="bg-gradient-to-br from-maximus-dark to-[#0a4a3f] rounded-[24px] shadow-premium p-8 text-white relative overflow-hidden">
+                        <!-- Elementos decorativos -->
+                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-5 blur-2xl"></div>
+                        <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-maximus-accent opacity-20 blur-xl"></div>
+                        
+                        <div class="relative z-10">
+                            <h3 class="font-extrabold text-xl mb-4 flex items-center gap-2">
+                                <i class="ph-fill ph-info text-maximus-accent"></i> Arquitectura Lista
+                            </h3>
+                            <p class="text-sm text-gray-200 font-medium mb-6 leading-relaxed">
+                                El sistema extraerá automáticamente la <strong>miniatura HD</strong> y la <strong>duración</strong> del video directamente desde YouTube. Solo necesitas proveer el enlace.
+                            </p>
+                            
+                            <div class="bg-black/20 rounded-xl p-5 border border-white/10 backdrop-blur-sm">
+                                <h4 class="text-xs font-bold text-maximus-accent uppercase tracking-wider mb-3">Recomendaciones</h4>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start gap-2 text-sm text-gray-200">
+                                        <i class="ph-fill ph-check-circle text-emerald-400 mt-0.5"></i>
+                                        <span>Sube los videos en calidad 1080p o superior a YouTube.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2 text-sm text-gray-200">
+                                        <i class="ph-fill ph-check-circle text-emerald-400 mt-0.5"></i>
+                                        <span>Asegúrate de que la visibilidad del video sea "Oculto" o "Público".</span>
+                                    </li>
+                                    <li class="flex items-start gap-2 text-sm text-gray-200">
+                                        <i class="ph-fill ph-check-circle text-emerald-400 mt-0.5"></i>
+                                        <span>Mantén los títulos cortos y descriptivos.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- J. VISTA: ADMIN CARGAR INMUEBLES -->
+            <section id="view-admin-cargar-inmueble" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
+                <div class="pt-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent font-bold text-xs uppercase tracking-wider mb-2">
+                        <i class="ph-bold ph-shield-check"></i> Exclusivo Administradores
+                    </div>
+                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Cargar Nuevo Inmueble</h2>
+                    <p class="text-gray-500 mt-1 text-base font-medium">Sube una nueva propiedad al catálogo con todos sus detalles e imágenes.</p>
+                </div>
+
+                <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20 max-w-4xl mx-auto">
+                    <form class="space-y-8">
+                        <!-- Info Básica -->
+                        <div>
+                            <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Información Básica</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Título del Inmueble</label>
+                                    <input type="text" placeholder="Ej: Quinta de lujo con piscina..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo de Inmueble</label>
+                                    <select class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                        <option value="casa">Casa</option>
+                                        <option value="apartamento">Apartamento</option>
+                                        <option value="townhouse">Townhouse</option>
+                                        <option value="local">Local Comercial</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Operación</label>
+                                    <select class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                        <option value="venta">Venta</option>
+                                        <option value="alquiler">Alquiler</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio (USD)</label>
+                                    <input type="number" placeholder="Ej: 150000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles -->
+                        <div>
+                            <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Características Principales</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Habitaciones</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Baños</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Puestos de Est.</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Área (m²)</label>
+                                    <input type="number" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asignación MAXIMUS -->
+                        <div>
+                            <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
+                                <i class="ph-fill ph-buildings text-maximus-accent"></i> Captación MAXIMUS
+                            </h3>
+                            <label class="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100 cursor-pointer hover:bg-emerald-100/50 transition-colors">
+                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-maximus-accent focus:ring-maximus-accent">
+                                <div>
+                                    <p class="text-sm font-extrabold text-maximus-dark">Marcar como Captación Directa MAXIMUS</p>
+                                    <p class="text-[11px] text-gray-500 font-medium">Esto hará que el inmueble aparezca en la sección exclusiva con la insignia correspondiente.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="pt-4 flex justify-end">
+                            <button type="button" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                                <i class="ph-bold ph-check"></i> Guardar Inmueble
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
         </main>
     </div>
+
+
 
     <!-- ==========================================
          4. LÓGICA JAVASCRIPT
@@ -1287,6 +2042,24 @@
                 closeLocationDropdown();
             } else {
                 openLocationDropdown();
+            }
+        }
+
+        let isFiltrosDropdownOpen = false;
+        function toggleFiltrosDropdown() {
+            const panel = document.getElementById('dropdown-filtros-panel');
+            if (!panel) return;
+
+            if (isFiltrosDropdownOpen) {
+                // Cerrar
+                isFiltrosDropdownOpen = false;
+                panel.classList.remove('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+                panel.classList.add('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+            } else {
+                // Abrir
+                isFiltrosDropdownOpen = true;
+                panel.classList.remove('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+                panel.classList.add('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
             }
         }
 
@@ -1752,7 +2525,7 @@
             document.getElementById('modal-zona-precio').value = zona.precio_m2_base;
             document.getElementById('modal-zona-min').value = zona.precio_min_m2 || Math.round(zona.precio_m2_base * 0.9);
             document.getElementById('modal-zona-max').value = zona.precio_max_m2 || Math.round(zona.precio_m2_base * 1.15);
-            document.getElementById('modalEditarZona').classList.remove('hidden');
+            animarAperturaModal('modalEditarZona');
         }
 
         function abrirModalNuevaZona() {
@@ -1763,11 +2536,65 @@
             document.getElementById('modal-zona-precio').value = 500;
             document.getElementById('modal-zona-min').value = 450;
             document.getElementById('modal-zona-max').value = 600;
-            document.getElementById('modalEditarZona').classList.remove('hidden');
+            animarAperturaModal('modalEditarZona');
         }
 
         function cerrarModalZona() {
-            document.getElementById('modalEditarZona').classList.add('hidden');
+            animarCierreModal('modalEditarZona');
+        }
+
+        // ==========================================
+        // 10. ANIMACIONES DE MODALES (GSAP Premium)
+        // ==========================================
+        function animarAperturaModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            
+            // Buscar el contenedor interno con .modal-content, si no, usar firstElementChild (fallback)
+            let content = modal.querySelector('.modal-content');
+            if (!content) content = modal.children.length > 1 ? modal.lastElementChild : modal.firstElementChild;
+            
+            modal.classList.remove('hidden');
+            
+            if (window.gsap) {
+                // Fade in background suave
+                gsap.fromTo(modal, 
+                    { opacity: 0 }, 
+                    { opacity: 1, duration: 0.3, ease: 'power2.out' }
+                );
+                
+                // Efecto "Pop / Sheet" (sube y hace un leve rebote premium)
+                gsap.fromTo(content,
+                    { scale: 0.93, y: 40, opacity: 0 },
+                    { scale: 1, y: 0, opacity: 1, duration: 0.45, ease: 'back.out(1.15)', clearProps: 'all' }
+                );
+            }
+        }
+
+        function animarCierreModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            
+            let content = modal.querySelector('.modal-content');
+            if (!content) content = modal.children.length > 1 ? modal.lastElementChild : modal.firstElementChild;
+            
+            if (window.gsap) {
+                // Saca el contenido suavemente hacia abajo
+                gsap.to(content, {
+                    scale: 0.95, y: 20, opacity: 0, duration: 0.25, ease: 'power2.in'
+                });
+                
+                // Desvanece el fondo oscuro
+                gsap.to(modal, {
+                    opacity: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
+                        modal.classList.add('hidden');
+                        gsap.set(modal, { clearProps: 'all' });
+                        gsap.set(content, { clearProps: 'all' });
+                    }
+                });
+            } else {
+                modal.classList.add('hidden');
+            }
         }
 
         async function guardarModalZona() {
@@ -1796,6 +2623,140 @@
             cerrarModalZona();
             await inicializarCotizador();
             alert('✅ ¡Precio por metro cuadrado actualizado correctamente! Ya está sincronizado con el cotizador.');
+        }
+
+        // ==========================================
+        // 11. FILTRO INTELIGENTE DE INMUEBLES & RED MAXIMUS
+        // ==========================================
+        let filtroCategoriaActivo = 'todos'; // 'todos' | 'maximus' | 'venta' | 'alquiler'
+        let filtroSoloMaximusToggle = false;
+
+        function filtrarCatalogoInmuebles() {
+            const searchInput = document.getElementById('buscador-inmuebles');
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const tarjetas = document.querySelectorAll('.tarjeta-inmueble');
+            const emptyState = document.getElementById('inmuebles-empty-state');
+            const contador = document.getElementById('contador-resultados');
+            
+            let visibles = 0;
+
+            tarjetas.forEach(card => {
+                const isMaximus = card.getAttribute('data-maximus') === 'true';
+                const operacion = card.getAttribute('data-operacion');
+                const searchData = (card.getAttribute('data-search') || '').toLowerCase();
+                const cardText = card.textContent.toLowerCase();
+
+                let coincideCategoria = true;
+                if (filtroCategoriaActivo === 'maximus' || filtroSoloMaximusToggle) {
+                    coincideCategoria = isMaximus;
+                } else if (filtroCategoriaActivo === 'venta') {
+                    coincideCategoria = operacion === 'venta';
+                } else if (filtroCategoriaActivo === 'alquiler') {
+                    coincideCategoria = operacion === 'alquiler';
+                }
+
+                let coincideBusqueda = true;
+                if (query.length > 0) {
+                    coincideBusqueda = searchData.includes(query) || cardText.includes(query);
+                }
+
+                if (coincideCategoria && coincideBusqueda) {
+                    card.style.display = '';
+                    visibles++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (emptyState) {
+                emptyState.classList.toggle('hidden', visibles > 0);
+            }
+            if (contador) {
+                contador.textContent = `${visibles} ${visibles === 1 ? 'inmueble disponible' : 'inmuebles disponibles'}`;
+            }
+
+            // Animar tarjetas visibles con GSAP
+            if (window.gsap && visibles > 0) {
+                const tarjetasVisibles = Array.from(tarjetas).filter(t => t.style.display !== 'none');
+                gsap.fromTo(tarjetasVisibles,
+                    { opacity: 0, y: 12 },
+                    { opacity: 1, y: 0, duration: 0.26, stagger: 0.03, ease: 'power2.out', clearProps: 'transform,opacity' }
+                );
+            }
+        }
+
+        function toggleFiltroSoloMaximus() {
+            filtroSoloMaximusToggle = !filtroSoloMaximusToggle;
+            const btn = document.getElementById('btn-filtro-maximus-toggle');
+            
+            if (btn) {
+                if (filtroSoloMaximusToggle) {
+                    btn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all border border-emerald-500 bg-maximus-dark text-white shadow-md scale-105 cursor-pointer';
+                    filtroCategoriaActivo = 'maximus';
+                    actualizarEstilosPills('maximus');
+                } else {
+                    btn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-maximus-dark shadow-sm cursor-pointer';
+                    filtroCategoriaActivo = 'todos';
+                    actualizarEstilosPills('todos');
+                }
+            }
+            filtrarCatalogoInmuebles();
+        }
+
+        function setFiltroCategoria(categoria, btnElement) {
+            filtroCategoriaActivo = categoria;
+            filtroSoloMaximusToggle = (categoria === 'maximus');
+            
+            // Actualizar estilo del botón toggle
+            const toggleBtn = document.getElementById('btn-filtro-maximus-toggle');
+            if (toggleBtn) {
+                if (filtroSoloMaximusToggle) {
+                    toggleBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all border border-emerald-500 bg-maximus-dark text-white shadow-md scale-105 cursor-pointer';
+                } else {
+                    toggleBtn.className = 'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wider transition-all border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-maximus-dark shadow-sm cursor-pointer';
+                }
+            }
+
+            actualizarEstilosPills(categoria);
+            filtrarCatalogoInmuebles();
+        }
+
+        function actualizarEstilosPills(categoria) {
+            document.querySelectorAll('.filtro-pill').forEach(pill => {
+                const onclickAttr = pill.getAttribute('onclick') || '';
+                const isSelected = onclickAttr.includes(`'${categoria}'`);
+
+                if (isSelected) {
+                    if (categoria === 'maximus') {
+                        pill.className = 'filtro-pill shrink-0 bg-maximus-dark border border-emerald-400 text-emerald-300 px-5 py-2 rounded-full text-xs font-extrabold shadow-sm transition-all flex items-center gap-1.5';
+                    } else {
+                        pill.className = 'filtro-pill shrink-0 bg-maximus-dark text-white px-5 py-2 rounded-full text-xs font-extrabold shadow-sm transition-all';
+                    }
+                } else {
+                    if (onclickAttr.includes(`'maximus'`)) {
+                        pill.className = 'filtro-pill shrink-0 bg-white border border-emerald-300 text-maximus-dark hover:bg-emerald-50 px-5 py-2 rounded-full text-xs font-extrabold transition-all flex items-center gap-1.5';
+                    } else {
+                        pill.className = 'filtro-pill shrink-0 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 px-5 py-2 rounded-full text-xs font-bold transition-all';
+                    }
+                }
+            });
+        }
+
+        function filtrarPorAsesor(nombreAsesor) {
+            activateTab('view-inmuebles', true);
+            setTimeout(() => {
+                const searchInput = document.getElementById('buscador-inmuebles');
+                if (searchInput) {
+                    searchInput.value = nombreAsesor;
+                }
+                setFiltroCategoria('maximus');
+            }, 50);
+        }
+
+        function resetearFiltrosInmuebles() {
+            const searchInput = document.getElementById('buscador-inmuebles');
+            if (searchInput) searchInput.value = '';
+            setFiltroCategoria('todos');
         }
     </script>
 </body>
