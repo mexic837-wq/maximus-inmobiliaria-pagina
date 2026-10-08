@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-[#F4F7F6]">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAXIMUS | Panel de Asesores Inmobiliarios</title>
+    <script>
+        // Prevenir parpadeo de modo oscuro al cargar
+        if (localStorage.getItem('maximus_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -45,9 +51,246 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0B4A3F; }
+
+        /* ==========================================
+           MAXIMUS LUXURY DARK MODE THEME SYSTEM
+           Paleta Oficial: Forest Obsidian & Jade (#071714 / #0A1F1B / #0C221D / #10B981)
+           ========================================== */
+        html {
+            background-color: #F4F7F6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html.dark {
+            color-scheme: dark;
+            background-color: #071714 !important;
+        }
+
+        html.dark body {
+            background-color: #071714 !important;
+            color: #E2ECE9 !important;
+        }
+
+        /* 1. Sidebar y Header */
+        html.dark aside {
+            background-color: #0A1F1B !important;
+            border-color: #14352D !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        html.dark aside > div:first-child > div:first-child {
+            background-color: #0A1F1B !important;
+            border-color: #14352D !important;
+        }
+
+        html.dark aside .border-t,
+        html.dark aside .border-b {
+            border-color: #14352D !important;
+        }
+
+        html.dark aside .bg-gray-50\/50 {
+            background-color: #081A16 !important;
+        }
+
+        html.dark header {
+            background-color: rgba(10, 31, 27, 0.88) !important;
+            border-color: #14352D !important;
+            backdrop-filter: blur(16px);
+        }
+
+        /* 2. Tarjetas y Paneles (Previamente bg-white) */
+        html.dark .bg-white {
+            background-color: #0C221D !important;
+            color: #E2ECE9 !important;
+        }
+
+        /* 3. Contenedores y Cajas Interiores (Previamente bg-gray-50) */
+        html.dark .bg-gray-50,
+        html.dark .bg-gray-100,
+        html.dark .bg-slate-50,
+        html.dark .bg-zinc-50,
+        html.dark .bg-gray-50\/50,
+        html.dark .bg-gray-50\/70,
+        html.dark .bg-gray-50\/80 {
+            background-color: #081A16 !important;
+        }
+
+        html.dark .hover\:bg-gray-50:hover,
+        html.dark .hover\:bg-gray-100:hover {
+            background-color: #123029 !important;
+        }
+
+        /* 4. Tipografía y Jerarquía Visual */
+        html.dark .text-maximus-dark,
+        html.dark .text-maximus-black,
+        html.dark .text-gray-900,
+        html.dark .text-gray-800 {
+            color: #EEF8F5 !important;
+        }
+
+        html.dark .text-gray-700,
+        html.dark .text-gray-600 {
+            color: #C2D6D0 !important;
+        }
+
+        html.dark .text-gray-500,
+        html.dark .text-gray-400 {
+            color: #8BAAA1 !important;
+        }
+
+        html.dark .text-emerald-700,
+        html.dark .text-emerald-800,
+        html.dark .text-emerald-600 {
+            color: #34D399 !important;
+        }
+
+        /* 5. Bordes Limpios */
+        html.dark .border-gray-50,
+        html.dark .border-gray-100,
+        html.dark .border-gray-200,
+        html.dark .border-gray-300,
+        html.dark .border-maximus-silver,
+        html.dark .border-maximus-silver\/20,
+        html.dark .border-maximus-silver\/30,
+        html.dark .border-maximus-silver\/50 {
+            border-color: #163830 !important;
+        }
+
+        /* 6. Inputs, Selects y Formularios */
+        html.dark input,
+        html.dark select,
+        html.dark textarea {
+            background-color: #081A16 !important;
+            border-color: #163830 !important;
+            color: #EEF8F5 !important;
+        }
+
+        html.dark input::placeholder,
+        html.dark textarea::placeholder {
+            color: #5C7A71 !important;
+        }
+
+        html.dark input:focus,
+        html.dark select:focus,
+        html.dark textarea:focus {
+            border-color: #10B981 !important;
+            background-color: #0B201B !important;
+        }
+
+        /* 7. Menús Flotantes y Dropdowns */
+        html.dark #dropdown-profile,
+        html.dark #locationDropdown,
+        html.dark #dropdown-filtros-panel {
+            background-color: #0A1F1B !important;
+            border-color: #184239 !important;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+        }
+
+        html.dark #dropdown-profile .bg-gray-50\/50,
+        html.dark #dropdown-profile .bg-gray-50 {
+            background-color: #071714 !important;
+            border-color: #163830 !important;
+        }
+
+        /* 8. Botones de Navegación del Sidebar */
+        html.dark .nav-link {
+            color: #8BAAA1 !important;
+        }
+
+        html.dark .nav-link:hover {
+            background-color: #123029 !important;
+            color: #EEF8F5 !important;
+        }
+
+        html.dark .nav-link.active {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            color: #34D399 !important;
+        }
+
+        /* 9. Botones de Acción y Filtros */
+        html.dark .bg-emerald-50,
+        html.dark .bg-emerald-100 {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            color: #34D399 !important;
+        }
+
+        html.dark .bg-maximus-dark {
+            background-color: #0E3E34 !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        }
+
+        html.dark .bg-maximus-dark:hover {
+            background-color: #134F42 !important;
+            border-color: #10B981 !important;
+        }
+
+        html.dark .filtro-pill.bg-white {
+            background-color: #0C221D !important;
+            border-color: #163830 !important;
+            color: #8BAAA1 !important;
+        }
+
+        html.dark .filtro-pill.bg-white:hover {
+            background-color: #123029 !important;
+            color: #EEF8F5 !important;
+        }
+
+        html.dark .filtro-pill.bg-maximus-dark {
+            background-color: #10B981 !important;
+            color: #071714 !important;
+            border-color: #10B981 !important;
+        }
+
+        /* 10. Botones de Temporalidad (Resumen) */
+        html.dark #timePeriodButtons {
+            background-color: #081A16 !important;
+            border: 1px solid #163830 !important;
+        }
+
+        html.dark .time-btn.bg-emerald-50 {
+            background-color: #10B981 !important;
+            color: #071714 !important;
+        }
+
+        /* 11. Tablas y Filas */
+        html.dark thead {
+            background-color: #081A16 !important;
+            border-color: #163830 !important;
+        }
+
+        html.dark thead th {
+            color: #8BAAA1 !important;
+            border-color: #163830 !important;
+        }
+
+        html.dark tbody tr {
+            border-color: #163830 !important;
+        }
+
+        html.dark tbody tr:hover {
+            background-color: #123029 !important;
+        }
+
+        /* 12. Sombras y Scrollbar */
+        html.dark .shadow-premium,
+        html.dark .shadow-sm,
+        html.dark .shadow-md,
+        html.dark .shadow-lg,
+        html.dark .shadow-xl {
+            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #184239;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb:hover {
+            background: #10B981;
+        }
     </style>
 </head>
-<body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-gray-900 transition-colors duration-300">
+<body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
 
     <!-- ==========================================
          1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
@@ -2229,7 +2472,14 @@
                 if (user.title) {
                     document.getElementById('userTitle').textContent = user.title;
                 }
+                const dropName = document.getElementById('dropdown-userName');
+                const dropEmail = document.getElementById('dropdown-userEmail');
+                if (dropName) dropName.textContent = user.name;
+                if (dropEmail && user.email) dropEmail.textContent = user.email;
             }
+
+            // Sincronizar estado visual del toggle de Modo Oscuro
+            actualizarUIModoOscuro(document.documentElement.classList.contains('dark'));
 
             // Aplicar visibilidad basada en roles
             const adminElements = document.querySelectorAll('.admin-only');
@@ -2579,25 +2829,26 @@
             }
         });
 
-        // Configuración de Modo Oscuro (Básico)
-        let isDarkMode = false;
+        // Configuración de Modo Oscuro con Persistencia en LocalStorage
         function toggleTheme() {
-            isDarkMode = !isDarkMode;
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('maximus_theme', isDark ? 'dark' : 'light');
+            actualizarUIModoOscuro(isDark);
+        }
+
+        function actualizarUIModoOscuro(isDark) {
             const icon = document.getElementById('theme-icon');
             const dot = document.getElementById('theme-toggle-dot');
             const bg = document.getElementById('theme-toggle-bg');
+            if (!icon || !dot || !bg) return;
             
-            if (isDarkMode) {
-                document.documentElement.classList.add('dark');
-                icon.classList.remove('ph-moon');
-                icon.classList.add('ph-sun', 'text-amber-400');
-                bg.classList.add('bg-maximus-accent');
+            if (isDark) {
+                icon.className = 'ph-fill ph-sun text-lg text-amber-400';
+                bg.className = 'w-9 h-5 bg-maximus-accent rounded-full relative transition-colors';
                 dot.style.transform = 'translateX(16px)';
             } else {
-                document.documentElement.classList.remove('dark');
-                icon.classList.remove('ph-sun', 'text-amber-400');
-                icon.classList.add('ph-moon');
-                bg.classList.remove('bg-maximus-accent');
+                icon.className = 'ph-fill ph-moon text-lg text-gray-600 group-hover:text-maximus-dark transition-colors';
+                bg.className = 'w-9 h-5 bg-gray-200 rounded-full relative transition-colors';
                 dot.style.transform = 'translateX(0px)';
             }
         }
