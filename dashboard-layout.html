@@ -1414,6 +1414,17 @@
                             </div>
                         </div>
 
+                        <div class="pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Correo Electrónico (Login)</label>
+                                <input type="email" id="asesor-correo" placeholder="Ej: asesor@maximus.com" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Contraseña Temporal</label>
+                                <input type="password" id="asesor-password" placeholder="Mínimo 6 caracteres" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                            </div>
+                        </div>
+
                         <div class="pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rating</label>
@@ -3882,8 +3893,11 @@
             const rating = document.getElementById('asesor-rating').value;
             const cierres = document.getElementById('asesor-cierres').value;
             let avatar = document.getElementById('asesor-avatar').value;
+            
+            const correo = document.getElementById('asesor-correo').value;
+            const password = document.getElementById('asesor-password').value;
 
-            if (!nombre || !cargo || !especialidad || !telefono) {
+            if (!nombre || !cargo || !especialidad || !telefono || !correo || !password) {
                 mostrarToast('Por favor, complete todos los campos obligatorios.', 'error');
                 return;
             }
@@ -3913,8 +3927,13 @@
             renderAsesoresMaximus();
             // Actualizar select de cargar inmueble
             popularSelectAsesores();
+            // AQUÍ VA LA LÓGICA DE SUPABASE
+            // 1. Crear usuario en Auth de Supabase:
+            // const { data: authData, error: authError } = await supabase.auth.signUp({ email: correo, password: password })
+            // 2. Guardar datos del perfil en la tabla 'asesores':
+            // await supabase.from('asesores').insert([{ ...nuevoAsesor, user_id: authData.user.id }])
 
-            mostrarToast('Asesor MAXIMUS guardado correctamente');
+            mostrarToast(`Asesor creado y cuenta generada para ${correo}`);
             document.getElementById('form-crear-asesor').reset();
         }
 
