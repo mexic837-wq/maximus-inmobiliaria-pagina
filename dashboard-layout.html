@@ -9,6 +9,9 @@
         if (localStorage.getItem('maximus_theme') === 'dark') {
             document.documentElement.classList.add('dark');
         }
+        if (localStorage.getItem('maximus_sidebar_collapsed') === 'true') {
+            document.documentElement.classList.add('sidebar-is-collapsed');
+        }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -237,6 +240,167 @@
             color: #10B981 !important;
         }
 
+        /* ========================================================
+           8.1 SIDEBAR COLAPSIBLE Y ANIMACIÓN FLUIDA (SMOOTH ANIMATION)
+           ======================================================== */
+        #sidebar {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Estado colapsado: reduce a solo iconos (84px) */
+        html.sidebar-is-collapsed #sidebar,
+        #sidebar.collapsed {
+            width: 84px !important;
+        }
+
+        #sidebar .sidebar-label {
+            display: inline-block;
+            max-width: 175px;
+            opacity: 1;
+            transform: translateX(0);
+            white-space: nowrap;
+            transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html.sidebar-is-collapsed #sidebar .sidebar-label,
+        #sidebar.collapsed .sidebar-label {
+            max-width: 0 !important;
+            opacity: 0 !important;
+            transform: translateX(-10px) !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+            margin: 0 !important;
+        }
+
+        #sidebar .sidebar-category {
+            max-height: 40px;
+            opacity: 1;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                        margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html.sidebar-is-collapsed #sidebar .sidebar-category,
+        #sidebar.collapsed .sidebar-category {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        #sidebar .sidebar-collapsed-divider {
+            display: none;
+        }
+
+        html.sidebar-is-collapsed #sidebar .sidebar-collapsed-divider,
+        #sidebar.collapsed .sidebar-collapsed-divider {
+            display: block;
+            height: 1px;
+            margin: 8px 10px;
+            background-color: rgba(209, 213, 219, 0.45);
+            transition: all 0.3s ease;
+        }
+
+        html.dark #sidebar.collapsed .sidebar-collapsed-divider,
+        html.dark.sidebar-is-collapsed #sidebar .sidebar-collapsed-divider {
+            background-color: rgba(20, 53, 45, 0.85);
+        }
+
+        html.sidebar-is-collapsed #sidebar .sidebar-header,
+        #sidebar.collapsed .sidebar-header {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+
+        html.sidebar-is-collapsed #sidebar nav,
+        #sidebar.collapsed nav {
+            padding-left: 14px !important;
+            padding-right: 14px !important;
+        }
+
+        html.sidebar-is-collapsed #sidebar .nav-link,
+        #sidebar.collapsed .nav-link,
+        html.sidebar-is-collapsed #sidebar nav a,
+        #sidebar.collapsed nav a {
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            width: 48px !important;
+            height: 48px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            gap: 0 !important;
+            border-radius: 14px !important;
+        }
+
+        /* Tooltip flotante estilizado solo visible al hacer hover en modo colapsado */
+        #sidebar .sidebar-tooltip {
+            display: none;
+        }
+
+        #sidebar.collapsed a:hover .sidebar-tooltip,
+        html.sidebar-is-collapsed #sidebar a:hover .sidebar-tooltip {
+            display: flex !important;
+            align-items: center;
+            position: absolute;
+            left: calc(100% + 14px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #0B4A3F;
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 10px;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            pointer-events: none;
+            animation: tooltipFadeIn 0.15s ease-out forwards;
+        }
+
+        html.dark #sidebar.collapsed a:hover .sidebar-tooltip,
+        html.dark.sidebar-is-collapsed #sidebar a:hover .sidebar-tooltip {
+            background: #0C221D;
+            color: #EEF8F5;
+            border: 1px solid #14352D;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+        }
+
+        #sidebar.collapsed a:hover .sidebar-tooltip::before,
+        html.sidebar-is-collapsed #sidebar a:hover .sidebar-tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent #0B4A3F transparent transparent;
+        }
+
+        html.dark #sidebar.collapsed a:hover .sidebar-tooltip::before,
+        html.dark.sidebar-is-collapsed #sidebar a:hover .sidebar-tooltip::before {
+            border-color: transparent #0C221D transparent transparent;
+        }
+
+        @keyframes tooltipFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+
         /* 9. Barra de Búsqueda y Botones en Inmuebles (Sin franja tosca) */
         html.dark #view-inmuebles .rounded-full.shadow-premium.border {
             background-color: #0A1F1B !important;
@@ -463,71 +627,140 @@
     <!-- ==========================================
          1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
          ========================================== -->
-    <aside class="w-[280px] bg-white border-r border-maximus-silver/30 flex flex-col justify-between flex-shrink-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative">
+    <aside id="sidebar" class="w-[280px] bg-white border-r border-maximus-silver/30 flex flex-col justify-between flex-shrink-0 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative transition-all duration-300 ease-in-out">
+        
+        <!-- Botón Toggle Colapsar / Expandir (Flecha Flotante con Animación Smooth) -->
+        <button id="sidebarToggleBtn" onclick="toggleSidebar()" 
+                class="absolute -right-3.5 top-[32px] z-30 w-7 h-7 rounded-full bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-[#14352D] shadow-md flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-maximus-accent dark:hover:text-maximus-accent hover:border-maximus-accent/50 dark:hover:border-maximus-accent/50 hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none cursor-pointer"
+                title="Colapsar menú lateral" aria-label="Colapsar menú lateral">
+            <i id="sidebarToggleIcon" class="ph-bold ph-caret-left text-xs transition-transform duration-300"></i>
+        </button>
+
         <div>
             <!-- Logo -->
-            <div class="h-[90px] flex items-center px-8 pt-3 border-b border-maximus-silver/20">
+            <div class="sidebar-header h-[90px] flex items-center px-8 pt-3 border-b border-maximus-silver/20 relative transition-all duration-300">
                 <span class="text-[28px] font-extrabold tracking-tight text-maximus-dark flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-maximus-dark flex items-center justify-center text-white shadow-md">
-                        <i class="ph-fill ph-buildings text-xl"></i>
+                    <div class="w-10 h-10 rounded-xl bg-maximus-dark dark:bg-[#06231D] dark:border dark:border-emerald-500/30 flex items-center justify-center text-white shadow-md shadow-maximus-dark/20 relative overflow-hidden group flex-shrink-0 cursor-pointer" onclick="toggleSidebar()" title="MAXIMUS">
+                        <svg class="w-6 h-6 transition-transform group-hover:scale-105 duration-200" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="maximus-house-silver" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#FFFFFF"/>
+                                    <stop offset="40%" stop-color="#F8FAFC"/>
+                                    <stop offset="80%" stop-color="#CBD5E1"/>
+                                    <stop offset="100%" stop-color="#94A3B8"/>
+                                </linearGradient>
+                                <linearGradient id="maximus-arrow-green" x1="10" y1="24" x2="29" y2="3" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#059669"/>
+                                    <stop offset="50%" stop-color="#10B981"/>
+                                    <stop offset="100%" stop-color="#34D399"/>
+                                </linearGradient>
+                                <filter id="maximus-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="1" stdDeviation="0.8" flood-color="#000000" flood-opacity="0.35"/>
+                                </filter>
+                            </defs>
+                            <!-- Estructura Arquitectónica Plateada (Casa y Monograma M) -->
+                            <g filter="url(#maximus-shadow)">
+                                <rect x="7.4" y="6" width="2.4" height="6.5" rx="0.5" fill="url(#maximus-house-silver)"/>
+                                <path d="M6 17.5V26.5" stroke="url(#maximus-house-silver)" stroke-width="2.5" stroke-linecap="round"/>
+                                <path d="M24.5 17.5V26.5" stroke="url(#maximus-house-silver)" stroke-width="2.5" stroke-linecap="round"/>
+                                <path d="M3.5 17.5L15 7.5L26.5 17.5" stroke="url(#maximus-house-silver)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <!-- Flecha Dinámica de Crecimiento / Inversión (Sello Oficial Maximus) -->
+                            <g filter="url(#maximus-shadow)">
+                                <path d="M10.5 15.5L15 21L24.2 9.2" stroke="url(#maximus-arrow-green)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polygon points="29,4 21.5,6.8 26.2,13.8" fill="url(#maximus-arrow-green)"/>
+                            </g>
+                        </svg>
                     </div>
-                    MAXIMUS<span class="text-maximus-accent">.</span>
+                    <span class="sidebar-label">MAXIMUS<span class="text-maximus-accent">.</span></span>
                 </span>
             </div>
             
             <!-- Menú de Navegación -->
-            <nav class="p-6 space-y-2 overflow-y-auto max-h-[calc(100vh-180px)]">
+            <nav class="p-6 space-y-2 overflow-y-auto max-h-[calc(100vh-180px)] transition-all duration-300">
                 <!-- Principal -->
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4">Plataforma</p>
-                <a href="#" data-target="view-resumen" class="nav-link active flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all">
-                    <i class="ph-fill ph-squares-four text-xl text-maximus-accent"></i> Resumen
+                <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4">Plataforma</p>
+                <div class="sidebar-collapsed-divider"></div>
+
+                <a href="#" data-target="view-resumen" class="nav-link active flex items-center gap-3 px-4 py-3.5 text-[15px] font-bold rounded-2xl transition-all relative group" title="Resumen">
+                    <i class="ph-fill ph-squares-four text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Resumen</span>
+                    <span class="sidebar-tooltip">Resumen</span>
                 </a>
-                <a href="#" data-target="view-inmuebles" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-house-line text-xl"></i> Inmuebles
+
+                <a href="#" data-target="view-inmuebles" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Inmuebles">
+                    <i class="ph ph-house-line text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Inmuebles</span>
+                    <span class="sidebar-tooltip">Inmuebles</span>
                 </a>
-                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all group">
-                    <i class="ph-fill ph-buildings text-xl text-maximus-accent"></i>
-                    <span>Captaciones MAXIMUS</span>
+
+                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Captaciones MAXIMUS">
+                    <i class="ph-fill ph-buildings text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Captaciones MAXIMUS</span>
+                    <span class="sidebar-tooltip">Captaciones MAXIMUS</span>
                 </a>
-                <a href="#" data-target="view-metricas" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-chart-line-up text-xl"></i> Métricas
+
+                <a href="#" data-target="view-metricas" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Métricas">
+                    <i class="ph ph-chart-line-up text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Métricas</span>
+                    <span class="sidebar-tooltip">Métricas</span>
                 </a>
                 
                 <!-- Gestión -->
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
-                <a href="#" data-target="view-cotizador" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-calculator text-xl"></i> Cotizador Express
+                <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
+                <div class="sidebar-collapsed-divider"></div>
+
+                <a href="#" data-target="view-cotizador" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cotizador Express">
+                    <i class="ph ph-calculator text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Cotizador Express</span>
+                    <span class="sidebar-tooltip">Cotizador Express</span>
                 </a>
-                <!-- <a href="#" data-target="view-pagos" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-credit-card text-xl"></i> Pagos / Renovar
-                </a> -->
-                <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-handshake text-xl"></i> Histórico Global
+
+                <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Histórico Global">
+                    <i class="ph ph-handshake text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Histórico Global</span>
+                    <span class="sidebar-tooltip">Histórico Global</span>
                 </a>
-                <a href="#" id="nav-admin-cargar" data-target="view-admin-cargar-inmueble" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-house-line text-xl text-maximus-accent"></i> Cargar Inmueble
+
+                <a href="#" id="nav-admin-cargar" data-target="view-admin-cargar-inmueble" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cargar Inmueble">
+                    <i class="ph-fill ph-house-line text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Cargar Inmueble</span>
+                    <span class="sidebar-tooltip">Cargar Inmueble</span>
                 </a>
-                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent"></i> Precios m²
+
+                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Precios m²">
+                    <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Precios m²</span>
+                    <span class="sidebar-tooltip">Precios m²</span>
                 </a>
-                <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-users-three text-xl text-maximus-accent"></i> Gestión de Agentes
+
+                <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Gestión de Agentes">
+                    <i class="ph-fill ph-users-three text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Gestión de Agentes</span>
+                    <span class="sidebar-tooltip">Gestión de Agentes</span>
                 </a>
 
                 <!-- Recursos -->
-                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8 agente-only">Soporte & Recursos</p>
-                <a href="#" class="agente-only text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-whatsapp-logo text-xl"></i> Bot Whatsapp
+                <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8 agente-only">Soporte & Recursos</p>
+                <div class="sidebar-collapsed-divider"></div>
+
+                <a href="#" class="agente-only text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Bot Whatsapp">
+                    <i class="ph ph-whatsapp-logo text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Bot Whatsapp</span>
+                    <span class="sidebar-tooltip">Bot Whatsapp</span>
                 </a>
-                <a href="#" data-target="view-tutoriales" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-play-circle text-xl"></i> Tutoriales VIP
+
+                <a href="#" data-target="view-tutoriales" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Tutoriales VIP">
+                    <i class="ph ph-play-circle text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Tutoriales VIP</span>
+                    <span class="sidebar-tooltip">Tutoriales VIP</span>
                 </a>
-                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph-fill ph-video-camera text-xl text-maximus-accent"></i> Subir Tutoriales
+
+                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Tutoriales">
+                    <i class="ph-fill ph-video-camera text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Subir Tutoriales</span>
+                    <span class="sidebar-tooltip">Subir Tutoriales</span>
                 </a>
-                <!-- <a href="#" class="agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all">
-                    <i class="ph ph-headset text-xl"></i> Soporte 24/7
-                </a> -->
             </nav>
         </div>
 
@@ -3033,6 +3266,51 @@
         }
 
         // ==========================================
+        // SIDEBAR COLAPSIBLE CON ANIMACIÓN SMOOTH
+        // ==========================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const toggleBtn = document.getElementById('sidebarToggleBtn');
+            if (!sidebar) return;
+
+            const isCollapsed = sidebar.classList.toggle('collapsed');
+            document.documentElement.classList.toggle('sidebar-is-collapsed', isCollapsed);
+
+            if (isCollapsed) {
+                if (icon) icon.classList.add('rotate-180');
+                if (toggleBtn) toggleBtn.setAttribute('title', 'Expandir menú lateral');
+                localStorage.setItem('maximus_sidebar_collapsed', 'true');
+            } else {
+                if (icon) icon.classList.remove('rotate-180');
+                if (toggleBtn) toggleBtn.setAttribute('title', 'Colapsar menú lateral');
+                localStorage.setItem('maximus_sidebar_collapsed', 'false');
+            }
+        }
+
+        // Atajo de teclado profesional: Ctrl + B o Cmd + B para colapsar/expandir menú lateral
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                toggleSidebar();
+            }
+        });
+
+        // Sincronizar estado inicial del sidebar guardado en localStorage
+        (function() {
+            if (localStorage.getItem('maximus_sidebar_collapsed') === 'true') {
+                window.addEventListener('DOMContentLoaded', () => {
+                    const sidebar = document.getElementById('sidebar');
+                    const icon = document.getElementById('sidebarToggleIcon');
+                    const toggleBtn = document.getElementById('sidebarToggleBtn');
+                    if (sidebar) sidebar.classList.add('collapsed');
+                    if (icon) icon.classList.add('rotate-180');
+                    if (toggleBtn) toggleBtn.setAttribute('title', 'Expandir menú lateral');
+                });
+            }
+        })();
+
+        // ==========================================
         // 8. NAVEGACIÓN Y PERSISTENCIA DE PESTAÑAS (Sidebar)
         // ==========================================
         const navLinks = document.querySelectorAll('.nav-link');
@@ -3077,7 +3355,8 @@
                         icon.classList.remove('ph');
                         icon.classList.add('ph-fill', 'text-maximus-accent');
                     }
-                    sectionName = link.textContent.trim();
+                    const labelSpan = link.querySelector('.sidebar-label');
+                    sectionName = labelSpan ? labelSpan.textContent.trim() : link.textContent.trim();
                 } else {
                     link.classList.remove('active', 'bg-emerald-50/70', 'text-maximus-dark', 'font-bold');
                     link.classList.add('text-gray-500', 'hover:bg-gray-50', 'hover:text-maximus-dark', 'font-semibold');
