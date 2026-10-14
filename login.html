@@ -164,6 +164,30 @@
                         </label>
                     </div>
 
+                    <!-- Selector Rápido de Cuentas Demo / Test -->
+                    <div class="pt-2">
+                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Acceso Rápido por Perfil:</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="selectDemoAccount('admin')" 
+                                    class="p-2 rounded-xl border border-gray-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition group">
+                                <span class="block text-[11px] font-extrabold text-maximus-dark group-hover:text-emerald-700">Director</span>
+                                <span class="block text-[9px] text-gray-500 font-semibold truncate">admin@maximus.com</span>
+                            </button>
+                            <button type="button" onclick="selectDemoAccount('asesor_maximus')" 
+                                    class="p-2 rounded-xl border border-emerald-500 bg-emerald-50/60 hover:bg-emerald-100/60 text-left transition group shadow-sm">
+                                <span class="block text-[11px] font-extrabold text-emerald-800 flex items-center gap-1">
+                                    <i class="fas fa-check-circle text-[9px]"></i> Asesor Maximus
+                                </span>
+                                <span class="block text-[9px] text-emerald-700 font-semibold truncate">Valeria Méndez</span>
+                            </button>
+                            <button type="button" onclick="selectDemoAccount('asesor_externo')" 
+                                    class="p-2 rounded-xl border border-gray-200 hover:border-blue-600 hover:bg-blue-50/50 text-left transition group">
+                                <span class="block text-[11px] font-extrabold text-gray-700 group-hover:text-blue-700">Asesor Externo</span>
+                                <span class="block text-[9px] text-gray-500 font-semibold truncate">Pedro Rivas</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Botón Principal con el Verde Corporativo Maximus Dark #0B4A3F -->
                     <div class="pt-2">
                         <button type="submit" 
@@ -188,11 +212,18 @@
         </div>
     </div>
 
+    <!-- Scripts de Configuración, Mock Data y AuthService -->
+    <script src="js/config.js?v=2.2"></script>
+    <script src="js/mock-data.js?v=2.2"></script>
+    <script src="js/auth.js?v=2.2"></script>
+
     <!-- Script para interactividad y mock login -->
     <script>
         const toggleBtn = document.getElementById('togglePassword');
         const passInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
+        const emailInput = document.getElementById('email');
+        const loginForm = document.getElementById('loginForm');
 
         toggleBtn.addEventListener('click', () => {
             if (passInput.type === 'password') {
@@ -206,31 +237,80 @@
             }
         });
 
-        // Lógica de Mock Login para Administrador y Agente
-        const loginForm = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
+        // Selector rápido para pruebas
+        function selectDemoAccount(tipo) {
+            if (tipo === 'admin') {
+                emailInput.value = 'admin@maximus.com';
+                passInput.value = 'admin123';
+            } else if (tipo === 'asesor_maximus') {
+                emailInput.value = 'asesor.maximus@maximus.com';
+                passInput.value = 'maximus123';
+            } else if (tipo === 'asesor_externo') {
+                emailInput.value = 'asesor.externo@maximus.com';
+                passInput.value = 'externo123';
+            }
+        }
 
-        loginForm.addEventListener('submit', (e) => {
+        // Lógica de Login con AuthService
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = emailInput.value.trim().toLowerCase();
             const password = passInput.value;
 
+            if (window.AuthService) {
+                const res = await window.AuthService.login(email, password);
+                if (res.success) {
+                    window.location.href = 'dashboard-layout.html';
+                    return;
+                } else {
+                    alert(res.error || 'Credenciales incorrectas.');
+                    return;
+                }
+            }
+
+            // Fallback directo en caso de fallo de carga de script
             if (email === 'admin@maximus.com' && password === 'admin123') {
                 localStorage.setItem('maximus_user', JSON.stringify({
+                    id: 'mock-admin-001',
                     name: 'José Guerrero',
+                    email: 'admin@maximus.com',
                     role: 'admin',
+                    tipo_asesor: 'maximus',
                     title: 'Director / Administrador'
+                }));
+                window.location.href = 'dashboard-layout.html';
+            } else if (email === 'asesor.maximus@maximus.com' && password === 'maximus123') {
+                localStorage.setItem('maximus_user', JSON.stringify({
+                    id: 'asesor-2',
+                    name: 'Valeria Méndez',
+                    email: 'asesor.maximus@maximus.com',
+                    role: 'asesor_maximus',
+                    tipo_asesor: 'maximus',
+                    title: 'Asesor MAXIMUS Oficial'
+                }));
+                window.location.href = 'dashboard-layout.html';
+            } else if (email === 'asesor.externo@maximus.com' && password === 'externo123') {
+                localStorage.setItem('maximus_user', JSON.stringify({
+                    id: 'asesor-5',
+                    name: 'Pedro Rivas',
+                    email: 'asesor.externo@maximus.com',
+                    role: 'asesor_externo',
+                    tipo_asesor: 'externo',
+                    title: 'Asesor Externo / Colega'
                 }));
                 window.location.href = 'dashboard-layout.html';
             } else if (email === 'agente@maximus.com' && password === 'agente123') {
                 localStorage.setItem('maximus_user', JSON.stringify({
+                    id: 'mock-agente-001',
                     name: 'Carlos Pérez',
-                    role: 'agente',
-                    title: 'Asesor Inmobiliario'
+                    email: 'agente@maximus.com',
+                    role: 'asesor_maximus',
+                    tipo_asesor: 'maximus',
+                    title: 'Asesor Inmobiliario MAXIMUS'
                 }));
                 window.location.href = 'dashboard-layout.html';
             } else {
-                alert('Credenciales incorrectas. Intente con admin@maximus.com (clave: admin123) o agente@maximus.com (clave: agente123).');
+                alert('Credenciales incorrectas. Puede usar los botones de acceso rápido o: admin@maximus.com / asesor.maximus@maximus.com / asesor.externo@maximus.com');
             }
         });
     </script>

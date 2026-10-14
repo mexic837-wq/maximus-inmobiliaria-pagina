@@ -35,6 +35,10 @@ const APP_CONFIG = {
         NOTIFICACION_AGENTE: '/webhook/notificacion-agente',
         GENERAR_REPORTE:     '/webhook/generar-reporte',
         SUBIR_IMAGEN:        '/webhook/subir-imagen',
+        AUTH_CAMBIO_PASSWORD:'/webhook/auth-cambio-password',
+        AUTH_VERIFICACION_2FA:'/webhook/auth-verificacion-2fa',
+        PERFIL_ACTUALIZADO:  '/webhook/perfil-actualizado',
+        VALORACION_LEAD:     '/webhook/valoracion-lead',
     },
 
     // ========== STORAGE (Imágenes de Inmuebles) ==========
@@ -44,7 +48,9 @@ const APP_CONFIG = {
     // ========== ROLES DE USUARIO ==========
     ROLES: {
         ADMIN: 'admin',
-        AGENTE: 'agente',
+        ASESOR_MAXIMUS: 'asesor_maximus',
+        ASESOR_EXTERNO: 'asesor_externo',
+        AGENTE: 'agente', // Compatibilidad hacia atrás
     },
 
     // ========== TABLAS DE SUPABASE (Nombres) ==========
@@ -57,6 +63,13 @@ const APP_CONFIG = {
         PAGOS: 'pagos',
         DOCUMENTOS: 'documentos',
         ZONAS_COTIZADOR: 'zonas_cotizador',
+        CIERRES_VENTAS: 'cierres_ventas',
+        HISTORICO_ASESORES: 'cierres_ventas',
+        COLECCIONES_VIP: 'colecciones_vip',
+        EQUIPO_WEB: 'equipo_web',
+        SECCIONES_WEB: 'secciones_web',
+        ASESORES_MAXIMUS: 'asesores_maximus',
+        NOTIFICACIONES: 'notificaciones',
     },
 };
 

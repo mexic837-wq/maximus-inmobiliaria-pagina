@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>MAXIMUS Inmobiliaria | Inicio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -57,6 +60,101 @@
         .marquee-wrapper:hover .marquee-group {
             animation-play-state: paused;
         }
+
+        /* ========================================================
+           VERSIÓN MÓVIL (≤ 767px) - Proporciones nativas tipo App
+           ======================================================== */
+        html { -webkit-text-size-adjust: 100%; }
+        body { -webkit-tap-highlight-color: transparent; }
+
+        /* Drawer de navegación móvil */
+        #mobile-menu { transition: opacity .3s ease, visibility .3s ease; }
+        #mobile-menu .mobile-menu-panel { transition: transform .35s cubic-bezier(.4,0,.2,1); }
+        #mobile-menu.is-open { opacity: 1; visibility: visible; }
+        #mobile-menu:not(.is-open) { opacity: 0; visibility: hidden; }
+        #mobile-menu.is-open .mobile-menu-panel { transform: translateY(0); }
+        #mobile-menu:not(.is-open) .mobile-menu-panel { transform: translateY(-16px); }
+
+        /* Scrollbars ocultas en carruseles táctiles */
+        .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 767px) {
+
+            /* Hero: altura real del viewport móvil (evita corte por barra del navegador) */
+            .hero-section { height: auto !important; min-height: 100svh; padding-top: 5.5rem; padding-bottom: 4.5rem; }
+            .hero-title { font-size: 2.35rem !important; line-height: 1.1 !important; margin-bottom: 1rem !important; }
+            .hero-desc { font-size: 0.95rem !important; margin-bottom: 1.5rem !important; padding: 0 .25rem; }
+            .hero-ctas { margin-bottom: 1.5rem !important; }
+            .hero-ctas:hover { transform: none !important; }
+
+            /* Dock de métricas: rejilla de 3 columnas que nunca se desborda */
+            .hero-dock { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 0 !important; width: 100%; padding: .85rem .5rem !important; }
+            .hero-dock > .w-px { display: none; }
+            .hero-dock > div { text-align: center !important; padding: 0 .25rem; }
+            .hero-dock > div:nth-child(3),
+            .hero-dock > div:nth-child(5) { border-left: 1px solid rgba(255,255,255,.15); }
+            .hero-dock p:first-child { font-size: 1.25rem !important; }
+            .hero-dock p:last-child { font-size: 10px !important; line-height: 1.2; }
+
+            /* Rutas de servicio: tarjetas compactas horizontales */
+            .rutas-section { margin-top: -1.75rem !important; border-radius: 1.75rem 1.75rem 0 0 !important; padding-top: 2rem !important; padding-bottom: 2rem !important; }
+            .rutas-grid { gap: .75rem !important; }
+            .ruta-card { display: grid !important; grid-template-columns: 48px 1fr; column-gap: 1rem; align-items: center; padding: 1rem 1.1rem !important; border-radius: 1.25rem !important; }
+            .ruta-card > div:first-child { width: 48px !important; height: 48px !important; font-size: 1.15rem !important; margin-bottom: 0 !important; grid-row: span 3; border-radius: .9rem !important; }
+            .ruta-card h3 { font-size: 1rem !important; margin-bottom: .15rem !important; }
+            .ruta-card p { font-size: .78rem !important; margin-bottom: .35rem !important; line-height: 1.4 !important; }
+            .ruta-card a { font-size: .8rem; }
+
+            /* Títulos y espaciados de secciones */
+            section.py-24 { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+            section.py-20 { padding-top: 3.25rem !important; padding-bottom: 3.25rem !important; }
+            section h2 { font-size: 1.65rem !important; line-height: 1.2 !important; }
+            section .mb-16 { margin-bottom: 2rem !important; }
+
+            /* Carrusel de propiedades: deslizable con el dedo (scroll-snap) */
+            .marquee-wrapper { overflow-x: auto !important; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-left: 1rem; padding-right: 1rem; scrollbar-width: none; }
+            .marquee-wrapper::-webkit-scrollbar { display: none; }
+            .marquee-wrapper > .pointer-events-none { display: none; }
+            .marquee-group { animation: none !important; gap: .85rem; padding-right: 1rem; }
+            #marquee-group-2 { display: none !important; }
+            .marquee-group > a { width: 82vw !important; max-width: 340px; scroll-snap-align: center; }
+            .marquee-group > a:hover { transform: none !important; }
+            .marquee-group > a .h-60 { height: 13rem !important; }
+            .marquee-group > a .p-6 { padding: 1.1rem !important; }
+            .marquee-group > a .text-2xl { font-size: 1.3rem !important; }
+
+            /* Pills de filtro con scroll horizontal si no caben */
+            #propiedades-header .inline-flex.p-1 { max-width: 100%; }
+
+            /* Valoración */
+            #valoracion h2 { font-size: 1.75rem !important; }
+            #valoracion p.text-lg { font-size: .95rem !important; margin-bottom: 1.75rem !important; }
+
+            /* Beneficios: tarjetas en fila con icono a la izquierda */
+            #nosotros .grid { gap: 1rem !important; }
+            .benefit-card { display: flex; gap: 1rem; text-align: left !important; align-items: flex-start; background: #F9FAFB; border: 1px solid #F3F4F6; border-radius: 1.25rem; padding: 1.1rem; }
+            .benefit-card > div:first-child { width: 52px !important; height: 52px !important; margin: 0 !important; flex-shrink: 0; border-radius: 1rem !important; }
+            .benefit-card > div:first-child i { font-size: 1.25rem !important; }
+            .benefit-card h3 { font-size: 1.02rem !important; margin-bottom: .25rem !important; }
+            .benefit-card p { font-size: .83rem; line-height: 1.45; }
+
+            /* Equipo: 2 columnas compactas */
+            #grid-equipo { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: .85rem !important; }
+            #grid-equipo > div .p-6 { padding: .85rem .6rem 1rem !important; }
+            #grid-equipo h3 { font-size: .88rem !important; }
+            #grid-equipo h3 + p { font-size: .72rem !important; margin-bottom: .65rem !important; }
+            #grid-equipo a { width: 2.1rem !important; height: 2.1rem !important; }
+
+            /* Testimonios: carrusel deslizable */
+            .testimonios-track { flex-wrap: nowrap !important; justify-content: flex-start !important; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -1rem; padding: 0 1rem .5rem; gap: .85rem !important; scrollbar-width: none; }
+            .testimonios-track::-webkit-scrollbar { display: none; }
+            .testimonios-track > div { flex: 0 0 85% !important; width: 85% !important; scroll-snap-align: center; padding: 1.5rem !important; border-radius: 1.5rem !important; }
+
+            /* Footer */
+            footer .grid { gap: 2rem !important; margin-bottom: 2rem !important; }
+            footer { padding-top: 2.75rem !important; }
+        }
     </style>
 </head>
 <body class="font-sans text-maximus-black antialiased bg-gray-50">
@@ -64,11 +162,11 @@
 
 
     <!-- Navbar Flotante -->
-    <nav class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/70 backdrop-blur-md border-b border-maximus-silver/30 shadow-sm">
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-maximus-silver/30 shadow-sm" style="padding-top: env(safe-area-inset-top);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
+            <div class="flex justify-between items-center h-16 md:h-20">
                 <div class="flex-shrink-0 flex items-center">
-                    <span class="text-2xl font-bold text-maximus-dark tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                    <span class="text-xl md:text-2xl font-bold text-maximus-dark tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
                 </div>
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="#" class="text-gray-700 hover:text-maximus-accent font-medium transition">Inicio</a>
@@ -78,9 +176,49 @@
                 <div class="hidden md:flex items-center">
                     <a href="login.html" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-6 py-2.5 rounded-full font-medium transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
                 </div>
+
+                <!-- Controles Móviles -->
+                <div class="flex md:hidden items-center gap-2">
+                    <a href="login.html" class="h-10 px-4 rounded-full bg-maximus-dark text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-maximus-dark/25 active:scale-95 transition">
+                        <i class="fas fa-user text-[11px]"></i> Entrar
+                    </a>
+                    <button type="button" id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Abrir menú" aria-expanded="false" class="w-10 h-10 rounded-full bg-gray-100 text-maximus-dark flex items-center justify-center active:scale-95 transition">
+                        <i id="mobile-menu-icon" class="fas fa-bars text-base"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
+
+    <!-- Drawer de Navegación Móvil -->
+    <div id="mobile-menu" class="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onclick="if(event.target === this) toggleMobileMenu(false)">
+        <div class="mobile-menu-panel absolute left-3 right-3 bg-white rounded-3xl shadow-2xl border border-gray-100 p-3" style="top: calc(4.5rem + env(safe-area-inset-top));">
+            <a href="#" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-home text-sm"></i></span> Inicio
+            </a>
+            <a href="#propiedades" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-building text-sm"></i></span> Propiedades
+            </a>
+            <a href="#valoracion" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-chart-line text-sm"></i></span> Valorar mi propiedad
+            </a>
+            <a href="#nosotros" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-star text-sm"></i></span> Nosotros
+            </a>
+            <a href="#equipo" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-users text-sm"></i></span> Nuestro Equipo
+            </a>
+            <div class="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-gray-100">
+                <a href="login.html" class="h-12 rounded-2xl bg-maximus-dark text-white text-sm font-semibold flex items-center justify-center gap-2">
+                    <i class="fas fa-user-lock text-xs"></i> Iniciar Sesión
+                </a>
+                <a href="https://wa.me/584240000000" target="_blank" class="h-12 rounded-2xl bg-emerald-500 text-white text-sm font-semibold flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Hero Section -->
     <section class="hero-section relative h-screen flex items-center justify-center overflow-hidden">
@@ -90,7 +228,7 @@
             <div class="absolute inset-0 bg-maximus-dark/70 mix-blend-multiply"></div>
         </div>
         
-        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto mt-24 flex flex-col items-center">
+        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto w-full mt-0 md:mt-24 flex flex-col items-center">
             <!-- OSS Hero: Título con revelación de líneas enmascaradas -->
             <h1 class="hero-title text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-6 leading-[1.12] tracking-tight">
                 <span class="hero-line block overflow-hidden"><span class="inline-block">Encuentra el hogar</span></span>
@@ -102,20 +240,27 @@
                 Experiencia, exclusividad y un servicio personalizado para llevarte a tu próxima gran inversión.
             </p>
 
-            <!-- Omni-Search Bar (Tabs + Search) -->
-            <div class="hero-ctas w-full max-w-3xl mb-12 transform transition-all hover:scale-[1.02] duration-300">
-                <div class="bg-white/10 backdrop-blur-md rounded-t-xl inline-flex overflow-hidden border border-white/20 border-b-0">
-                    <button id="tab-comprar" onclick="switchHeroTab('comprar')" class="px-6 py-2.5 text-white bg-maximus-accent font-semibold text-sm transition-colors">Comprar</button>
-                    <button id="tab-alquilar" onclick="switchHeroTab('alquilar')" class="px-6 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm transition-colors">Alquilar</button>
-                    <button id="tab-vender" onclick="switchHeroTab('vender')" class="px-6 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm transition-colors">Vender</button>
+            <!-- Omni-Search Bar (Tabs + Search: Comprar y Alquilar sincronizados con Supabase) -->
+            <div class="hero-ctas w-full max-w-3xl mb-12 transform transition-all hover:scale-[1.01] duration-300">
+                <div class="bg-white/10 backdrop-blur-md rounded-t-2xl inline-flex overflow-hidden border border-white/20 border-b-0 p-1 gap-1">
+                    <button id="tab-comprar" onclick="switchHeroTab('comprar')" class="px-7 py-2.5 text-white bg-maximus-accent font-semibold text-sm rounded-xl transition-all shadow-md flex items-center gap-2">
+                        <i class="fas fa-key text-xs"></i> Comprar
+                    </button>
+                    <button id="tab-alquilar" onclick="switchHeroTab('alquilar')" class="px-7 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm rounded-xl transition-all flex items-center gap-2">
+                        <i class="fas fa-building text-xs"></i> Alquilar
+                    </button>
                 </div>
-                <div class="bg-white p-2 rounded-2xl rounded-tl-none shadow-2xl flex flex-col sm:flex-row gap-2">
-                    <div class="flex-grow flex items-center bg-gray-50 rounded-xl px-4 py-2 sm:py-0 border border-gray-100">
-                        <i class="fas fa-search text-gray-400 mr-3"></i>
-                        <input type="text" id="hero-search-input" placeholder="Ciudad, barrio o tipo de inmueble..." class="w-full bg-transparent border-none outline-none text-gray-700 h-12 focus:ring-0">
+                <div class="bg-white p-2.5 rounded-2xl rounded-tl-none shadow-2xl flex flex-col sm:flex-row gap-2 border border-white/20">
+                    <div class="flex-grow flex items-center bg-gray-50 rounded-xl px-4 py-2 sm:py-0 border border-gray-100 focus-within:border-maximus-accent/50 focus-within:bg-white transition-all">
+                        <i class="fas fa-search text-maximus-accent/70 mr-3"></i>
+                        <input type="text" id="hero-search-input" onkeyup="handleHeroInputKey(event)" placeholder="Buscar por zona, barrio o tipo (ej: Penthouse, El Parral)..." class="w-full bg-transparent border-none outline-none text-gray-800 h-12 focus:ring-0 text-sm sm:text-base font-medium placeholder-gray-400">
+                        <button type="button" id="hero-search-clear" onclick="clearHeroSearch()" class="text-gray-400 hover:text-gray-600 hidden px-2">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
                     </div>
-                    <button id="hero-search-btn" onclick="executeHeroSearch()" class="bg-maximus-dark hover:bg-black text-white px-8 py-3 rounded-xl font-bold transition-colors w-full sm:w-auto flex-shrink-0">
-                        Buscar
+                    <button id="hero-search-btn" onclick="executeHeroSearch()" class="bg-maximus-dark hover:bg-black text-white px-8 py-3 rounded-xl font-bold transition-all w-full sm:w-auto flex-shrink-0 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                        <span>Explorar</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -141,38 +286,46 @@
     </section>
 
     <!-- Rutas de Servicio -->
-    <section class="py-16 bg-white relative z-20 -mt-10 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+    <section class="rutas-section py-16 bg-white relative z-20 -mt-10 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-xl hover:border-maximus-accent/30 transition-all group">
+            <div class="rutas-grid grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div class="ruta-card bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-xl hover:border-maximus-accent/30 transition-all group">
                     <div class="w-14 h-14 bg-emerald-100 text-maximus-accent rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fas fa-home"></i></div>
                     <h3 class="text-xl font-bold text-maximus-dark mb-3">Comprar una propiedad</h3>
                     <p class="text-gray-500 mb-6 text-sm leading-relaxed">Encuentra tu hogar ideal con nuestro amplio catálogo de inmuebles exclusivos.</p>
                     <a href="catalog.html" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Explorar opciones <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-xl hover:border-maximus-accent/30 transition-all group">
+                <div class="ruta-card bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-xl hover:border-maximus-accent/30 transition-all group">
                     <div class="w-14 h-14 bg-emerald-100 text-maximus-accent rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fas fa-key"></i></div>
                     <h3 class="text-xl font-bold text-maximus-dark mb-3">Alquilar un espacio</h3>
                     <p class="text-gray-500 mb-6 text-sm leading-relaxed">Descubre apartamentos y casas en alquiler en las mejores zonas de la ciudad.</p>
                     <a href="catalog.html" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Ver alquileres <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
                 </div>
-                <div class="bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-xl hover:border-maximus-accent/30 transition-all group">
-                    <div class="w-14 h-14 bg-emerald-100 text-maximus-accent rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fas fa-chart-line"></i></div>
-                    <h3 class="text-xl font-bold text-maximus-dark mb-3">Vender tu propiedad</h3>
-                    <p class="text-gray-500 mb-6 text-sm leading-relaxed">Te ayudamos a vender tu inmueble al mejor precio y en tiempo récord.</p>
-                    <a href="#valoracion" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Quiero vender <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
-                </div>
             </div>
         </div>
     </section>
 
-    <!-- Sección Destacados -->
+    <!-- Sección Destacados (Conectado dinámicamente con InmuebleService / Supabase) -->
     <section id="propiedades" class="py-24 bg-gray-50 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-            <div id="propiedades-header" class="text-center">
-                <h2 class="text-3xl md:text-4xl font-bold text-maximus-dark mb-4">Propiedades Destacadas</h2>
-                <p class="text-gray-500 max-w-2xl mx-auto">Nuestra selección exclusiva de las mejores propiedades disponibles en el mercado.</p>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center" id="propiedades-header">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-maximus-accent text-xs font-semibold uppercase tracking-wider mb-3">
+                <span class="w-2 h-2 rounded-full bg-maximus-accent animate-pulse"></span>
+                <span>Portafolio Sincronizado</span>
             </div>
+            <h2 class="text-3xl md:text-5xl font-bold text-maximus-dark mb-3">Propiedades Destacadas</h2>
+            <p id="propiedades-subtitulo" class="text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Explora nuestra colección curada de residencias y apartamentos exclusivos disponibles para comprar o alquilar.</p>
+            
+            <!-- Selector Rápido de Operación (Venta / Alquiler / Todos) -->
+            <div class="mt-6 inline-flex items-center p-1 bg-white rounded-xl border border-gray-200/80 shadow-sm gap-1">
+                <button id="pill-filter-todos" onclick="filtrarMarqueePorOperacion('todos')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all">Todos</button>
+                <button id="pill-filter-venta" onclick="filtrarMarqueePorOperacion('venta')" class="px-5 py-2 rounded-lg text-xs font-semibold text-white bg-maximus-dark shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="fas fa-key text-[10px]"></i> Comprar
+                </button>
+                <button id="pill-filter-alquiler" onclick="filtrarMarqueePorOperacion('alquiler')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5">
+                    <i class="fas fa-building text-[10px]"></i> Alquilar
+                </button>
+            </div>
+            <div id="propiedades-contador" class="mt-3 text-xs text-gray-400 font-medium">Sincronizando con base de datos...</div>
         </div>
         
         <!-- Carrusel Marquee Horizontal 100% Seamless -->
@@ -181,232 +334,20 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 w-24 md:w-36 bg-gradient-to-r from-gray-50 via-gray-50/70 to-transparent z-10"></div>
             <div class="pointer-events-none absolute inset-y-0 right-0 w-24 md:w-36 bg-gradient-to-l from-gray-50 via-gray-50/70 to-transparent z-10"></div>
             
-            <!-- Grupo 1 -->
-            <div class="marquee-group">
-                <!-- Tarjeta 1 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Villa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$450,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Villa Moderna San Cristóbal</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Urb. El Parral, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 250 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 2 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Apartamento" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Alquiler</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$1,200 / mes</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Apartamento Luxury Downtown</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Centro, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 2 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 120 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 3 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$850,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Residencia Exclusiva Altos</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Altos de Paramillo, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 5 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 4.5 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 450 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 4 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Penthouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$340,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Penthouse Panorámico</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pueblo Nuevo, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 220 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 5 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Townhouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$220,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Townhouse Minimalista</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pirineos, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2.5 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 180 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 6 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Quinta Campestre" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$185,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Quinta Campestre Cordero</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Cordero, Táchira</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 500 m²</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-            <!-- Grupo 2: Duplicado idéntico para crear el loop infinito 100% fluido -->
-            <div class="marquee-group" aria-hidden="true">
-                <!-- Tarjeta 1 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Villa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$450,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Villa Moderna San Cristóbal</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Urb. El Parral, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 250 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 2 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Apartamento" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Alquiler</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$1,200 / mes</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Apartamento Luxury Downtown</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Centro, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 2 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 120 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 3 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Casa" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$850,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Residencia Exclusiva Altos</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Altos de Paramillo, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 5 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 4.5 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 450 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 4 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Penthouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$340,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Penthouse Panorámico</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pueblo Nuevo, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 220 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 5 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Townhouse" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$220,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Townhouse Minimalista</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Pirineos, San Cristóbal</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 3 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 2.5 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 180 m²</span>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Tarjeta 6 -->
-                <a href="property-detail.html" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                    <div class="relative h-60 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Quinta Campestre" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                        <div class="absolute top-4 left-4 bg-maximus-accent text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">Venta</div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-2xl font-bold text-maximus-dark mb-1">$185,000</div>
-                        <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate">Quinta Campestre Cordero</h3>
-                        <p class="text-gray-500 text-sm mb-4 truncate"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i>Cordero, Táchira</p>
-                        <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
-                            <span><i class="fas fa-bed mr-1 text-maximus-accent"></i> 4 hab</span>
-                            <span><i class="fas fa-bath mr-1 text-maximus-accent"></i> 3 baños</span>
-                            <span><i class="fas fa-ruler-combined mr-1 text-maximus-accent"></i> 500 m²</span>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            <!-- Grupo 1 (Dinámico) -->
+            <div id="marquee-group-1" class="marquee-group"></div>
+            <!-- Grupo 2 (Duplicado para animación continua sin salto) -->
+            <div id="marquee-group-2" class="marquee-group" aria-hidden="true"></div>
         </div>
         
-        <div class="mt-8 text-center">
-            <a href="catalog.html" class="inline-flex items-center text-maximus-dark font-semibold hover:text-maximus-accent transition-colors group">
-                Ver catálogo completo <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+        <div class="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a id="btn-ver-catalogo" href="catalog.html" class="inline-flex items-center text-white bg-maximus-dark hover:bg-black px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all group text-sm">
+                <span>Ver catálogo completo</span>
+                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            <a href="https://wa.me/584240000000?text=Hola,%20quisiera%20asesor%C3%ADa%20personalizada%20sobre%20sus%20propiedades%20exclusivas" target="_blank" class="inline-flex items-center text-gray-700 bg-white hover:bg-gray-100 border border-gray-200 px-6 py-3 rounded-xl font-semibold transition-all text-sm shadow-sm hover:shadow">
+                <i class="fab fa-whatsapp text-emerald-500 mr-2 text-base"></i>
+                <span>Solicitar Asesoría Privada</span>
             </a>
         </div>
     </section>
@@ -419,47 +360,152 @@
             <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">¿Quieres saber cuánto vale tu propiedad?</h2>
             <p class="text-gray-300 mb-10 text-lg max-w-2xl mx-auto">Ingresa la dirección de tu inmueble y tu correo electrónico. Te enviaremos un análisis de mercado gratuito para que vendas al mejor precio.</p>
             
-            <form id="valuation-form" class="bg-white p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2" onsubmit="submitValuationForm(event)">
-                <div class="flex-grow flex items-center bg-gray-50 rounded-xl px-4 py-2 border border-gray-100">
-                    <i class="fas fa-map-marker-alt text-gray-400 mr-3"></i>
-                    <input type="text" id="val-address" required placeholder="Ej: Calle Principal 123, Centro" class="w-full bg-transparent border-none outline-none text-gray-700 h-12 focus:ring-0">
+            <form id="valuation-form" class="bg-white p-2 sm:p-2.5 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 border border-white/20" onsubmit="submitValuationForm(event)">
+                <div class="flex-grow flex items-center bg-gray-50 rounded-xl px-4 py-2 border border-gray-100 focus-within:bg-white focus-within:border-maximus-accent transition-all">
+                    <i class="fas fa-map-marker-alt text-maximus-accent mr-3"></i>
+                    <input type="text" id="val-address" required placeholder="Ej: Urb. El Parral, Calle 4, Casa #12" class="w-full bg-transparent border-none outline-none text-gray-800 h-12 focus:ring-0 text-sm font-medium placeholder-gray-400">
                 </div>
-                <div class="flex-grow flex items-center bg-gray-50 rounded-xl px-4 py-2 border border-gray-100">
-                    <i class="fas fa-envelope text-gray-400 mr-3"></i>
-                    <input type="email" id="val-email" required placeholder="Tu correo electrónico" class="w-full bg-transparent border-none outline-none text-gray-700 h-12 focus:ring-0">
+                <div class="flex-grow flex items-center bg-gray-50 rounded-xl px-4 py-2 border border-gray-100 focus-within:bg-white focus-within:border-maximus-accent transition-all">
+                    <i class="fas fa-envelope text-maximus-accent mr-3"></i>
+                    <input type="email" id="val-email" required placeholder="Tu correo electrónico (ej: tu@correo.com)" class="w-full bg-transparent border-none outline-none text-gray-800 h-12 focus:ring-0 text-sm font-medium placeholder-gray-400">
                 </div>
-                <button type="submit" class="bg-maximus-accent hover:bg-emerald-400 text-white px-8 py-3 rounded-xl font-bold transition-colors w-full md:w-auto flex-shrink-0">
-                    Analizar
+                <button type="submit" id="btn-val-submit" class="bg-maximus-accent hover:bg-emerald-400 text-white px-8 py-3.5 rounded-xl font-bold transition-all w-full md:w-auto flex-shrink-0 shadow-lg flex items-center justify-center gap-2 group cursor-pointer">
+                    <span id="btn-val-text">Analizar</span>
+                    <i id="btn-val-icon" class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </form>
-            <div id="valuation-success" class="hidden mt-4 text-emerald-400 font-medium bg-emerald-400/10 py-2 rounded-lg inline-block px-6">
-                ¡Gracias! Estamos procesando tu solicitud. Recibirás un correo pronto.
+
+            <!-- Card de Éxito / Feedback de Automatización n8n & Supabase -->
+            <div id="valuation-success" class="hidden mt-6 bg-white/10 backdrop-blur-xl border border-emerald-400/40 rounded-2xl p-6 text-white text-left shadow-2xl transition-all">
+                <div class="flex flex-col sm:flex-row items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[11px] font-bold uppercase tracking-wider">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+                                Webhook n8n Activado
+                            </span>
+                            <span class="text-xs text-gray-300 font-medium">Sincronizado con Supabase</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-white mb-1.5">¡Solicitud de Valoración Recibida!</h4>
+                        <p class="text-gray-200 text-sm leading-relaxed mb-4">
+                            Registramos la propiedad en <span id="valuation-success-address" class="font-bold text-emerald-300 underline decoration-emerald-400/50"></span>. Nuestro workflow automatizado en <strong>n8n</strong> ha iniciado el cálculo comparativo de mercado y te enviará el informe preliminar a <span id="valuation-success-email" class="font-bold text-emerald-300"></span>.
+                        </p>
+                        
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10 text-xs">
+                            <div class="flex items-center gap-4 text-gray-300">
+                                <span class="inline-flex items-center gap-1.5"><i class="fas fa-check text-emerald-400"></i> Lead en Supabase</span>
+                                <span class="inline-flex items-center gap-1.5"><i class="fas fa-bolt text-amber-300"></i> Disparo n8n instantáneo</span>
+                            </div>
+                            <a id="valuation-whatsapp-btn" href="#" target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl shadow transition-all hover:scale-105">
+                                <i class="fab fa-whatsapp text-sm"></i>
+                                <span>Atención Inmediata con un Tasador</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <script>
-                // Webhook listo para n8n
+                // Webhook n8n & Conexión con Supabase LeadService
                 async function submitValuationForm(e) {
                     e.preventDefault();
-                    const address = document.getElementById('val-address').value;
-                    const email = document.getElementById('val-email').value;
-                    const webhookUrl = 'https://n8n.tudominio.com/webhook/valuation-lead'; // TODO: Reemplazar con URL real de n8n
                     
+                    const addressInput = document.getElementById('val-address');
+                    const emailInput = document.getElementById('val-email');
+                    const btn = document.getElementById('btn-val-submit');
+                    const btnText = document.getElementById('btn-val-text');
+                    const btnIcon = document.getElementById('btn-val-icon');
+                    const successCard = document.getElementById('valuation-success');
+                    const successAddress = document.getElementById('valuation-success-address');
+                    const successEmail = document.getElementById('valuation-success-email');
+                    const waBtn = document.getElementById('valuation-whatsapp-btn');
+
+                    const address = addressInput ? addressInput.value.trim() : '';
+                    const email = emailInput ? emailInput.value.trim() : '';
+
+                    if (!address || !email) return;
+
+                    // 1. Estado de carga en el botón
+                    btn.disabled = true;
+                    btn.classList.add('opacity-80', 'cursor-wait');
+                    btnText.textContent = 'Procesando...';
+                    btnIcon.className = 'fas fa-spinner fa-spin text-xs';
+
                     try {
-                        // Comentado temporalmente hasta tener el webhook activo
-                        /*
-                        await fetch(webhookUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ address, email, source: 'landing_page' })
-                        });
-                        */
-                        
+                        let leadId = null;
+
+                        // 2. Guardar en Base de Datos Supabase (o mock local)
+                        if (window.LeadService) {
+                            const resLead = await LeadService.create({
+                                nombre: 'Propietario Web (Tasación)',
+                                email: email,
+                                notas: `Solicitud de valoración de mercado para: ${address}`,
+                                origen: 'web',
+                                estatus: 'nuevo'
+                            });
+                            if (resLead && resLead.data) {
+                                leadId = resLead.data.id;
+                            }
+                        }
+
+                        // 3. Disparar Webhook n8n vía N8nService
+                        const payload = {
+                            evento: 'VALORACION_SOLICITADA',
+                            tipo: 'tasacion_inmueble',
+                            lead_id: leadId,
+                            direccion: address,
+                            email: email,
+                            origen: 'landing_lead_magnet_vende_con_nosotros',
+                            fecha: new Date().toISOString(),
+                            navegador: navigator.userAgent
+                        };
+
+                        if (window.N8nService) {
+                            await N8nService.trigger('VALORACION_LEAD', payload);
+                        } else {
+                            // Fallback fetch directo si el servicio no estuviese en scope
+                            const webhookUrl = (window.APP_CONFIG && APP_CONFIG.N8N_BASE_URL) 
+                                ? (APP_CONFIG.N8N_BASE_URL + (APP_CONFIG.N8N_WEBHOOKS?.VALORACION_LEAD || '/webhook/valoracion-lead'))
+                                : 'https://n8n.tudominio.com/webhook/valoracion-lead';
+                            
+                            if (window.APP_CONFIG && !APP_CONFIG.USE_MOCK_DATA) {
+                                await fetch(webhookUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(payload)
+                                });
+                            } else {
+                                console.log('🟡 MOCK N8N: Webhook VALORACION_LEAD disparado con payload:', payload);
+                            }
+                        }
+
+                        // 4. Mostrar feedback exitoso
+                        if (successAddress) successAddress.textContent = address;
+                        if (successEmail) successEmail.textContent = email;
+                        if (waBtn) {
+                            const waText = encodeURIComponent(`Hola MAXIMUS, acabo de solicitar la valoración de mi inmueble en "${address}" (Email: ${email}). Quisiera atención personalizada.`);
+                            waBtn.href = `https://wa.me/584240000000?text=${waText}`;
+                        }
+
+                        if (successCard) {
+                            successCard.classList.remove('hidden');
+                        }
+
+                        // Limpiar campos del formulario
                         document.getElementById('valuation-form').reset();
-                        document.getElementById('valuation-success').classList.remove('hidden');
-                        setTimeout(() => document.getElementById('valuation-success').classList.add('hidden'), 5000);
+
                     } catch (error) {
-                        console.error('Error enviando lead:', error);
-                        alert('Hubo un error. Por favor intenta más tarde.');
+                        console.error('Error procesando valoración y webhook n8n:', error);
+                        alert('No se pudo enviar la solicitud. Por favor intenta de nuevo.');
+                    } finally {
+                        // Restaurar botón
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-80', 'cursor-wait');
+                        btnText.textContent = 'Analizar';
+                        btnIcon.className = 'fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform';
                     }
                 }
             </script>
@@ -503,67 +549,70 @@
     </section>
 
     <!-- Equipo de Agentes -->
+    <!-- Equipo (Conectado dinámicamente con Supabase / Admin Dashboard) -->
     <section id="equipo" class="py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="text-maximus-accent font-semibold tracking-wider uppercase text-sm mb-2 block">Nuestro Equipo</span>
-                <h2 class="text-3xl font-bold text-maximus-dark mb-4">Agentes Expertos a tu Servicio</h2>
-                <p class="text-gray-500 max-w-2xl mx-auto">Profesionales con años de experiencia listos para asesorarte en cada paso de tu inversión.</p>
+                <span id="equipo-tag" class="text-maximus-accent font-semibold tracking-wider uppercase text-sm mb-2 block">Nuestro Equipo</span>
+                <h2 id="equipo-titulo" class="text-3xl font-bold text-maximus-dark mb-4">Agentes Expertos a tu Servicio</h2>
+                <p id="equipo-subtitulo" class="text-gray-500 max-w-2xl mx-auto">Profesionales con años de experiencia listos para asesorarte en cada paso de tu inversión.</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            
+            <!-- Grid Dinámico de Agentes -->
+            <div id="grid-equipo" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                 <!-- Agente 1 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center">
-                    <div class="relative overflow-hidden aspect-square">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Agente" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
+                    <div class="relative overflow-hidden aspect-square bg-gray-100">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Lic. Eva Camargo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark">Lic. Eva Camargo</h3>
-                        <p class="text-maximus-accent text-sm mb-4">Directora Comercial</p>
+                        <h3 class="text-lg font-bold text-maximus-dark truncate">Lic. Eva Camargo</h3>
+                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Directora Comercial</p>
                         <div class="flex justify-center space-x-3">
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="fab fa-whatsapp"></i></a>
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="far fa-envelope"></i></a>
+                            <a href="https://wa.me/584241234567" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            <a href="mailto:eva.camargo@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
                         </div>
                     </div>
                 </div>
                 <!-- Agente 2 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center">
-                    <div class="relative overflow-hidden aspect-square">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Agente" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
+                    <div class="relative overflow-hidden aspect-square bg-gray-100">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Abg. José Guerrero" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark">Abg. José Guerrero</h3>
-                        <p class="text-maximus-accent text-sm mb-4">Director Legal</p>
+                        <h3 class="text-lg font-bold text-maximus-dark truncate">Abg. José Guerrero</h3>
+                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Director Legal</p>
                         <div class="flex justify-center space-x-3">
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="fab fa-whatsapp"></i></a>
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="far fa-envelope"></i></a>
+                            <a href="https://wa.me/584149876543" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            <a href="mailto:jose.guerrero@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
                         </div>
                     </div>
                 </div>
                 <!-- Agente 3 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center">
-                    <div class="relative overflow-hidden aspect-square">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Agente" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
+                    <div class="relative overflow-hidden aspect-square bg-gray-100">
+                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="María Rodríguez" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark">María Rodríguez</h3>
-                        <p class="text-maximus-accent text-sm mb-4">Asesora Inmobiliaria</p>
+                        <h3 class="text-lg font-bold text-maximus-dark truncate">María Rodríguez</h3>
+                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Asesora Inmobiliaria</p>
                         <div class="flex justify-center space-x-3">
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="fab fa-whatsapp"></i></a>
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="far fa-envelope"></i></a>
+                            <a href="https://wa.me/584125557890" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            <a href="mailto:maria.rodriguez@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
                         </div>
                     </div>
                 </div>
                 <!-- Agente 4 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center">
-                    <div class="relative overflow-hidden aspect-square">
-                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Agente" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
+                    <div class="relative overflow-hidden aspect-square bg-gray-100">
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Carlos Mendoza" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
                     <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark">Carlos Mendoza</h3>
-                        <p class="text-maximus-accent text-sm mb-4">Asesor de Inversiones</p>
+                        <h3 class="text-lg font-bold text-maximus-dark truncate">Carlos Mendoza</h3>
+                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Asesor de Inversiones</p>
                         <div class="flex justify-center space-x-3">
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="fab fa-whatsapp"></i></a>
-                            <a href="#" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-maximus-accent hover:text-white transition-colors"><i class="far fa-envelope"></i></a>
+                            <a href="https://wa.me/584247778899" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            <a href="mailto:carlos.mendoza@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
                         </div>
                     </div>
                 </div>
@@ -579,7 +628,7 @@
                 <h2 class="text-3xl font-bold text-maximus-dark mb-4">Lo que dicen nuestros clientes</h2>
             </div>
             
-            <div class="flex flex-wrap md:flex-nowrap gap-6 justify-center">
+            <div class="testimonios-track no-scrollbar flex flex-wrap md:flex-nowrap gap-6 justify-center">
                 <div class="bg-gray-50 p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
                     <i class="fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200"></i>
                     <div class="text-yellow-400 text-sm mb-4">
@@ -958,57 +1007,332 @@
             });
         });
 
-        // F. Lógica de Pestañas del Buscador (Omni-Search)
-        window.activeSearchTab = 'comprar';
-        
-        window.switchHeroTab = function(tab) {
+        // ========================================================
+        // F. SINCRONIZACIÓN HERO Y DESTACADOS CON SUPABASE / MOCK
+        // ========================================================
+        window.activeSearchTab = 'comprar'; // 'comprar' (venta) | 'alquilar' (alquiler)
+        window.currentOperacionFilter = 'venta'; // 'todos' | 'venta' | 'alquiler'
+        window.currentSearchQuery = '';
+
+        // Formateador de moneda en USD
+        function formatUSD(num) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num || 0);
+        }
+
+        // 1. Cambio de pestaña en el Omni-Search del Hero
+        window.switchHeroTab = function(tab, shouldScroll = false) {
             window.activeSearchTab = tab;
-            const tabs = ['comprar', 'alquilar', 'vender'];
+            window.currentOperacionFilter = (tab === 'comprar') ? 'venta' : 'alquiler';
             
-            // Restablecer estilos a inactivos
-            tabs.forEach(t => {
-                const btn = document.getElementById('tab-' + t);
-                btn.className = "px-6 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm transition-colors";
-            });
-            
-            // Estilo activo
-            document.getElementById('tab-' + tab).className = "px-6 py-2.5 text-white bg-maximus-accent font-semibold text-sm transition-colors";
-            
-            // Cambiar placeholders y botones
+            const btnComprar = document.getElementById('tab-comprar');
+            const btnAlquilar = document.getElementById('tab-alquilar');
             const input = document.getElementById('hero-search-input');
-            const btn = document.getElementById('hero-search-btn');
+            const searchBtn = document.getElementById('hero-search-btn');
             
-            if(tab === 'comprar') {
-                input.placeholder = "Ciudad, barrio o tipo de inmueble...";
-                btn.textContent = "Buscar";
-            } else if (tab === 'alquilar') {
-                input.placeholder = "Buscar alquileres por zona...";
-                btn.textContent = "Buscar";
-            } else if (tab === 'vender') {
-                input.placeholder = "Ingresa la dirección de tu propiedad...";
-                btn.textContent = "Valorar Propiedad";
+            const activeClass = "px-7 py-2.5 text-white bg-maximus-accent font-semibold text-sm rounded-xl transition-all shadow-md flex items-center gap-2";
+            const inactiveClass = "px-7 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm rounded-xl transition-all flex items-center gap-2";
+            
+            if (tab === 'comprar') {
+                if (btnComprar) btnComprar.className = activeClass;
+                if (btnAlquilar) btnAlquilar.className = inactiveClass;
+                if (input) input.placeholder = "Buscar por zona, barrio o tipo (ej: Penthouse, El Parral)...";
+            } else {
+                if (btnAlquilar) btnAlquilar.className = activeClass;
+                if (btnComprar) btnComprar.className = inactiveClass;
+                if (input) input.placeholder = "Buscar por zona, barrio o tipo de alquiler (ej: Apartamento, Centro)...";
+            }
+            
+            // Sincronizar pills de la sección Destacados
+            syncPillsUI(window.currentOperacionFilter);
+            
+            // Recargar propiedades destacadas con la operación seleccionada
+            cargarPropiedadesDestacadas(window.currentOperacionFilter, window.currentSearchQuery);
+
+            if (shouldScroll && typeof lenis !== 'undefined') {
+                lenis.scrollTo('#propiedades', { duration: 1.2, offset: -70 });
             }
         };
 
-        window.executeHeroSearch = function() {
-            const val = document.getElementById('hero-search-input').value;
+        // 2. Sincronizar UI de los pills de filtro en #propiedades
+        function syncPillsUI(operacion) {
+            const pillTodos = document.getElementById('pill-filter-todos');
+            const pillVenta = document.getElementById('pill-filter-venta');
+            const pillAlquiler = document.getElementById('pill-filter-alquiler');
             
-            if (window.activeSearchTab === 'vender') {
-                // Si está en modo vender, llevar a la sección de valoración y precargar el input
-                if (val) {
-                    const valAddress = document.getElementById('val-address');
-                    if (valAddress) valAddress.value = val;
-                }
-                lenis.scrollTo('#valoracion', { duration: 1.5, offset: -50 });
-            } else {
-                // Modo comprar/alquilar, llevar al catálogo con el parámetro de búsqueda (simulado)
-                if (val) {
-                    window.location.href = `catalog.html?q=${encodeURIComponent(val)}&type=${window.activeSearchTab}`;
-                } else {
-                    window.location.href = 'catalog.html';
-                }
+            const activePill = "px-5 py-2 rounded-lg text-xs font-semibold text-white bg-maximus-dark shadow-sm transition-all flex items-center gap-1.5";
+            const inactivePill = "px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5";
+            
+            if (pillTodos) pillTodos.className = (operacion === 'todos') ? activePill : inactivePill;
+            if (pillVenta) pillVenta.className = (operacion === 'venta') ? activePill : inactivePill;
+            if (pillAlquiler) pillAlquiler.className = (operacion === 'alquiler') ? activePill : inactivePill;
+        }
+
+        // 3. Filtrar desde los pills de la sección #propiedades
+        window.filtrarMarqueePorOperacion = function(operacion) {
+            window.currentOperacionFilter = operacion;
+            syncPillsUI(operacion);
+            
+            // Sincronizar con el hero tab si es específico
+            if (operacion === 'venta') {
+                window.activeSearchTab = 'comprar';
+                const btnComprar = document.getElementById('tab-comprar');
+                const btnAlquilar = document.getElementById('tab-alquilar');
+                if (btnComprar) btnComprar.className = "px-7 py-2.5 text-white bg-maximus-accent font-semibold text-sm rounded-xl transition-all shadow-md flex items-center gap-2";
+                if (btnAlquilar) btnAlquilar.className = "px-7 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm rounded-xl transition-all flex items-center gap-2";
+            } else if (operacion === 'alquiler') {
+                window.activeSearchTab = 'alquilar';
+                const btnComprar = document.getElementById('tab-comprar');
+                const btnAlquilar = document.getElementById('tab-alquilar');
+                if (btnAlquilar) btnAlquilar.className = "px-7 py-2.5 text-white bg-maximus-accent font-semibold text-sm rounded-xl transition-all shadow-md flex items-center gap-2";
+                if (btnComprar) btnComprar.className = "px-7 py-2.5 text-white/80 hover:bg-white/10 hover:text-white font-medium text-sm rounded-xl transition-all flex items-center gap-2";
+            }
+            
+            cargarPropiedadesDestacadas(operacion, window.currentSearchQuery);
+        };
+
+        // 4. Manejo de teclado y limpieza en el input de búsqueda
+        window.handleHeroInputKey = function(e) {
+            const clearBtn = document.getElementById('hero-search-clear');
+            if (clearBtn) {
+                clearBtn.classList.toggle('hidden', !e.target.value);
+            }
+            if (e.key === 'Enter') {
+                executeHeroSearch();
             }
         };
+
+        window.clearHeroSearch = function() {
+            const input = document.getElementById('hero-search-input');
+            const clearBtn = document.getElementById('hero-search-clear');
+            if (input) input.value = '';
+            if (clearBtn) clearBtn.classList.add('hidden');
+            window.currentSearchQuery = '';
+            cargarPropiedadesDestacadas(window.currentOperacionFilter, '');
+        };
+
+        // 5. Ejecución de la búsqueda en Hero
+        window.executeHeroSearch = function() {
+            const input = document.getElementById('hero-search-input');
+            const val = input ? input.value.trim() : '';
+            window.currentSearchQuery = val;
+            
+            cargarPropiedadesDestacadas(window.currentOperacionFilter, val);
+            
+            // Actualizar URL del botón "Ver catálogo completo"
+            const btnCatalogo = document.getElementById('btn-ver-catalogo');
+            if (btnCatalogo) {
+                const opParam = window.currentOperacionFilter !== 'todos' ? `&operacion=${window.currentOperacionFilter}` : '';
+                const qParam = val ? `&q=${encodeURIComponent(val)}` : '';
+                btnCatalogo.href = `catalog.html?type=${window.activeSearchTab}${opParam}${qParam}`;
+            }
+            
+            // Desplazamiento fluido hacia la sección de propiedades
+            if (typeof lenis !== 'undefined') {
+                lenis.scrollTo('#propiedades', { duration: 1.2, offset: -70 });
+            }
+        };
+
+        // 6. Carga dinámica de propiedades desde InmuebleService (Supabase / Mock)
+        async function cargarPropiedadesDestacadas(operacion = 'venta', busqueda = '') {
+            const group1 = document.getElementById('marquee-group-1');
+            const group2 = document.getElementById('marquee-group-2');
+            const counterEl = document.getElementById('propiedades-contador');
+            
+            if (!group1 || !group2) return;
+            
+            try {
+                if (!window.InmuebleService) {
+                    console.warn('InmuebleService no disponible aún.');
+                    return;
+                }
+                
+                const filtros = { estatus: 'disponible' };
+                if (operacion && operacion !== 'todos') {
+                    filtros.operacion = operacion;
+                }
+                if (busqueda) {
+                    filtros.busqueda = busqueda;
+                }
+                
+                const res = await InmuebleService.getAll(filtros);
+                let items = (res && res.data) ? res.data : [];
+                
+                // Actualizar contador visual
+                if (counterEl) {
+                    const opTexto = operacion === 'venta' ? 'en Venta' : operacion === 'alquiler' ? 'en Alquiler' : 'disponibles';
+                    const busqTexto = busqueda ? ` para "${busqueda}"` : '';
+                    counterEl.innerHTML = `<span class="text-maximus-dark font-semibold">${items.length} propiedades</span> ${opTexto}${busqTexto} · Datos sincronizados`;
+                }
+
+                // Si no hay resultados con la búsqueda exacta, mostrar aviso o fallback
+                if (items.length === 0) {
+                    const emptyCard = `
+                        <div class="w-[360px] sm:w-[420px] flex-shrink-0 bg-white rounded-2xl p-8 border border-gray-200 text-center shadow-sm">
+                            <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 text-maximus-accent flex items-center justify-center text-2xl mb-4">
+                                <i class="fas fa-search-location"></i>
+                            </div>
+                            <h4 class="font-bold text-gray-900 text-lg mb-2">Búsqueda personalizada</h4>
+                            <p class="text-gray-500 text-sm mb-6">No encontramos inmuebles con ese filtro específico, pero nuestro equipo puede buscar propiedades privadas fuera de catálogo para ti.</p>
+                            <a href="https://wa.me/584240000000?text=${encodeURIComponent('Hola Maximus, busco un inmueble con estas características: ' + busqueda)}" target="_blank" class="inline-flex items-center justify-center w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">
+                                <i class="fab fa-whatsapp mr-2"></i> Consultar por WhatsApp
+                            </a>
+                        </div>
+                    `;
+                    group1.innerHTML = emptyCard;
+                    group2.innerHTML = emptyCard;
+                    return;
+                }
+
+                // Generar tarjetas de propiedades
+                const generateCardsHTML = (inmueblesList) => {
+                    return inmueblesList.map(item => {
+                        const esAlquiler = item.operacion === 'alquiler';
+                        const badgeColor = esAlquiler ? 'bg-blue-600' : 'bg-maximus-accent';
+                        const badgeLabel = esAlquiler ? 'Alquiler' : 'Venta';
+                        const precioFormateado = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-sm font-normal text-gray-400">/ mes</span>' : '');
+                        const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
+                        const codigo = item.id ? ('#MAX-' + item.id.replace('inm-', '').slice(0, 4).toUpperCase()) : '#MAX';
+
+                        return `
+                            <a href="property-detail.html?id=${encodeURIComponent(item.id)}" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                                <div class="relative h-60 overflow-hidden bg-gray-100">
+                                    <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
+                                    <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-md flex items-center gap-1.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                        ${badgeLabel}
+                                    </div>
+                                    ${item.en_oferta ? `<div class="absolute top-4 right-4 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">Destacado</div>` : ''}
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex items-baseline justify-between mb-1">
+                                        <div class="text-2xl font-bold text-maximus-dark">${precioFormateado}</div>
+                                        <span class="text-[10px] font-mono font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${codigo}</span>
+                                    </div>
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate text-gray-900">${item.titulo}</h3>
+                                    <p class="text-gray-500 text-sm mb-4 truncate flex items-center">
+                                        <i class="fas fa-map-marker-alt text-maximus-accent mr-2 flex-shrink-0 text-xs"></i>
+                                        <span>${item.ubicacion || 'San Cristóbal, Táchira'}</span>
+                                    </p>
+                                    <div class="flex justify-between items-center text-gray-600 text-sm border-t border-gray-100 pt-4">
+                                        <span><i class="fas fa-bed mr-1.5 text-maximus-accent"></i> ${item.habitaciones || 0} hab</span>
+                                        <span><i class="fas fa-bath mr-1.5 text-maximus-accent"></i> ${item.banos || 0} ${item.banos == 1 ? 'baño' : 'baños'}</span>
+                                        <span><i class="fas fa-ruler-combined mr-1.5 text-maximus-accent"></i> ${item.metros_cuadrados || 0} m²</span>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    }).join('');
+                };
+
+                // Si hay pocos items, duplicarlos para que la tira de marquee tenga suficiente ancho continuo
+                // (en móvil el carrusel es táctil, por lo que no se duplican tarjetas)
+                const esMovil = window.matchMedia('(max-width: 767px)').matches;
+                let listForMarquee = [...items];
+                while (!esMovil && listForMarquee.length < 6) {
+                    listForMarquee = listForMarquee.concat(items);
+                }
+
+                const htmlCards = generateCardsHTML(listForMarquee);
+                group1.innerHTML = htmlCards;
+                group2.innerHTML = htmlCards;
+
+            } catch (err) {
+                console.error('Error al cargar propiedades en marquee:', err);
+                if (counterEl) counterEl.textContent = 'Portafolio disponible en catálogo';
+            }
+        }
+
+        // 7. Inicializar al cargar el DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar propiedades por defecto (Venta)
+            cargarPropiedadesDestacadas('venta', '');
+            
+            // Cargar miembros del equipo desde EquipoWebService
+            cargarEquipoLanding();
+
+            // Actualizar total general en el Dock del Hero
+            if (window.InmuebleService) {
+                InmuebleService.getAll({ estatus: 'disponible' }).then(res => {
+                    if (res && res.data && res.data.length > 0) {
+                        const statEl = document.getElementById('stat-inmuebles');
+                        if (statEl) statEl.textContent = res.data.length + '+';
+                    }
+                }).catch(e => console.log('Dock stats fallback:', e));
+            }
+        });
+
+        // 8. Carga dinámica de "Nuestro Equipo" desde EquipoWebService (Supabase / Mock)
+        async function cargarEquipoLanding() {
+            try {
+                if (!window.EquipoWebService) return;
+
+                // Cargar textos de cabecera
+                const cfg = EquipoWebService.getConfig();
+                if (cfg) {
+                    const tagEl = document.getElementById('equipo-tag');
+                    const tituloEl = document.getElementById('equipo-titulo');
+                    const subtituloEl = document.getElementById('equipo-subtitulo');
+                    if (tagEl && cfg.etiqueta) tagEl.textContent = cfg.etiqueta;
+                    if (tituloEl && cfg.titulo) tituloEl.textContent = cfg.titulo;
+                    if (subtituloEl && cfg.subtitulo) subtituloEl.textContent = cfg.subtitulo;
+                }
+
+                // Cargar miembros del equipo visibles
+                const res = await EquipoWebService.getAll({ mostrar_en_web: true, activo: true });
+                const miembros = (res && res.data && res.data.length > 0) ? res.data : null;
+                const grid = document.getElementById('grid-equipo');
+
+                if (grid && miembros && miembros.length > 0) {
+                    grid.innerHTML = miembros.map(m => {
+                        const foto = m.foto_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80';
+                        const rawWa = (m.whatsapp || m.telefono || '').replace(/\D/g, '');
+                        const waLink = rawWa ? `https://wa.me/${rawWa}?text=${encodeURIComponent('Hola ' + m.nombre + ', quisiera consultar sobre una propiedad en MAXIMUS.')}` : '#';
+                        const mailLink = m.email ? `mailto:${m.email}?subject=${encodeURIComponent('Consulta Inmobiliaria - MAXIMUS')}` : '#';
+
+                        return `
+                            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group text-center flex flex-col justify-between">
+                                <div class="relative overflow-hidden aspect-square bg-gray-100">
+                                    <img src="${foto}" alt="${m.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80'">
+                                </div>
+                                <div class="p-6">
+                                    <h3 class="text-lg font-bold text-maximus-dark truncate">${m.nombre}</h3>
+                                    <p class="text-maximus-accent text-sm mb-4 truncate font-medium">${m.cargo}</p>
+                                    <div class="flex justify-center space-x-3">
+                                        <a href="${waLink}" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp">
+                                            <i class="fab fa-whatsapp"></i>
+                                        </a>
+                                        <a href="${mailLink}" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo">
+                                            <i class="far fa-envelope"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Error al cargar equipo en landing:', err);
+            }
+        }
+
+        // 9. Menú de navegación móvil
+        window.toggleMobileMenu = function(forceState) {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (!menu) return;
+            const open = typeof forceState === 'boolean' ? forceState : !menu.classList.contains('is-open');
+            menu.classList.toggle('is-open', open);
+            if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (icon) icon.className = open ? 'fas fa-times text-base' : 'fas fa-bars text-base';
+            document.body.style.overflow = open ? 'hidden' : '';
+            if (typeof lenis !== 'undefined') { open ? lenis.stop() : lenis.start(); }
+        };
+
+        // Cerrar menú automáticamente al pasar a escritorio
+        window.matchMedia('(min-width: 768px)').addEventListener('change', e => {
+            if (e.matches) toggleMobileMenu(false);
+        });
 
     </script>
 </body>

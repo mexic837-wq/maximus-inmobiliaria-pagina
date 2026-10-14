@@ -59,12 +59,33 @@ const AuthService = {
 
     /**
      * Verificar si el usuario actual tiene un rol específico.
-     * @param {string} role - 'admin' o 'agente'
+     * @param {string} role - 'admin', 'asesor_maximus', 'asesor_externo' o 'agente'
      * @returns {boolean}
      */
     hasRole(role) {
         const user = this.getCurrentUser();
         return user ? user.role === role : false;
+    },
+
+    isAdmin() {
+        return this.hasRole(APP_CONFIG.ROLES.ADMIN);
+    },
+
+    isAsesorMaximus() {
+        return this.hasRole(APP_CONFIG.ROLES.ASESOR_MAXIMUS) || this.hasRole('agente');
+    },
+
+    isAsesorExterno() {
+        return this.hasRole(APP_CONFIG.ROLES.ASESOR_EXTERNO);
+    },
+
+    canAccessHistorico() {
+        const user = this.getCurrentUser();
+        if (!user) return false;
+        // Permitido para Asesores Maximus y Administradores
+        return user.role === APP_CONFIG.ROLES.ADMIN || 
+               user.role === APP_CONFIG.ROLES.ASESOR_MAXIMUS || 
+               user.role === 'agente';
     },
 
     /**
@@ -90,19 +111,46 @@ const AuthService = {
                     name: 'José Guerrero',
                     email: 'admin@maximus.com',
                     role: APP_CONFIG.ROLES.ADMIN,
+                    tipo_asesor: 'maximus',
                     title: 'Director / Administrador',
-                    avatar: null,
+                    avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
                 }
             },
+            'asesor.maximus@maximus.com': {
+                password: 'maximus123',
+                user: {
+                    id: 'asesor-2',
+                    name: 'Valeria Méndez',
+                    email: 'asesor.maximus@maximus.com',
+                    role: APP_CONFIG.ROLES.ASESOR_MAXIMUS,
+                    tipo_asesor: 'maximus',
+                    title: 'Asesor MAXIMUS Oficial',
+                    avatar: 'https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true',
+                }
+            },
+            'asesor.externo@maximus.com': {
+                password: 'externo123',
+                user: {
+                    id: 'asesor-5',
+                    name: 'Pedro Rivas',
+                    email: 'asesor.externo@maximus.com',
+                    role: APP_CONFIG.ROLES.ASESOR_EXTERNO,
+                    tipo_asesor: 'externo',
+                    title: 'Asesor Externo / Colega Aliado',
+                    avatar: 'https://ui-avatars.com/api/?name=Pedro+Rivas&background=1E3A8A&color=fff&bold=true',
+                }
+            },
+            // Alias y compatibilidad previa
             'agente@maximus.com': {
                 password: 'agente123',
                 user: {
                     id: 'mock-agente-001',
                     name: 'Carlos Pérez',
                     email: 'agente@maximus.com',
-                    role: APP_CONFIG.ROLES.AGENTE,
-                    title: 'Asesor Inmobiliario',
-                    avatar: null,
+                    role: APP_CONFIG.ROLES.ASESOR_MAXIMUS,
+                    tipo_asesor: 'maximus',
+                    title: 'Asesor Inmobiliario MAXIMUS',
+                    avatar: 'https://ui-avatars.com/api/?name=Carlos+Perez&background=0B4A3F&color=fff&bold=true',
                 }
             }
         };
@@ -110,7 +158,7 @@ const AuthService = {
         const entry = mockUsers[email.toLowerCase().trim()];
 
         if (!entry) {
-            return { success: false, error: 'Usuario no encontrado.' };
+            return { success: false, error: 'Usuario no encontrado. Utilice una cuenta autorizada.' };
         }
         if (entry.password !== password) {
             return { success: false, error: 'Contraseña incorrecta.' };

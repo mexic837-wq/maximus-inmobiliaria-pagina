@@ -1,0 +1,123 @@
+{
+  "name": "MAXIMUS - Lead Magnet Valoración Inmueble",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "valoracion-lead",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "id": "node-webhook-1",
+      "name": "Webhook Valoración Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "valoracion-lead"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "direccion",
+              "value": "={{ $json.body.direccion }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.body.email }}"
+            },
+            {
+              "name": "lead_id",
+              "value": "={{ $json.body.lead_id }}"
+            },
+            {
+              "name": "fecha",
+              "value": "={{ $json.body.fecha || $now.toISO() }}"
+            },
+            {
+              "name": "origen",
+              "value": "={{ $json.body.origen || 'landing_lead_magnet' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "node-set-data",
+      "name": "Estructurar Datos del Lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "🏠 MAXIMUS - Hemos recibido la solicitud de valoración para tu propiedad",
+        "message": "=Hola,\n\nHemos recibido la solicitud para realizar el estudio de mercado y valoración pericial de tu inmueble ubicado en:\n📍 {{ $json.direccion }}\n\nNuestro equipo pericial de MAXIMUS ya está calculando los rangos de precio por m² de la zona y las ventas comparativas recientes.\n\nEn breve te enviaremos el reporte preliminar a este correo.\n\nSi deseas acelerar el informe o concertar una visita presencial con uno de nuestros directores, puedes responder a este correo o escribirnos a nuestro WhatsApp oficial: +58 424-0000000.\n\nAtentamente,\nEquipo de Valoraciones MAXIMUS Inmobiliaria\nSan Cristóbal, Táchira"
+      },
+      "id": "node-email-cliente",
+      "name": "Enviar Email Confirmación Cliente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "-1001234567890",
+        "text": "=🚨 *NUEVO LEAD DE VALORACIÓN (LANDING PAGE)*\n\n📍 *Ubicación del Inmueble:* {{ $json.direccion }}\n📧 *Email Propietario:* {{ $json.email }}\n🆔 *ID Lead Supabase:* {{ $json.lead_id }}\n⏱️ *Fecha:* {{ $json.fecha }}\n\n👉 *Acción recomendada:* Contactar al propietario para solicitar fotos y programar visita técnica.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "node-alerta-equipo",
+      "name": "Alerta Telegram / WhatsApp Equipo",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Valoración Lead": {
+      "main": [
+        [
+          {
+            "node": "Estructurar Datos del Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estructurar Datos del Lead": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email Confirmación Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alerta Telegram / WhatsApp Equipo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}
