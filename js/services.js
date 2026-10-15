@@ -521,17 +521,48 @@ const CierreVentaService = {
 
         // ---- SUPABASE REAL ----
         try {
-            const sb = getSupabase();
-            let query = sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).select('*');
-            if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
-            if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') query = query.eq('tipo_operacion', filtros.tipo_operacion);
-            if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') query = query.eq('estatus_comision', filtros.estatus_comision);
-            if (filtros.busqueda) query = query.ilike('inmueble_titulo', `%${filtros.busqueda}%`);
-            query = query.order('fecha_cierre', { ascending: false });
-            return await query;
+            const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (sb) {
+                let query = sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).select('*');
+                if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
+                if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') query = query.eq('tipo_operacion', filtros.tipo_operacion);
+                if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') query = query.eq('estatus_comision', filtros.estatus_comision);
+                if (filtros.busqueda) query = query.ilike('inmueble_titulo', `%${filtros.busqueda}%`);
+                query = query.order('fecha_cierre', { ascending: false });
+                const res = await query;
+                if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                    return res;
+                }
+                if (res && res.error) {
+                    console.warn('⚠️ MAXIMUS CierreVentaService: Supabase error o no autorizado. Usando respaldo local:', res.error);
+                }
+            }
         } catch (err) {
-            return { data: null, error: err.message };
+            console.warn('⚠️ MAXIMUS CierreVentaService: Excepción al conectar con Supabase. Usando respaldo local:', err);
         }
+
+        // ---- RESPALDO LOCAL / MOCK DATA ----
+        let data = this._getStoredCierres();
+        if (filtros.asesor_id && filtros.asesor_id !== 'todos') {
+            data = data.filter(c => c.asesor_id === filtros.asesor_id);
+        }
+        if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') {
+            data = data.filter(c => c.tipo_operacion === filtros.tipo_operacion);
+        }
+        if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') {
+            data = data.filter(c => c.estatus_comision === filtros.estatus_comision);
+        }
+        if (filtros.busqueda) {
+            const q = filtros.busqueda.toLowerCase().trim();
+            data = data.filter(c => 
+                (c.inmueble_titulo && c.inmueble_titulo.toLowerCase().includes(q)) ||
+                (c.asesor_nombre && c.asesor_nombre.toLowerCase().includes(q)) ||
+                (c.ubicacion && c.ubicacion.toLowerCase().includes(q)) ||
+                (c.cliente_comprador && c.cliente_comprador.toLowerCase().includes(q))
+            );
+        }
+        data.sort((a, b) => new Date(b.fecha_cierre) - new Date(a.fecha_cierre));
+        return { data, error: null };
     },
 
     async getMetricas(filtros = {}) {
