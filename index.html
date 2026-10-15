@@ -326,8 +326,10 @@
             
             <!-- Selector Rápido de Operación (Venta / Alquiler / Todos) -->
             <div class="mt-6 inline-flex items-center p-1 bg-white rounded-xl border border-gray-200/80 shadow-sm gap-1">
-                <button id="pill-filter-todos" onclick="filtrarMarqueePorOperacion('todos')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all">Todos</button>
-                <button id="pill-filter-venta" onclick="filtrarMarqueePorOperacion('venta')" class="px-5 py-2 rounded-lg text-xs font-semibold text-white bg-maximus-dark shadow-sm transition-all flex items-center gap-1.5">
+                <button id="pill-filter-todos" onclick="filtrarMarqueePorOperacion('todos')" class="px-5 py-2 rounded-lg text-xs font-semibold text-white bg-maximus-dark shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="fas fa-layer-group text-[10px]"></i> Todos
+                </button>
+                <button id="pill-filter-venta" onclick="filtrarMarqueePorOperacion('venta')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5">
                     <i class="fas fa-key text-[10px]"></i> Comprar
                 </button>
                 <button id="pill-filter-alquiler" onclick="filtrarMarqueePorOperacion('alquiler')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5">
@@ -1006,7 +1008,7 @@
         // F. SINCRONIZACIÓN HERO Y DESTACADOS CON SUPABASE / MOCK
         // ========================================================
         window.activeSearchTab = 'comprar'; // 'comprar' (venta) | 'alquilar' (alquiler)
-        window.currentOperacionFilter = 'venta'; // 'todos' | 'venta' | 'alquiler'
+        window.currentOperacionFilter = 'todos'; // 'todos' | 'venta' | 'alquiler'
         window.currentSearchQuery = '';
 
         // Formateador de moneda en USD
@@ -1127,8 +1129,18 @@
             }
         };
 
+        // Función para aleatorizar arrays (Fisher-Yates shuffle)
+        function shuffleInmuebles(arr) {
+            const copia = [...arr];
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+        }
+
         // 6. Carga dinámica de propiedades desde InmuebleService (Supabase / Mock)
-        async function cargarPropiedadesDestacadas(operacion = 'venta', busqueda = '') {
+        async function cargarPropiedadesDestacadas(operacion = 'todos', busqueda = '') {
             const group1 = document.getElementById('marquee-group-1');
             const group2 = document.getElementById('marquee-group-2');
             const counterEl = document.getElementById('propiedades-contador');
@@ -1150,16 +1162,29 @@
                 }
                 
                 const res = await InmuebleService.getAll(filtros);
-                let items = (res && res.data) ? res.data : [];
-                
-                // Actualizar contador visual
-                if (counterEl) {
-                    const opTexto = operacion === 'venta' ? 'en Venta' : operacion === 'alquiler' ? 'en Alquiler' : 'disponibles';
-                    const busqTexto = busqueda ? ` para "${busqueda}"` : '';
-                    counterEl.innerHTML = `<span class="text-maximus-dark font-semibold">${items.length} propiedades</span> ${opTexto}${busqTexto} · Datos sincronizados`;
+                let items = (res && res.data && res.data.length > 0) ? res.data : [];
+
+                // Respaldo secundario si la consulta no arrojó resultados sin búsqueda específica
+                if (items.length === 0 && !busqueda) {
+                    if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
+                        items = [...MOCK_DATA.inmuebles];
+                        if (operacion && operacion !== 'todos') {
+                            items = items.filter(i => i.operacion === operacion);
+                        }
+                    }
                 }
 
-                // Si no hay resultados con la búsqueda exacta, mostrar aviso o fallback
+                // SIEMPRE barajar aleatoriamente las propiedades subidas para que salgan al azar
+                items = shuffleInmuebles(items);
+                
+                // Actualizar contador visual si existe
+                if (counterEl) {
+                    const opTexto = operacion === 'venta' ? 'en Venta' : operacion === 'alquiler' ? 'en Alquiler' : 'en Catálogo';
+                    const busqTexto = busqueda ? ` para "${busqueda}"` : '';
+                    counterEl.innerHTML = `<span class="text-maximus-dark font-semibold">${items.length} propiedades</span> ${opTexto}${busqTexto} · Sincronizadas al azar`;
+                }
+
+                // Si tras todo no hay resultados (búsqueda que no coincide con nada)
                 if (items.length === 0) {
                     const emptyCard = `
                         <div class="w-[360px] sm:w-[420px] flex-shrink-0 bg-white rounded-2xl p-8 border border-gray-200 text-center shadow-sm">
@@ -1183,8 +1208,9 @@
                     return inmueblesList.map(item => {
                         const esAlquiler = item.operacion === 'alquiler';
                         const badgeColor = esAlquiler ? 'bg-blue-600' : 'bg-maximus-accent';
-                        const badgeLabel = esAlquiler ? 'Alquiler' : 'Venta';
-                        const precioFormateado = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-sm font-normal text-gray-400">/ mes</span>' : '');
+                        const badgeLabel = esAlquiler ? 'ALQUILER' : 'VENTA';
+                        const tipoLabel = (item.tipo || 'INMUEBLE').toUpperCase();
+                        const precioFormateado = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-xs font-medium text-gray-400">/ mes</span>' : '');
                         const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
                         const codigo = item.id ? ('#MAX-' + item.id.replace('inm-', '').slice(0, 4).toUpperCase()) : '#MAX';
 
@@ -1192,13 +1218,22 @@
                             <a href="/detalle-propiedad?id=${encodeURIComponent(item.id)}" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
                                 <div class="relative h-60 overflow-hidden bg-gray-100">
                                     <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
-                                    <div class="absolute top-3.5 left-3.5 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-2.5 py-1 rounded-lg">
-                                        ${badgeLabel}
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                                        <span class="${badgeColor} text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg shadow-md tracking-wider">
+                                            ${badgeLabel}
+                                        </span>
+                                        <span class="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase px-2 py-1 rounded-lg">
+                                            ${tipoLabel}
+                                        </span>
+                                    </div>
+                                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-gray-800 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                                        ${codigo}
                                     </div>
                                 </div>
                                 <div class="p-6">
                                     <div class="text-2xl font-bold text-maximus-dark mb-1">${precioFormateado}</div>
-                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate text-gray-900">${item.titulo}</h3>
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate text-gray-900" title="${item.titulo}">${item.titulo}</h3>
                                     <p class="text-gray-500 text-sm mb-4 truncate flex items-center">
                                         <i class="fas fa-map-marker-alt text-maximus-accent mr-2 flex-shrink-0 text-xs"></i>
                                         <span>${item.ubicacion || 'San Cristóbal, Táchira'}</span>
@@ -1214,12 +1249,11 @@
                     }).join('');
                 };
 
-                // Si hay pocos items, duplicarlos para que la tira de marquee tenga suficiente ancho continuo
-                // (en móvil el carrusel es táctil, por lo que no se duplican tarjetas)
+                // Asegurar que haya suficientes tarjetas para un carrusel marquee sin saltos
                 const esMovil = window.matchMedia('(max-width: 767px)').matches;
                 let listForMarquee = [...items];
-                while (!esMovil && listForMarquee.length < 6) {
-                    listForMarquee = listForMarquee.concat(items);
+                while (listForMarquee.length > 0 && listForMarquee.length < 8) {
+                    listForMarquee = listForMarquee.concat(shuffleInmuebles(items));
                 }
 
                 const htmlCards = generateCardsHTML(listForMarquee);
@@ -1234,8 +1268,10 @@
 
         // 7. Inicializar al cargar el DOM
         document.addEventListener('DOMContentLoaded', function() {
-            // Cargar propiedades por defecto (Venta)
-            cargarPropiedadesDestacadas('venta', '');
+            // Cargar propiedades por defecto (Todas, al azar)
+            window.currentOperacionFilter = 'todos';
+            syncPillsUI('todos');
+            cargarPropiedadesDestacadas('todos', '');
             
             // Cargar miembros del equipo desde EquipoWebService
             cargarEquipoLanding();

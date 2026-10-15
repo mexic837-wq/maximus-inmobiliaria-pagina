@@ -53,8 +53,11 @@ const MOCK_DATA = {
             habitaciones: 0,
             banos: 1,
             metros_cuadrados: 80,
-            foto_principal: null, // SIN FOTO
-            fotos: [],
+            foto_principal: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
+            fotos: [
+                'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
+                'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
+            ],
             en_oferta: false,
             propietario_nombre: 'Inversiones ABC C.A.',
             propietario_telefono: '+58 412-9876543',
