@@ -39,7 +39,7 @@
 
     <!-- Barra Superior / Acciones Rápidas -->
     <div class="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-5 max-w-7xl mx-auto">
-        <a href="index.html" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-semibold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5">
+        <a href="/inicio" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-semibold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5">
             <i class="fas fa-arrow-left text-maximus-accent"></i>
             <span>Volver a la Web</span>
         </a>
@@ -260,7 +260,7 @@
             if (window.AuthService) {
                 const res = await window.AuthService.login(email, password);
                 if (res.success) {
-                    window.location.href = 'dashboard-layout.html';
+                    window.location.href = '/dashboard';
                     return;
                 } else {
                     alert(res.error || 'Credenciales incorrectas.');
@@ -278,7 +278,7 @@
                     tipo_asesor: 'maximus',
                     title: 'Director / Administrador'
                 }));
-                window.location.href = 'dashboard-layout.html';
+                window.location.href = '/dashboard';
             } else if (email === 'asesor.maximus@maximus.com' && password === 'maximus123') {
                 localStorage.setItem('maximus_user', JSON.stringify({
                     id: 'asesor-2',
@@ -288,7 +288,7 @@
                     tipo_asesor: 'maximus',
                     title: 'Asesor MAXIMUS Oficial'
                 }));
-                window.location.href = 'dashboard-layout.html';
+                window.location.href = '/dashboard';
             } else if (email === 'asesor.externo@maximus.com' && password === 'externo123') {
                 localStorage.setItem('maximus_user', JSON.stringify({
                     id: 'asesor-5',
@@ -298,7 +298,7 @@
                     tipo_asesor: 'externo',
                     title: 'Asesor Externo / Colega'
                 }));
-                window.location.href = 'dashboard-layout.html';
+                window.location.href = '/dashboard';
             } else if (email === 'agente@maximus.com' && password === 'agente123') {
                 localStorage.setItem('maximus_user', JSON.stringify({
                     id: 'mock-agente-001',
@@ -308,7 +308,7 @@
                     tipo_asesor: 'maximus',
                     title: 'Asesor Inmobiliario MAXIMUS'
                 }));
-                window.location.href = 'dashboard-layout.html';
+                window.location.href = '/dashboard';
             } else {
                 alert('Credenciales incorrectas. Puede usar los botones de acceso rápido o: admin@maximus.com / asesor.maximus@maximus.com / asesor.externo@maximus.com');
             }

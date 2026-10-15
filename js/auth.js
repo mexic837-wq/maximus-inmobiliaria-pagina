@@ -30,14 +30,14 @@ const AuthService = {
         if (APP_CONFIG.USE_MOCK_DATA) {
             localStorage.removeItem('maximus_user');
             localStorage.removeItem('maximus_session');
-            window.location.href = 'login.html';
+            window.location.href = '/login';
             return;
         }
         
         const sb = getSupabase();
         await sb.auth.signOut();
         localStorage.removeItem('maximus_user');
-        window.location.href = 'login.html';
+        window.location.href = '/login';
     },
 
     /**
@@ -93,7 +93,7 @@ const AuthService = {
      */
     requireAuth() {
         if (!this.isAuthenticated()) {
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         }
     },
 

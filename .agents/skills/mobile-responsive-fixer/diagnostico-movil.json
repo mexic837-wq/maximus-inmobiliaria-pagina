@@ -1,0 +1,566 @@
+{
+  "dashboard-layout.html": [
+    {
+      "line": 710,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": ".view-section .text-4xl, .view-section .text-5xl { font-size: 26px !important; }",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 853,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<div class=\"sidebar-header h-[90px] flex items-center px-8 pt-3 border-b border-maximus-silver/20 re",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 1331,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1550px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-inmuebles\" class=\"view-section max-w-[1550px] mx-auto space-y-3.5 pb-6\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 1736,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1240px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-exclusivas-maximus\" class=\"view-section max-w-[1240px] mx-auto space-y-6\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 1746,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-2xl md:text-4xl font-extrabold tracking-tight text-white leading-tight\">",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 1929,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-vendidos\" class=\"view-section max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 1931,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Cierres de Mercado</h2>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 1939,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h3 class=\"text-4xl font-extrabold tracking-tight\">1,240</h3>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 1943,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h3 class=\"text-4xl font-extrabold text-maximus-accent tracking-tight\">850</h3>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 1947,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h3 class=\"text-4xl font-extrabold text-blue-500 tracking-tight\">390</h3>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 1975,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<div class=\"bg-maximus-accent text-white font-black text-2xl tracking-widest px-8 py-3 rounded-xl sh",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2002,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<div class=\"bg-blue-600 text-white font-black text-2xl tracking-widest px-8 py-3 rounded-xl shadow-2",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2030,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1450px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-historico-asesores\" class=\"view-section asesor-maximus-only max-w-[1450px] mx-auto",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 2405,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-metricas\" class=\"view-section max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 2407,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Inteligencia de Datos</h2>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 2494,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-pagos\" class=\"view-section agente-only max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 2497,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Facturación</h2>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 2514,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">Fecha de Pago</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2515,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">Método Usado</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2516,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">N° Referencia</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2517,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5 text-right\">Monto</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2518,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5 text-center\">Estado</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2523,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 font-bold text-maximus-dark\">01 Oct 2024</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2524,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-sm font-medium text-gray-600 flex items-center gap-3\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2527,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-gray-400 font-mono text-xs\">REF-00123</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2528,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 font-black text-maximus-dark text-lg text-right\">$25.00</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2529,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-center\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2536,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 font-bold text-maximus-dark\">01 Sep 2024</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2537,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-sm font-medium text-gray-600 flex items-center gap-3\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2540,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-gray-400 font-mono text-xs\">TX-99881A</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2541,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 font-black text-maximus-dark text-lg text-right\">$25.00</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2542,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-center\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2549,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 font-bold text-maximus-dark\">01 Ago 2024</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2550,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-sm font-medium text-gray-600 flex items-center gap-3\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2553,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-gray-400 font-mono text-xs\">001299994</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2554,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 font-black text-maximus-dark text-lg text-right\">$25.00</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2555,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-5 text-center\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2568,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-tutoriales\" class=\"view-section agente-only max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 2570,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Academia MAXIMUS</h2>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 2630,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-cotizador\" class=\"view-section agente-only max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 2633,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Cotizador Inmobiliario Express<",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 2787,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-admin-cotizador\" class=\"view-section admin-only max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 2790,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Gestión de Precios por Metro Cu",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 2812,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">Sector / Zona</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2813,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">Municipio</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2814,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">Precio Base / m²</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2815,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5\">Rango Mín - Máx</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2816,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<th class=\"px-8 py-5 text-right\">Acciones</th>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 2880,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-admin-config\" class=\"view-section admin-only max-w-[1400px] mx-auto space-y-8\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 3056,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<button type=\"button\" onclick=\"guardarAsesorMaximus()\" class=\"px-8 py-3.5 rounded-xl bg-maximus-dark",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 3126,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-admin-equipo-web\" class=\"view-section admin-only max-w-[1400px] mx-auto space-y-8\"",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 3330,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-admin-tutoriales\" class=\"view-section admin-only max-w-[1400px] mx-auto space-y-8\"",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 3332,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Gestión de Academia MAXIMUS</h2",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 3377,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<button type=\"button\" class=\"w-full md:w-auto px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#0736",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 3421,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-admin-cargar-inmueble\" class=\"view-section admin-only max-w-[1400px] mx-auto space",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 3423,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<h2 class=\"text-4xl font-extrabold text-maximus-dark tracking-tight\">Cargar Nuevo Inmueble</h2>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 3659,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<button type=\"button\" onclick=\"guardarInmuebleAdmin()\" class=\"px-8 py-3.5 rounded-xl bg-maximus-dark",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 3670,
+      "type": "ANCHO_FIJO_DESBORDANTE",
+      "severity": "critical",
+      "detail": "Ancho fijo de 1400px sin adaptación móvil. En pantallas de 360-390px causa desbordamiento lateral.",
+      "snippet": "<section id=\"view-colecciones\" class=\"view-section max-w-[1400px] mx-auto space-y-5\">",
+      "remedy": "Reemplazar con w-full sm:w-[...px] o max-w-full"
+    },
+    {
+      "line": 5940,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-4 font-bold text-maximus-dark text-sm flex items-center gap-3\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 5946,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-4 text-sm text-gray-500 font-semibold\">${zona.municipio}</td>",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 5947,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-4\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 5952,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-4 text-xs font-bold text-gray-400\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 5955,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<td class=\"px-8 py-4 text-right\">",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 7741,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<i class=\"ph-bold ph-magnifying-glass text-4xl text-emerald-300/60\"></i>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 8530,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<i class=\"ph ph-receipt text-4xl mb-2 text-gray-300 block\"></i>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    }
+  ],
+  "index.html": [
+    {
+      "line": 261,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<button id=\"hero-search-btn\" onclick=\"executeHeroSearch()\" class=\"bg-maximus-dark hover:bg-black tex",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 367,
+      "type": "PADDING_EXCESIVO",
+      "severity": "warning",
+      "detail": "Uso de px-8 sin prefijo responsive sm:. Puede desperdiciar hasta 64px de ancho en móviles.",
+      "snippet": "<button type=\"submit\" id=\"btn-val-submit\" class=\"bg-maximus-accent hover:bg-emerald-400 text-white p",
+      "remedy": "Reemplazar por px-3.5 sm:px-8 o px-4 sm:px-8"
+    },
+    {
+      "line": 615,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<i class=\"fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200\"></i>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 632,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<i class=\"fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200\"></i>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    },
+    {
+      "line": 649,
+      "type": "TIPOGRAFIA_DESPROPORCIONADA",
+      "severity": "info",
+      "detail": "text-4xl directo puede forzar saltos de línea indeseados en pantallas móviles.",
+      "snippet": "<i class=\"fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200\"></i>",
+      "remedy": "Usar escala móvil-primero: text-2xl sm:text-4xl"
+    }
+  ]
+}
