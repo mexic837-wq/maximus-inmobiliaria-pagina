@@ -115,6 +115,8 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, () => {
   const url = `http://localhost:${PORT}/inicio`;
-  console.log(`Servidor local activo en: ${url}`);
-  exec(`start ${url}`);
+  console.log(`Servidor activo en: ${url}`);
+  if (process.platform === 'win32' && !process.env.NO_AUTO_OPEN) {
+    exec(`start ${url}`);
+  }
 });
