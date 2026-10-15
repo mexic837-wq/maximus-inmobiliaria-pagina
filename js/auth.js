@@ -25,18 +25,42 @@ const AuthService = {
      * @returns {Promise<{success: boolean, user?: object, error?: string}>}
      */
     async login(email, password, rememberDevice = false) {
-        let result;
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            result = this._mockLogin(email, password);
-        } else {
-            result = await this._supabaseLogin(email, password);
+        const cleanEmail = (email || '').trim().toLowerCase();
+        let result = null;
+
+        // 1. Si es una de las cuentas demo del portal, permitir acceso directo con perfil simulado
+        const demoAccounts = ['admin@maximus.com', 'asesor.maximus@maximus.com', 'asesor.externo@maximus.com', 'agente@maximus.com'];
+        if (demoAccounts.includes(cleanEmail)) {
+            const demoRes = this._mockLogin(cleanEmail, password);
+            if (demoRes.success) {
+                this._saveSession(demoRes.user, cleanEmail, rememberDevice);
+                return demoRes;
+            }
         }
 
-        if (result.success && result.user) {
-            this._saveSession(result.user, email, rememberDevice);
+        // 2. Si no es cuenta demo y estamos en modo producción (Supabase)
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                result = await this._supabaseLogin(cleanEmail, password);
+                if (result.success && result.user) {
+                    this._saveSession(result.user, cleanEmail, rememberDevice);
+                    return result;
+                }
+            } catch (err) {
+                console.warn('Supabase login error:', err);
+            }
         }
 
-        return result;
+        // 3. Fallback a cuentas mock configuradas
+        if (!result || !result.success) {
+            const fallbackRes = this._mockLogin(cleanEmail, password);
+            if (fallbackRes.success) {
+                this._saveSession(fallbackRes.user, cleanEmail, rememberDevice);
+                return fallbackRes;
+            }
+        }
+
+        return result || { success: false, error: 'Credenciales inválidas. Verifique su correo y contraseña.' };
     },
 
     /**
@@ -306,7 +330,10 @@ const AuthService = {
      */
     async _supabaseLogin(email, password) {
         try {
-            const sb = getSupabase();
+            const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+            if (!sb) {
+                return { success: false, error: 'Servicio de Supabase no disponible temporalmente.' };
+            }
 
             // 1. Autenticar con Supabase Auth
             const { data, error } = await sb.auth.signInWithPassword({
