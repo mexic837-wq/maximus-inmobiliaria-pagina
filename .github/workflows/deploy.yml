@@ -1,0 +1,26 @@
+name: Deploy Automatico a VPS
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Conectar a VPS y actualizar proyecto
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /var/www/maximus-inmobiliaria-pagina
+            git pull origin main
+            npm install
+            npm run build --if-present
+            pm2 restart maximus
