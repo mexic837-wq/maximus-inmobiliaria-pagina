@@ -1324,6 +1324,30 @@
             if (e.matches) toggleMobileMenu(false);
         });
 
+        // 10. Reconocimiento inteligente de sesión activa en la navegación
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.AuthService) {
+                const isAuth = await window.AuthService.checkSession();
+                if (isAuth) {
+                    const user = window.AuthService.getCurrentUser();
+                    const firstName = user && user.name ? user.name.split(' ')[0] : 'Panel';
+                    
+                    const loginLinks = document.querySelectorAll('a[href="/login"]');
+                    loginLinks.forEach(link => {
+                        link.href = '/dashboard';
+                        if (link.classList.contains('px-6')) {
+                            link.innerHTML = `<i class="fas fa-th-large mr-2"></i> Mi Panel (${firstName})`;
+                            link.classList.add('bg-emerald-800');
+                        } else if (link.querySelector('.fa-user')) {
+                            link.innerHTML = `<i class="fas fa-th-large text-[11px]"></i> Panel`;
+                        } else {
+                            link.innerHTML = `<span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center"><i class="fas fa-th-large text-sm"></i></span> Mi Panel Inmobiliario`;
+                        }
+                    });
+                }
+            }
+        });
+
     </script>
 </body>
 </html>

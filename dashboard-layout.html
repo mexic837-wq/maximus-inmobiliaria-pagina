@@ -4785,16 +4785,31 @@
         // ==========================================
         // 1. AUTENTICACIÓN
         // ==========================================
-        document.addEventListener('DOMContentLoaded', () => {
-            const userData = localStorage.getItem('maximus_user');
+        document.addEventListener('DOMContentLoaded', async () => {
+            let user = null;
+            if (window.AuthService) {
+                const isAuth = await window.AuthService.checkSession();
+                if (!isAuth) {
+                    window.location.replace('/login');
+                    return;
+                }
+                user = window.AuthService.getCurrentUser();
+            } else {
+                const userData = localStorage.getItem('maximus_user') || sessionStorage.getItem('maximus_user');
+                if (!userData) {
+                    window.location.replace('/login');
+                    return;
+                }
+                try { user = JSON.parse(userData); } catch (e) {}
+            }
+
             let userRole = 'asesor_maximus';
-            if (userData) {
-                const user = JSON.parse(userData);
+            if (user) {
                 userRole = user.role || 'asesor_maximus';
                 if (userRole === 'agente') userRole = 'asesor_maximus';
-                document.getElementById('userName').textContent = user.name;
-                document.getElementById('userAvatar').src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0B4A3F&color=fff&bold=true`;
-                if (user.title) {
+                if (document.getElementById('userName')) document.getElementById('userName').textContent = user.name;
+                if (document.getElementById('userAvatar')) document.getElementById('userAvatar').src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0B4A3F&color=fff&bold=true`;
+                if (user.title && document.getElementById('userTitle')) {
                     document.getElementById('userTitle').textContent = user.title;
                 }
                 const dropName = document.getElementById('dropdown-userName');
@@ -4923,9 +4938,15 @@
             }, 40);
         });
 
-        function logout() {
-            localStorage.removeItem('maximus_user');
-            window.location.href = '/login';
+        async function logout() {
+            if (window.AuthService) {
+                await window.AuthService.logout();
+            } else {
+                localStorage.setItem('maximus_logged_out', 'true');
+                localStorage.removeItem('maximus_user');
+                sessionStorage.removeItem('maximus_user');
+                window.location.href = '/login';
+            }
         }
 
         // ==========================================

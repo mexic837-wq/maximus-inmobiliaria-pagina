@@ -1,65 +1,190 @@
 /**
- * ============================================
- * MAXIMUS - Servicio de Autenticación
- * ============================================
+ * ==============================================================================
+ * MAXIMUS INMOBILIARIA - Servicio de Autenticación y Sesión Inteligente
+ * ==============================================================================
  * 
- * Maneja login, logout, sesión y roles.
- * En modo MOCK usa localStorage.
- * En producción usa Supabase Auth.
+ * Gestiona autenticación, roles, persistencia inteligente ("Recordar dispositivo"),
+ * auto-redirección de sesión y cierre de sesión seguro tanto en MOCK como en Supabase.
  */
 
 const AuthService = {
+
+    KEYS: {
+        USER: 'maximus_user',
+        REMEMBER: 'maximus_remember_device',
+        SAVED_EMAIL: 'maximus_saved_email',
+        EXPLICIT_LOGOUT: 'maximus_logged_out',
+        SESSION_TIMESTAMP: 'maximus_session_start'
+    },
 
     /**
      * Iniciar sesión.
      * @param {string} email 
      * @param {string} password 
+     * @param {boolean} rememberDevice - Si es true, la sesión se mantiene en este dispositivo indefinidamente.
      * @returns {Promise<{success: boolean, user?: object, error?: string}>}
      */
-    async login(email, password) {
+    async login(email, password, rememberDevice = false) {
+        let result;
         if (APP_CONFIG.USE_MOCK_DATA) {
-            return this._mockLogin(email, password);
+            result = this._mockLogin(email, password);
+        } else {
+            result = await this._supabaseLogin(email, password);
         }
-        return this._supabaseLogin(email, password);
+
+        if (result.success && result.user) {
+            this._saveSession(result.user, email, rememberDevice);
+        }
+
+        return result;
     },
 
     /**
-     * Cerrar sesión.
+     * Guardar sesión respetando la preferencia de "Recordar dispositivo".
+     */
+    _saveSession(user, email, rememberDevice) {
+        // Limpiar marca de logout explícito
+        localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
+
+        const serialized = JSON.stringify(user);
+        const timestamp = Date.now().toString();
+
+        if (rememberDevice) {
+            // Guardar permanentemente en localStorage
+            localStorage.setItem(this.KEYS.USER, serialized);
+            localStorage.setItem(this.KEYS.REMEMBER, 'true');
+            localStorage.setItem(this.KEYS.SAVED_EMAIL, email || user.email);
+            localStorage.setItem(this.KEYS.SESSION_TIMESTAMP, timestamp);
+            sessionStorage.removeItem(this.KEYS.USER);
+        } else {
+            // Guardar solo para la sesión actual del navegador (se pierde al cerrar la ventana)
+            sessionStorage.setItem(this.KEYS.USER, serialized);
+            sessionStorage.setItem(this.KEYS.SESSION_TIMESTAMP, timestamp);
+            localStorage.removeItem(this.KEYS.USER);
+            localStorage.removeItem(this.KEYS.REMEMBER);
+            localStorage.removeItem(this.KEYS.SAVED_EMAIL);
+        }
+    },
+
+    /**
+     * Cerrar sesión de manera explícita y segura.
      */
     async logout() {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            localStorage.removeItem('maximus_user');
-            localStorage.removeItem('maximus_session');
-            window.location.href = '/login';
-            return;
+        // Marcar que el usuario salió intencionalmente para no auto-loguearlo en la siguiente visita
+        localStorage.setItem(this.KEYS.EXPLICIT_LOGOUT, 'true');
+        localStorage.removeItem(this.KEYS.USER);
+        sessionStorage.removeItem(this.KEYS.USER);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+                if (sb && sb.auth) {
+                    await sb.auth.signOut();
+                }
+            } catch (e) {
+                console.warn('Aviso: error cerrando sesión en Supabase:', e);
+            }
         }
-        
-        const sb = getSupabase();
-        await sb.auth.signOut();
-        localStorage.removeItem('maximus_user');
+
         window.location.href = '/login';
     },
 
     /**
-     * Obtener usuario actual de la sesión.
+     * Obtener usuario actual (busca primero en sessionStorage y luego en localStorage).
      * @returns {object|null}
      */
     getCurrentUser() {
-        const data = localStorage.getItem('maximus_user');
-        return data ? JSON.parse(data) : null;
+        const sessionData = sessionStorage.getItem(this.KEYS.USER);
+        if (sessionData) {
+            try { return JSON.parse(sessionData); } catch (e) {}
+        }
+
+        const localData = localStorage.getItem(this.KEYS.USER);
+        if (localData) {
+            try { return JSON.parse(localData); } catch (e) {}
+        }
+
+        return null;
     },
 
     /**
-     * Verificar si hay sesión activa.
+     * Consulta si el usuario tiene sesión activa actualmente.
      * @returns {boolean}
      */
     isAuthenticated() {
+        if (localStorage.getItem(this.KEYS.EXPLICIT_LOGOUT) === 'true') {
+            return false;
+        }
         return this.getCurrentUser() !== null;
     },
 
     /**
-     * Verificar si el usuario actual tiene un rol específico.
-     * @param {string} role - 'admin', 'asesor_maximus', 'asesor_externo' o 'agente'
+     * Verificación inteligente asíncrona completa (compatible con Supabase Auth y Local/Session).
+     * @returns {Promise<boolean>}
+     */
+    async checkSession() {
+        // Si el usuario presionó "Cerrar Sesión", no lo auto-logueamos
+        if (localStorage.getItem(this.KEYS.EXPLICIT_LOGOUT) === 'true') {
+            return false;
+        }
+
+        // Si estamos en modo Supabase real, verificar token activo
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+                if (sb && sb.auth) {
+                    const { data: { session }, error } = await sb.auth.getSession();
+                    if (!error && session && session.user) {
+                        // Si no tenemos el perfil en cache local, lo sincronizamos
+                        let user = this.getCurrentUser();
+                        if (!user) {
+                            const { data: perfil } = await sb
+                                .from(APP_CONFIG.TABLES.USUARIOS)
+                                .select('*')
+                                .eq('auth_id', session.user.id)
+                                .single();
+
+                            user = {
+                                id: session.user.id,
+                                name: perfil ? perfil.nombre_completo : (session.user.user_metadata?.nombre_completo || session.user.email.split('@')[0]),
+                                email: session.user.email,
+                                role: perfil ? perfil.rol : (session.user.user_metadata?.rol || 'asesor_maximus'),
+                                title: perfil ? perfil.titulo : 'Asesor Inmobiliario',
+                                avatar: perfil ? perfil.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`
+                            };
+                            this._saveSession(user, session.user.email, this.shouldRemember());
+                        }
+                        return true;
+                    }
+                }
+            } catch (err) {
+                console.warn('Aviso: Verificación de sesión Supabase fallback a local:', err);
+            }
+        }
+
+        // En modo mock o como respaldo rápido
+        return this.getCurrentUser() !== null;
+    },
+
+    /**
+     * Verifica si se marcó previamente "Recordar dispositivo".
+     * @returns {boolean}
+     */
+    shouldRemember() {
+        return localStorage.getItem(this.KEYS.REMEMBER) === 'true';
+    },
+
+    /**
+     * Retorna el correo recordado si existe.
+     * @returns {string}
+     */
+    getSavedEmail() {
+        return localStorage.getItem(this.KEYS.SAVED_EMAIL) || '';
+    },
+
+    /**
+     * Verifica si el usuario actual tiene un rol específico.
+     * @param {string} role
      * @returns {boolean}
      */
     hasRole(role) {
@@ -82,25 +207,35 @@ const AuthService = {
     canAccessHistorico() {
         const user = this.getCurrentUser();
         if (!user) return false;
-        // Permitido para Asesores Maximus y Administradores
         return user.role === APP_CONFIG.ROLES.ADMIN || 
                user.role === APP_CONFIG.ROLES.ASESOR_MAXIMUS || 
                user.role === 'agente';
     },
 
     /**
-     * Proteger una página: redirige al login si no hay sesión.
+     * Proteger página: redirige al login si no hay sesión.
      */
-    requireAuth() {
-        if (!this.isAuthenticated()) {
-            window.location.href = '/login';
+    async requireAuth(redirectTo = '/login') {
+        const isAuth = await this.checkSession();
+        if (!isAuth) {
+            window.location.replace(redirectTo);
+        }
+    },
+
+    /**
+     * Proteger login: redirige al dashboard si ya hay sesión activa.
+     */
+    async redirectIfAuthenticated(targetUrl = '/dashboard') {
+        const isAuth = await this.checkSession();
+        if (isAuth) {
+            window.location.replace(targetUrl);
         }
     },
 
     // ===== IMPLEMENTACIONES PRIVADAS =====
 
     /**
-     * Login MOCK (datos ficticios para desarrollo local).
+     * Login MOCK
      */
     _mockLogin(email, password) {
         const mockUsers = {
@@ -140,7 +275,6 @@ const AuthService = {
                     avatar: 'https://ui-avatars.com/api/?name=Pedro+Rivas&background=1E3A8A&color=fff&bold=true',
                 }
             },
-            // Alias y compatibilidad previa
             'agente@maximus.com': {
                 password: 'agente123',
                 user: {
@@ -164,14 +298,11 @@ const AuthService = {
             return { success: false, error: 'Contraseña incorrecta.' };
         }
 
-        // Guardar sesión en localStorage
-        localStorage.setItem('maximus_user', JSON.stringify(entry.user));
         return { success: true, user: entry.user };
     },
 
     /**
      * Login REAL con Supabase Auth.
-     * Se activará cuando USE_MOCK_DATA sea false.
      */
     async _supabaseLogin(email, password) {
         try {
@@ -194,29 +325,24 @@ const AuthService = {
                 .eq('auth_id', data.user.id)
                 .single();
 
-            if (perfilError) {
-                return { success: false, error: 'No se encontró el perfil del usuario.' };
-            }
-
             const user = {
                 id: data.user.id,
-                name: perfil.nombre_completo,
+                name: perfil ? perfil.nombre_completo : (data.user.user_metadata?.nombre_completo || data.user.email.split('@')[0]),
                 email: data.user.email,
-                role: perfil.rol,
-                title: perfil.titulo || 'Agente',
-                avatar: perfil.avatar_url,
+                role: perfil ? perfil.rol : (data.user.user_metadata?.rol || 'asesor_maximus'),
+                title: perfil ? perfil.titulo : 'Asesor Inmobiliario',
+                avatar: perfil ? perfil.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(data.user.email)}&background=0B4A3F&color=fff&bold=true`,
             };
 
-            localStorage.setItem('maximus_user', JSON.stringify(user));
             return { success: true, user };
 
         } catch (err) {
-            return { success: false, error: 'Error de conexión con el servidor.' };
+            return { success: false, error: 'Error de conexión con el servidor Supabase: ' + (err.message || '') };
         }
     },
 };
 
-// Exportar
+// Exportar globalmente
 if (typeof window !== 'undefined') {
     window.AuthService = AuthService;
 }

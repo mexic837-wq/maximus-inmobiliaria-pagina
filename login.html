@@ -121,6 +121,12 @@
                     <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa tus credenciales autorizadas.</p>
                 </div>
 
+                <!-- Notificación de auto-redirección si la sesión ya existe -->
+                <div id="sessionRedirectBanner" class="hidden mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2.5 animate-pulse">
+                    <i class="fas fa-circle-notch fa-spin text-emerald-600"></i>
+                    <span class="font-bold">Sesión activa detectada. Ingresando automáticamente al panel...</span>
+                </div>
+
                 <!-- Formulario -->
                 <form id="loginForm" class="space-y-4">
                     
@@ -253,66 +259,87 @@
             }
         }
 
-        // Lógica de Login con AuthService
+        // 1. Detección Inteligente de Sesión Activa al Cargar la Página
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.AuthService) {
+                // Verificar si ya tiene sesión activa válida y no hizo logout explícito
+                const isAuth = await window.AuthService.checkSession();
+                if (isAuth) {
+                    const banner = document.getElementById('sessionRedirectBanner');
+                    if (banner) banner.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.replace('/dashboard');
+                    }, 200);
+                    return;
+                }
+
+                // Si tenía activada la opción de recordar en este equipo, autocompletar correo
+                const savedEmail = window.AuthService.getSavedEmail();
+                const rememberCheckbox = document.getElementById('remember');
+                if (savedEmail) {
+                    emailInput.value = savedEmail;
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
+                    passInput.focus();
+                }
+            }
+        });
+
+        // 2. Lógica de Envío de Formulario con AuthService
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = emailInput.value.trim().toLowerCase();
             const password = passInput.value;
+            const remember = document.getElementById('remember')?.checked || false;
+
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-xs"></i> <span>Verificando credenciales...</span>';
 
             if (window.AuthService) {
-                const res = await window.AuthService.login(email, password);
+                const res = await window.AuthService.login(email, password, remember);
                 if (res.success) {
-                    window.location.href = '/dashboard';
+                    window.location.replace('/dashboard');
                     return;
                 } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalContent;
                     alert(res.error || 'Credenciales incorrectas.');
                     return;
                 }
             }
 
-            // Fallback directo en caso de fallo de carga de script
-            if (email === 'admin@maximus.com' && password === 'admin123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'mock-admin-001',
-                    name: 'José Guerrero',
-                    email: 'admin@maximus.com',
-                    role: 'admin',
-                    tipo_asesor: 'maximus',
-                    title: 'Director / Administrador'
-                }));
-                window.location.href = '/dashboard';
-            } else if (email === 'asesor.maximus@maximus.com' && password === 'maximus123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'asesor-2',
-                    name: 'Valeria Méndez',
-                    email: 'asesor.maximus@maximus.com',
-                    role: 'asesor_maximus',
-                    tipo_asesor: 'maximus',
-                    title: 'Asesor MAXIMUS Oficial'
-                }));
-                window.location.href = '/dashboard';
-            } else if (email === 'asesor.externo@maximus.com' && password === 'externo123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'asesor-5',
-                    name: 'Pedro Rivas',
-                    email: 'asesor.externo@maximus.com',
-                    role: 'asesor_externo',
-                    tipo_asesor: 'externo',
-                    title: 'Asesor Externo / Colega'
-                }));
-                window.location.href = '/dashboard';
-            } else if (email === 'agente@maximus.com' && password === 'agente123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'mock-agente-001',
-                    name: 'Carlos Pérez',
-                    email: 'agente@maximus.com',
-                    role: 'asesor_maximus',
-                    tipo_asesor: 'maximus',
-                    title: 'Asesor Inmobiliario MAXIMUS'
-                }));
-                window.location.href = '/dashboard';
+            // Fallback en caso de que AuthService no haya cargado
+            const mockUsers = {
+                'admin@maximus.com': { pass: 'admin123', name: 'José Guerrero', role: 'admin', title: 'Director / Administrador' },
+                'asesor.maximus@maximus.com': { pass: 'maximus123', name: 'Valeria Méndez', role: 'asesor_maximus', title: 'Asesor MAXIMUS Oficial' },
+                'asesor.externo@maximus.com': { pass: 'externo123', name: 'Pedro Rivas', role: 'asesor_externo', title: 'Asesor Externo / Colega' },
+                'agente@maximus.com': { pass: 'agente123', name: 'Carlos Pérez', role: 'asesor_maximus', title: 'Asesor Inmobiliario MAXIMUS' }
+            };
+
+            const userEntry = mockUsers[email];
+            if (userEntry && userEntry.pass === password) {
+                const userObj = {
+                    id: 'mock-' + email,
+                    name: userEntry.name,
+                    email: email,
+                    role: userEntry.role,
+                    tipo_asesor: userEntry.role === 'asesor_externo' ? 'externo' : 'maximus',
+                    title: userEntry.title
+                };
+                if (remember) {
+                    localStorage.setItem('maximus_user', JSON.stringify(userObj));
+                    localStorage.setItem('maximus_remember_device', 'true');
+                    localStorage.setItem('maximus_saved_email', email);
+                } else {
+                    sessionStorage.setItem('maximus_user', JSON.stringify(userObj));
+                }
+                localStorage.removeItem('maximus_logged_out');
+                window.location.replace('/dashboard');
             } else {
-                alert('Credenciales incorrectas. Puede usar los botones de acceso rápido o: admin@maximus.com / asesor.maximus@maximus.com / asesor.externo@maximus.com');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                alert('Credenciales incorrectas. Verifique los datos o use los botones de acceso rápido.');
             }
         });
     </script>
