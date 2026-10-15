@@ -19,7 +19,7 @@ const APP_CONFIG = {
     // ========== MODO DE DATOS ==========
     // true  = Usa datos ficticios (desarrollo local sin backend)
     // false = Conecta a Supabase y n8n reales (producción)
-    USE_MOCK_DATA: true,
+    USE_MOCK_DATA: false,
 
     // ========== SUPABASE (VPS PRODUCCIÓN) ==========
     SUPABASE_URL: 'https://db.maximusinmobiliaria.tech',
