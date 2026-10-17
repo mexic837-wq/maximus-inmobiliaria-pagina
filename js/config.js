@@ -51,6 +51,8 @@ const APP_CONFIG = {
         ASESOR_MAXIMUS: 'asesor_maximus',
         ASESOR_EXTERNO: 'asesor_externo',
         AGENTE: 'agente', // Compatibilidad hacia atrás
+        CLIENTE: 'cliente', // Usuario normal / cliente
+        USUARIO: 'cliente', // Alias
     },
 
     // ========== TABLAS DE SUPABASE (Nombres) ==========

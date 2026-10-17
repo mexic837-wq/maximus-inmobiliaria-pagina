@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS public.usuarios (
     nombre_completo TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     telefono TEXT,
-    rol TEXT NOT NULL DEFAULT 'asesor_maximus' CHECK (rol IN ('admin', 'asesor_maximus', 'asesor_externo', 'agente')),
-    tipo_asesor TEXT DEFAULT 'maximus' CHECK (tipo_asesor IN ('maximus', 'externo')),
-    titulo TEXT DEFAULT 'Asesor Inmobiliario',
+    rol TEXT NOT NULL DEFAULT 'cliente' CHECK (rol IN ('admin', 'asesor_maximus', 'asesor_externo', 'agente', 'cliente', 'usuario')),
+    tipo_asesor TEXT DEFAULT NULL CHECK (tipo_asesor IS NULL OR tipo_asesor IN ('maximus', 'externo', 'cliente')),
+    titulo TEXT DEFAULT 'Usuario Registrado',
     avatar_url TEXT,
     bio TEXT DEFAULT 'Asesor inmobiliario especializado en propiedades exclusivas y activos de alto valor en Táchira.',
     licencia_inmobiliaria TEXT DEFAULT 'CIV-9821 / Cámara Inmobiliaria',
@@ -192,7 +192,13 @@ ALTER TABLE public.cierres_ventas ENABLE ROW LEVEL SECURITY;
 
 -- Usuarios: cada quien ve su perfil, admin ve todos
 CREATE POLICY "Usuarios: ver propio" ON public.usuarios
-    FOR SELECT USING (auth.uid() = auth_id);
+    FOR SELECT USING (
+        auth.uid() = auth_id 
+        OR EXISTS (SELECT 1 FROM public.usuarios u2 WHERE u2.auth_id = auth.uid() AND u2.rol = 'admin')
+    );
+
+CREATE POLICY "Usuarios: insertar propio" ON public.usuarios
+    FOR INSERT WITH CHECK (auth.uid() = auth_id);
 
 CREATE POLICY "Usuarios: actualizar propio" ON public.usuarios
     FOR UPDATE USING (auth.uid() = auth_id)
@@ -546,8 +552,50 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 
+-- ===== 14. TRIGGER AUTOMÁTICO: CREAR PERFIL AL REGISTRARSE EN SUPABASE AUTH =====
+-- Este trigger se dispara automáticamente cada vez que un usuario normal se registra
+-- vía Supabase Auth (email/password o Google). Crea su fila en public.usuarios con rol 'cliente'.
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.usuarios (
+        auth_id,
+        nombre_completo,
+        email,
+        telefono,
+        rol,
+        tipo_asesor,
+        titulo,
+        avatar_url
+    )
+    VALUES (
+        NEW.id,
+        COALESCE(NEW.raw_user_meta_data->>'nombre_completo', split_part(NEW.email, '@', 1)),
+        NEW.email,
+        NEW.raw_user_meta_data->>'telefono',
+        COALESCE(NEW.raw_user_meta_data->>'rol', 'cliente'),
+        NULL,
+        COALESCE(NEW.raw_user_meta_data->>'titulo', 'Usuario Registrado'),
+        'https://ui-avatars.com/api/?name=' || encode(convert_to(COALESCE(NEW.raw_user_meta_data->>'nombre_completo', NEW.email), 'UTF-8'), 'escape') || '&background=0B4A3F&color=fff&bold=true'
+    )
+    ON CONFLICT (auth_id) DO UPDATE SET
+        nombre_completo = COALESCE(EXCLUDED.nombre_completo, public.usuarios.nombre_completo),
+        email = EXCLUDED.email,
+        telefono = COALESCE(EXCLUDED.telefono, public.usuarios.telefono),
+        updated_at = now();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
 -- ===== STORAGE BUCKET =====
 -- Ejecutar en SQL Editor de Supabase:
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('inmuebles-fotos', 'inmuebles-fotos', true);
+
 
 

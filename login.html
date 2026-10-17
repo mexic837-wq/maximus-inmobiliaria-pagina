@@ -116,92 +116,219 @@
         <div class="md:col-span-7 p-8 sm:p-10 flex flex-col justify-center bg-white">
             <div class="w-full">
                 
-                <div class="mb-6">
-                    <h2 class="text-2xl font-bold text-maximus-black">Iniciar Sesión</h2>
-                    <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa tus credenciales autorizadas.</p>
+                <!-- Selector de Pestañas: Iniciar Sesión vs Crear Cuenta -->
+                <div class="flex items-center p-1 bg-gray-100 rounded-2xl mb-6">
+                    <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')"
+                            class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-dark shadow-sm">
+                        <i class="fas fa-sign-in-alt mr-1.5 text-maximus-accent"></i> Iniciar Sesión
+                    </button>
+                    <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')"
+                            class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark">
+                        <i class="fas fa-user-plus mr-1.5"></i> Crear Cuenta
+                    </button>
                 </div>
 
-                <!-- Formulario -->
-                <form id="loginForm" class="space-y-4">
-                    
-                    <!-- Campo Correo -->
-                    <div>
-                        <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Correo Electrónico</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <i class="fas fa-envelope text-sm"></i>
+                <!-- Feedback de Mensajes (Alertas visuales) -->
+                <div id="authAlert" class="hidden mb-4 p-3.5 rounded-2xl text-xs font-medium flex items-start gap-2.5 transition-all">
+                    <i id="authAlertIcon" class="fas fa-info-circle text-sm mt-0.5"></i>
+                    <span id="authAlertMsg" class="flex-1"></span>
+                </div>
+
+                <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
+                <div id="loginView">
+                    <div class="mb-5">
+                        <h2 class="text-2xl font-bold text-maximus-black">Bienvenido de nuevo</h2>
+                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa tus credenciales para acceder a la plataforma.</p>
+                    </div>
+
+                    <!-- Formulario Login -->
+                    <form id="loginForm" class="space-y-4">
+                        <!-- Campo Correo -->
+                        <div>
+                            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Correo Electrónico</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-envelope text-sm"></i>
+                                </div>
+                                <input type="email" id="email" required
+                                       class="block w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="tu@correo.com">
                             </div>
-                            <input type="email" id="email" required
-                                   class="block w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                   placeholder="agente@maximus.com">
                         </div>
-                    </div>
 
-                    <!-- Campo Contraseña -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">Contraseña</label>
-                            <a href="#" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition">¿Olvidaste tu clave?</a>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <i class="fas fa-lock text-sm"></i>
+                        <!-- Campo Contraseña -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">Contraseña</label>
+                                <a href="#" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition">¿Olvidaste tu clave?</a>
                             </div>
-                            <input type="password" id="password" required
-                                   class="block w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                   placeholder="••••••••••••">
-                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
-                                <i class="fas fa-eye text-sm" id="eyeIcon"></i>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-lock text-sm"></i>
+                                </div>
+                                <input type="password" id="password" required
+                                       class="block w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="••••••••••••">
+                                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
+                                    <i class="fas fa-eye text-sm" id="eyeIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recordar credenciales -->
+                        <div class="flex items-center pt-1">
+                            <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
+                            <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
+                                Recordar mis datos en este equipo
+                            </label>
+                        </div>
+
+                        <!-- Selector Rápido de 3 Tipos de Cuentas: Admin, Agente Maximus y Usuario Normal -->
+                        <div class="pt-2">
+                            <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Acceso Rápido por Perfil:</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" onclick="selectDemoAccount('admin')" 
+                                        class="p-2.5 rounded-xl border border-gray-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition group">
+                                    <span class="block text-[11px] font-extrabold text-maximus-dark group-hover:text-emerald-700 flex items-center gap-1">
+                                        <i class="fas fa-shield-alt text-[9px] text-amber-500"></i> Admin
+                                    </span>
+                                    <span class="block text-[9px] text-gray-500 font-semibold truncate">admin@maximus.com</span>
+                                </button>
+                                <button type="button" onclick="selectDemoAccount('asesor_maximus')" 
+                                        class="p-2.5 rounded-xl border border-emerald-500 bg-emerald-50/60 hover:bg-emerald-100/60 text-left transition group shadow-sm">
+                                    <span class="block text-[11px] font-extrabold text-emerald-800 flex items-center gap-1">
+                                        <i class="fas fa-check-circle text-[9px]"></i> Agente Maximus
+                                    </span>
+                                    <span class="block text-[9px] text-emerald-700 font-semibold truncate">asesor.maximus</span>
+                                </button>
+                                <button type="button" onclick="selectDemoAccount('cliente')" 
+                                        class="p-2.5 rounded-xl border border-teal-300 bg-teal-50/50 hover:bg-teal-100/60 text-left transition group shadow-sm">
+                                    <span class="block text-[11px] font-extrabold text-teal-800 flex items-center gap-1">
+                                        <i class="fas fa-user text-[9px]"></i> Usuario Normal
+                                    </span>
+                                    <span class="block text-[9px] text-teal-700 font-semibold truncate">cliente@maximus.com</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Botón Principal -->
+                        <div class="pt-2">
+                            <button type="submit" id="loginSubmitBtn"
+                                    class="w-full py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                                <span>Ingresar al Portal Inmobiliario</span>
+                                <i class="fas fa-arrow-right text-xs"></i>
                             </button>
                         </div>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p class="text-xs text-gray-500">
+                            ¿Aún no tienes cuenta?
+                            <button type="button" onclick="switchAuthTab('register')" class="text-maximus-accent hover:underline font-bold ml-1 cursor-pointer">
+                                Regístrate gratis como usuario
+                            </button>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ================= VISTA 2: CREAR CUENTA (USUARIO NORMAL) ================= -->
+                <div id="registerView" class="hidden">
+                    <div class="mb-5">
+                        <h2 class="text-2xl font-bold text-maximus-black">Crear Cuenta de Usuario</h2>
+                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Crea tu cuenta para explorar propiedades y contactar asesores.</p>
                     </div>
 
-                    <!-- Recordar credenciales -->
-                    <div class="flex items-center pt-1">
-                        <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
-                        <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
-                            Recordar mis datos en este equipo
-                        </label>
-                    </div>
+                    <!-- Formulario Registro -->
+                    <form id="registerForm" class="space-y-3.5">
+                        <!-- Campo Nombre Completo -->
+                        <div>
+                            <label for="regNombre" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Nombre Completo</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-user text-sm"></i>
+                                </div>
+                                <input type="text" id="regNombre" required
+                                       class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="Ej: Alejandro Sánchez">
+                            </div>
+                        </div>
 
-                    <!-- Selector Rápido de Cuentas Demo / Test -->
-                    <div class="pt-2">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Acceso Rápido por Perfil:</p>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button type="button" onclick="selectDemoAccount('admin')" 
-                                    class="p-2 rounded-xl border border-gray-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition group">
-                                <span class="block text-[11px] font-extrabold text-maximus-dark group-hover:text-emerald-700">Director</span>
-                                <span class="block text-[9px] text-gray-500 font-semibold truncate">admin@maximus.com</span>
-                            </button>
-                            <button type="button" onclick="selectDemoAccount('asesor_maximus')" 
-                                    class="p-2 rounded-xl border border-emerald-500 bg-emerald-50/60 hover:bg-emerald-100/60 text-left transition group shadow-sm">
-                                <span class="block text-[11px] font-extrabold text-emerald-800 flex items-center gap-1">
-                                    <i class="fas fa-check-circle text-[9px]"></i> Asesor Maximus
-                                </span>
-                                <span class="block text-[9px] text-emerald-700 font-semibold truncate">Valeria Méndez</span>
-                            </button>
-                            <button type="button" onclick="selectDemoAccount('asesor_externo')" 
-                                    class="p-2 rounded-xl border border-gray-200 hover:border-blue-600 hover:bg-blue-50/50 text-left transition group">
-                                <span class="block text-[11px] font-extrabold text-gray-700 group-hover:text-blue-700">Asesor Externo</span>
-                                <span class="block text-[9px] text-gray-500 font-semibold truncate">Pedro Rivas</span>
+                        <!-- Campo Correo -->
+                        <div>
+                            <label for="regEmail" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Correo Electrónico</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-envelope text-sm"></i>
+                                </div>
+                                <input type="email" id="regEmail" required
+                                       class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="tunombre@gmail.com">
+                            </div>
+                        </div>
+
+                        <!-- Campo Teléfono / WhatsApp -->
+                        <div>
+                            <label for="regTelefono" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Teléfono / WhatsApp <span class="text-gray-400 font-normal lowercase">(opcional)</span></label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fab fa-whatsapp text-sm text-emerald-600"></i>
+                                </div>
+                                <input type="tel" id="regTelefono"
+                                       class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="+58 414-1234567">
+                            </div>
+                        </div>
+
+                        <!-- Campo Contraseña -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label for="regPassword" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Contraseña</label>
+                                <div class="relative">
+                                    <input type="password" id="regPassword" required minlength="6"
+                                           class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                           placeholder="Mínimo 6 caracteres">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="regPasswordConfirm" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Confirmar Clave</label>
+                                <div class="relative">
+                                    <input type="password" id="regPasswordConfirm" required minlength="6"
+                                           class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                           placeholder="Repite la clave">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Badge Informativo Rol de Cuenta -->
+                        <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200 text-emerald-900 text-[11px] flex items-center gap-2">
+                            <i class="fas fa-check-shield text-emerald-600"></i>
+                            <span>Se creará una <strong>cuenta de usuario estándar</strong> para explorar y consultar propiedades en MAXIMUS.</span>
+                        </div>
+
+                        <!-- Botón Crear Cuenta -->
+                        <div class="pt-2">
+                            <button type="submit" id="registerSubmitBtn"
+                                    class="w-full py-3.5 px-6 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-600/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                                <span>Crear mi Cuenta de Usuario</span>
+                                <i class="fas fa-check text-xs"></i>
                             </button>
                         </div>
-                    </div>
+                    </form>
 
-                    <!-- Botón Principal con el Verde Corporativo Maximus Dark #0B4A3F -->
-                    <div class="pt-2">
-                        <button type="submit" 
-                                class="w-full py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2">
-                            <span>Ingresar al Portal Inmobiliario</span>
-                            <i class="fas fa-arrow-right text-xs"></i>
-                        </button>
+                    <div class="mt-4 text-center">
+                        <p class="text-xs text-gray-500">
+                            ¿Ya tienes una cuenta registrada?
+                            <button type="button" onclick="switchAuthTab('login')" class="text-maximus-dark hover:text-maximus-accent font-bold ml-1 cursor-pointer">
+                                Iniciar Sesión aquí
+                            </button>
+                        </p>
                     </div>
-                </form>
+                </div>
 
                 <!-- Pie de contacto directo con Lic. Eva Camargo & Abg. José Guerrero -->
                 <div class="mt-6 pt-5 border-t border-gray-100 text-center">
                     <p class="text-xs text-gray-500">
-                        ¿Requieres acceso como nuevo asesor?
+                        ¿Requieres acceso como asesor inmobiliario o alianzas?
                         <a href="https://wa.me/584247835697" target="_blank" class="text-maximus-dark hover:text-maximus-accent font-semibold inline-flex items-center gap-1 ml-1 transition">
                             <i class="fab fa-whatsapp text-maximus-accent"></i> Contactar a Dirección
                         </a>
@@ -213,49 +340,106 @@
     </div>
 
     <!-- Scripts de Configuración, Mock Data y AuthService -->
-    <script src="js/config.js?v=2.2"></script>
-    <script src="js/mock-data.js?v=2.2"></script>
-    <script src="js/auth.js?v=2.2"></script>
+    <script src="js/config.js?v=3.1"></script>
+    <script src="js/supabase-client.js?v=3.1"></script>
+    <script src="js/mock-data.js?v=3.1"></script>
+    <script src="js/auth.js?v=3.1"></script>
 
-    <!-- Script para interactividad y mock login -->
+    <!-- Script para interactividad y auth -->
     <script>
         const toggleBtn = document.getElementById('togglePassword');
         const passInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
         const emailInput = document.getElementById('email');
         const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginView = document.getElementById('loginView');
+        const registerView = document.getElementById('registerView');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        const authAlert = document.getElementById('authAlert');
+        const authAlertMsg = document.getElementById('authAlertMsg');
+        const authAlertIcon = document.getElementById('authAlertIcon');
 
-        toggleBtn.addEventListener('click', () => {
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
+        // Mostrar Alertas visuales limpias
+        function showAlert(msg, type = 'error') {
+            authAlert.classList.remove('hidden', 'bg-rose-50', 'text-rose-800', 'border-rose-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+            if (type === 'error') {
+                authAlert.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+                authAlertIcon.className = 'fas fa-exclamation-circle text-rose-500 text-sm mt-0.5';
             } else {
-                passInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
+                authAlert.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+                authAlertIcon.className = 'fas fa-check-circle text-emerald-500 text-sm mt-0.5';
             }
-        });
+            authAlertMsg.textContent = msg;
+        }
 
-        // Selector rápido para pruebas
+        function hideAlert() {
+            authAlert.classList.add('hidden');
+        }
+
+        // Alternar Pestañas de Auth
+        function switchAuthTab(tab) {
+            hideAlert();
+            if (tab === 'login') {
+                loginView.classList.remove('hidden');
+                registerView.classList.add('hidden');
+                tabLoginBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-dark shadow-sm';
+                tabRegisterBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark';
+            } else {
+                loginView.classList.add('hidden');
+                registerView.classList.remove('hidden');
+                tabRegisterBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-accent shadow-sm';
+                tabLoginBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark';
+            }
+        }
+
+        // Mostrar / Ocultar Contraseña
+        if (toggleBtn && passInput && eyeIcon) {
+            toggleBtn.addEventListener('click', () => {
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                } else {
+                    passInput.type = 'password';
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            });
+        }
+
+        // Abrir tab de registro automáticamente si viene por URL hash o query
+        if (window.location.hash === '#register' || window.location.search.includes('tab=register')) {
+            switchAuthTab('register');
+        }
+
+        // Selector rápido para pruebas de los 3 tipos de cuenta
         function selectDemoAccount(tipo) {
+            switchAuthTab('login');
             if (tipo === 'admin') {
                 emailInput.value = 'admin@maximus.com';
                 passInput.value = 'admin123';
             } else if (tipo === 'asesor_maximus') {
                 emailInput.value = 'asesor.maximus@maximus.com';
                 passInput.value = 'maximus123';
-            } else if (tipo === 'asesor_externo') {
-                emailInput.value = 'asesor.externo@maximus.com';
-                passInput.value = 'externo123';
+            } else if (tipo === 'cliente') {
+                emailInput.value = 'cliente@maximus.com';
+                passInput.value = 'cliente123';
             }
         }
 
-        // Lógica de Login con AuthService
+        // Lógica de Login
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            hideAlert();
             const email = emailInput.value.trim().toLowerCase();
             const password = passInput.value;
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Verificando...';
 
             if (window.AuthService) {
                 const res = await window.AuthService.login(email, password);
@@ -263,55 +447,70 @@
                     window.location.href = 'dashboard-layout.html';
                     return;
                 } else {
-                    alert(res.error || 'Credenciales incorrectas.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    showAlert(res.error || 'Credenciales incorrectas.');
                     return;
                 }
             }
 
-            // Fallback directo en caso de fallo de carga de script
-            if (email === 'admin@maximus.com' && password === 'admin123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'mock-admin-001',
-                    name: 'José Guerrero',
-                    email: 'admin@maximus.com',
-                    role: 'admin',
-                    tipo_asesor: 'maximus',
-                    title: 'Director / Administrador'
-                }));
-                window.location.href = 'dashboard-layout.html';
-            } else if (email === 'asesor.maximus@maximus.com' && password === 'maximus123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'asesor-2',
-                    name: 'Valeria Méndez',
-                    email: 'asesor.maximus@maximus.com',
-                    role: 'asesor_maximus',
-                    tipo_asesor: 'maximus',
-                    title: 'Asesor MAXIMUS Oficial'
-                }));
-                window.location.href = 'dashboard-layout.html';
-            } else if (email === 'asesor.externo@maximus.com' && password === 'externo123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'asesor-5',
-                    name: 'Pedro Rivas',
-                    email: 'asesor.externo@maximus.com',
-                    role: 'asesor_externo',
-                    tipo_asesor: 'externo',
-                    title: 'Asesor Externo / Colega'
-                }));
-                window.location.href = 'dashboard-layout.html';
-            } else if (email === 'agente@maximus.com' && password === 'agente123') {
-                localStorage.setItem('maximus_user', JSON.stringify({
-                    id: 'mock-agente-001',
-                    name: 'Carlos Pérez',
-                    email: 'agente@maximus.com',
-                    role: 'asesor_maximus',
-                    tipo_asesor: 'maximus',
-                    title: 'Asesor Inmobiliario MAXIMUS'
-                }));
-                window.location.href = 'dashboard-layout.html';
-            } else {
-                alert('Credenciales incorrectas. Puede usar los botones de acceso rápido o: admin@maximus.com / asesor.maximus@maximus.com / asesor.externo@maximus.com');
+            // Fallback si no hay AuthService
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            showAlert('No se pudo cargar el servicio de autenticación.');
+        });
+
+        // Lógica de Registro de Usuario Normal
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const nombre = document.getElementById('regNombre').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const telefono = document.getElementById('regTelefono').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regPasswordConfirm').value;
+            const submitBtn = document.getElementById('registerSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+
+            if (password !== confirmPassword) {
+                showAlert('Las contraseñas no coinciden. Por favor verifícalas.');
+                return;
             }
+
+            if (password.length < 6) {
+                showAlert('La contraseña debe tener al menos 6 caracteres.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creando tu cuenta...';
+
+            if (window.AuthService) {
+                const res = await window.AuthService.register({ nombre, email, password, telefono });
+                if (res.success) {
+                    if (res.requiresEmailConfirmation) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                        showAlert(res.message || 'Cuenta creada. Revisa tu correo para verificar tu cuenta.', 'success');
+                    } else {
+                        showAlert('¡Cuenta creada con éxito! Ingresando al panel...', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard-layout.html';
+                        }, 800);
+                    }
+                    return;
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    showAlert(res.error || 'No se pudo crear la cuenta.');
+                    return;
+                }
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            showAlert('Servicio no disponible temporalmente.');
         });
     </script>
 </body>

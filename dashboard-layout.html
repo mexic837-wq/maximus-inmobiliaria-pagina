@@ -56,6 +56,15 @@
         ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0B4A3F; }
 
+        /* Restricción visual de secciones para cuentas de Usuarios Normales */
+        body.role-cliente .staff-only,
+        body.role-cliente .admin-only,
+        body.role-cliente .asesor-maximus-only,
+        body.role-cliente .agente-only,
+        body.role-cliente .asesor-externo-only {
+            display: none !important;
+        }
+
         /* ==========================================
            MAXIMUS LUXURY DARK MODE THEME SYSTEM
            Paleta Oficial: Forest Obsidian & Jade (#071714 / #0A1F1B / #0C221D / #10B981)
@@ -698,89 +707,89 @@
                     <span class="sidebar-tooltip">Captaciones MAXIMUS</span>
                 </a>
 
-                <a href="#" data-target="view-resumen" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Resumen">
+                <a href="#" data-target="view-resumen" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Resumen">
                     <i class="ph-fill ph-squares-four text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Panorama & Resumen</span>
                     <span class="sidebar-tooltip">Panorama & Resumen</span>
                 </a>
 
-                <a href="#" data-target="view-metricas" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Métricas">
+                <a href="#" data-target="view-metricas" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Métricas">
                     <i class="ph ph-chart-line-up text-xl flex-shrink-0"></i>
                     <span class="sidebar-label">Métricas</span>
                     <span class="sidebar-tooltip">Métricas</span>
                 </a>
                 
                 <!-- Gestión -->
-                <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
-                <div class="sidebar-collapsed-divider"></div>
+                <p class="sidebar-category staff-only text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
+                <div class="sidebar-collapsed-divider staff-only"></div>
 
                 <!-- Sección Exclusiva para Asesores MAXIMUS y Dirección -->
-                <a href="#" id="nav-historico-asesores" data-target="view-historico-asesores" class="nav-link asesor-maximus-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Histórico de Asesores & Comisiones">
+                <a href="#" id="nav-historico-asesores" data-target="view-historico-asesores" class="nav-link asesor-maximus-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Histórico de Asesores & Comisiones">
                     <i class="ph ph-chart-polar text-xl text-emerald-600 flex-shrink-0"></i>
                     <span class="sidebar-label">Histórico Asesores</span>
                     <span class="sidebar-tooltip">Histórico Asesores</span>
                 </a>
 
                 <!-- Colecciones para Clientes (Dossiers Personalizados) -->
-                <a href="#" id="nav-colecciones" data-target="view-colecciones" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Colecciones para Clientes">
+                <a href="#" id="nav-colecciones" data-target="view-colecciones" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Colecciones para Clientes">
                     <i class="ph ph-folder-star text-xl text-amber-500 flex-shrink-0"></i>
                     <span class="sidebar-label">Colecciones</span>
                     <span class="sidebar-tooltip">Colecciones</span>
                 </a>
 
-                <a href="#" data-target="view-vendidos" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Histórico Global">
+                <a href="#" data-target="view-vendidos" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Histórico Global">
                     <i class="ph ph-handshake text-xl flex-shrink-0"></i>
                     <span class="sidebar-label">Histórico Global</span>
                     <span class="sidebar-tooltip">Histórico Global</span>
                 </a>
 
-                <a href="#" data-target="view-cotizador" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cotizador Express">
+                <a href="#" data-target="view-cotizador" class="nav-link agente-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cotizador Express">
                     <i class="ph ph-calculator text-xl flex-shrink-0"></i>
                     <span class="sidebar-label">Cotizador Express</span>
                     <span class="sidebar-tooltip">Cotizador Express</span>
                 </a>
 
-                <a href="#" id="nav-admin-cargar" data-target="view-admin-cargar-inmueble" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cargar Inmueble">
+                <a href="#" id="nav-admin-cargar" data-target="view-admin-cargar-inmueble" class="nav-link admin-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cargar Inmueble">
                     <i class="ph-fill ph-house-line text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Cargar Inmueble</span>
                     <span class="sidebar-tooltip">Cargar Inmueble</span>
                 </a>
 
-                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Precios m²">
+                <a href="#" id="nav-admin-precios" data-target="view-admin-cotizador" class="nav-link admin-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Precios m²">
                     <i class="ph-fill ph-sliders-horizontal text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Precios m²</span>
                     <span class="sidebar-tooltip">Precios m²</span>
                 </a>
 
-                <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Gestión de Agentes">
+                <a href="#" id="nav-admin-config" data-target="view-admin-config" class="nav-link admin-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Gestión de Agentes">
                     <i class="ph-fill ph-users-three text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Gestión de Agentes</span>
                     <span class="sidebar-tooltip">Gestión de Agentes</span>
                 </a>
 
-                <a href="#" id="nav-admin-equipo-web" data-target="view-admin-equipo-web" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Equipo en Web (Landing)">
+                <a href="#" id="nav-admin-equipo-web" data-target="view-admin-equipo-web" class="nav-link admin-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Equipo en Web (Landing)">
                     <i class="ph ph-identification-badge text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Equipo en Web</span>
                     <span class="sidebar-tooltip">Equipo en Web</span>
                 </a>
 
                 <!-- Recursos -->
-                <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8 agente-only">Soporte & Recursos</p>
-                <div class="sidebar-collapsed-divider"></div>
+                <p class="sidebar-category staff-only text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8 agente-only">Soporte & Recursos</p>
+                <div class="sidebar-collapsed-divider staff-only"></div>
 
-                <a href="#" class="agente-only text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Bot Whatsapp">
+                <a href="#" class="agente-only staff-only text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Bot Whatsapp">
                     <i class="ph ph-whatsapp-logo text-xl flex-shrink-0"></i>
                     <span class="sidebar-label">Bot Whatsapp</span>
                     <span class="sidebar-tooltip">Bot Whatsapp</span>
                 </a>
 
-                <a href="#" data-target="view-tutoriales" class="nav-link agente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Tutoriales VIP">
+                <a href="#" data-target="view-tutoriales" class="nav-link agente-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Tutoriales VIP">
                     <i class="ph ph-play-circle text-xl flex-shrink-0"></i>
                     <span class="sidebar-label">Tutoriales VIP</span>
                     <span class="sidebar-tooltip">Tutoriales VIP</span>
                 </a>
 
-                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Tutoriales">
+                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Tutoriales">
                     <i class="ph-fill ph-video-camera text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Subir Tutoriales</span>
                     <span class="sidebar-tooltip">Subir Tutoriales</span>
@@ -4641,10 +4650,14 @@
                 const user = JSON.parse(userData);
                 userRole = user.role || 'asesor_maximus';
                 if (userRole === 'agente') userRole = 'asesor_maximus';
+                if (userRole === 'usuario') userRole = 'cliente';
+
                 document.getElementById('userName').textContent = user.name;
                 document.getElementById('userAvatar').src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0B4A3F&color=fff&bold=true`;
                 if (user.title) {
                     document.getElementById('userTitle').textContent = user.title;
+                } else if (userRole === 'cliente') {
+                    document.getElementById('userTitle').textContent = 'Usuario Registrado';
                 }
                 const dropName = document.getElementById('dropdown-userName');
                 const dropEmail = document.getElementById('dropdown-userEmail');
@@ -4662,6 +4675,15 @@
                     if (dropBadge) {
                         dropBadge.textContent = 'Dirección';
                         dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900';
+                    }
+                } else if (userRole === 'cliente') {
+                    if (roleBadge) {
+                        roleBadge.textContent = 'USUARIO';
+                        roleBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-300';
+                    }
+                    if (dropBadge) {
+                        dropBadge.textContent = 'Usuario Normal';
+                        dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-teal-50 text-teal-800';
                     }
                 } else if (userRole === 'asesor_externo') {
                     if (roleBadge) {
@@ -4684,6 +4706,11 @@
                 }
             }
 
+            // Añadir clase de rol al body para reglas CSS directas
+            if (userRole === 'cliente') {
+                document.body.classList.add('role-cliente');
+            }
+
             // Sincronizar estado visual del toggle de Modo Oscuro
             actualizarUIModoOscuro(document.documentElement.classList.contains('dark'));
 
@@ -4692,22 +4719,33 @@
             const asesorMaximusElements = document.querySelectorAll('.asesor-maximus-only');
             const asesorExternoElements = document.querySelectorAll('.asesor-externo-only');
             const agenteElements = document.querySelectorAll('.agente-only');
+            const staffElements = document.querySelectorAll('.staff-only');
 
-            if (userRole === 'admin') {
+            if (userRole === 'cliente') {
+                // Para el usuario normal se ocultan por completo: Panorama & Resumen, Métricas, Gestión Comercial y Soporte & Recursos
+                adminElements.forEach(el => el.style.display = 'none');
+                asesorMaximusElements.forEach(el => el.style.display = 'none');
+                asesorExternoElements.forEach(el => el.style.display = 'none');
+                agenteElements.forEach(el => el.style.display = 'none');
+                staffElements.forEach(el => el.style.display = 'none');
+            } else if (userRole === 'admin') {
                 adminElements.forEach(el => el.style.display = '');
                 asesorMaximusElements.forEach(el => el.style.display = '');
                 asesorExternoElements.forEach(el => el.style.display = 'none');
                 agenteElements.forEach(el => el.style.display = 'none');
+                staffElements.forEach(el => el.style.display = '');
             } else if (userRole === 'asesor_maximus') {
                 adminElements.forEach(el => el.style.display = 'none');
                 asesorMaximusElements.forEach(el => el.style.display = '');
                 asesorExternoElements.forEach(el => el.style.display = 'none');
                 agenteElements.forEach(el => el.style.display = '');
+                staffElements.forEach(el => el.style.display = '');
             } else if (userRole === 'asesor_externo') {
                 adminElements.forEach(el => el.style.display = 'none');
-                asesorMaximusElements.forEach(el => el.style.display = 'none'); // Excluido de comisiones internas
+                asesorMaximusElements.forEach(el => el.style.display = 'none');
                 asesorExternoElements.forEach(el => el.style.display = '');
                 agenteElements.forEach(el => el.style.display = '');
+                staffElements.forEach(el => el.style.display = '');
             }
 
             // Renderizar dropdown de ubicaciones
@@ -4729,21 +4767,25 @@
             // Cargar datos iniciales
             updateDashboard();
 
-            // Inicializar Cotizador y catálogo de zonas
-            inicializarCotizador();
+            // Inicializar Cotizador y catálogo de zonas (solo agentes/admin)
+            if (userRole !== 'cliente') {
+                inicializarCotizador();
+            }
 
             // Inicializar Histórico si el rol lo permite
             if (userRole === 'admin' || userRole === 'asesor_maximus') {
                 inicializarHistoricoAsesores();
             }
 
-            // Inicializar Colecciones VIP para Clientes
-            inicializarColeccionesVIP();
+            // Inicializar Colecciones VIP para Clientes (solo equipo de ventas)
+            if (userRole !== 'cliente') {
+                inicializarColeccionesVIP();
+            }
 
             // Inicializar Centro de Notificaciones y Alertas
             cargarYRenderizarNotificaciones();
 
-            // Tab inicial por defecto según rol: Admin -> 'view-resumen', Asesores -> 'view-inmuebles'
+            // Tab inicial por defecto según rol: Admin -> 'view-resumen', Asesores -> 'view-inmuebles', Cliente -> 'view-inmuebles'
             const defaultTabPorRol = (userRole === 'admin') ? 'view-resumen' : 'view-inmuebles';
 
             // Restaurar la última sección guardada (por URL hash o localStorage)
@@ -4753,7 +4795,18 @@
                 : (localStorage.getItem('maximus_active_tab') || defaultTabPorRol);
 
             const tabElement = document.getElementById(savedTab);
-            if (tabElement) {
+            const vistasRestringidasCliente = [
+                'view-resumen', 'view-metricas', 'view-historico-asesores', 
+                'view-colecciones', 'view-vendidos', 'view-cotizador', 
+                'view-admin-cargar-inmueble', 'view-admin-cotizador', 
+                'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales'
+            ];
+
+            if (userRole === 'cliente') {
+                if (vistasRestringidasCliente.includes(savedTab)) {
+                    savedTab = 'view-inmuebles';
+                }
+            } else if (tabElement) {
                 if (userRole === 'admin' && tabElement.classList.contains('agente-only')) {
                     savedTab = defaultTabPorRol;
                 }
@@ -5462,8 +5515,27 @@
         const views = document.querySelectorAll('.view-section');
 
         function activateTab(targetId, animate = true) {
+            // Verificar restricciones para usuarios normales
+            let currentUserRole = 'asesor_maximus';
+            try {
+                const u = JSON.parse(localStorage.getItem('maximus_user'));
+                if (u && u.role) currentUserRole = u.role;
+                if (currentUserRole === 'usuario') currentUserRole = 'cliente';
+            } catch(e) {}
+
+            const vistasRestringidasCliente = [
+                'view-resumen', 'view-metricas', 'view-historico-asesores', 
+                'view-colecciones', 'view-vendidos', 'view-cotizador', 
+                'view-admin-cargar-inmueble', 'view-admin-cotizador', 
+                'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales'
+            ];
+
+            if (currentUserRole === 'cliente' && vistasRestringidasCliente.includes(targetId)) {
+                targetId = 'view-inmuebles';
+            }
+
             if (!targetId || !document.getElementById(targetId)) {
-                targetId = 'view-resumen';
+                targetId = (currentUserRole === 'cliente') ? 'view-inmuebles' : 'view-resumen';
             }
 
             // 1. Persistir en localStorage
