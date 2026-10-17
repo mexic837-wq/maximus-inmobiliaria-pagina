@@ -30,7 +30,7 @@
     <div class="max-w-7xl mx-auto">
         
         <div class="mb-6 flex justify-between items-center">
-            <a href="catalog.html" class="inline-flex items-center text-gray-500 hover:text-maximus-dark transition bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
+            <a href="/catalogo" class="inline-flex items-center text-gray-500 hover:text-maximus-dark transition bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
                 <i class="fas fa-arrow-left mr-2"></i> Volver al catálogo
             </a>
             <div class="flex gap-2">
@@ -43,21 +43,21 @@
         <!-- Header: Galería estilo Collage Moderno -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 h-[50vh] min-h-[400px] mb-10 relative rounded-2xl overflow-hidden">
             <div class="h-full">
-                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Principal" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer">
+                <img id="prop-img-main" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Principal" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer">
             </div>
             <div class="hidden md:grid grid-cols-2 grid-rows-2 gap-4 h-full">
-                <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img id="prop-img-2" src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img id="prop-img-3" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img id="prop-img-4" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
                 <div class="relative w-full h-full">
-                    <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover brightness-50">
+                    <img id="prop-img-5" src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover brightness-50">
                     <button class="absolute inset-0 flex items-center justify-center text-white font-medium hover:underline text-lg">
-                        Ver todas las fotos (12)
+                        Ver galería
                     </button>
                 </div>
             </div>
             <!-- Etiqueta status sobre imagen -->
-            <div class="absolute top-4 left-4 bg-maximus-accent text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-sm">
+            <div id="prop-badge-status" class="absolute top-4 left-4 bg-maximus-accent text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-sm">
                 En Venta
             </div>
         </div>
@@ -68,8 +68,8 @@
             <div class="lg:col-span-2">
                 <div class="flex flex-wrap justify-between items-start mb-6">
                     <div>
-                        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Villa Moderna en Barrio Obrero</h1>
-                        <p class="text-lg text-gray-600 flex items-center"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i> Av. Principal, Barrio Obrero, San Cristóbal, Táchira</p>
+                        <h1 id="prop-title" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Villa Moderna en Barrio Obrero</h1>
+                        <p id="prop-location" class="text-lg text-gray-600 flex items-center"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i> Av. Principal, Barrio Obrero, San Cristóbal, Táchira</p>
                     </div>
                 </div>
 
@@ -77,23 +77,23 @@
                 <div class="flex flex-wrap gap-6 py-6 border-y border-gray-200 mb-8">
                     <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
                         <i class="fas fa-bed text-2xl text-maximus-dark mb-2"></i>
-                        <span class="font-semibold">4</span>
+                        <span id="prop-habs" class="font-semibold">4</span>
                         <span class="text-xs text-gray-500">Habitaciones</span>
                     </div>
                     <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
                         <i class="fas fa-bath text-2xl text-maximus-dark mb-2"></i>
-                        <span class="font-semibold">3</span>
+                        <span id="prop-banos" class="font-semibold">3</span>
                         <span class="text-xs text-gray-500">Baños</span>
                     </div>
                     <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
                         <i class="fas fa-ruler-combined text-2xl text-maximus-dark mb-2"></i>
-                        <span class="font-semibold">250</span>
+                        <span id="prop-metros" class="font-semibold">250</span>
                         <span class="text-xs text-gray-500">m² Totales</span>
                     </div>
                     <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
-                        <i class="fas fa-car text-2xl text-maximus-dark mb-2"></i>
-                        <span class="font-semibold">2</span>
-                        <span class="text-xs text-gray-500">Puestos</span>
+                        <i class="fas fa-layer-group text-2xl text-maximus-dark mb-2"></i>
+                        <span id="prop-tipo" class="font-semibold uppercase">Casa</span>
+                        <span class="text-xs text-gray-500">Tipo</span>
                     </div>
                 </div>
 
@@ -101,9 +101,7 @@
                 <div class="mb-10">
                     <h2 class="text-2xl font-bold mb-4">Acerca de la propiedad</h2>
                     <div class="prose prose-lg text-gray-600">
-                        <p class="mb-4">Espectacular villa de diseño contemporáneo ubicada en una de las zonas más exclusivas de la ciudad. Completamente remodelada con acabados de lujo, iluminación inteligente y sistema de seguridad 24/7 integrado.</p>
-                        <p class="mb-4">La planta baja ofrece un concepto abierto con sala a doble altura, ventanales panorámicos que integran el jardín interior, cocina estilo italiano con tope de cuarzo y electrodomésticos de alta gama.</p>
-                        <p>En el segundo nivel se encuentran las habitaciones, destacando la master suite con walk-in closet inmenso y baño tipo spa con jacuzzi y ducha de hidromasajes.</p>
+                        <p id="prop-descripcion" class="mb-4">Espectacular villa de diseño contemporáneo ubicada en una de las zonas más exclusivas de la ciudad. Completamente remodelada con acabados de lujo, iluminación inteligente y sistema de seguridad 24/7 integrado.</p>
                     </div>
                 </div>
 
@@ -124,7 +122,6 @@
                 <div class="mb-10">
                     <h2 class="text-2xl font-bold mb-4">Ubicación</h2>
                     <div class="w-full h-64 bg-gray-200 rounded-2xl overflow-hidden relative border border-gray-100">
-                        <!-- Mapa simulado con iframe de gmaps o placeholder -->
                         <div class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-400">
                             <div class="text-center">
                                 <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
@@ -142,21 +139,21 @@
                     <!-- Tarjeta Principal Info Venta -->
                     <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
                         <div class="mb-4">
-                            <span class="text-sm text-gray-500 font-medium uppercase tracking-wider block mb-1">Precio de Venta</span>
-                            <span class="text-4xl font-bold text-maximus-dark">$450,000</span>
+                            <span id="prop-label-precio" class="text-sm text-gray-500 font-medium uppercase tracking-wider block mb-1">Precio</span>
+                            <span id="prop-precio" class="text-4xl font-bold text-maximus-dark">$450,000</span>
                         </div>
                         
                         <div class="space-y-4 mb-6">
-                            <button class="w-full bg-maximus-accent hover:bg-emerald-400 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-md shadow-maximus-accent/30 flex justify-center items-center">
-                                <i class="fab fa-whatsapp mr-2 text-lg"></i> Compartir con Cliente
-                            </button>
-                            <button class="w-full bg-white hover:bg-gray-50 text-maximus-dark font-semibold py-3 px-4 rounded-xl border border-gray-200 transition duration-200">
-                                <i class="far fa-calendar-alt mr-2"></i> Agendar Visita
-                            </button>
+                            <a id="prop-btn-whatsapp" href="https://wa.me/584240000000" target="_blank" class="w-full bg-maximus-accent hover:bg-emerald-400 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-md shadow-maximus-accent/30 flex justify-center items-center">
+                                <i class="fab fa-whatsapp mr-2 text-lg"></i> Consultar por WhatsApp
+                            </a>
+                            <a href="/catalogo" class="w-full bg-white hover:bg-gray-50 text-maximus-dark font-semibold py-3 px-4 rounded-xl border border-gray-200 transition duration-200 text-center block">
+                                <i class="fas fa-th-large mr-2"></i> Ver catálogo completo
+                            </a>
                         </div>
 
                         <div class="pt-4 border-t border-gray-100">
-                            <p class="text-xs text-gray-400 text-center">ID del Inmueble: <span class="font-mono text-gray-700">MX-8492</span></p>
+                            <p class="text-xs text-gray-400 text-center">ID del Inmueble: <span id="prop-id-code" class="font-mono text-gray-700">MX-8492</span></p>
                         </div>
                     </div>
 
@@ -199,5 +196,88 @@
 
         </div>
     </div>
+    <!-- Scripts de Supabase y Servicios para Carga Dinámica -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/services.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const propId = params.get('id');
+                if (!propId) return;
+
+                let item = null;
+                if (window.InmuebleService) {
+                    const res = await InmuebleService.getById(propId);
+                    if (res && res.data) item = res.data;
+                }
+
+                if (!item && typeof MOCK_DATA !== 'undefined' && MOCK_DATA.inmuebles) {
+                    item = MOCK_DATA.inmuebles.find(i => i.id === propId || i.id === 'inm-' + propId || (propId && propId.endsWith(i.id)));
+                }
+
+                if (!item) return;
+
+                // Formateador
+                const formatUSD = num => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num || 0);
+
+                // Actualizar textos
+                document.title = `${item.titulo} | MAXIMUS`;
+                const titleEl = document.getElementById('prop-title');
+                if (titleEl) titleEl.textContent = item.titulo;
+
+                const locEl = document.getElementById('prop-location');
+                if (locEl) locEl.innerHTML = `<i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i> ${item.ubicacion || 'San Cristóbal, Táchira'}`;
+
+                const habsEl = document.getElementById('prop-habs');
+                if (habsEl) habsEl.textContent = item.habitaciones || 0;
+
+                const banosEl = document.getElementById('prop-banos');
+                if (banosEl) banosEl.textContent = item.banos || 0;
+
+                const metrosEl = document.getElementById('prop-metros');
+                if (metrosEl) metrosEl.textContent = item.metros_cuadrados || 0;
+
+                const tipoEl = document.getElementById('prop-tipo');
+                if (tipoEl) tipoEl.textContent = item.tipo || 'Inmueble';
+
+                const descEl = document.getElementById('prop-descripcion');
+                if (descEl) descEl.textContent = item.descripcion || 'Propiedad exclusiva seleccionada por MAXIMUS.';
+
+                const esAlquiler = item.operacion === 'alquiler';
+                const badgeEl = document.getElementById('prop-badge-status');
+                if (badgeEl) {
+                    badgeEl.textContent = esAlquiler ? 'En Alquiler' : 'En Venta';
+                    badgeEl.className = `absolute top-4 left-4 ${esAlquiler ? 'bg-blue-600' : 'bg-maximus-accent'} text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-sm`;
+                }
+
+                const labelPrecio = document.getElementById('prop-label-precio');
+                if (labelPrecio) labelPrecio.textContent = esAlquiler ? 'Canon de Alquiler' : 'Precio de Venta';
+
+                const precioEl = document.getElementById('prop-precio');
+                if (precioEl) precioEl.innerHTML = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-sm font-normal text-gray-500">/ mes</span>' : '');
+
+                const codeEl = document.getElementById('prop-id-code');
+                if (codeEl) codeEl.textContent = item.id ? ('MAX-' + item.id.replace('inm-', '').toUpperCase()) : 'MAX-PRO';
+
+                // Fotos
+                const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1000&q=80';
+                const imgMain = document.getElementById('prop-img-main');
+                if (imgMain) imgMain.src = foto;
+
+                // WhatsApp de consulta con el título del inmueble
+                const waBtn = document.getElementById('prop-btn-whatsapp');
+                if (waBtn) {
+                    const mensaje = encodeURIComponent(`Hola MAXIMUS, deseo recibir más información sobre "${item.titulo}" (${codeEl ? codeEl.textContent : ''}) por ${formatUSD(item.precio)}.`);
+                    waBtn.href = `https://wa.me/584240000000?text=${mensaje}`;
+                }
+            } catch (err) {
+                console.warn('Error cargando detalle dinámico de propiedad:', err);
+            }
+        });
+    </script>
 </body>
 </html>

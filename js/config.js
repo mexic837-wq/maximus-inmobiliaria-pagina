@@ -19,11 +19,13 @@ const APP_CONFIG = {
     // ========== MODO DE DATOS ==========
     // true  = Usa datos ficticios (desarrollo local sin backend)
     // false = Conecta a Supabase y n8n reales (producción)
-    USE_MOCK_DATA: true,
+    USE_MOCK_DATA: false,
 
-    // ========== SUPABASE ==========
-    SUPABASE_URL: 'https://TU-PROYECTO.supabase.co',       // ← Cambia esto
-    SUPABASE_ANON_KEY: 'TU-ANON-KEY-PUBLICA-AQUI',         // ← Cambia esto
+    // ========== SUPABASE (VPS PRODUCCIÓN) ==========
+    SUPABASE_URL: 'https://db.maximusinmobiliaria.tech',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzkyMDg0NDk2LCJleHAiOjE5NDk3NjQ0OTZ9.KQWVxf3I0ZgLCCTvB8MfwmDugkozWFFUwgr3lhICcg8',
+    // SERVICE_ROLE_KEY para n8n (NO exponer en frontend):
+    // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3OTIwODQ0OTYsImV4cCI6MTk0OTc2NDQ5Nn0.knU9MwRLtyc10C1pjnHih-OxXtarvEqH8t7jMia70ko
 
     // ========== N8N (Webhooks de Automatización) ==========
     N8N_BASE_URL: 'https://n8n.tudominio.com',              // ← Cambia esto

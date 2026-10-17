@@ -39,7 +39,7 @@
 
     <!-- Barra Superior / Acciones Rápidas -->
     <div class="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-5 max-w-7xl mx-auto">
-        <a href="index.html" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-semibold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5">
+        <a href="/" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-semibold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5">
             <i class="fas fa-arrow-left text-maximus-accent"></i>
             <span>Volver a la Web</span>
         </a>
@@ -47,7 +47,7 @@
         <!-- Badge Corporativo Inmobiliario -->
         <div class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-medium backdrop-blur-md shadow-sm">
             <i class="fas fa-shield-alt text-maximus-accent"></i>
-            <span>Acceso Exclusivo para Asesores</span>
+            <span>Portal Oficial MAXIMUS</span>
         </div>
     </div>
 
@@ -128,6 +128,12 @@
                     </button>
                 </div>
 
+                <!-- Notificación de auto-redirección si la sesión ya existe -->
+                <div id="sessionRedirectBanner" class="hidden mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2.5 animate-pulse">
+                    <i class="fas fa-circle-notch fa-spin text-emerald-600"></i>
+                    <span class="font-bold">Sesión activa detectada. Ingresando automáticamente al panel...</span>
+                </div>
+
                 <!-- Feedback de Mensajes (Alertas visuales) -->
                 <div id="authAlert" class="hidden mb-4 p-3.5 rounded-2xl text-xs font-medium flex items-start gap-2.5 transition-all">
                     <i id="authAlertIcon" class="fas fa-info-circle text-sm mt-0.5"></i>
@@ -137,7 +143,7 @@
                 <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
                 <div id="loginView">
                     <div class="mb-5">
-                        <h2 class="text-2xl font-bold text-maximus-black">Bienvenido de nuevo</h2>
+                        <h2 class="text-2xl font-bold text-maximus-black">Bienvenido</h2>
                         <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa tus credenciales para acceder a la plataforma.</p>
                     </div>
 
@@ -190,14 +196,14 @@
                                 <button type="button" onclick="selectDemoAccount('admin')" 
                                         class="p-2.5 rounded-xl border border-gray-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition group">
                                     <span class="block text-[11px] font-extrabold text-maximus-dark group-hover:text-emerald-700 flex items-center gap-1">
-                                        <i class="fas fa-shield-alt text-[9px] text-amber-500"></i> Admin
+                                        <i class="fas fa-shield-alt text-[9px] text-amber-500"></i> Director
                                     </span>
                                     <span class="block text-[9px] text-gray-500 font-semibold truncate">admin@maximus.com</span>
                                 </button>
                                 <button type="button" onclick="selectDemoAccount('asesor_maximus')" 
                                         class="p-2.5 rounded-xl border border-emerald-500 bg-emerald-50/60 hover:bg-emerald-100/60 text-left transition group shadow-sm">
                                     <span class="block text-[11px] font-extrabold text-emerald-800 flex items-center gap-1">
-                                        <i class="fas fa-check-circle text-[9px]"></i> Agente Maximus
+                                        <i class="fas fa-check-circle text-[9px]"></i> Asesor Maximus
                                     </span>
                                     <span class="block text-[9px] text-emerald-700 font-semibold truncate">asesor.maximus</span>
                                 </button>
@@ -339,7 +345,8 @@
         </div>
     </div>
 
-    <!-- Scripts de Configuración, Mock Data y AuthService -->
+    <!-- Scripts de Configuración, Supabase, Mock Data y AuthService -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js?v=3.1"></script>
     <script src="js/supabase-client.js?v=3.1"></script>
     <script src="js/mock-data.js?v=3.1"></script>
@@ -429,22 +436,49 @@
             }
         }
 
-        // Lógica de Login
+        // 1. Detección Inteligente de Sesión Activa al Cargar la Página
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.AuthService) {
+                // Si ya tiene sesión activa válida y no hizo logout explícito
+                const isAuth = await window.AuthService.checkSession();
+                if (isAuth) {
+                    const banner = document.getElementById('sessionRedirectBanner');
+                    if (banner) banner.classList.remove('hidden');
+                    setTimeout(() => {
+                        window.location.replace('/dashboard');
+                    }, 250);
+                    return;
+                }
+
+                // Autocompletar correo recordado
+                const savedEmail = window.AuthService.getSavedEmail();
+                const rememberCheckbox = document.getElementById('remember');
+                if (savedEmail) {
+                    emailInput.value = savedEmail;
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
+                    passInput.focus();
+                }
+            }
+        });
+
+        // 2. Lógica de Envío de Formulario Login con AuthService
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideAlert();
             const email = emailInput.value.trim().toLowerCase();
             const password = passInput.value;
+            const remember = document.getElementById('remember')?.checked || false;
+
             const submitBtn = document.getElementById('loginSubmitBtn');
             const originalText = submitBtn.innerHTML;
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Verificando...';
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-xs"></i> <span>Verificando credenciales...</span>';
 
             if (window.AuthService) {
-                const res = await window.AuthService.login(email, password);
+                const res = await window.AuthService.login(email, password, remember);
                 if (res.success) {
-                    window.location.href = 'dashboard-layout.html';
+                    window.location.replace('/dashboard');
                     return;
                 } else {
                     submitBtn.disabled = false;
@@ -454,13 +488,13 @@
                 }
             }
 
-            // Fallback si no hay AuthService
+            // Fallback directo si no hay AuthService
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
-            showAlert('No se pudo cargar el servicio de autenticación.');
+            showAlert('No se pudo conectar al servicio de autenticación.');
         });
 
-        // Lógica de Registro de Usuario Normal
+        // 3. Lógica de Registro de Usuario Normal
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideAlert();
@@ -484,10 +518,10 @@
             }
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creando tu cuenta...';
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Creando tu cuenta...';
 
             if (window.AuthService) {
-                const res = await window.AuthService.register({ nombre, email, password, telefono });
+                const res = await window.AuthService.register({ nombre, email, password, telefono, rememberDevice: true });
                 if (res.success) {
                     if (res.requiresEmailConfirmation) {
                         submitBtn.disabled = false;
@@ -496,8 +530,8 @@
                     } else {
                         showAlert('¡Cuenta creada con éxito! Ingresando al panel...', 'success');
                         setTimeout(() => {
-                            window.location.href = 'dashboard-layout.html';
-                        }, 800);
+                            window.location.replace('/dashboard');
+                        }, 500);
                     }
                     return;
                 } else {

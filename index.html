@@ -34,6 +34,7 @@
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
     <!-- Arquitectura Backend / Supabase & Mock Services -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/mock-data.js"></script>
@@ -75,9 +76,21 @@
         #mobile-menu.is-open .mobile-menu-panel { transform: translateY(0); }
         #mobile-menu:not(.is-open) .mobile-menu-panel { transform: translateY(-16px); }
 
-        /* Scrollbars ocultas en carruseles táctiles */
+        /* Scrollbars ocultas en carruseles táctiles y vista móvil */
         .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        @media (max-width: 1024px) {
+            html, body, div, section, nav {
+                scrollbar-width: none !important;
+                -ms-overflow-style: none !important;
+            }
+            ::-webkit-scrollbar {
+                display: none !important;
+                width: 0px !important;
+                height: 0px !important;
+            }
+        }
 
         @media (max-width: 767px) {
 
@@ -174,13 +187,13 @@
                     <a href="#nosotros" class="text-gray-700 hover:text-maximus-accent font-medium transition">Nosotros</a>
                 </div>
                 <div class="hidden md:flex items-center gap-4">
-                    <a href="login.html#register" class="text-xs uppercase tracking-wider font-bold text-gray-700 hover:text-maximus-accent transition">Crear Cuenta</a>
-                    <a href="login.html" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-5 py-2.5 rounded-full text-xs uppercase tracking-wider font-bold transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
+                    <a href="/login#register" class="text-xs uppercase tracking-wider font-bold text-gray-700 hover:text-maximus-accent transition">Crear Cuenta</a>
+                    <a href="/login" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-5 py-2.5 rounded-full text-xs uppercase tracking-wider font-bold transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
                 </div>
 
                 <!-- Controles Móviles -->
                 <div class="flex md:hidden items-center gap-2">
-                    <a href="login.html" class="h-10 px-4 rounded-full bg-maximus-dark text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-maximus-dark/25 active:scale-95 transition">
+                    <a href="/login" class="h-10 px-4 rounded-full bg-maximus-dark text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-maximus-dark/25 active:scale-95 transition">
                         <i class="fas fa-user text-[11px]"></i> Entrar
                     </a>
                     <button type="button" id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Abrir menú" aria-expanded="false" class="w-10 h-10 rounded-full bg-gray-100 text-maximus-dark flex items-center justify-center active:scale-95 transition">
@@ -210,7 +223,7 @@
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-users text-sm"></i></span> Nuestro Equipo
             </a>
             <div class="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-gray-100">
-                <a href="login.html" class="h-12 rounded-2xl bg-maximus-dark text-white text-sm font-semibold flex items-center justify-center gap-2">
+                <a href="/login" class="h-12 rounded-2xl bg-maximus-dark text-white text-sm font-semibold flex items-center justify-center gap-2">
                     <i class="fas fa-user-lock text-xs"></i> Iniciar Sesión
                 </a>
                 <a href="https://wa.me/584240000000" target="_blank" class="h-12 rounded-2xl bg-emerald-500 text-white text-sm font-semibold flex items-center justify-center gap-2">
@@ -231,9 +244,9 @@
         
         <div class="relative z-10 text-center px-4 max-w-5xl mx-auto w-full mt-0 md:mt-24 flex flex-col items-center">
             <!-- OSS Hero: Título con revelación de líneas enmascaradas -->
-            <h1 class="hero-title text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-6 leading-[1.12] tracking-tight">
-                <span class="hero-line block overflow-hidden"><span class="inline-block">Encuentra el hogar</span></span>
-                <span class="hero-line block overflow-hidden"><span class="inline-block">de tus <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">sueños.</span></span></span>
+            <h1 class="hero-title text-4xl sm:text-6xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+                <span class="hero-line block overflow-hidden pb-3 -mb-3"><span class="inline-block pb-2">Encuentra el hogar</span></span>
+                <span class="hero-line block overflow-hidden pb-3 -mb-3"><span class="inline-block pb-2">de tus <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">sueños.</span></span></span>
             </h1>
 
             <!-- OSS Hero: Subtítulo con lectura limpia -->
@@ -259,14 +272,14 @@
                             <i class="fas fa-times-circle"></i>
                         </button>
                     </div>
-                    <button id="hero-search-btn" onclick="executeHeroSearch()" class="bg-maximus-dark hover:bg-black text-white px-8 py-3 rounded-xl font-bold transition-all w-full sm:w-auto flex-shrink-0 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                    <button id="hero-search-btn" onclick="executeHeroSearch()" class="bg-maximus-dark hover:bg-black text-white px-5 sm:px-8 py-3 rounded-xl font-bold transition-all w-full sm:w-auto flex-shrink-0 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                         <span>Explorar</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Dock de Métricas (Conectado a la arquitectura de datos Supabase / Mock) -->
+            <!-- Dock de Métricas -->
             <div class="hero-dock inline-flex items-center gap-5 sm:gap-8 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/15 text-white shadow-2xl">
                 <div class="text-left">
                     <p id="stat-inmuebles" class="text-xl sm:text-2xl font-extrabold text-white leading-none">45+</p>
@@ -294,13 +307,13 @@
                     <div class="w-14 h-14 bg-emerald-100 text-maximus-accent rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fas fa-home"></i></div>
                     <h3 class="text-xl font-bold text-maximus-dark mb-3">Comprar una propiedad</h3>
                     <p class="text-gray-500 mb-6 text-sm leading-relaxed">Encuentra tu hogar ideal con nuestro amplio catálogo de inmuebles exclusivos.</p>
-                    <a href="catalog.html" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Explorar opciones <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
+                    <a href="/catalogo" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Explorar opciones <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
                 </div>
                 <div class="ruta-card bg-gray-50 p-8 rounded-3xl border border-gray-100 hover:shadow-xl hover:border-maximus-accent/30 transition-all group">
                     <div class="w-14 h-14 bg-emerald-100 text-maximus-accent rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform"><i class="fas fa-key"></i></div>
                     <h3 class="text-xl font-bold text-maximus-dark mb-3">Alquilar un espacio</h3>
                     <p class="text-gray-500 mb-6 text-sm leading-relaxed">Descubre apartamentos y casas en alquiler en las mejores zonas de la ciudad.</p>
-                    <a href="catalog.html" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Ver alquileres <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
+                    <a href="/catalogo" class="text-maximus-accent font-semibold hover:text-maximus-dark transition-colors inline-flex items-center">Ver alquileres <i class="fas fa-arrow-right ml-2 text-sm"></i></a>
                 </div>
             </div>
         </div>
@@ -309,24 +322,22 @@
     <!-- Sección Destacados (Conectado dinámicamente con InmuebleService / Supabase) -->
     <section id="propiedades" class="py-24 bg-gray-50 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center" id="propiedades-header">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-maximus-accent text-xs font-semibold uppercase tracking-wider mb-3">
-                <span class="w-2 h-2 rounded-full bg-maximus-accent animate-pulse"></span>
-                <span>Portafolio Sincronizado</span>
-            </div>
             <h2 class="text-3xl md:text-5xl font-bold text-maximus-dark mb-3">Propiedades Destacadas</h2>
             <p id="propiedades-subtitulo" class="text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Explora nuestra colección curada de residencias y apartamentos exclusivos disponibles para comprar o alquilar.</p>
             
             <!-- Selector Rápido de Operación (Venta / Alquiler / Todos) -->
             <div class="mt-6 inline-flex items-center p-1 bg-white rounded-xl border border-gray-200/80 shadow-sm gap-1">
-                <button id="pill-filter-todos" onclick="filtrarMarqueePorOperacion('todos')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all">Todos</button>
-                <button id="pill-filter-venta" onclick="filtrarMarqueePorOperacion('venta')" class="px-5 py-2 rounded-lg text-xs font-semibold text-white bg-maximus-dark shadow-sm transition-all flex items-center gap-1.5">
+                <button id="pill-filter-todos" onclick="filtrarMarqueePorOperacion('todos')" class="px-5 py-2 rounded-lg text-xs font-semibold text-white bg-maximus-dark shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="fas fa-layer-group text-[10px]"></i> Todos
+                </button>
+                <button id="pill-filter-venta" onclick="filtrarMarqueePorOperacion('venta')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5">
                     <i class="fas fa-key text-[10px]"></i> Comprar
                 </button>
                 <button id="pill-filter-alquiler" onclick="filtrarMarqueePorOperacion('alquiler')" class="px-5 py-2 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition-all flex items-center gap-1.5">
                     <i class="fas fa-building text-[10px]"></i> Alquilar
                 </button>
             </div>
-            <div id="propiedades-contador" class="mt-3 text-xs text-gray-400 font-medium">Sincronizando con base de datos...</div>
+            <div id="propiedades-contador" class="hidden"></div>
         </div>
         
         <!-- Carrusel Marquee Horizontal 100% Seamless -->
@@ -342,7 +353,7 @@
         </div>
         
         <div class="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a id="btn-ver-catalogo" href="catalog.html" class="inline-flex items-center text-white bg-maximus-dark hover:bg-black px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all group text-sm">
+            <a id="btn-ver-catalogo" href="/catalogo" class="inline-flex items-center text-white bg-maximus-dark hover:bg-black px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all group text-sm">
                 <span>Ver catálogo completo</span>
                 <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
             </a>
@@ -353,11 +364,10 @@
         </div>
     </section>
 
-    <!-- Lead Magnet: Home Valuation (Webhook n8n) -->
+    <!-- Lead Magnet: Home Valuation -->
     <section id="valoracion" class="py-20 bg-maximus-dark relative overflow-hidden">
         <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <span class="text-maximus-accent font-semibold tracking-wider uppercase text-sm mb-2 block">Vende con nosotros</span>
             <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">¿Quieres saber cuánto vale tu propiedad?</h2>
             <p class="text-gray-300 mb-10 text-lg max-w-2xl mx-auto">Ingresa la dirección de tu inmueble y tu correo electrónico. Te enviaremos un análisis de mercado gratuito para que vendas al mejor precio.</p>
             
@@ -370,39 +380,28 @@
                     <i class="fas fa-envelope text-maximus-accent mr-3"></i>
                     <input type="email" id="val-email" required placeholder="Tu correo electrónico (ej: tu@correo.com)" class="w-full bg-transparent border-none outline-none text-gray-800 h-12 focus:ring-0 text-sm font-medium placeholder-gray-400">
                 </div>
-                <button type="submit" id="btn-val-submit" class="bg-maximus-accent hover:bg-emerald-400 text-white px-8 py-3.5 rounded-xl font-bold transition-all w-full md:w-auto flex-shrink-0 shadow-lg flex items-center justify-center gap-2 group cursor-pointer">
+                <button type="submit" id="btn-val-submit" class="bg-maximus-accent hover:bg-emerald-400 text-white px-5 sm:px-8 py-3.5 rounded-xl font-bold transition-all w-full md:w-auto flex-shrink-0 shadow-lg flex items-center justify-center gap-2 group cursor-pointer">
                     <span id="btn-val-text">Analizar</span>
                     <i id="btn-val-icon" class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </form>
 
-            <!-- Card de Éxito / Feedback de Automatización n8n & Supabase -->
-            <div id="valuation-success" class="hidden mt-6 bg-white/10 backdrop-blur-xl border border-emerald-400/40 rounded-2xl p-6 text-white text-left shadow-2xl transition-all">
+            <!-- Card de Éxito / Feedback -->
+            <div id="valuation-success" class="hidden mt-6 bg-white/10 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-6 text-white text-left shadow-2xl transition-all">
                 <div class="flex flex-col sm:flex-row items-start gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="flex-grow">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[11px] font-bold uppercase tracking-wider">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                                Webhook n8n Activado
-                            </span>
-                            <span class="text-xs text-gray-300 font-medium">Sincronizado con Supabase</span>
-                        </div>
                         <h4 class="text-lg font-bold text-white mb-1.5">¡Solicitud de Valoración Recibida!</h4>
                         <p class="text-gray-200 text-sm leading-relaxed mb-4">
-                            Registramos la propiedad en <span id="valuation-success-address" class="font-bold text-emerald-300 underline decoration-emerald-400/50"></span>. Nuestro workflow automatizado en <strong>n8n</strong> ha iniciado el cálculo comparativo de mercado y te enviará el informe preliminar a <span id="valuation-success-email" class="font-bold text-emerald-300"></span>.
+                            Hemos registrado la información de la propiedad en <span id="valuation-success-address" class="font-bold text-emerald-300 underline decoration-emerald-400/50"></span>. Un asesor especialista preparará el informe comparativo y te contactará a <span id="valuation-success-email" class="font-bold text-emerald-300"></span>.
                         </p>
                         
-                        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10 text-xs">
-                            <div class="flex items-center gap-4 text-gray-300">
-                                <span class="inline-flex items-center gap-1.5"><i class="fas fa-check text-emerald-400"></i> Lead en Supabase</span>
-                                <span class="inline-flex items-center gap-1.5"><i class="fas fa-bolt text-amber-300"></i> Disparo n8n instantáneo</span>
-                            </div>
-                            <a id="valuation-whatsapp-btn" href="#" target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl shadow transition-all hover:scale-105">
+                        <div class="pt-3 border-t border-white/10 text-xs flex justify-end">
+                            <a id="valuation-whatsapp-btn" href="#" target="_blank" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl shadow transition-all hover:scale-105">
                                 <i class="fab fa-whatsapp text-sm"></i>
-                                <span>Atención Inmediata con un Tasador</span>
+                                <span>Atención Inmediata con un Asesor</span>
                             </a>
                         </div>
                     </div>
@@ -554,7 +553,6 @@
     <section id="equipo" class="py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span id="equipo-tag" class="text-maximus-accent font-semibold tracking-wider uppercase text-sm mb-2 block">Nuestro Equipo</span>
                 <h2 id="equipo-titulo" class="text-3xl font-bold text-maximus-dark mb-4">Agentes Expertos a tu Servicio</h2>
                 <p id="equipo-subtitulo" class="text-gray-500 max-w-2xl mx-auto">Profesionales con años de experiencia listos para asesorarte en cada paso de tu inversión.</p>
             </div>
@@ -625,13 +623,12 @@
     <section class="py-24 bg-white overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="text-maximus-accent font-semibold tracking-wider uppercase text-sm mb-2 block">Testimonios</span>
                 <h2 class="text-3xl font-bold text-maximus-dark mb-4">Lo que dicen nuestros clientes</h2>
             </div>
             
             <div class="testimonios-track no-scrollbar flex flex-wrap md:flex-nowrap gap-6 justify-center">
-                <div class="bg-gray-50 p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
-                    <i class="fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200"></i>
+                <div class="bg-gray-50 p-5 sm:p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
+                    <i class="fas fa-quote-right absolute top-5 sm:top-6 right-5 sm:right-8 text-2xl sm:text-4xl text-gray-200"></i>
                     <div class="text-yellow-400 text-sm mb-4">
                         <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
@@ -647,8 +644,8 @@
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
-                    <i class="fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200"></i>
+                <div class="bg-gray-50 p-5 sm:p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
+                    <i class="fas fa-quote-right absolute top-5 sm:top-6 right-5 sm:right-8 text-2xl sm:text-4xl text-gray-200"></i>
                     <div class="text-yellow-400 text-sm mb-4">
                         <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
@@ -664,8 +661,8 @@
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
-                    <i class="fas fa-quote-right absolute top-6 right-8 text-4xl text-gray-200"></i>
+                <div class="bg-gray-50 p-5 sm:p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
+                    <i class="fas fa-quote-right absolute top-5 sm:top-6 right-5 sm:right-8 text-2xl sm:text-4xl text-gray-200"></i>
                     <div class="text-yellow-400 text-sm mb-4">
                         <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                     </div>
@@ -704,7 +701,7 @@
                         <li><a href="#" class="text-gray-400 hover:text-white transition">Inicio</a></li>
                         <li><a href="#propiedades" class="text-gray-400 hover:text-white transition">Catálogo de Propiedades</a></li>
                         <li><a href="#nosotros" class="text-gray-400 hover:text-white transition">Sobre Nosotros</a></li>
-                        <li><a href="login.html" class="text-gray-400 hover:text-maximus-accent transition">Iniciar Sesión</a></li>
+                        <li><a href="/login" class="text-gray-400 hover:text-maximus-accent transition">Iniciar Sesión</a></li>
                     </ul>
                 </div>
                 
@@ -784,7 +781,7 @@
         const ossHeroTl = gsap.timeline({ delay: 0.2 });
 
         // 1. Título de líneas enmascaradas: revelación escalonada elegante
-        ossHeroTl.from(".hero-line span", {
+        ossHeroTl.from(".hero-line > span", {
             y: 80,
             opacity: 0,
             duration: 0.95,
@@ -1012,7 +1009,7 @@
         // F. SINCRONIZACIÓN HERO Y DESTACADOS CON SUPABASE / MOCK
         // ========================================================
         window.activeSearchTab = 'comprar'; // 'comprar' (venta) | 'alquilar' (alquiler)
-        window.currentOperacionFilter = 'venta'; // 'todos' | 'venta' | 'alquiler'
+        window.currentOperacionFilter = 'todos'; // 'todos' | 'venta' | 'alquiler'
         window.currentSearchQuery = '';
 
         // Formateador de moneda en USD
@@ -1124,7 +1121,7 @@
             if (btnCatalogo) {
                 const opParam = window.currentOperacionFilter !== 'todos' ? `&operacion=${window.currentOperacionFilter}` : '';
                 const qParam = val ? `&q=${encodeURIComponent(val)}` : '';
-                btnCatalogo.href = `catalog.html?type=${window.activeSearchTab}${opParam}${qParam}`;
+                btnCatalogo.href = `/catalogo?type=${window.activeSearchTab}${opParam}${qParam}`;
             }
             
             // Desplazamiento fluido hacia la sección de propiedades
@@ -1133,8 +1130,18 @@
             }
         };
 
+        // Función para aleatorizar arrays (Fisher-Yates shuffle)
+        function shuffleInmuebles(arr) {
+            const copia = [...arr];
+            for (let i = copia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copia[i], copia[j]] = [copia[j], copia[i]];
+            }
+            return copia;
+        }
+
         // 6. Carga dinámica de propiedades desde InmuebleService (Supabase / Mock)
-        async function cargarPropiedadesDestacadas(operacion = 'venta', busqueda = '') {
+        async function cargarPropiedadesDestacadas(operacion = 'todos', busqueda = '') {
             const group1 = document.getElementById('marquee-group-1');
             const group2 = document.getElementById('marquee-group-2');
             const counterEl = document.getElementById('propiedades-contador');
@@ -1156,16 +1163,29 @@
                 }
                 
                 const res = await InmuebleService.getAll(filtros);
-                let items = (res && res.data) ? res.data : [];
-                
-                // Actualizar contador visual
-                if (counterEl) {
-                    const opTexto = operacion === 'venta' ? 'en Venta' : operacion === 'alquiler' ? 'en Alquiler' : 'disponibles';
-                    const busqTexto = busqueda ? ` para "${busqueda}"` : '';
-                    counterEl.innerHTML = `<span class="text-maximus-dark font-semibold">${items.length} propiedades</span> ${opTexto}${busqTexto} · Datos sincronizados`;
+                let items = (res && res.data && res.data.length > 0) ? res.data : [];
+
+                // Respaldo secundario si la consulta no arrojó resultados sin búsqueda específica
+                if (items.length === 0 && !busqueda) {
+                    if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
+                        items = [...MOCK_DATA.inmuebles];
+                        if (operacion && operacion !== 'todos') {
+                            items = items.filter(i => i.operacion === operacion);
+                        }
+                    }
                 }
 
-                // Si no hay resultados con la búsqueda exacta, mostrar aviso o fallback
+                // SIEMPRE barajar aleatoriamente las propiedades subidas para que salgan al azar
+                items = shuffleInmuebles(items);
+                
+                // Actualizar contador visual si existe
+                if (counterEl) {
+                    const opTexto = operacion === 'venta' ? 'en Venta' : operacion === 'alquiler' ? 'en Alquiler' : 'en Catálogo';
+                    const busqTexto = busqueda ? ` para "${busqueda}"` : '';
+                    counterEl.innerHTML = `<span class="text-maximus-dark font-semibold">${items.length} propiedades</span> ${opTexto}${busqTexto} · Sincronizadas al azar`;
+                }
+
+                // Si tras todo no hay resultados (búsqueda que no coincide con nada)
                 if (items.length === 0) {
                     const emptyCard = `
                         <div class="w-[360px] sm:w-[420px] flex-shrink-0 bg-white rounded-2xl p-8 border border-gray-200 text-center shadow-sm">
@@ -1189,27 +1209,32 @@
                     return inmueblesList.map(item => {
                         const esAlquiler = item.operacion === 'alquiler';
                         const badgeColor = esAlquiler ? 'bg-blue-600' : 'bg-maximus-accent';
-                        const badgeLabel = esAlquiler ? 'Alquiler' : 'Venta';
-                        const precioFormateado = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-sm font-normal text-gray-400">/ mes</span>' : '');
+                        const badgeLabel = esAlquiler ? 'ALQUILER' : 'VENTA';
+                        const tipoLabel = (item.tipo || 'INMUEBLE').toUpperCase();
+                        const precioFormateado = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-xs font-medium text-gray-400">/ mes</span>' : '');
                         const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
                         const codigo = item.id ? ('#MAX-' + item.id.replace('inm-', '').slice(0, 4).toUpperCase()) : '#MAX';
 
                         return `
-                            <a href="property-detail.html?id=${encodeURIComponent(item.id)}" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
+                            <a href="/detalle-propiedad?id=${encodeURIComponent(item.id)}" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
                                 <div class="relative h-60 overflow-hidden bg-gray-100">
                                     <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
-                                    <div class="absolute top-4 left-4 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-md flex items-center gap-1.5">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                                        ${badgeLabel}
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                                        <span class="${badgeColor} text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg shadow-md tracking-wider">
+                                            ${badgeLabel}
+                                        </span>
+                                        <span class="bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase px-2 py-1 rounded-lg">
+                                            ${tipoLabel}
+                                        </span>
                                     </div>
-                                    ${item.en_oferta ? `<div class="absolute top-4 right-4 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">Destacado</div>` : ''}
+                                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-gray-800 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
+                                        ${codigo}
+                                    </div>
                                 </div>
                                 <div class="p-6">
-                                    <div class="flex items-baseline justify-between mb-1">
-                                        <div class="text-2xl font-bold text-maximus-dark">${precioFormateado}</div>
-                                        <span class="text-[10px] font-mono font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded">${codigo}</span>
-                                    </div>
-                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate text-gray-900">${item.titulo}</h3>
+                                    <div class="text-2xl font-bold text-maximus-dark mb-1">${precioFormateado}</div>
+                                    <h3 class="text-lg font-semibold mb-2 group-hover:text-maximus-accent transition-colors truncate text-gray-900" title="${item.titulo}">${item.titulo}</h3>
                                     <p class="text-gray-500 text-sm mb-4 truncate flex items-center">
                                         <i class="fas fa-map-marker-alt text-maximus-accent mr-2 flex-shrink-0 text-xs"></i>
                                         <span>${item.ubicacion || 'San Cristóbal, Táchira'}</span>
@@ -1225,12 +1250,11 @@
                     }).join('');
                 };
 
-                // Si hay pocos items, duplicarlos para que la tira de marquee tenga suficiente ancho continuo
-                // (en móvil el carrusel es táctil, por lo que no se duplican tarjetas)
+                // Asegurar que haya suficientes tarjetas para un carrusel marquee sin saltos
                 const esMovil = window.matchMedia('(max-width: 767px)').matches;
                 let listForMarquee = [...items];
-                while (!esMovil && listForMarquee.length < 6) {
-                    listForMarquee = listForMarquee.concat(items);
+                while (listForMarquee.length > 0 && listForMarquee.length < 8) {
+                    listForMarquee = listForMarquee.concat(shuffleInmuebles(items));
                 }
 
                 const htmlCards = generateCardsHTML(listForMarquee);
@@ -1245,8 +1269,10 @@
 
         // 7. Inicializar al cargar el DOM
         document.addEventListener('DOMContentLoaded', function() {
-            // Cargar propiedades por defecto (Venta)
-            cargarPropiedadesDestacadas('venta', '');
+            // Cargar propiedades por defecto (Todas, al azar)
+            window.currentOperacionFilter = 'todos';
+            syncPillsUI('todos');
+            cargarPropiedadesDestacadas('todos', '');
             
             // Cargar miembros del equipo desde EquipoWebService
             cargarEquipoLanding();
@@ -1333,6 +1359,30 @@
         // Cerrar menú automáticamente al pasar a escritorio
         window.matchMedia('(min-width: 768px)').addEventListener('change', e => {
             if (e.matches) toggleMobileMenu(false);
+        });
+
+        // 10. Reconocimiento inteligente de sesión activa en la navegación
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.AuthService) {
+                const isAuth = await window.AuthService.checkSession();
+                if (isAuth) {
+                    const user = window.AuthService.getCurrentUser();
+                    const firstName = user && user.name ? user.name.split(' ')[0] : 'Panel';
+                    
+                    const loginLinks = document.querySelectorAll('a[href="/login"]');
+                    loginLinks.forEach(link => {
+                        link.href = '/dashboard';
+                        if (link.classList.contains('px-6')) {
+                            link.innerHTML = `<i class="fas fa-th-large mr-2"></i> Mi Panel (${firstName})`;
+                            link.classList.add('bg-emerald-800');
+                        } else if (link.querySelector('.fa-user')) {
+                            link.innerHTML = `<i class="fas fa-th-large text-[11px]"></i> Panel`;
+                        } else {
+                            link.innerHTML = `<span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center"><i class="fas fa-th-large text-sm"></i></span> Mi Panel Inmobiliario`;
+                        }
+                    });
+                }
+            }
         });
 
     </script>

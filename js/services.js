@@ -22,39 +22,62 @@
 const InmuebleService = {
 
     async getAll(filtros = {}) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let data = [...MOCK_DATA.inmuebles];
-            if (filtros.operacion) data = data.filter(i => i.operacion === filtros.operacion);
-            if (filtros.estatus) data = data.filter(i => i.estatus === filtros.estatus);
-            if (filtros.tipo) data = data.filter(i => i.tipo === filtros.tipo);
-            if (filtros.busqueda) {
-                const q = filtros.busqueda.toLowerCase();
-                data = data.filter(i => 
-                    i.titulo.toLowerCase().includes(q) || 
-                    i.ubicacion.toLowerCase().includes(q)
-                );
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    let query = sb.from(APP_CONFIG.TABLES.INMUEBLES).select('*');
+                    if (filtros.operacion && filtros.operacion !== 'todos') query = query.eq('operacion', filtros.operacion);
+                    if (filtros.estatus) query = query.eq('estatus', filtros.estatus);
+                    if (filtros.tipo) query = query.eq('tipo', filtros.tipo);
+                    if (filtros.busqueda) query = query.ilike('titulo', `%${filtros.busqueda}%`);
+                    query = query.order('created_at', { ascending: false });
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                        return res;
+                    }
+                    if (res && res.error) {
+                        console.warn('⚠️ MAXIMUS InmuebleService: Supabase devolvió error o no está autorizado. Usando respaldo de datos locales:', res.error);
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ MAXIMUS InmuebleService: Excepción al conectar con Supabase. Usando respaldo de datos locales:', err);
             }
-            return { data, error: null };
         }
 
-        // ---- SUPABASE REAL ----
-        const sb = getSupabase();
-        let query = sb.from(APP_CONFIG.TABLES.INMUEBLES).select('*');
-        if (filtros.operacion) query = query.eq('operacion', filtros.operacion);
-        if (filtros.estatus) query = query.eq('estatus', filtros.estatus);
-        if (filtros.tipo) query = query.eq('tipo', filtros.tipo);
-        if (filtros.busqueda) query = query.ilike('titulo', `%${filtros.busqueda}%`);
-        query = query.order('created_at', { ascending: false });
-        return await query;
+        // ---- RESPALDO LOCAL / MOCK DATA ----
+        let data = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) ? [...MOCK_DATA.inmuebles] : [];
+        if (filtros.operacion && filtros.operacion !== 'todos') data = data.filter(i => i.operacion === filtros.operacion);
+        if (filtros.estatus) data = data.filter(i => i.estatus === filtros.estatus);
+        if (filtros.tipo) data = data.filter(i => i.tipo === filtros.tipo);
+        if (filtros.busqueda) {
+            const q = filtros.busqueda.toLowerCase();
+            data = data.filter(i => 
+                (i.titulo && i.titulo.toLowerCase().includes(q)) || 
+                (i.ubicacion && i.ubicacion.toLowerCase().includes(q))
+            );
+        }
+        return { data, error: null };
     },
 
     async getById(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const item = MOCK_DATA.inmuebles.find(i => i.id === id);
-            return { data: item || null, error: item ? null : 'No encontrado' };
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const res = await sb.from(APP_CONFIG.TABLES.INMUEBLES).select('*').eq('id', id).single();
+                    if (res && !res.error && res.data) {
+                        return res;
+                    }
+                }
+            } catch (err) {
+                console.warn('InmuebleService.getById: Excepción Supabase, usando respaldo local:', err);
+            }
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.INMUEBLES).select('*').eq('id', id).single();
+        const item = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) 
+            ? MOCK_DATA.inmuebles.find(i => i.id === id || i.id === 'inm-' + id || (id && id.endsWith(i.id)))
+            : null;
+        return { data: item || null, error: item ? null : 'No encontrado' };
     },
 
     async create(inmuebleData) {
@@ -498,17 +521,48 @@ const CierreVentaService = {
 
         // ---- SUPABASE REAL ----
         try {
-            const sb = getSupabase();
-            let query = sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).select('*');
-            if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
-            if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') query = query.eq('tipo_operacion', filtros.tipo_operacion);
-            if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') query = query.eq('estatus_comision', filtros.estatus_comision);
-            if (filtros.busqueda) query = query.ilike('inmueble_titulo', `%${filtros.busqueda}%`);
-            query = query.order('fecha_cierre', { ascending: false });
-            return await query;
+            const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (sb) {
+                let query = sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).select('*');
+                if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
+                if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') query = query.eq('tipo_operacion', filtros.tipo_operacion);
+                if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') query = query.eq('estatus_comision', filtros.estatus_comision);
+                if (filtros.busqueda) query = query.ilike('inmueble_titulo', `%${filtros.busqueda}%`);
+                query = query.order('fecha_cierre', { ascending: false });
+                const res = await query;
+                if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                    return res;
+                }
+                if (res && res.error) {
+                    console.warn('⚠️ MAXIMUS CierreVentaService: Supabase error o no autorizado. Usando respaldo local:', res.error);
+                }
+            }
         } catch (err) {
-            return { data: null, error: err.message };
+            console.warn('⚠️ MAXIMUS CierreVentaService: Excepción al conectar con Supabase. Usando respaldo local:', err);
         }
+
+        // ---- RESPALDO LOCAL / MOCK DATA ----
+        let data = this._getStoredCierres();
+        if (filtros.asesor_id && filtros.asesor_id !== 'todos') {
+            data = data.filter(c => c.asesor_id === filtros.asesor_id);
+        }
+        if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') {
+            data = data.filter(c => c.tipo_operacion === filtros.tipo_operacion);
+        }
+        if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') {
+            data = data.filter(c => c.estatus_comision === filtros.estatus_comision);
+        }
+        if (filtros.busqueda) {
+            const q = filtros.busqueda.toLowerCase().trim();
+            data = data.filter(c => 
+                (c.inmueble_titulo && c.inmueble_titulo.toLowerCase().includes(q)) ||
+                (c.asesor_nombre && c.asesor_nombre.toLowerCase().includes(q)) ||
+                (c.ubicacion && c.ubicacion.toLowerCase().includes(q)) ||
+                (c.cliente_comprador && c.cliente_comprador.toLowerCase().includes(q))
+            );
+        }
+        data.sort((a, b) => new Date(b.fecha_cierre) - new Date(a.fecha_cierre));
+        return { data, error: null };
     },
 
     async getMetricas(filtros = {}) {

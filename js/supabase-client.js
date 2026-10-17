@@ -1,52 +1,72 @@
 /**
- * ============================================
- * MAXIMUS - Cliente de Supabase
- * ============================================
+ * ==============================================================================
+ * MAXIMUS INMOBILIARIA - Cliente Centralizado de Supabase
+ * ==============================================================================
  * 
- * Inicializa la conexión con Supabase.
- * En modo MOCK no carga la librería, evitando errores.
- * 
- * PARA PRODUCCIÓN:
- * Agrega este script en tu HTML ANTES de este archivo:
- * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ * Inicializa y administra de forma segura la instancia del cliente Supabase.
+ * Evita colisiones de identificadores en el ámbito global del navegador
+ * y realiza auto-inicialización bajo demanda (Lazy Loading).
  */
 
-let supabase = null;
+(function () {
+    'use strict';
 
-function initSupabase() {
-    if (APP_CONFIG.USE_MOCK_DATA) {
-        console.log('🟡 MAXIMUS: Modo MOCK activo. Supabase no se conectará.');
-        return null;
-    }
+    let _supabaseClientInstance = null;
 
-    if (typeof window.supabase === 'undefined' && typeof createClient === 'undefined') {
-        console.error('❌ MAXIMUS: La librería de Supabase no está cargada. Agrega el CDN en tu HTML.');
-        return null;
-    }
-
-    // Crear cliente de Supabase
-    const { createClient } = window.supabase || window;
-    supabase = createClient(APP_CONFIG.SUPABASE_URL, APP_CONFIG.SUPABASE_ANON_KEY);
-    console.log('✅ MAXIMUS: Supabase conectado correctamente.');
-    return supabase;
-}
-
-/**
- * Retorna la instancia activa de Supabase.
- * Lanza error si se intenta usar sin inicializar.
- */
-function getSupabase() {
-    if (!supabase) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            return null; // En modo mock, devuelve null silenciosamente
+    /**
+     * Inicializa la conexión con Supabase utilizando la configuración de APP_CONFIG.
+     */
+    function initSupabase() {
+        if (typeof APP_CONFIG === 'undefined') {
+            console.warn('⚠️ MAXIMUS: APP_CONFIG aún no está disponible.');
+            return null;
         }
-        throw new Error('Supabase no ha sido inicializado. Llama a initSupabase() primero.');
-    }
-    return supabase;
-}
 
-// Exportar para uso global
-if (typeof window !== 'undefined') {
-    window.initSupabase = initSupabase;
-    window.getSupabase = getSupabase;
-}
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            return null;
+        }
+
+        const supabaseLib = window.supabase || (typeof createClient === 'function' ? { createClient } : null);
+        if (!supabaseLib || typeof supabaseLib.createClient !== 'function') {
+            console.warn('⚠️ MAXIMUS: La librería @supabase/supabase-js aún no se ha cargado.');
+            return null;
+        }
+
+        if (!APP_CONFIG.SUPABASE_URL || !APP_CONFIG.SUPABASE_ANON_KEY) {
+            console.warn('⚠️ MAXIMUS: SUPABASE_URL o SUPABASE_ANON_KEY no están configurados.');
+            return null;
+        }
+
+        try {
+            _supabaseClientInstance = supabaseLib.createClient(APP_CONFIG.SUPABASE_URL, APP_CONFIG.SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            });
+            console.log('✅ MAXIMUS: Supabase conectado correctamente.');
+            return _supabaseClientInstance;
+        } catch (err) {
+            console.error('❌ MAXIMUS: Error al inicializar cliente Supabase:', err);
+            return null;
+        }
+    }
+
+    /**
+     * Retorna la instancia activa de Supabase.
+     * Si aún no fue creada, intenta inicializarla automáticamente.
+     */
+    function getSupabase() {
+        if (!_supabaseClientInstance) {
+            initSupabase();
+        }
+        return _supabaseClientInstance;
+    }
+
+    // Exportar al objeto global window sin colisionar con la librería Supabase
+    if (typeof window !== 'undefined') {
+        window.initSupabase = initSupabase;
+        window.getSupabase = getSupabase;
+    }
+})();
