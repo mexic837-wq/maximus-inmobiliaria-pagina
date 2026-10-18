@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitud de Valoración Recibida | MAXIMUS Inmobiliaria</title>
+</head>
+<body style="margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F4F7F6; padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <!-- Contenedor Principal -->
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;">
+          
+          <!-- Barra Superior Cromo & Esmeralda -->
+          <tr>
+            <td style="height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);"></td>
+          </tr>
+
+          <!-- Cabecera con Identidad del Logo MAXIMUS -->
+          <tr>
+            <td align="center" style="background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;">
+              <div style="display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;">
+                <span style="font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;">M</span><span style="font-size:26px; font-weight:900; color:#10B981;">↗</span>
+              </div>
+              <h1 style="margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;">
+                MAXIMUS<span style="color:#10B981;">.</span>
+              </h1>
+              <p style="margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;">
+                INMOBILIARIA
+              </p>
+            </td>
+          </tr>
+
+          <!-- Cuerpo del Mensaje -->
+          <tr>
+            <td style="padding:40px 36px 32px 36px;">
+              <!-- Badge Estado -->
+              <div style="margin-bottom:20px;">
+                <span style="display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">
+                  ✓ Solicitud Registrada · Ref. {{ $json.lead_id }}
+                </span>
+              </div>
+
+              <h2 style="margin:0 0 14px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;">
+                Hemos recibido tu solicitud de valoración inmobiliaria
+              </h2>
+
+              <p style="margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;">
+                Gracias por confiar en <strong style="color:#0B4A3F;">MAXIMUS Inmobiliaria</strong>. Nuestro equipo de especialistas en avalúos y análisis de mercado en San Cristóbal ya está procesando la información de tu inmueble para entregarte una estimación precisa, confidencial y respaldada por datos reales de cierres recientes.
+              </p>
+
+              <!-- Tarjeta Resumen del Inmueble -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;">
+                <tr>
+                  <td style="padding:22px 24px;">
+                    <p style="margin:0 0 12px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;">
+                      Detalles de la Solicitud
+                    </p>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding:6px 0; font-size:13px; color:#64748B; width:38%;">Ubicación / Inmueble:</td>
+                        <td style="padding:6px 0; font-size:14px; font-weight:700; color:#0F172A;">{{ $json.direccion }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0; font-size:13px; color:#64748B;">Correo de Contacto:</td>
+                        <td style="padding:6px 0; font-size:14px; font-weight:600; color:#0B4A3F;">{{ $json.email }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0; font-size:13px; color:#64748B;">Código de Expediente:</td>
+                        <td style="padding:6px 0; font-size:13px; font-weight:700; color:#10B981; font-family:monospace;">#{{ $json.lead_id }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Próximos Pasos -->
+              <p style="margin:0 0 14px 0; font-size:13px; font-weight:800; letter-spacing:1px; color:#0F172A; text-transform:uppercase;">
+                ¿Qué sucede a continuación?
+              </p>
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:28px;">
+                <tr>
+                  <td valign="top" width="32" style="padding-bottom:12px;">
+                    <span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background-color:#0B4A3F; color:#FFFFFF; font-size:11px; font-weight:800;">1</span>
+                  </td>
+                  <td valign="top" style="padding-bottom:12px; font-size:14px; color:#475569; line-height:1.5;">
+                    <strong style="color:#0F172A;">Estudio Comparativo de Mercado (ACM):</strong> Analizamos propiedades similares vendidas y activas en tu urbanización o sector.
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top" width="32" style="padding-bottom:12px;">
+                    <span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background-color:#0B4A3F; color:#FFFFFF; font-size:11px; font-weight:800;">2</span>
+                  </td>
+                  <td valign="top" style="padding-bottom:12px; font-size:14px; color:#475569; line-height:1.5;">
+                    <strong style="color:#0F172A;">Contacto de un Asesor Senior:</strong> En menos de 24 horas hábiles nos comunicaremos contigo para afinar detalles técnicos del inmueble.
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top" width="32">
+                    <span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background-color:#10B981; color:#FFFFFF; font-size:11px; font-weight:800;">3</span>
+                  </td>
+                  <td valign="top" style="font-size:14px; color:#475569; line-height:1.5;">
+                    <strong style="color:#0F172A;">Entrega de Reporte de Valoración:</strong> Recibirás el rango óptimo de comercialización y nuestra estrategia de venta exclusiva.
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center" style="padding-top:6px;">
+                    <a href="https://wa.me/584247329254?text=Hola%20MAXIMUS%20Inmobiliaria,%20solicité%20la%20valoración%20de%20mi%20inmueble%20(Ref:%20{{ $json.lead_id }})" style="display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);">
+                      Hablar con un Especialista por WhatsApp →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer Oscuro & Plata -->
+          <tr>
+            <td style="background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;">
+              <p style="margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;">
+                MAXIMUS<span style="color:#10B981;">.</span> <span style="font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;">INMOBILIARIA</span>
+              </p>
+              <p style="margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;">
+                Experiencia, exclusividad y respaldo legal en cada inversión.<br>
+                San Cristóbal, Estado Táchira · Venezuela
+              </p>
+              <p style="margin:0; font-size:11px; color:#64748B;">
+                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

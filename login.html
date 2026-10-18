@@ -166,7 +166,7 @@
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
                                 <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">Contraseña</label>
-                                <a href="#" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition">¿Olvidaste tu clave?</a>
+                                <button type="button" onclick="handleForgotPassword(event)" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition cursor-pointer">¿Olvidaste tu clave?</button>
                             </div>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -244,6 +244,7 @@
                         <p class="text-gray-500 text-xs sm:text-sm mt-1">Crea tu cuenta para explorar propiedades y contactar asesores.</p>
                     </div>
 
+<<<<<<< HEAD
                     <!-- Formulario Registro -->
                     <form id="registerForm" class="space-y-3.5">
                         <!-- Campo Nombre Completo -->
@@ -258,6 +259,23 @@
                                        placeholder="Ej: Alejandro Sánchez">
                             </div>
                         </div>
+=======
+                    <!-- Banner de feedback para recuperación de contraseña -->
+                    <div id="forgotPasswordBanner" class="hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all">
+                        <i class="fas fa-check-circle text-emerald-600 mt-0.5 text-sm"></i>
+                        <div class="flex-1">
+                            <span id="forgotPasswordText" class="font-semibold block">Enlace de recuperación enviado a tu correo electrónico.</span>
+                        </div>
+                    </div>
+
+                    <!-- Recordar credenciales -->
+                    <div class="flex items-center pt-1">
+                        <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
+                        <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
+                            Recordar mis datos en este equipo
+                        </label>
+                    </div>
+>>>>>>> 6af2820 (feat(n8n): integrar webhooks de automatización, flujos JSON y plantillas HTML luxury de correo)
 
                         <!-- Campo Correo -->
                         <div>
@@ -345,12 +363,20 @@
         </div>
     </div>
 
-    <!-- Scripts de Configuración, Supabase, Mock Data y AuthService -->
+    <!-- Scripts de Configuración, Supabase, Mock Data, Services y AuthService -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<<<<<<< HEAD
     <script src="js/config.js?v=3.1"></script>
     <script src="js/supabase-client.js?v=3.1"></script>
     <script src="js/mock-data.js?v=3.1"></script>
     <script src="js/auth.js?v=3.1"></script>
+=======
+    <script src="js/config.js?v=2.2"></script>
+    <script src="js/supabase-client.js?v=2.2"></script>
+    <script src="js/mock-data.js?v=2.2"></script>
+    <script src="js/services.js?v=2.2"></script>
+    <script src="js/auth.js?v=2.2"></script>
+>>>>>>> 6af2820 (feat(n8n): integrar webhooks de automatización, flujos JSON y plantillas HTML luxury de correo)
 
     <!-- Script para interactividad y auth -->
     <script>
@@ -368,12 +394,58 @@
         const authAlertMsg = document.getElementById('authAlertMsg');
         const authAlertIcon = document.getElementById('authAlertIcon');
 
+<<<<<<< HEAD
         // Mostrar Alertas visuales limpias
         function showAlert(msg, type = 'error') {
             authAlert.classList.remove('hidden', 'bg-rose-50', 'text-rose-800', 'border-rose-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
             if (type === 'error') {
                 authAlert.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
                 authAlertIcon.className = 'fas fa-exclamation-circle text-rose-500 text-sm mt-0.5';
+=======
+        async function handleForgotPassword(e) {
+            if (e) e.preventDefault();
+            let email = emailInput ? emailInput.value.trim() : '';
+            if (!email) {
+                email = prompt('Ingresa tu correo electrónico corporativo para recuperar tu contraseña:', '');
+                if (!email) return;
+                if (emailInput) emailInput.value = email.trim();
+            }
+            email = email.trim().toLowerCase();
+            if (!email.includes('@')) {
+                alert('Por favor ingresa un correo electrónico válido.');
+                return;
+            }
+
+            const banner = document.getElementById('forgotPasswordBanner');
+            const bannerText = document.getElementById('forgotPasswordText');
+
+            if (window.AuthService && typeof window.AuthService.resetPassword === 'function') {
+                const res = await window.AuthService.resetPassword(email);
+                if (banner && bannerText) {
+                    bannerText.textContent = res.message || `Hemos enviado las instrucciones de recuperación a ${email}. Revisa tu bandeja de entrada.`;
+                    banner.classList.remove('hidden');
+                } else {
+                    alert(res.message || `Instrucciones de recuperación enviadas a ${email}.`);
+                }
+            } else if (window.N8nService) {
+                await window.N8nService.solicitarRecuperacionPassword({
+                    email,
+                    fecha: new Date().toISOString(),
+                    ip: 'Sesión Web Portal MAXIMUS'
+                });
+                if (banner && bannerText) {
+                    bannerText.textContent = `Hemos enviado las instrucciones de recuperación de clave a ${email}.`;
+                    banner.classList.remove('hidden');
+                }
+            }
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+>>>>>>> 6af2820 (feat(n8n): integrar webhooks de automatización, flujos JSON y plantillas HTML luxury de correo)
             } else {
                 authAlert.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
                 authAlertIcon.className = 'fas fa-check-circle text-emerald-500 text-sm mt-0.5';

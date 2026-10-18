@@ -1,0 +1,237 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 05. Envío de Dossier Colección VIP y Ficha VIP por Correo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enviar-dossier-vip",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-dossier-vip",
+      "name": "Webhook Dossier Colección VIP",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        180
+      ],
+      "webhookId": "maximus-enviar-dossier-vip"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "enviar-ficha-vip",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-ficha-vip",
+      "name": "Webhook Ficha VIP Individual",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        420
+      ],
+      "webhookId": "maximus-enviar-ficha-vip"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "vip-1",
+              "name": "cliente_nombre",
+              "value": "={{ $json.body.cliente_nombre || $json.cliente_nombre || 'Cliente Distinguido' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-2",
+              "name": "cliente_email",
+              "value": "={{ $json.body.cliente_email || $json.cliente_email || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-3",
+              "name": "titulo_dossier",
+              "value": "={{ $json.body.nombre_coleccion || $json.body.inmueble_titulo || $json.nombre_coleccion || $json.inmueble_titulo || 'Selección Privada MAXIMUS VIP' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-4",
+              "name": "mensaje_personalizado",
+              "value": "={{ $json.body.nota_personalizada || $json.body.mensaje_personalizado || $json.nota_personalizada || 'Hemos preparado esta selección exclusiva pensando en sus requerimientos.' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-5",
+              "name": "asesor_nombre",
+              "value": "={{ $json.body.asesor_nombre || $json.asesor_nombre || 'Especialista Senior MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-6",
+              "name": "asesor_telefono",
+              "value": "={{ $json.body.asesor_telefono || $json.asesor_telefono || '+58 424-4292151' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-7",
+              "name": "inmueble_precio",
+              "value": "={{ $json.body.inmueble_precio || $json.inmueble_precio || 'Selección Múltiple' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-8",
+              "name": "inmueble_ubicacion",
+              "value": "={{ $json.body.inmueble_ubicacion || $json.inmueble_ubicacion || 'Zonas Exclusivas Carabobo' }}",
+              "type": "string"
+            },
+            {
+              "id": "vip-9",
+              "name": "link_dossier",
+              "value": "={{ $json.body.link_publico || $json.body.link_ficha || 'https://maximusinmobiliaria.com/propiedades.html' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-coleccion_titulo",
+              "name": "coleccion_titulo",
+              "value": "={{ $json.body.coleccion_titulo || $json.body.titulo_dossier || $json.body.titulo || 'Portafolio Privado de Inversión' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-coleccion_nota",
+              "name": "coleccion_nota",
+              "value": "={{ $json.body.coleccion_nota || $json.body.nota || $json.body.mensaje_personalizado || 'Selección exclusiva preparada por tu asesor MAXIMUS.' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-cantidad_inmuebles",
+              "name": "cantidad_inmuebles",
+              "value": "={{ $json.body.cantidad_inmuebles || ($json.body.inmuebles ? $json.body.inmuebles.length : 1) }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-inmueble_destacado_titulo",
+              "name": "inmueble_destacado_titulo",
+              "value": "={{ $json.body.inmueble_destacado_titulo || $json.body.inmueble_titulo || 'Propiedad Destacada MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-inmueble_destacado_precio",
+              "name": "inmueble_destacado_precio",
+              "value": "={{ $json.body.inmueble_destacado_precio || $json.body.inmueble_precio || 'Consultar' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-inmueble_destacado_ubicacion",
+              "name": "inmueble_destacado_ubicacion",
+              "value": "={{ $json.body.inmueble_destacado_ubicacion || $json.body.inmueble_ubicacion || 'San Cristóbal, Estado Táchira' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-url_dossier",
+              "name": "url_dossier",
+              "value": "={{ $json.body.url_dossier || $json.body.link_dossier || 'https://maximusinmobiliaria.tech/catalog.html' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "set-dossier-vip",
+      "name": "Unificar Datos Dossier VIP",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "MAXIMUS Private Wealth <vip@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.cliente_email }}",
+        "subject": "=💎 Dossier Inmobiliario Privado para {{ $json.cliente_nombre }}: {{ $json.titulo_dossier }}",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Dossier Privado VIP: {{ $json.coleccion_titulo }} | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Colección VIP -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  💎 Portafolio Privado VIP · {{ $json.cantidad_inmuebles }} Propiedades Seleccionadas\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Estimado(a) {{ $json.cliente_nombre }}, hemos preparado tu selección exclusiva\n              </h2>\n\n              <p style=\"margin:0 0 22px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Tu asesor patrimonial en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> ha curado el dossier personalizado <strong style=\"color:#0F172A;\">\"{{ $json.coleccion_titulo }}\"</strong> atendiendo estrictamente a tus criterios de ubicación, rentabilidad y estilo de vida.\n              </p>\n\n              <!-- Nota Personal del Asesor -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#ECFDF5; border:1px solid #A7F3D0; border-radius:12px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:16px 20px;\">\n                    <p style=\"margin:0 0 4px 0; font-size:11px; font-weight:800; letter-spacing:1px; color:#065F46; text-transform:uppercase;\">\n                      Nota de Curaduría de {{ $json.asesor_nombre }}:\n                    </p>\n                    <p style=\"margin:0; font-size:14px; color:#064E3B; font-style:italic; line-height:1.55;\">\n                      \"{{ $json.coleccion_nota }}\"\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Propiedad Destacada de la Colección -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 8px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Propiedad Insignia del Dossier\n                    </p>\n                    <h3 style=\"margin:0 0 12px 0; font-size:18px; font-weight:800; color:#0F172A;\">\n                      {{ $json.inmueble_destacado_titulo }}\n                    </h3>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:5px 0; font-size:13px; color:#64748B; width:38%;\">Valor de Mercado:</td>\n                        <td style=\"padding:5px 0; font-size:16px; font-weight:800; color:#10B981;\">{{ $json.inmueble_destacado_precio }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:5px 0; font-size:13px; color:#64748B;\">Ubicación Privilegiada:</td>\n                        <td style=\"padding:5px 0; font-size:13px; font-weight:700; color:#334155;\">{{ $json.inmueble_destacado_ubicacion }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:5px 0; font-size:13px; color:#64748B;\">Asesor Responsable:</td>\n                        <td style=\"padding:5px 0; font-size:13px; font-weight:700; color:#0F172A;\">{{ $json.asesor_nombre }} ({{ $json.asesor_telefono }})</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_dossier }}\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Abrir Dossier Interactivo VIP →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "email-dossier-cliente",
+      "name": "Enviar Dossier HTML de Lujo al Cliente",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"enviar-dossier-vip\",\n  \"destinatario\": \"{{ $json.cliente_email }}\",\n  \"dossier\": \"{{ $json.titulo_dossier }}\"\n}",
+        "options": {}
+      },
+      "id": "respond-dossier-vip",
+      "name": "Responder al Dashboard",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1060,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Dossier Colección VIP": {
+      "main": [
+        [
+          {
+            "node": "Unificar Datos Dossier VIP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Ficha VIP Individual": {
+      "main": [
+        [
+          {
+            "node": "Unificar Datos Dossier VIP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Unificar Datos Dossier VIP": {
+      "main": [
+        [
+          {
+            "node": "Enviar Dossier HTML de Lujo al Cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Dossier HTML de Lujo al Cliente": {
+      "main": [
+        [
+          {
+            "node": "Responder al Dashboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

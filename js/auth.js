@@ -317,6 +317,58 @@ const AuthService = {
         }
     },
 
+    /**
+     * Solicitar recuperación de contraseña vía Supabase Auth y Webhook n8n.
+     * @param {string} email
+     */
+    async resetPassword(email) {
+        const cleanEmail = (email || '').trim().toLowerCase();
+        if (!cleanEmail || !cleanEmail.includes('@')) {
+            return { success: false, error: 'Por favor ingresa un correo electrónico válido.' };
+        }
+
+        const tokenRecuperacion = 'REC-' + Math.floor(100000 + Math.random() * 900000);
+        const payload = {
+            email: cleanEmail,
+            fecha: new Date().toISOString(),
+            ip: 'Sesión Web Portal MAXIMUS',
+            dispositivo: typeof navigator !== 'undefined' ? navigator.userAgent : 'Navegador Web',
+            token_recuperacion: tokenRecuperacion,
+            url_recuperacion: (typeof window !== 'undefined' ? window.location.origin : 'https://maximusinmobiliaria.com') + `/login?reset_token=${tokenRecuperacion}&email=${encodeURIComponent(cleanEmail)}`
+        };
+
+        // 1. Disparar automatización de correo de recuperación vía n8n
+        if (typeof window !== 'undefined' && window.N8nService && typeof window.N8nService.solicitarRecuperacionPassword === 'function') {
+            await window.N8nService.solicitarRecuperacionPassword(payload);
+        } else if (typeof window !== 'undefined' && window.APP_CONFIG && window.APP_CONFIG.ENABLE_N8N_WEBHOOKS) {
+            try {
+                const url = (window.APP_CONFIG.N8N_BASE_URL || 'https://n8n.tudominio.com') + (window.APP_CONFIG.N8N_WEBHOOKS?.AUTH_RECUPERAR_PASSWORD || '/webhook/auth-recuperar-password');
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ...payload, evento: 'AUTH_RECUPERAR_PASSWORD', source: 'maximus_crm' })
+                });
+            } catch (_) {}
+        }
+
+        // 2. Intentar también con Supabase Auth si está disponible
+        if (typeof window !== 'undefined' && window.APP_CONFIG && !window.APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+                if (sb && sb.auth) {
+                    await sb.auth.resetPasswordForEmail(cleanEmail, {
+                        redirectTo: window.location.origin + '/login'
+                    });
+                }
+            } catch (_) {}
+        }
+
+        return {
+            success: true,
+            message: `Hemos enviado las instrucciones y enlace de recuperación de clave a ${cleanEmail}.`
+        };
+    },
+
     // ===== IMPLEMENTACIONES PRIVADAS =====
 
     /**

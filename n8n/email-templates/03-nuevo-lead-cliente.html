@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmación de Consulta Inmobiliaria | MAXIMUS Inmobiliaria</title>
+</head>
+<body style="margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F4F7F6; padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <!-- Contenedor Principal -->
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;">
+          
+          <!-- Barra Superior Cromo & Esmeralda -->
+          <tr>
+            <td style="height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);"></td>
+          </tr>
+
+          <!-- Cabecera con Identidad del Logo MAXIMUS -->
+          <tr>
+            <td align="center" style="background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;">
+              <div style="display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;">
+                <span style="font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;">M</span><span style="font-size:26px; font-weight:900; color:#10B981;">↗</span>
+              </div>
+              <h1 style="margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;">
+                MAXIMUS<span style="color:#10B981;">.</span>
+              </h1>
+              <p style="margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;">
+                INMOBILIARIA
+              </p>
+            </td>
+          </tr>
+
+          <!-- Cuerpo del Mensaje -->
+          <tr>
+            <td style="padding:40px 36px 32px 36px;">
+              <!-- Badge Estado -->
+              <div style="margin-bottom:20px;">
+                <span style="display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">
+                  ✓ Atención VIP Activada · {{ $json.inmueble_codigo }}
+                </span>
+              </div>
+
+              <h2 style="margin:0 0 14px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;">
+                Hola, {{ $json.nombre }}. Tu consulta inmobiliaria está en manos expertas
+              </h2>
+
+              <p style="margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;">
+                Hemos recibido tu interés en nuestra cartera exclusiva de propiedades. En <strong style="color:#0B4A3F;">MAXIMUS Inmobiliaria</strong> acompañamos cada decisión patrimonial con asesoría integral, transparencia jurídica y trato personalizado.
+              </p>
+
+              <!-- Tarjeta Propiedad Consultada -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:24px;">
+                <tr>
+                  <td style="padding:22px 24px;">
+                    <p style="margin:0 0 10px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;">
+                      Propiedad de Interés
+                    </p>
+                    <h3 style="margin:0 0 12px 0; font-size:17px; font-weight:800; color:#0F172A;">
+                      {{ $json.inmueble_titulo }}
+                    </h3>
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding:5px 0; font-size:13px; color:#64748B; width:38%;">Código Catálogo:</td>
+                        <td style="padding:5px 0; font-size:13px; font-weight:800; color:#10B981; font-family:monospace;">{{ $json.inmueble_codigo }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:5px 0; font-size:13px; color:#64748B;">Valor de Inversión:</td>
+                        <td style="padding:5px 0; font-size:15px; font-weight:800; color:#0F172A;">{{ $json.inmueble_precio }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:5px 0; font-size:13px; color:#64748B;">Ubicación:</td>
+                        <td style="padding:5px 0; font-size:13px; font-weight:600; color:#334155;">{{ $json.inmueble_ubicacion }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Tarjeta Asesor Asignado -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); border-radius:14px; margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <p style="margin:0 0 6px 0; font-size:10px; font-weight:800; letter-spacing:2px; color:#10B981; text-transform:uppercase;">
+                      Tu Asesor Asignado en MAXIMUS
+                    </p>
+                    <p style="margin:0 0 4px 0; font-size:16px; font-weight:800; color:#F8FAFC;">
+                      {{ $json.asesor_nombre }}
+                    </p>
+                    <p style="margin:0; font-size:13px; color:#CBD5E1;">
+                      Contacto Directo: <strong style="color:#FFFFFF;">{{ $json.asesor_telefono }}</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center">
+                    <a href="https://wa.me/{{ $json.asesor_telefono }}?text=Hola%20{{ $json.asesor_nombre }},%20soy%20{{ $json.nombre }}%20y%20deseo%20información%20sobre%20{{ $json.inmueble_titulo }}%20({{ $json.inmueble_codigo }})" style="display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);">
+                      Coordinar Visita por WhatsApp →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer Oscuro & Plata -->
+          <tr>
+            <td style="background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;">
+              <p style="margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;">
+                MAXIMUS<span style="color:#10B981;">.</span> <span style="font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;">INMOBILIARIA</span>
+              </p>
+              <p style="margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;">
+                Experiencia, exclusividad y respaldo legal en cada inversión.<br>
+                San Cristóbal, Estado Táchira · Venezuela
+              </p>
+              <p style="margin:0; font-size:11px; color:#64748B;">
+                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,201 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 06. Confirmación de Cita y Visita Inmobiliaria",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nueva-cita",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-nueva-cita",
+      "name": "Webhook Nueva Cita",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "maximus-nueva-cita"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cit-1",
+              "name": "cliente_nombre",
+              "value": "={{ $json.body.cliente_nombre || $json.cliente_nombre || 'Cliente VIP' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-2",
+              "name": "cliente_email",
+              "value": "={{ $json.body.cliente_email || $json.cliente_email || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-3",
+              "name": "cliente_telefono",
+              "value": "={{ $json.body.cliente_telefono || $json.cliente_telefono || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-4",
+              "name": "inmueble_nombre",
+              "value": "={{ $json.body.inmueble_nombre || $json.inmueble_nombre || 'Propiedad MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-5",
+              "name": "fecha",
+              "value": "={{ $json.body.fecha || $json.fecha || 'Por confirmar' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-6",
+              "name": "hora",
+              "value": "={{ $json.body.hora || $json.hora || '10:00 AM' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-7",
+              "name": "tipo_cita",
+              "value": "={{ $json.body.tipo || $json.tipo || 'Visita Presencial' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-8",
+              "name": "asesor_nombre",
+              "value": "={{ $json.body.asesor_nombre || $json.asesor_nombre || 'Asesor MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-9",
+              "name": "asesor_email",
+              "value": "={{ $json.body.asesor_email || $json.asesor_email || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "cit-10",
+              "name": "notas",
+              "value": "={{ $json.body.notas || $json.notas || 'Presentarse 10 minutos antes en recepción/garita.' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-cita_titulo",
+              "name": "cita_titulo",
+              "value": "={{ $json.body.cita_titulo || $json.body.titulo || 'Visita Guiada a Propiedad' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-fecha_hora",
+              "name": "fecha_hora",
+              "value": "={{ $json.body.fecha_hora || ($json.body.fecha ? $json.body.fecha + ' ' + ($json.body.hora || '') : new Date().toLocaleString('es-VE')) }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-inmueble_titulo",
+              "name": "inmueble_titulo",
+              "value": "={{ $json.body.inmueble_titulo || $json.body.inmueble_nombre || 'Propiedad MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-ubicacion",
+              "name": "ubicacion",
+              "value": "={{ $json.body.ubicacion || 'San Cristóbal, Estado Táchira' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-asesor_telefono",
+              "name": "asesor_telefono",
+              "value": "={{ $json.body.asesor_telefono || '584240000000' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "set-nueva-cita",
+      "name": "Preparar Agenda Cita",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "Agenda MAXIMUS <citas@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.cliente_email }}, {{ $json.asesor_email }}",
+        "subject": "=📅 [CITA CONFIRMADA] {{ $json.tipo_cita }}: {{ $json.inmueble_nombre }} ({{ $json.fecha }} - {{ $json.hora }})",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Confirmación de Cita y Visita Inmobiliaria | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Agenda -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  📅 Cita Confirmada · Agenda MAXIMUS\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Confirmación de Recorrido / Cita Inmobiliaria\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.cliente_nombre }}</strong>. Tu cita ha sido programada exitosamente con el equipo de <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. A continuación encontrarás los detalles logísticos de tu encuentro:\n              </p>\n\n              <!-- Ficha de la Cita -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Coordenadas del Encuentro\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Motivo / Cita:</td>\n                        <td style=\"padding:7px 0; font-size:14px; font-weight:800; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.cita_titulo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:14px; font-weight:800; color:#10B981; border-bottom:1px solid #E2E8F0;\">{{ $json.fecha_hora }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Inmueble a Visitar:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0B4A3F; border-bottom:1px solid #E2E8F0;\">{{ $json.inmueble_titulo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Punto de Encuentro:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.ubicacion }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Asesor Encargado:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:800; color:#0F172A;\">{{ $json.asesor_nombre }} · {{ $json.asesor_telefono }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Observaciones de la Visita -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#ECFDF5; border:1px solid #A7F3D0; border-radius:12px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:16px 20px;\">\n                    <p style=\"margin:0 0 4px 0; font-size:11px; font-weight:800; letter-spacing:1px; color:#065F46; text-transform:uppercase;\">\n                      Indicaciones Adicionales:\n                    </p>\n                    <p style=\"margin:0; font-size:13px; color:#064E3B; line-height:1.55;\">\n                      {{ $json.notas }}\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://wa.me/{{ $json.asesor_telefono }}?text=Hola%20{{ $json.asesor_nombre }},%20confirmo%20mi%20asistencia%20a%20la%20cita%20({{ $json.cita_titulo }})%20el%20{{ $json.fecha_hora }}\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Confirmar o Reprogramar por WhatsApp →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "email-confirmacion-cita",
+      "name": "Email Pase de Visita a Cliente y Asesor",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"nueva-cita\",\n  \"cliente\": \"{{ $json.cliente_nombre }}\",\n  \"fecha\": \"{{ $json.fecha }}\"\n}",
+        "options": {}
+      },
+      "id": "respond-nueva-cita",
+      "name": "Responder Cita Agendada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Nueva Cita": {
+      "main": [
+        [
+          {
+            "node": "Preparar Agenda Cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Agenda Cita": {
+      "main": [
+        [
+          {
+            "node": "Email Pase de Visita a Cliente y Asesor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Pase de Visita a Cliente y Asesor": {
+      "main": [
+        [
+          {
+            "node": "Responder Cita Agendada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

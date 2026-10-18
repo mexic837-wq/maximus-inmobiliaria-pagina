@@ -1,0 +1,189 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 03. Nueva Captación de Inmueble",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nuevo-inmueble",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-nuevo-inmueble",
+      "name": "Webhook Nuevo Inmueble",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "maximus-nuevo-inmueble"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "inm-1",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo || $json.codigo || '#MAX-NEW' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-2",
+              "name": "titulo",
+              "value": "={{ $json.body.titulo || $json.titulo || 'Propiedad Exclusiva' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-3",
+              "name": "tipo",
+              "value": "={{ $json.body.tipo || $json.tipo || 'Inmueble' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-4",
+              "name": "operacion",
+              "value": "={{ $json.body.operacion || $json.operacion || 'Venta' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-5",
+              "name": "precio",
+              "value": "={{ $json.body.precio || $json.precio || '$0 USD' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-6",
+              "name": "comision",
+              "value": "={{ $json.body.comision || $json.comision || '5%' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-7",
+              "name": "ubicacion",
+              "value": "={{ $json.body.ubicacion || $json.ubicacion || 'Carabobo' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-8",
+              "name": "m2",
+              "value": "={{ $json.body.m2 || $json.m2 || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-9",
+              "name": "habitaciones",
+              "value": "={{ $json.body.habitaciones || $json.habitaciones || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-10",
+              "name": "banos",
+              "value": "={{ $json.body.banos || $json.banos || '0' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-11",
+              "name": "asesor_nombre",
+              "value": "={{ $json.body.asesor_nombre || $json.asesor_nombre || 'Asesor MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-12",
+              "name": "asesor_email",
+              "value": "={{ $json.body.asesor_email || $json.asesor_email || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "inm-13",
+              "name": "email_empresa",
+              "value": "={{ $json.body.email_empresa || $json.email_empresa || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "set-nuevo-inmueble",
+      "name": "Preparar Ficha Captación",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "Captaciones MAXIMUS <captaciones@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.asesor_email }}, {{ $json.email_empresa }}",
+        "subject": "=🏛️ [NUEVA CAPTACIÓN {{ $json.codigo }}] {{ $json.titulo }} - {{ $json.precio }}",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Nueva Captación Activa en Catálogo {{ $json.codigo }} | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🏢 Nueva Captación Activa · Código {{ $json.codigo }}\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                {{ $json.titulo }}\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Se ha incorporado exitosamente una nueva propiedad al inventario oficial de <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Ya se encuentra disponible para promoción comercial, cruce con cartera de compradores y presentación en dossiers VIP.\n              </p>\n\n              <!-- KPIs Rápidos del Inmueble -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:20px;\">\n                <tr>\n                  <td width=\"32%\" align=\"center\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:14px 8px;\">\n                    <p style=\"margin:0 0 4px 0; font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:1px;\">Área Total</p>\n                    <p style=\"margin:0; font-size:16px; font-weight:800; color:#0B4A3F;\">{{ $json.m2 }} m²</p>\n                  </td>\n                  <td width=\"2%\"></td>\n                  <td width=\"32%\" align=\"center\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:14px 8px;\">\n                    <p style=\"margin:0 0 4px 0; font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:1px;\">Habitaciones</p>\n                    <p style=\"margin:0; font-size:16px; font-weight:800; color:#0F172A;\">{{ $json.habitaciones }} Hab.</p>\n                  </td>\n                  <td width=\"2%\"></td>\n                  <td width=\"32%\" align=\"center\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:14px 8px;\">\n                    <p style=\"margin:0 0 4px 0; font-size:10px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:1px;\">Baños</p>\n                    <p style=\"margin:0; font-size:16px; font-weight:800; color:#0F172A;\">{{ $json.banos }} Baños</p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Ficha Técnica Detallada -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Especificaciones Comerciales de Captación\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:40%; border-bottom:1px solid #E2E8F0;\">Código Oficial:</td>\n                        <td style=\"padding:7px 0; font-size:14px; font-weight:800; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.codigo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Tipo de Propiedad:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.tipo }} · {{ $json.operacion }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Precio de Lista:</td>\n                        <td style=\"padding:7px 0; font-size:16px; font-weight:800; color:#0B4A3F; border-bottom:1px solid #E2E8F0;\">{{ $json.precio }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Ubicación:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.ubicacion }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Comisión Pactada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:800; color:#059669; border-bottom:1px solid #E2E8F0;\">{{ $json.comision }}%</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Asesor Captador:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:800; color:#0F172A;\">{{ $json.asesor_nombre }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.com/dashboard.html\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ver Ficha en el Catálogo CRM →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "email-nueva-captacion",
+      "name": "Email Confirmación de Captación",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"nuevo-inmueble\",\n  \"codigo\": \"{{ $json.codigo }}\",\n  \"titulo\": \"{{ $json.titulo }}\"\n}",
+        "options": {}
+      },
+      "id": "respond-nuevo-inmueble",
+      "name": "Responder Confirmación",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Nuevo Inmueble": {
+      "main": [
+        [
+          {
+            "node": "Preparar Ficha Captación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Ficha Captación": {
+      "main": [
+        [
+          {
+            "node": "Email Confirmación de Captación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Confirmación de Captación": {
+      "main": [
+        [
+          {
+            "node": "Responder Confirmación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -28,19 +28,27 @@ const APP_CONFIG = {
     // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3OTIwODQ0OTYsImV4cCI6MTk0OTc2NDQ5Nn0.knU9MwRLtyc10C1pjnHih-OxXtarvEqH8t7jMia70ko
 
     // ========== N8N (Webhooks de Automatización) ==========
-    N8N_BASE_URL: 'https://n8n.tudominio.com',              // ← Cambia esto
+    ENABLE_N8N_WEBHOOKS: true,
+    COMPANY_NOTIFY_EMAIL: 'contacto@maximusinmobiliaria.com',
+    N8N_BASE_URL: 'https://n8n.tudominio.com',              // ← Cambia esto por tu URL real de n8n
     N8N_WEBHOOKS: {
         // Cada webhook es un endpoint de n8n que dispara un workflow
-        NUEVO_LEAD:          '/webhook/nuevo-lead',
-        CONTACTAR_WHATSAPP:  '/webhook/contactar-whatsapp',
-        NUEVO_INMUEBLE:      '/webhook/nuevo-inmueble',
-        NOTIFICACION_AGENTE: '/webhook/notificacion-agente',
-        GENERAR_REPORTE:     '/webhook/generar-reporte',
-        SUBIR_IMAGEN:        '/webhook/subir-imagen',
-        AUTH_CAMBIO_PASSWORD:'/webhook/auth-cambio-password',
-        AUTH_VERIFICACION_2FA:'/webhook/auth-verificacion-2fa',
-        PERFIL_ACTUALIZADO:  '/webhook/perfil-actualizado',
-        VALORACION_LEAD:     '/webhook/valoracion-lead',
+        NUEVO_LEAD:              '/webhook/nuevo-lead',
+        VALORACION_LEAD:         '/webhook/valoracion-lead',
+        CONTACTAR_WHATSAPP:      '/webhook/contactar-whatsapp',
+        NUEVO_INMUEBLE:          '/webhook/nuevo-inmueble',
+        CIERRE_REGISTRADO:       '/webhook/cierre-registrado',
+        ENVIAR_DOSSIER_VIP:      '/webhook/enviar-dossier-vip',
+        ENVIAR_FICHA_VIP:        '/webhook/enviar-ficha-vip',
+        NUEVA_CITA:              '/webhook/nueva-cita',
+        BIENVENIDA_ASESOR:       '/webhook/bienvenida-asesor',
+        NOTIFICACION_AGENTE:     '/webhook/notificacion-agente',
+        GENERAR_REPORTE:         '/webhook/generar-reporte',
+        SUBIR_IMAGEN:            '/webhook/subir-imagen',
+        AUTH_CAMBIO_PASSWORD:    '/webhook/auth-cambio-password',
+        AUTH_RECUPERAR_PASSWORD: '/webhook/auth-recuperar-password',
+        AUTH_VERIFICACION_2FA:   '/webhook/auth-verificacion-2fa',
+        PERFIL_ACTUALIZADO:      '/webhook/perfil-actualizado',
     },
 
     // ========== STORAGE (Imágenes de Inmuebles) ==========

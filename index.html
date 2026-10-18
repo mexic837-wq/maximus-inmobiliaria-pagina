@@ -444,18 +444,19 @@
                                 email: email,
                                 notas: `Solicitud de valoración de mercado para: ${address}`,
                                 origen: 'web',
-                                estatus: 'nuevo'
+                                estatus: 'nuevo',
+                                _skipN8nLead: true
                             });
                             if (resLead && resLead.data) {
                                 leadId = resLead.data.id;
                             }
                         }
 
-                        // 3. Disparar Webhook n8n vía N8nService
+                        // 3. Disparar Webhook n8n vía N8nService.enviarValoracionLead
                         const payload = {
                             evento: 'VALORACION_SOLICITADA',
                             tipo: 'tasacion_inmueble',
-                            lead_id: leadId,
+                            lead_id: leadId || ('lead-' + Date.now()),
                             direccion: address,
                             email: email,
                             origen: 'landing_lead_magnet_vende_con_nosotros',
@@ -463,23 +464,10 @@
                             navegador: navigator.userAgent
                         };
 
-                        if (window.N8nService) {
+                        if (window.N8nService && typeof N8nService.enviarValoracionLead === 'function') {
+                            await N8nService.enviarValoracionLead(payload);
+                        } else if (window.N8nService) {
                             await N8nService.trigger('VALORACION_LEAD', payload);
-                        } else {
-                            // Fallback fetch directo si el servicio no estuviese en scope
-                            const webhookUrl = (window.APP_CONFIG && APP_CONFIG.N8N_BASE_URL) 
-                                ? (APP_CONFIG.N8N_BASE_URL + (APP_CONFIG.N8N_WEBHOOKS?.VALORACION_LEAD || '/webhook/valoracion-lead'))
-                                : 'https://n8n.tudominio.com/webhook/valoracion-lead';
-                            
-                            if (window.APP_CONFIG && !APP_CONFIG.USE_MOCK_DATA) {
-                                await fetch(webhookUrl, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(payload)
-                                });
-                            } else {
-                                console.log('🟡 MOCK N8N: Webhook VALORACION_LEAD disparado con payload:', payload);
-                            }
                         }
 
                         // 4. Mostrar feedback exitoso

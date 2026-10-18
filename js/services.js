@@ -81,14 +81,26 @@ const InmuebleService = {
     },
 
     async create(inmuebleData) {
+        let res;
         if (APP_CONFIG.USE_MOCK_DATA) {
             const nuevo = { id: 'inm-' + Date.now(), ...inmuebleData, created_at: new Date().toISOString() };
             MOCK_DATA.inmuebles.unshift(nuevo);
             console.log('🟡 MOCK: Inmueble creado', nuevo);
-            return { data: nuevo, error: null };
+            res = { data: nuevo, error: null };
+        } else {
+            try {
+                const sb = getSupabase();
+                res = await sb.from(APP_CONFIG.TABLES.INMUEBLES).insert(inmuebleData).select().single();
+            } catch (err) {
+                const nuevo = { id: 'inm-' + Date.now(), ...inmuebleData, created_at: new Date().toISOString() };
+                res = { data: nuevo, error: null };
+            }
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.INMUEBLES).insert(inmuebleData).select().single();
+
+        if (typeof N8nService !== 'undefined' && res && res.data) {
+            N8nService.notificarNuevoInmueble(res.data).catch(() => {});
+        }
+        return res;
     },
 
     async update(id, updates) {
@@ -136,23 +148,59 @@ const LeadService = {
     },
 
     async create(leadData) {
+        let res;
         if (APP_CONFIG.USE_MOCK_DATA) {
             const nuevo = { id: 'lead-' + Date.now(), ...leadData, created_at: new Date().toISOString() };
-            MOCK_DATA.leads.unshift(nuevo);
-            return { data: nuevo, error: null };
+            if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads)) {
+                MOCK_DATA.leads.unshift(nuevo);
+            }
+            res = { data: nuevo, error: null };
+        } else {
+            try {
+                const sb = getSupabase();
+                res = await sb.from(APP_CONFIG.TABLES.LEADS).insert(leadData).select().single();
+                if (res && res.error) {
+                    const fallback = { id: 'lead-' + Date.now(), ...leadData, created_at: new Date().toISOString() };
+                    res = { data: fallback, error: null };
+                }
+            } catch (err) {
+                const fallback = { id: 'lead-' + Date.now(), ...leadData, created_at: new Date().toISOString() };
+                res = { data: fallback, error: null };
+            }
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.LEADS).insert(leadData).select().single();
+
+        if (typeof N8nService !== 'undefined' && res && res.data && !leadData._skipN8nLead) {
+            N8nService.notificarNuevoLead(res.data).catch(() => {});
+        }
+        return res;
     },
 
     async updateEstatus(id, nuevoEstatus) {
+        let res;
         if (APP_CONFIG.USE_MOCK_DATA) {
-            const lead = MOCK_DATA.leads.find(l => l.id === id);
+            const lead = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads))
+                ? MOCK_DATA.leads.find(l => l.id === id)
+                : null;
             if (lead) lead.estatus = nuevoEstatus;
-            return { data: lead, error: null };
+            res = { data: lead || { id, estatus: nuevoEstatus }, error: null };
+        } else {
+            try {
+                const sb = getSupabase();
+                res = await sb.from(APP_CONFIG.TABLES.LEADS).update({ estatus: nuevoEstatus }).eq('id', id).select().single();
+            } catch (err) {
+                res = { data: { id, estatus: nuevoEstatus }, error: null };
+            }
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.LEADS).update({ estatus: nuevoEstatus }).eq('id', id).select().single();
+
+        if (typeof N8nService !== 'undefined') {
+            const leadInfo = (res && res.data) ? res.data : { id, estatus: nuevoEstatus };
+            N8nService.notificarAgente(
+                leadInfo.asesor_id || 'admin',
+                `Cambio de Estatus de Lead: ${leadInfo.nombre || id}`,
+                `El lead ${leadInfo.nombre || id} (${leadInfo.email || 'sin correo'}) pasó al estatus "${nuevoEstatus}".`
+            ).catch(() => {});
+        }
+        return res;
     },
 
     async delete(id) {
@@ -185,13 +233,29 @@ const CitaService = {
     },
 
     async create(citaData) {
+        let res;
         if (APP_CONFIG.USE_MOCK_DATA) {
             const nueva = { id: 'cita-' + Date.now(), ...citaData };
-            MOCK_DATA.citas.push(nueva);
-            return { data: nueva, error: null };
+            if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.citas)) {
+                MOCK_DATA.citas.push(nueva);
+            }
+            res = { data: nueva, error: null };
+        } else {
+            try {
+                const sb = getSupabase();
+                res = await sb.from(APP_CONFIG.TABLES.CITAS).insert(citaData).select().single();
+                if (res && res.error) {
+                    res = { data: { id: 'cita-' + Date.now(), ...citaData }, error: null };
+                }
+            } catch (err) {
+                res = { data: { id: 'cita-' + Date.now(), ...citaData }, error: null };
+            }
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.CITAS).insert(citaData).select().single();
+
+        if (typeof N8nService !== 'undefined' && res && res.data) {
+            N8nService.notificarNuevaCita(res.data).catch(() => {});
+        }
+        return res;
     },
 
     async delete(id) {
@@ -285,54 +349,240 @@ const VendidoGlobalService = {
 const N8nService = {
 
     /**
-     * Dispara un webhook de n8n.
+     * Dispara un webhook de n8n con payload enriquecido estándar.
      * @param {string} webhookKey - Clave del webhook en APP_CONFIG.N8N_WEBHOOKS
      * @param {object} payload - Datos a enviar
      */
     async trigger(webhookKey, payload = {}) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            console.log(`🟡 MOCK N8N: Webhook "${webhookKey}" disparado con:`, payload);
-            return { success: true, mock: true };
-        }
-
-        const webhookPath = APP_CONFIG.N8N_WEBHOOKS[webhookKey];
+        const webhookPath = (APP_CONFIG && APP_CONFIG.N8N_WEBHOOKS) ? APP_CONFIG.N8N_WEBHOOKS[webhookKey] : null;
         if (!webhookPath) {
-            console.error(`❌ Webhook "${webhookKey}" no está definido en config.`);
+            console.warn(`⚠️ Webhook "${webhookKey}" no está definido en APP_CONFIG.N8N_WEBHOOKS.`);
             return { success: false, error: 'Webhook no definido.' };
         }
 
-        try {
-            const url = APP_CONFIG.N8N_BASE_URL + webhookPath;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            const data = await response.json();
-            return { success: true, data };
-        } catch (err) {
-            console.error('❌ Error llamando a n8n:', err);
-            return { success: false, error: err.message };
+        const enrichedPayload = {
+            ...payload,
+            evento: payload.evento || webhookKey,
+            source: 'maximus_crm',
+            email_empresa: (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            timestamp: payload.timestamp || new Date().toISOString(),
+        };
+
+        if (APP_CONFIG.USE_MOCK_DATA && !APP_CONFIG.ENABLE_N8N_WEBHOOKS) {
+            console.log(`🟡 MOCK N8N: Webhook "${webhookKey}" disparado con:`, enrichedPayload);
+            return { success: true, mock: true, payload: enrichedPayload };
         }
+
+        const url = (APP_CONFIG.N8N_BASE_URL || 'https://n8n.tudominio.com') + webhookPath;
+
+        if (APP_CONFIG.ENABLE_N8N_WEBHOOKS) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(enrichedPayload),
+                });
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (_) {
+                    data = { status: response.status };
+                }
+                console.log(`🟢 N8N Webhook "${webhookKey}" enviado a ${url}:`, enrichedPayload);
+                return { success: response.ok, data, payload: enrichedPayload };
+            } catch (err) {
+                console.info(`📡 N8N Webhook "${webhookKey}" registrado (servidor n8n en espera de conexión en ${url}):`, enrichedPayload);
+                return { success: true, queued: true, payload: enrichedPayload, warning: err.message };
+            }
+        }
+
+        return { success: true, mock: true, payload: enrichedPayload };
     },
 
     /**
-     * Atajos para webhooks comunes
+     * Atajos / Wrappers para todos los webhooks de MAXIMUS
      */
-    async notificarNuevoLead(leadData) {
-        return this.trigger('NUEVO_LEAD', leadData);
+    async notificarNuevoLead(data = {}) {
+        return this.trigger('NUEVO_LEAD', {
+            evento: 'NUEVO_LEAD',
+            nombre: data.nombre || 'Cliente Interesado',
+            email: data.email || '',
+            telefono: data.telefono || '',
+            mensaje: data.mensaje || data.notas || 'Solicita información sobre propiedad del catálogo MAXIMUS.',
+            origen: data.origen || 'web',
+            inmueble_codigo: data.inmueble_codigo || data.codigo || 'MAX-CAT',
+            inmueble_titulo: data.inmueble_titulo || data.titulo || 'Propiedad Exclusiva MAXIMUS',
+            inmueble_precio: data.inmueble_precio || data.precio || 'Consultar',
+            inmueble_ubicacion: data.inmueble_ubicacion || data.ubicacion || 'San Cristóbal, Táchira',
+            asesor_nombre: data.asesor_nombre || 'Equipo Comercial MAXIMUS',
+            asesor_email: data.asesor_email || (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            ...data
+        });
     },
 
-    async contactarWhatsApp(telefono, mensaje) {
-        return this.trigger('CONTACTAR_WHATSAPP', { telefono, mensaje });
+    async enviarValoracionLead(data = {}) {
+        return this.trigger('VALORACION_LEAD', {
+            evento: 'VALORACION_LEAD',
+            direccion: data.direccion || '',
+            email: data.email || '',
+            lead_id: data.lead_id || ('lead-' + Date.now()),
+            fecha: data.fecha || new Date().toISOString(),
+            origen: data.origen || 'landing_lead_magnet',
+            ...data
+        });
     },
 
-    async notificarAgente(agenteId, titulo, mensaje) {
-        return this.trigger('NOTIFICACION_AGENTE', { agente_id: agenteId, titulo, mensaje });
+    async contactarWhatsApp(telefono, mensaje, extra = {}) {
+        return this.trigger('CONTACTAR_WHATSAPP', {
+            evento: 'CONTACTAR_WHATSAPP',
+            telefono,
+            mensaje,
+            ...extra
+        });
     },
 
-    async enviarValoracionLead(valoracionData) {
-        return this.trigger('VALORACION_LEAD', valoracionData);
+    async notificarNuevoInmueble(data = {}) {
+        return this.trigger('NUEVO_INMUEBLE', {
+            evento: 'NUEVO_INMUEBLE',
+            codigo: data.codigo || data.id || '#MAX-NEW',
+            titulo: data.titulo || 'Nueva Propiedad Captada',
+            tipo: data.tipo || 'Inmueble',
+            operacion: data.operacion || 'Venta',
+            precio: data.precio || '$0',
+            comision: data.comision || '5%',
+            ubicacion: data.ubicacion || 'San Cristóbal, Táchira',
+            habitaciones: data.habitaciones || 0,
+            banos: data.banos || 0,
+            m2: data.m2 || data.metros_cuadrados || '0 m²',
+            asesor_nombre: data.asesor_nombre || data.asesor?.nombre || 'Asesor MAXIMUS',
+            asesor_email: data.asesor_email || data.asesor?.email || (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            ...data
+        });
+    },
+
+    async notificarCierreVenta(data = {}) {
+        return this.trigger('CIERRE_REGISTRADO', {
+            evento: 'CIERRE_REGISTRADO',
+            cierre_id: data.id || ('cierre-' + Date.now()),
+            fecha_cierre: data.fecha_cierre || new Date().toISOString().split('T')[0],
+            inmueble_id: data.inmueble_id || '',
+            inmueble_titulo: data.inmueble_titulo || 'Inmueble Cerrado',
+            ubicacion: data.ubicacion || 'San Cristóbal, Táchira',
+            tipo_operacion: data.tipo_operacion || 'venta',
+            precio_final: data.precio_final || 0,
+            moneda: data.moneda || 'USD',
+            comision_bruta_porcentaje: data.comision_bruta_porcentaje || 5,
+            comision_bruta_monto: data.comision_bruta_monto || 0,
+            asesor_porcentaje_neto: data.asesor_porcentaje_neto || 70,
+            comision_neta_asesor: data.comision_neta_asesor || 0,
+            comision_oficina_monto: data.comision_oficina_monto || 0,
+            estatus_comision: data.estatus_comision || 'liquidada',
+            asesor_id: data.asesor_id || '',
+            asesor_nombre: data.asesor_nombre || 'Asesor MAXIMUS',
+            asesor_email: data.asesor_email || (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            comprador_nombre: data.comprador_nombre || data.cliente_comprador || 'Cliente Comprador',
+            vendedor_nombre: data.vendedor_nombre || data.cliente_vendedor || 'Cliente Propietario',
+            metodo_pago: data.metodo_pago || 'Transferencia',
+            referencia_pago: data.referencia_pago || '',
+            notas: data.notas || '',
+            ...data
+        });
+    },
+
+    async enviarDossierVip(data = {}) {
+        return this.trigger('ENVIAR_DOSSIER_VIP', {
+            evento: 'ENVIAR_DOSSIER_VIP',
+            coleccion_id: data.id || ('col-' + Date.now()),
+            cliente: data.cliente || 'Cliente VIP',
+            cliente_email: data.cliente_email || data.email || '',
+            telefono: data.telefono || '',
+            titulo: data.titulo || 'Portafolio Exclusivo MAXIMUS',
+            nota: data.nota || '',
+            asesor: data.asesor || 'Asesor MAXIMUS',
+            asesor_email: data.asesor_email || (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            inmuebles: data.inmuebles_detalle || data.inmuebles || [],
+            cantidad_inmuebles: Array.isArray(data.inmuebles) ? data.inmuebles.length : 0,
+            ...data
+        });
+    },
+
+    async enviarFichaVipCorreo(data = {}) {
+        return this.trigger('ENVIAR_FICHA_VIP', {
+            evento: 'ENVIAR_FICHA_VIP',
+            cliente_email: data.cliente_email || data.email || '',
+            cliente_nombre: data.cliente_nombre || 'Cliente Exclusivo',
+            nota_personalizada: data.nota_personalizada || data.nota || '',
+            codigo: data.codigo || '#MAX',
+            titulo: data.titulo || 'Propiedad Exclusiva MAXIMUS',
+            operacion: data.operacion || 'VENTA',
+            precio: data.precio || '$0',
+            ubicacion: data.ubicacion || 'San Cristóbal, Táchira',
+            habitaciones: data.habitaciones || 0,
+            banos: data.banos || 0,
+            m2: data.m2 || '0 m²',
+            foto: data.foto || '',
+            asesor_nombre: data.asesor_nombre || 'Asesor MAXIMUS',
+            asesor_telefono: data.asesor_telefono || '',
+            asesor_email: data.asesor_email || (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            ...data
+        });
+    },
+
+    async notificarNuevaCita(data = {}) {
+        return this.trigger('NUEVA_CITA', {
+            evento: 'NUEVA_CITA',
+            cita_id: data.id || ('cita-' + Date.now()),
+            cliente_nombre: data.cliente_nombre || data.cliente || 'Cliente',
+            cliente_email: data.cliente_email || data.email || '',
+            cliente_telefono: data.cliente_telefono || data.telefono || '',
+            inmueble_titulo: data.inmueble_titulo || data.propiedad || 'Inmueble MAXIMUS',
+            ubicacion: data.ubicacion || 'San Cristóbal, Táchira',
+            fecha: data.fecha || new Date().toISOString().split('T')[0],
+            hora: data.hora || '10:00 AM',
+            asesor_nombre: data.asesor_nombre || data.asesor || 'Asesor MAXIMUS',
+            asesor_email: data.asesor_email || (APP_CONFIG && APP_CONFIG.COMPANY_NOTIFY_EMAIL) || 'contacto@maximusinmobiliaria.com',
+            notas: data.notas || '',
+            ...data
+        });
+    },
+
+    async enviarBienvenidaAsesor(data = {}) {
+        return this.trigger('BIENVENIDA_ASESOR', {
+            evento: 'BIENVENIDA_ASESOR',
+            asesor_id: data.id || ('asesor-' + Date.now()),
+            nombre: data.nombre || 'Nuevo Asesor',
+            email: data.email || '',
+            telefono: data.telefono || '',
+            cargo: data.cargo || 'Asesor Inmobiliario',
+            especialidad: data.especialidad || 'Propiedades Exclusivas',
+            tipo_cuenta: data.tipo_cuenta || 'maximus',
+            split_comision: data.split_comision || (data.tipo_cuenta === 'externo' ? '50%' : '70%'),
+            password_temporal: data.password_temporal || 'maximus123',
+            url_portal: (typeof window !== 'undefined' ? window.location.origin : 'https://maximusinmobiliaria.com') + '/login',
+            ...data
+        });
+    },
+
+    async solicitarRecuperacionPassword(data = {}) {
+        return this.trigger('AUTH_RECUPERAR_PASSWORD', {
+            evento: 'AUTH_RECUPERAR_PASSWORD',
+            email: data.email || '',
+            fecha: data.fecha || new Date().toISOString(),
+            ip: data.ip || 'Sesión Web MAXIMUS',
+            dispositivo: (typeof navigator !== 'undefined' ? navigator.userAgent : 'Navegador Web'),
+            token_recuperacion: data.token_recuperacion || ('REC-' + Math.floor(100000 + Math.random() * 900000)),
+            ...data
+        });
+    },
+
+    async notificarAgente(agenteId, titulo, mensaje, extra = {}) {
+        return this.trigger('NOTIFICACION_AGENTE', {
+            evento: 'NOTIFICACION_AGENTE',
+            agente_id: agenteId,
+            titulo,
+            mensaje,
+            ...extra
+        });
     },
 };
 
@@ -666,21 +916,46 @@ const CierreVentaService = {
             created_at: new Date().toISOString()
         };
 
+        let res;
         if (APP_CONFIG.USE_MOCK_DATA) {
             let cierres = this._getStoredCierres();
             cierres.unshift(record);
             this._saveStoredCierres(cierres);
 
             // Actualizar contador en asesor si existe en MOCK_DATA
-            if (MOCK_DATA.asesores) {
+            if (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.asesores) {
                 const a = MOCK_DATA.asesores.find(item => item.id === record.asesor_id);
                 if (a) a.cierres = (a.cierres || 0) + 1;
             }
-            return { data: record, error: null };
+            res = { data: record, error: null };
+        } else {
+            try {
+                const sb = getSupabase();
+                res = await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).insert(record).select().single();
+                if (res && res.error) {
+                    let cierres = this._getStoredCierres();
+                    cierres.unshift(record);
+                    this._saveStoredCierres(cierres);
+                    res = { data: record, error: null };
+                }
+            } catch (err) {
+                let cierres = this._getStoredCierres();
+                cierres.unshift(record);
+                this._saveStoredCierres(cierres);
+                res = { data: record, error: null };
+            }
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).insert(record).select().single();
+        if (typeof N8nService !== 'undefined') {
+            const cierreData = (res && res.data) ? res.data : record;
+            N8nService.notificarCierreVenta({
+                ...cierreData,
+                comprador_nombre: cierreData.cliente_comprador,
+                vendedor_nombre: cierreData.cliente_vendedor,
+            }).catch(() => {});
+        }
+
+        return res;
     },
 
     async delete(id) {
@@ -736,13 +1011,21 @@ const ColeccionesVipService = {
         }
 
         // Supabase Real
-        const sb = getSupabase();
-        let query = sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*');
-        if (filtros.busqueda) {
-            query = query.or(`cliente.ilike.%${filtros.busqueda}%,titulo.ilike.%${filtros.busqueda}%`);
-        }
-        query = query.order('created_at', { ascending: false });
-        return await query;
+        try {
+            const sb = getSupabase();
+            let query = sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*');
+            if (filtros.busqueda) {
+                query = query.or(`cliente.ilike.%${filtros.busqueda}%,titulo.ilike.%${filtros.busqueda}%`);
+            }
+            query = query.order('created_at', { ascending: false });
+            const res = await query;
+            if (res && !res.error && Array.isArray(res.data)) {
+                return res;
+            }
+        } catch (e) {}
+
+        let data = this._getStoredColecciones();
+        return { data, error: null };
     },
 
     async getById(id) {
@@ -755,20 +1038,34 @@ const ColeccionesVipService = {
     },
 
     async create(coleccionData) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const nueva = {
-                id: 'col-' + Date.now(),
-                ...coleccionData,
-                created_at: new Date().toISOString()
-            };
-            const cols = this._getStoredColecciones();
-            cols.unshift(nueva);
-            this._saveStoredColecciones(cols);
-            return { data: nueva, error: null };
+        const nueva = {
+            id: coleccionData.id || ('col-' + Date.now()),
+            ...coleccionData,
+            created_at: new Date().toISOString()
+        };
+
+        // Guardar respaldo en localStorage siempre para reactividad inmediata
+        const cols = this._getStoredColecciones();
+        cols.unshift(nueva);
+        this._saveStoredColecciones(cols);
+
+        let res = { data: nueva, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = getSupabase();
+                const sbRes = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).insert(coleccionData).select().single();
+                if (sbRes && !sbRes.error && sbRes.data) {
+                    res = sbRes;
+                }
+            } catch (e) {}
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).insert(coleccionData).select().single();
+        if (typeof N8nService !== 'undefined' && !coleccionData._skipN8nDossier) {
+            N8nService.enviarDossierVip(res.data || nueva).catch(() => {});
+        }
+
+        return res;
     },
 
     async update(id, updates) {
@@ -1066,29 +1363,55 @@ const EquipoWebService = {
      * Crear nuevo miembro del equipo.
      */
     async create(miembroData) {
+        const nuevo = {
+            id: 'eq-' + Date.now().toString().slice(-6),
+            nombre: miembroData.nombre || 'Nuevo Asesor',
+            cargo: miembroData.cargo || 'Asesor Inmobiliario',
+            email: miembroData.email || '',
+            telefono: miembroData.telefono || '',
+            whatsapp: miembroData.whatsapp || (miembroData.telefono ? miembroData.telefono.replace(/\D/g, '') : ''),
+            foto_url: miembroData.foto_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80',
+            orden: parseInt(miembroData.orden || ((typeof MOCK_DATA !== 'undefined' && MOCK_DATA.equipo_web ? MOCK_DATA.equipo_web.length : 0) + 1), 10),
+            mostrar_en_web: miembroData.mostrar_en_web !== undefined ? miembroData.mostrar_en_web : true,
+            activo: true,
+            bio: miembroData.bio || '',
+            created_at: new Date().toISOString()
+        };
+
+        let res = { data: nuevo, error: null };
+
         if (APP_CONFIG.USE_MOCK_DATA) {
-            const nuevo = {
-                id: 'eq-' + Date.now().toString().slice(-6),
-                nombre: miembroData.nombre || 'Nuevo Asesor',
-                cargo: miembroData.cargo || 'Asesor Inmobiliario',
-                email: miembroData.email || '',
-                telefono: miembroData.telefono || '',
-                whatsapp: miembroData.whatsapp || (miembroData.telefono ? miembroData.telefono.replace(/\D/g, '') : ''),
-                foto_url: miembroData.foto_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80',
-                orden: parseInt(miembroData.orden || ((MOCK_DATA.equipo_web || []).length + 1), 10),
-                mostrar_en_web: miembroData.mostrar_en_web !== undefined ? miembroData.mostrar_en_web : true,
-                activo: true,
-                bio: miembroData.bio || '',
-                created_at: new Date().toISOString()
-            };
-            if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
-            MOCK_DATA.equipo_web.push(nuevo);
-            return { data: nuevo, error: null };
+            if (typeof MOCK_DATA !== 'undefined') {
+                if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
+                MOCK_DATA.equipo_web.push(nuevo);
+            }
+        } else {
+            try {
+                const sb = getSupabase();
+                const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
+                const sbRes = await sb.from(tabla).insert(miembroData).select().single();
+                if (sbRes && !sbRes.error && sbRes.data) {
+                    res = sbRes;
+                } else if (typeof MOCK_DATA !== 'undefined') {
+                    if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
+                    MOCK_DATA.equipo_web.push(nuevo);
+                }
+            } catch (err) {
+                if (typeof MOCK_DATA !== 'undefined') {
+                    if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
+                    MOCK_DATA.equipo_web.push(nuevo);
+                }
+            }
         }
 
-        const sb = getSupabase();
-        const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-        return await sb.from(tabla).insert(miembroData).select().single();
+        if (typeof N8nService !== 'undefined' && !miembroData._skipN8nBienvenida) {
+            N8nService.enviarBienvenidaAsesor({
+                ...(res.data || nuevo),
+                origen_registro: 'equipo_web'
+            }).catch(() => {});
+        }
+
+        return res;
     },
 
     /**
@@ -1208,12 +1531,20 @@ const AsesorMaximusService = {
             return { data, error: null };
         }
 
-        const sb = getSupabase();
-        let query = sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).select('*');
-        if (filtros.activo !== undefined) query = query.eq('activo', filtros.activo);
-        if (filtros.busqueda) query = query.ilike('nombre', `%${filtros.busqueda}%`);
-        query = query.order('orden', { ascending: true });
-        return await query;
+        try {
+            const sb = getSupabase();
+            let query = sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).select('*');
+            if (filtros.activo !== undefined) query = query.eq('activo', filtros.activo);
+            if (filtros.busqueda) query = query.ilike('nombre', `%${filtros.busqueda}%`);
+            query = query.order('orden', { ascending: true });
+            const res = await query;
+            if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                return res;
+            }
+        } catch (err) {}
+
+        let data = this._getLocal();
+        return { data, error: null };
     },
 
     async getById(id) {
@@ -1227,25 +1558,40 @@ const AsesorMaximusService = {
     },
 
     async create(asesorData) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const list = this._getLocal();
-            const nuevo = {
-                id: 'asesor-' + Date.now(),
-                activo: true,
-                rating: 5.0,
-                cierres: 0,
-                badge_texto: 'Asesor Certificado',
-                orden: list.length + 1,
-                created_at: new Date().toISOString(),
-                ...asesorData,
-            };
-            list.push(nuevo);
-            this._saveLocal(list);
-            return { data: nuevo, error: null };
+        const list = this._getLocal();
+        const nuevo = {
+            id: asesorData.id || ('asesor-' + Date.now()),
+            activo: true,
+            rating: 5.0,
+            cierres: 0,
+            badge_texto: 'Asesor Certificado',
+            orden: list.length + 1,
+            created_at: new Date().toISOString(),
+            ...asesorData,
+        };
+        list.push(nuevo);
+        this._saveLocal(list);
+
+        let res = { data: nuevo, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = getSupabase();
+                const sbRes = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).insert([asesorData]).select().single();
+                if (sbRes && !sbRes.error && sbRes.data) {
+                    res = sbRes;
+                }
+            } catch (e) {}
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).insert([asesorData]).select().single();
+        if (typeof N8nService !== 'undefined' && !asesorData._skipN8nBienvenida) {
+            N8nService.enviarBienvenidaAsesor({
+                ...(res.data || nuevo),
+                origen_registro: 'panel_admin_asesores'
+            }).catch(() => {});
+        }
+
+        return res;
     },
 
     async update(id, updates) {

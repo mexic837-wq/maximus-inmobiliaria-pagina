@@ -1,56 +1,120 @@
 {
-  "name": "MAXIMUS - Lead Magnet Valoración Inmueble",
+  "name": "MAXIMUS Inmobiliaria - 01. Solicitud de Valoración Comercial (Lead)",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "valoracion-lead",
-        "responseMode": "onReceived",
-        "responseData": "allEntries",
-        "options": {}
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
       },
-      "id": "node-webhook-1",
+      "id": "webhook-valoracion-lead",
       "name": "Webhook Valoración Lead",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1.1,
+      "typeVersion": 2,
       "position": [
-        250,
+        240,
         300
       ],
-      "webhookId": "valoracion-lead"
+      "webhookId": "maximus-valoracion-lead"
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
-              "name": "direccion",
-              "value": "={{ $json.body.direccion }}"
+              "id": "val-1",
+              "name": "nombre_cliente",
+              "value": "={{ $json.body.nombre || $json.nombre || 'Propietario' }}",
+              "type": "string"
             },
             {
-              "name": "email",
-              "value": "={{ $json.body.email }}"
+              "id": "val-2",
+              "name": "email_cliente",
+              "value": "={{ $json.body.email || $json.email || '' }}",
+              "type": "string"
             },
             {
+              "id": "val-3",
+              "name": "telefono_cliente",
+              "value": "={{ $json.body.telefono || $json.telefono || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "val-4",
+              "name": "tipo_propiedad",
+              "value": "={{ $json.body.tipoPropiedad || $json.tipoPropiedad || 'Inmueble' }}",
+              "type": "string"
+            },
+            {
+              "id": "val-5",
+              "name": "operacion",
+              "value": "={{ $json.body.operacion || $json.operacion || 'Venta' }}",
+              "type": "string"
+            },
+            {
+              "id": "val-6",
+              "name": "ubicacion",
+              "value": "={{ $json.body.ubicacion || $json.ubicacion || 'San Diego, Carabobo' }}",
+              "type": "string"
+            },
+            {
+              "id": "val-7",
+              "name": "detalles",
+              "value": "={{ $json.body.detalles || $json.detalles || 'Sin observaciones adicionales' }}",
+              "type": "string"
+            },
+            {
+              "id": "val-8",
+              "name": "email_empresa",
+              "value": "={{ $json.body.email_empresa || $json.email_empresa || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "val-9",
+              "name": "fecha_formateada",
+              "value": "={{ new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-lead_id",
               "name": "lead_id",
-              "value": "={{ $json.body.lead_id }}"
+              "value": "={{ $json.body.lead_id || $json.lead_id || 'TAS-' + Date.now() }}",
+              "type": "string"
             },
             {
-              "name": "fecha",
-              "value": "={{ $json.body.fecha || $now.toISO() }}"
+              "id": "sync-direccion",
+              "name": "direccion",
+              "value": "={{ $json.body.direccion || $json.direccion || $json.body.ubicacion || 'San Cristóbal, Estado Táchira' }}",
+              "type": "string"
             },
             {
+              "id": "sync-email",
+              "name": "email",
+              "value": "={{ $json.body.email || $json.email || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-origen",
               "name": "origen",
-              "value": "={{ $json.body.origen || 'landing_lead_magnet' }}"
+              "value": "={{ $json.body.origen || $json.origen || 'landing_lead_magnet_vende_con_nosotros' }}",
+              "type": "string"
+            },
+            {
+              "id": "sync-fecha",
+              "name": "fecha",
+              "value": "={{ $json.body.fecha || $json.fecha || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
             }
           ]
-        },
-        "options": {}
+        }
       },
-      "id": "node-set-data",
-      "name": "Estructurar Datos del Lead",
+      "id": "set-datos-valoracion",
+      "name": "Normalizar Datos Tasación",
       "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
+      "typeVersion": 3.4,
       "position": [
         480,
         300
@@ -58,34 +122,53 @@
     },
     {
       "parameters": {
-        "sendTo": "={{ $json.email }}",
-        "subject": "🏠 MAXIMUS - Hemos recibido la solicitud de valoración para tu propiedad",
-        "message": "=Hola,\n\nHemos recibido la solicitud para realizar el estudio de mercado y valoración pericial de tu inmueble ubicado en:\n📍 {{ $json.direccion }}\n\nNuestro equipo pericial de MAXIMUS ya está calculando los rangos de precio por m² de la zona y las ventas comparativas recientes.\n\nEn breve te enviaremos el reporte preliminar a este correo.\n\nSi deseas acelerar el informe o concertar una visita presencial con uno de nuestros directores, puedes responder a este correo o escribirnos a nuestro WhatsApp oficial: +58 424-0000000.\n\nAtentamente,\nEquipo de Valoraciones MAXIMUS Inmobiliaria\nSan Cristóbal, Táchira"
+        "fromEmail": "MAXIMUS Inmobiliaria <captaciones@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.email_cliente }}",
+        "subject": "=🏛️ Hemos recibido tu solicitud de Valoración Comercial - MAXIMUS Inmobiliaria",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Solicitud de Valoración Recibida | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  ✓ Solicitud Registrada · Ref. {{ $json.lead_id }}\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 14px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Hemos recibido tu solicitud de valoración inmobiliaria\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Gracias por confiar en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Nuestro equipo de especialistas en avalúos y análisis de mercado en San Cristóbal ya está procesando la información de tu inmueble para entregarte una estimación precisa, confidencial y respaldada por datos reales de cierres recientes.\n              </p>\n\n              <!-- Tarjeta Resumen del Inmueble -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 12px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Detalles de la Solicitud\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B; width:38%;\">Ubicación / Inmueble:</td>\n                        <td style=\"padding:6px 0; font-size:14px; font-weight:700; color:#0F172A;\">{{ $json.direccion }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B;\">Correo de Contacto:</td>\n                        <td style=\"padding:6px 0; font-size:14px; font-weight:600; color:#0B4A3F;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B;\">Código de Expediente:</td>\n                        <td style=\"padding:6px 0; font-size:13px; font-weight:700; color:#10B981; font-family:monospace;\">#{{ $json.lead_id }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Próximos Pasos -->\n              <p style=\"margin:0 0 14px 0; font-size:13px; font-weight:800; letter-spacing:1px; color:#0F172A; text-transform:uppercase;\">\n                ¿Qué sucede a continuación?\n              </p>\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:28px;\">\n                <tr>\n                  <td valign=\"top\" width=\"32\" style=\"padding-bottom:12px;\">\n                    <span style=\"display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background-color:#0B4A3F; color:#FFFFFF; font-size:11px; font-weight:800;\">1</span>\n                  </td>\n                  <td valign=\"top\" style=\"padding-bottom:12px; font-size:14px; color:#475569; line-height:1.5;\">\n                    <strong style=\"color:#0F172A;\">Estudio Comparativo de Mercado (ACM):</strong> Analizamos propiedades similares vendidas y activas en tu urbanización o sector.\n                  </td>\n                </tr>\n                <tr>\n                  <td valign=\"top\" width=\"32\" style=\"padding-bottom:12px;\">\n                    <span style=\"display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background-color:#0B4A3F; color:#FFFFFF; font-size:11px; font-weight:800;\">2</span>\n                  </td>\n                  <td valign=\"top\" style=\"padding-bottom:12px; font-size:14px; color:#475569; line-height:1.5;\">\n                    <strong style=\"color:#0F172A;\">Contacto de un Asesor Senior:</strong> En menos de 24 horas hábiles nos comunicaremos contigo para afinar detalles técnicos del inmueble.\n                  </td>\n                </tr>\n                <tr>\n                  <td valign=\"top\" width=\"32\">\n                    <span style=\"display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background-color:#10B981; color:#FFFFFF; font-size:11px; font-weight:800;\">3</span>\n                  </td>\n                  <td valign=\"top\" style=\"font-size:14px; color:#475569; line-height:1.5;\">\n                    <strong style=\"color:#0F172A;\">Entrega de Reporte de Valoración:</strong> Recibirás el rango óptimo de comercialización y nuestra estrategia de venta exclusiva.\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\" style=\"padding-top:6px;\">\n                    <a href=\"https://wa.me/584247329254?text=Hola%20MAXIMUS%20Inmobiliaria,%20solicité%20la%20valoración%20de%20mi%20inmueble%20(Ref:%20{{ $json.lead_id }})\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Hablar con un Especialista por WhatsApp →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
       },
-      "id": "node-email-cliente",
-      "name": "Enviar Email Confirmación Cliente",
+      "id": "email-confirmacion-propietario",
+      "name": "Email Confirmación al Propietario",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        720,
-        200
+        760,
+        180
       ]
     },
     {
       "parameters": {
-        "chatId": "-1001234567890",
-        "text": "=🚨 *NUEVO LEAD DE VALORACIÓN (LANDING PAGE)*\n\n📍 *Ubicación del Inmueble:* {{ $json.direccion }}\n📧 *Email Propietario:* {{ $json.email }}\n🆔 *ID Lead Supabase:* {{ $json.lead_id }}\n⏱️ *Fecha:* {{ $json.fecha }}\n\n👉 *Acción recomendada:* Contactar al propietario para solicitar fotos y programar visita técnica.",
-        "additionalFields": {
-          "parse_mode": "Markdown"
-        }
+        "fromEmail": "CRM MAXIMUS <alertas@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.email_empresa }}",
+        "subject": "=🏠 [TASACIÓN] Nueva propiedad para captar: {{ $json.tipo_propiedad }} en {{ $json.ubicacion }}",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Alerta de Captación: Nueva Solicitud de Valoración | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Alerta Interna -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  ⚡ Alerta Interna de Captación · Prioridad Alta\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Nuevo Propietario Solicita Tasación de Inmueble\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Se ha registrado un nuevo lead de captación desde la plataforma web oficial de <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Se recomienda asignar un asesor captador de inmediato para contactar al propietario en las próximas 2 horas.\n              </p>\n\n              <!-- Tarjeta de Datos del Propietario / Inmueble -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Ficha Técnica del Lead de Captación\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:8px 0; font-size:13px; color:#64748B; width:40%; border-bottom:1px solid #E2E8F0;\">ID de Registro:</td>\n                        <td style=\"padding:8px 0; font-size:14px; font-weight:800; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">#{{ $json.lead_id }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:8px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección / Zona del Inmueble:</td>\n                        <td style=\"padding:8px 0; font-size:14px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.direccion }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:8px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Correo del Propietario:</td>\n                        <td style=\"padding:8px 0; font-size:14px; font-weight:700; color:#0B4A3F; border-bottom:1px solid #E2E8F0;\">\n                          <a href=\"mailto:{{ $json.email }}\" style=\"color:#0B4A3F; text-decoration:underline;\">{{ $json.email }}</a>\n                        </td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:8px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Canal de Origen:</td>\n                        <td style=\"padding:8px 0; font-size:13px; font-weight:700; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.origen }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:8px 0; font-size:13px; color:#64748B;\">Fecha y Hora de Recepción:</td>\n                        <td style=\"padding:8px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Botones de Acción Rápida -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"mailto:{{ $json.email }}?subject=Valoraci%C3%B3n%20de%20su%20Inmueble%20en%20MAXIMUS%20Inmobiliaria%20(Ref.%20{{ $json.lead_id }})\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:14px 28px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Contactar al Propietario Ahora →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
       },
-      "id": "node-alerta-equipo",
-      "name": "Alerta Telegram / WhatsApp Equipo",
-      "type": "n8n-nodes-base.telegram",
+      "id": "email-alerta-captaciones",
+      "name": "Email Alerta a Captaciones MAXIMUS",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"valoracion-lead\",\n  \"message\": \"Solicitud de valoración procesada y correos enviados\",\n  \"cliente\": \"{{ $json.nombre_cliente }}\"\n}",
+        "options": {}
+      },
+      "id": "respond-valoracion",
+      "name": "Responder al Portal Web",
+      "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        720,
-        400
+        1040,
+        300
       ]
     }
   ],
@@ -94,23 +177,45 @@
       "main": [
         [
           {
-            "node": "Estructurar Datos del Lead",
+            "node": "Normalizar Datos Tasación",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Estructurar Datos del Lead": {
+    "Normalizar Datos Tasación": {
       "main": [
         [
           {
-            "node": "Enviar Email Confirmación Cliente",
+            "node": "Email Confirmación al Propietario",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Alerta Telegram / WhatsApp Equipo",
+            "node": "Email Alerta a Captaciones MAXIMUS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Confirmación al Propietario": {
+      "main": [
+        [
+          {
+            "node": "Responder al Portal Web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Alerta a Captaciones MAXIMUS": {
+      "main": [
+        [
+          {
+            "node": "Responder al Portal Web",
             "type": "main",
             "index": 0
           }
@@ -118,6 +223,7 @@
       ]
     }
   },
-  "active": true,
-  "settings": {}
+  "settings": {
+    "executionOrder": "v1"
+  }
 }

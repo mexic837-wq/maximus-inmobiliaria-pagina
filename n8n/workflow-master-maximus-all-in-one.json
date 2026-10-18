@@ -1,0 +1,175 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 09. MASTER ALL-IN-ONE (Todos los Webhooks del Ecosistema CRM & Web)",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "valoracion-lead", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-valoracion",
+      "name": "WH 01. Valoración Comercial",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 100],
+      "webhookId": "master-maximus-valoracion-lead"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "nuevo-lead", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-nuevo-lead",
+      "name": "WH 02. Nuevo Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 220],
+      "webhookId": "master-maximus-nuevo-lead"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "nuevo-inmueble", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-nuevo-inmueble",
+      "name": "WH 03. Nuevo Inmueble",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 340],
+      "webhookId": "master-maximus-nuevo-inmueble"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "cierre-registrado", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-cierre",
+      "name": "WH 04. Cierre de Venta",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 460],
+      "webhookId": "master-maximus-cierre-registrado"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "enviar-dossier-vip", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-dossier-vip",
+      "name": "WH 05A. Dossier Colección VIP",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 580],
+      "webhookId": "master-maximus-enviar-dossier-vip"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "enviar-ficha-vip", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-ficha-vip",
+      "name": "WH 05B. Ficha VIP Correo",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 700],
+      "webhookId": "master-maximus-enviar-ficha-vip"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "nueva-cita", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-nueva-cita",
+      "name": "WH 06. Nueva Cita",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 820],
+      "webhookId": "master-maximus-nueva-cita"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "bienvenida-asesor", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-bienvenida-asesor",
+      "name": "WH 07. Bienvenida Asesor",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 940],
+      "webhookId": "master-maximus-bienvenida-asesor"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "auth-recuperar-password", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-recuperar-pass",
+      "name": "WH 08A. Recuperar Password",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 1060],
+      "webhookId": "master-maximus-recuperar-password"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "auth-cambio-password", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-cambio-pass",
+      "name": "WH 08B. Cambio Password",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 1180],
+      "webhookId": "master-maximus-cambio-password"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "auth-verificacion-2fa", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-2fa",
+      "name": "WH 08C. Código 2FA",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 1300],
+      "webhookId": "master-maximus-2fa"
+    },
+    {
+      "parameters": { "httpMethod": "POST", "path": "perfil-actualizado", "responseMode": "responseNode", "options": { "allowedOrigins": "*" } },
+      "id": "master-wh-perfil",
+      "name": "WH 08D. Perfil Actualizado",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [200, 1420],
+      "webhookId": "master-maximus-perfil-actualizado"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "m-1", "name": "evento", "value": "={{ $json.body.evento || $json.evento || 'NOTIFICACION_MAXIMUS' }}", "type": "string" },
+            { "id": "m-2", "name": "destinatario_principal", "value": "={{ $json.body.cliente_email || $json.body.email_cliente || $json.body.email || $json.body.asesor_email || 'contacto@maximusinmobiliaria.com' }}", "type": "string" },
+            { "id": "m-3", "name": "copia_empresa", "value": "={{ $json.body.email_empresa || 'contacto@maximusinmobiliaria.com' }}", "type": "string" },
+            { "id": "m-4", "name": "titulo_resumen", "value": "={{ $json.body.titulo || $json.body.inmueble_interes || $json.body.inmueble_nombre || $json.body.nombre_coleccion || $json.body.nombre || 'Operación MAXIMUS CRM' }}", "type": "string" },
+            { "id": "m-5", "name": "payload_json", "value": "={{ JSON.stringify($json.body || $json, null, 2) }}", "type": "string" }
+          ]
+        }
+      },
+      "id": "master-router-set",
+      "name": "Concentrador Central MAXIMUS",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [580, 740]
+    },
+    {
+      "parameters": {
+        "fromEmail": "MAXIMUS Inmobiliaria <notificaciones@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.destinatario_principal }}, {{ $json.copia_empresa }}",
+        "subject": "=🏛️ [MAXIMUS {{ $json.evento }}] {{ $json.titulo_resumen }}",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html><html><body style=\"margin:0;padding:0;background:#071714;font-family:'Plus Jakarta Sans',Arial,sans-serif;\"><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding:32px 16px;background:#071714;\"><tr><td align=\"center\"><table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #10B981;\"><tr><td style=\"background:linear-gradient(135deg,#0B4A3F 0%,#062E26 100%);padding:34px 32px;text-align:center;border-bottom:3px solid #D1D5DB;\"><div style=\"font-size:11px;letter-spacing:3px;color:#10B981;font-weight:800;\">SISTEMA CENTRAL DE AUTOMATIZACIÓN</div><h1 style=\"color:#ffffff;margin:8px 0 0;font-size:22px;\">MAXIMUS INMOBILIARIA</h1><p style=\"color:#D1D5DB;margin:6px 0 0;font-size:13px;\">Evento: {{ $json.evento }} • {{ $json.titulo_resumen }}</p></td></tr><tr><td style=\"padding:32px;\"><p style=\"font-size:14px;color:#374151;line-height:1.6;\">Se ha ejecutado automáticamente una transacción desde el ecosistema web/CRM de <strong>MAXIMUS Inmobiliaria</strong>:</p><pre style=\"background:#0B1512;color:#10B981;padding:18px;border-radius:12px;font-size:12px;overflow-x:auto;\">{{ $json.payload_json }}</pre></td></tr><tr><td style=\"background:#0B1512;color:#9CA3AF;padding:18px;text-align:center;font-size:11px;\">MAXIMUS Inmobiliaria C.A. • San Diego, Edo. Carabobo</td></tr></table></td></tr></table></body></html>",
+        "options": {}
+      },
+      "id": "master-email-dispatch",
+      "name": "Despachador de Correo Corporativo",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [860, 740]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"master_workflow\": true,\n  \"evento\": \"{{ $json.evento }}\",\n  \"destinatario\": \"{{ $json.destinatario_principal }}\"\n}",
+        "options": {}
+      },
+      "id": "master-respond",
+      "name": "Respuesta Unificada JSON",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1120, 740]
+    }
+  ],
+  "connections": {
+    "WH 01. Valoración Comercial": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 02. Nuevo Lead": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 03. Nuevo Inmueble": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 04. Cierre de Venta": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 05A. Dossier Colección VIP": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 05B. Ficha VIP Correo": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 06. Nueva Cita": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 07. Bienvenida Asesor": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 08A. Recuperar Password": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 08B. Cambio Password": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 08C. Código 2FA": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "WH 08D. Perfil Actualizado": { "main": [[{ "node": "Concentrador Central MAXIMUS", "type": "main", "index": 0 }]] },
+    "Concentrador Central MAXIMUS": { "main": [[{ "node": "Despachador de Correo Corporativo", "type": "main", "index": 0 }]] },
+    "Despachador de Correo Corporativo": { "main": [[{ "node": "Respuesta Unificada JSON", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

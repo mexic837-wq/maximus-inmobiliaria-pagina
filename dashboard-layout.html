@@ -4469,12 +4469,20 @@
                         <span class="text-[11px] font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-xl shadow-xs border border-emerald-100" id="vip-advisor-phone">+58 424-1234567</span>
                     </div>
 
-                    <!-- Custom Note Input (optional) -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">
-                            <i class="ph-bold ph-pencil-simple text-emerald-600"></i> Saludo o Nota Personalizada (Opcional)
-                        </label>
-                        <input type="text" id="vip-custom-note" placeholder="Ej: Hola Carlos, te comparto esta propiedad exclusiva que te interesará..." class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all" oninput="regenerarMensajeWhatsApp()">
+                    <!-- Custom Note & Email Input (optional) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">
+                                <i class="ph-bold ph-pencil-simple text-emerald-600"></i> Saludo o Nota Personalizada
+                            </label>
+                            <input type="text" id="vip-custom-note" placeholder="Ej: Hola Carlos, te comparto esta propiedad..." class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all" oninput="regenerarMensajeWhatsApp()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">
+                                <i class="ph-bold ph-envelope-simple text-emerald-600"></i> Correo del Cliente (Envío VIP)
+                            </label>
+                            <input type="email" id="vip-input-email" placeholder="cliente@correo.com (opcional)" class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all">
+                        </div>
                     </div>
 
                     <!-- Message Preview Box -->
@@ -4487,15 +4495,20 @@
                     </div>
 
                     <!-- Action Buttons Bar -->
-                    <div class="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
-                        <button onclick="copiarTextoFichaVIP()" class="w-full sm:flex-1 py-3 px-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 font-extrabold text-xs shadow-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                    <div class="pt-2 flex flex-col sm:flex-row items-center gap-2">
+                        <button onclick="copiarTextoFichaVIP()" class="w-full sm:flex-1 py-3 px-3.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-800 font-extrabold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
                             <i class="ph-bold ph-copy text-base text-gray-600"></i>
-                            <span>Copiar Mensaje</span>
+                            <span>Copiar</span>
                         </button>
 
-                        <button onclick="enviarWhatsAppFichaVIP()" class="w-full sm:flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                        <button onclick="enviarFichaVIPCorreo()" class="w-full sm:flex-1 py-3 px-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                            <i class="ph-bold ph-paper-plane-tilt text-base text-emerald-300"></i>
+                            <span>Enviar Ficha por Correo</span>
+                        </button>
+
+                        <button onclick="enviarWhatsAppFichaVIP()" class="w-full sm:flex-1 py-3 px-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-1.5 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
                             <i class="ph-fill ph-whatsapp-logo text-lg"></i>
-                            <span>Enviar por WhatsApp</span>
+                            <span>Enviar WhatsApp</span>
                         </button>
                     </div>
                 </div>
@@ -4527,10 +4540,14 @@
 
             <!-- Form Body -->
             <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Nombre del Cliente *</label>
                         <input type="text" id="form-col-cliente" placeholder="Ej: Dr. Carlos Mendoza" class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Correo del Cliente (Envío VIP)</label>
+                        <input type="email" id="form-col-email" placeholder="Ej: cliente@correo.com" class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">WhatsApp / Teléfono *</label>
@@ -4627,13 +4644,17 @@
             <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <button onclick="copiarTextoDossier()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
                     <i class="ph-bold ph-copy text-sm"></i>
-                    <span>Copiar Resumen para Portapapeles</span>
+                    <span>Copiar Resumen</span>
                 </button>
-                <div class="flex items-center gap-2.5 w-full sm:w-auto">
-                    <button onclick="cerrarModalVerDossier()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs transition-colors">
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="cerrarModalVerDossier()" class="px-4 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs transition-colors">
                         Cerrar
                     </button>
-                    <button onclick="compartirDossierWhatsApp()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                    <button onclick="enviarDossierColeccionCorreo()" class="px-4 py-2.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-envelope-simple text-emerald-300 text-sm"></i>
+                        <span>Enviar Dossier por Correo (n8n)</span>
+                    </button>
+                    <button onclick="compartirDossierWhatsApp()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="ph-fill ph-whatsapp-logo text-base"></i>
                         <span>Compartir por WhatsApp</span>
                     </button>
@@ -7055,6 +7076,59 @@
             window.open(url, '_blank');
         }
 
+        async function enviarFichaVIPCorreo() {
+            const data = INMUEBLES_DETALLE_DATA[currentVipInmuebleId];
+            if (!data) return;
+
+            const emailInput = document.getElementById('vip-input-email');
+            let clienteEmail = emailInput ? emailInput.value.trim() : '';
+            if (!clienteEmail) {
+                clienteEmail = prompt('Ingresa el correo electrónico del cliente para enviarle la Ficha Técnica VIP:', '');
+                if (!clienteEmail) return;
+                if (emailInput) emailInput.value = clienteEmail.trim();
+            }
+            clienteEmail = clienteEmail.trim();
+            if (!clienteEmail.includes('@')) {
+                mostrarToastNotificacion('⚠️ Ingresa un correo electrónico válido');
+                return;
+            }
+
+            let currentUser = null;
+            try {
+                currentUser = JSON.parse(localStorage.getItem('maximus_user'));
+            } catch(e) {}
+            const userName = currentUser?.name || data.asesor?.nombre || 'Asesor MAXIMUS';
+            const userPhone = currentUser?.telefono || data.asesor?.telefono || '+58 414-7000000';
+            const userEmail = currentUser?.email || 'contacto@maximusinmobiliaria.com';
+            const customNote = document.getElementById('vip-custom-note')?.value.trim() || `Hemos preparado esta Ficha Técnica Exclusiva de ${data.titulo} especialmente para usted.`;
+
+            const payload = {
+                cliente_email: clienteEmail,
+                nota_personalizada: customNote,
+                codigo: data.codigo,
+                titulo: data.titulo,
+                operacion: data.operacion,
+                precio: `${data.precio} ${data.moneda || 'USD'}`,
+                ubicacion: data.ubicacion,
+                habitaciones: data.habitaciones,
+                banos: data.banos,
+                m2: data.m2,
+                estacionamientos: data.estacionamientos,
+                foto: (data.fotos && data.fotos[0]) || '',
+                asesor_nombre: userName,
+                asesor_telefono: userPhone,
+                asesor_email: userEmail
+            };
+
+            if (window.N8nService && typeof window.N8nService.enviarFichaVipCorreo === 'function') {
+                await window.N8nService.enviarFichaVipCorreo(payload);
+            } else if (window.N8nService) {
+                await window.N8nService.trigger('ENVIAR_FICHA_VIP', payload);
+            }
+
+            mostrarToastNotificacion(`✉️ Ficha VIP de ${data.codigo} enviada a ${clienteEmail} vía n8n`);
+        }
+
         function toggleFavoritoModal(btn) {
             const icon = btn.querySelector('i');
             if (icon.classList.contains('ph-fill')) {
@@ -7140,6 +7214,7 @@
             {
                 id: 'col-1',
                 cliente: 'Dr. Carlos Mendoza',
+                email: 'carlos.mendoza@clinica.com',
                 telefono: '+58 414-9876543',
                 titulo: 'Selección Exclusiva de Quintas en Guaparo y Pueblo Nuevo',
                 nota: 'Estimado Dr. Mendoza, he preparado personalmente esta selección de quintas de primer nivel que cumplen con sus requerimientos de privacidad, piscina climatizada y planta eléctrica 100% operativa.',
@@ -7150,6 +7225,7 @@
             {
                 id: 'col-2',
                 cliente: 'Grupo Inmobiliario Los Andes',
+                email: 'inversiones@losandes.com',
                 telefono: '+58 424-5551234',
                 titulo: 'Activos Comerciales & Corporativos de Alta Rentabilidad',
                 nota: 'Estimado equipo de inversión, adjunto los activos comerciales con mayor flujo peatonal e industrial del Táchira disponibles para arrendamiento inmediato.',
@@ -7160,6 +7236,7 @@
             {
                 id: 'col-3',
                 cliente: 'Arq. Mariana Rivas',
+                email: 'mariana.rivas@estudio.com',
                 telefono: '+58 412-3344556',
                 titulo: 'Residencias Modernas para Confort y Familia',
                 nota: 'Hola Mariana, te comparto estas dos excelentes opciones residenciales en Paramillo y El Bosque ideales para vivienda familiar de alto estándar.',
@@ -7297,6 +7374,9 @@
                             <i class="ph-bold ph-eye text-sm text-emerald-600"></i>
                             <span>Ver Dossier</span>
                         </button>
+                        <button onclick="enviarDossierColeccionCorreo('${col.id}')" class="py-2.5 px-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1 transition-all hover:scale-105 cursor-pointer" title="Enviar Dossier por Correo (n8n)">
+                            <i class="ph-bold ph-envelope-simple text-emerald-300 text-sm"></i>
+                        </button>
                         <button onclick="compartirColeccionWhatsApp('${col.id}')" class="py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all hover:scale-105 cursor-pointer" title="Compartir Dossier por WhatsApp">
                             <i class="ph-fill ph-whatsapp-logo text-base"></i>
                         </button>
@@ -7309,6 +7389,8 @@
         function abrirModalCrearColeccion() {
             // Limpiar inputs
             document.getElementById('form-col-cliente').value = '';
+            const emailInput = document.getElementById('form-col-email');
+            if (emailInput) emailInput.value = '';
             document.getElementById('form-col-telefono').value = '';
             document.getElementById('form-col-titulo').value = '';
             document.getElementById('form-col-nota').value = '';
@@ -7353,6 +7435,7 @@
 
         async function guardarNuevaColeccion() {
             const cliente = document.getElementById('form-col-cliente').value.trim();
+            const email = document.getElementById('form-col-email')?.value.trim() || '';
             const telefono = document.getElementById('form-col-telefono').value.trim();
             const titulo = document.getElementById('form-col-titulo').value.trim();
             const nota = document.getElementById('form-col-nota').value.trim();
@@ -7379,20 +7462,41 @@
                 currentUser = JSON.parse(localStorage.getItem('maximus_user'));
             } catch(e) {}
             const advisorName = currentUser?.name || 'Asesor MAXIMUS';
+            const advisorEmail = currentUser?.email || 'contacto@maximusinmobiliaria.com';
 
             const hoy = new Date();
             const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
             const fechaStr = `${hoy.getDate()} ${meses[hoy.getMonth()]} ${hoy.getFullYear()}`;
 
+            const inmueblesDetalle = selectedProps.map(id => {
+                const p = INMUEBLES_DETALLE_DATA[id];
+                if (!p) return null;
+                return {
+                    id: p.id,
+                    codigo: p.codigo,
+                    titulo: p.titulo,
+                    precio: `${p.precio} ${p.moneda || 'USD'}`,
+                    ubicacion: p.ubicacion,
+                    m2: p.m2,
+                    habitaciones: p.habitaciones,
+                    banos: p.banos
+                };
+            }).filter(Boolean);
+
             const nuevaColeccion = {
                 id: 'col-' + Date.now(),
                 cliente,
+                email,
+                cliente_email: email,
                 telefono,
                 titulo,
                 nota: nota || `Dossier personalizado preparado especialmente para ${cliente}.`,
                 fecha: fechaStr,
                 inmuebles: selectedProps,
-                asesor: advisorName
+                inmuebles_detalle: inmueblesDetalle,
+                asesor: advisorName,
+                asesor_email: advisorEmail,
+                _skipN8nDossier: true
             };
 
             if (window.ColeccionesVipService) {
@@ -7410,9 +7514,13 @@
                 } catch(e) {}
             }
 
+            if (window.N8nService && typeof window.N8nService.enviarDossierVip === 'function') {
+                await window.N8nService.enviarDossierVip(nuevaColeccion);
+            }
+
             renderColeccionesVIP();
             cerrarModalCrearColeccion();
-            mostrarToastNotificacion(`📁 Colección para "${cliente}" creada con éxito`);
+            mostrarToastNotificacion(email ? `📁 Dossier creado y enviado a ${email}` : `📁 Colección para "${cliente}" creada con éxito`);
         }
 
         function abrirModalVerDossier(id) {
@@ -7553,6 +7661,45 @@
         function compartirDossierWhatsApp() {
             if (!currentDossierId) return;
             compartirColeccionWhatsApp(currentDossierId);
+        }
+
+        async function enviarDossierColeccionCorreo(id) {
+            const targetId = id || currentDossierId;
+            const col = coleccionesVipList.find(c => c.id === targetId);
+            if (!col) return;
+
+            let emailDestino = col.email || col.cliente_email || '';
+            if (!emailDestino) {
+                emailDestino = prompt(`Ingresa el correo electrónico de ${col.cliente} para enviarle su Dossier VIP:`, '');
+                if (!emailDestino) return;
+                col.email = emailDestino.trim();
+                col.cliente_email = emailDestino.trim();
+            }
+
+            const props = (col.inmuebles || []).map(pId => {
+                const p = INMUEBLES_DETALLE_DATA[pId];
+                if (!p) return null;
+                return {
+                    id: p.id,
+                    codigo: p.codigo,
+                    titulo: p.titulo,
+                    precio: `${p.precio} ${p.moneda || 'USD'}`,
+                    ubicacion: p.ubicacion,
+                    m2: p.m2,
+                    habitaciones: p.habitaciones,
+                    banos: p.banos
+                };
+            }).filter(Boolean);
+
+            if (window.N8nService && typeof window.N8nService.enviarDossierVip === 'function') {
+                await window.N8nService.enviarDossierVip({
+                    ...col,
+                    cliente_email: emailDestino,
+                    inmuebles_detalle: props
+                });
+            }
+
+            mostrarToastNotificacion(`✉️ Dossier VIP enviado a ${emailDestino} vía n8n`);
         }
 
         function copiarTextoDossier(id) {
@@ -8079,6 +8226,9 @@
             const telefono = document.getElementById('asesor-telefono').value.trim();
             const bio = document.getElementById('asesor-bio')?.value.trim() || '';
             const correo = document.getElementById('asesor-correo').value.trim();
+            const password = document.getElementById('asesor-password')?.value.trim() || 'Maximus2026!';
+            const tipoCuenta = document.querySelector('input[name="nuevo_tipo_cuenta"]:checked')?.value || 'maximus';
+            const splitComision = tipoCuenta === 'maximus' ? '70%' : '50%';
             const rating = document.getElementById('asesor-rating').value.trim() || '5.0';
             const cierres = parseInt(document.getElementById('asesor-cierres').value) || 0;
             const fileInput = document.getElementById('asesor-avatar-file');
@@ -8109,8 +8259,11 @@
                 cierres,
                 avatar,
                 activo: true,
-                badge_texto: 'Asesor Certificado',
-                captacionesActivas: 0
+                badge_texto: tipoCuenta === 'maximus' ? 'Asesor Certificado' : 'Aliado Externo',
+                tipo_cuenta: tipoCuenta,
+                split_comision: splitComision,
+                captacionesActivas: 0,
+                _skipN8nBienvenida: true
             };
 
             if (typeof AsesorMaximusService !== 'undefined') {
@@ -8120,7 +8273,21 @@
                 ASESORES_MAXIMUS_DATA.push(nuevoAsesor);
             }
 
-            mostrarToast(`✅ Asesor ${nombre} registrado con éxito y sincronizado con Captaciones.`);
+            // Disparar webhook n8n de bienvenida de asesor con credenciales
+            if (typeof N8nService !== 'undefined' && N8nService.enviarBienvenidaAsesor) {
+                N8nService.enviarBienvenidaAsesor({
+                    nombre,
+                    email: correo || 'contacto@maximusinmobiliaria.com',
+                    telefono,
+                    cargo,
+                    especialidad,
+                    tipo_cuenta: tipoCuenta === 'maximus' ? 'Asesor Oficial MAXIMUS' : 'Asesor Aliado Externo',
+                    split_comision: splitComision,
+                    password_temporal: password
+                });
+            }
+
+            mostrarToast(`✅ Asesor ${nombre} registrado con éxito y correo de bienvenida enviado.`);
             document.getElementById('form-crear-asesor').reset();
             cambiarTabAdminAsesores('lista');
             await inicializarGestionAsesoresAdmin();
@@ -8274,6 +8441,7 @@
                         nombre: asesorBuscado.nombre,
                         cargo: asesorBuscado.cargo,
                         telefono: asesorBuscado.telefono,
+                        email: asesorBuscado.email || 'contacto@maximusinmobiliaria.com',
                         avatar: asesorBuscado.avatar,
                         rating: `${asesorBuscado.rating} (${asesorBuscado.cierres} Cierres)`,
                         experiencia: 'Asesor Oficial MAXIMUS'
@@ -8289,7 +8457,6 @@
                 
                 if (fileExt) {
                     avatarExt = URL.createObjectURL(fileExt);
-                    // Supabase logic: supabase.storage.from('avatars').upload(...)
                 } else {
                     const nomFormateado = nombreExt.replace(/\s+/g, '+');
                     avatarExt = `https://ui-avatars.com/api/?name=${nomFormateado}&background=475569&color=fff&bold=true`;
@@ -8299,6 +8466,7 @@
                     nombre: nombreExt,
                     cargo: cargoExt,
                     telefono: telefonoExt,
+                    email: 'contacto@maximusinmobiliaria.com',
                     avatar: avatarExt,
                     rating: 'Nuevo',
                     experiencia: 'Asesor Externo'
@@ -8365,13 +8533,29 @@
                 amenidades
             };
 
-            // Aquí iría la llamada a Supabase insert() en el futuro
-            // const { data, error } = await supabase.from('inmuebles').insert([nuevoInmueble]);
-            
             // Temporalmente agregarlo al objeto local
             INMUEBLES_DETALLE_DATA[nuevoId] = nuevoInmueble;
 
-            mostrarToast('Inmueble guardado correctamente');
+            // Disparar webhook n8n de nuevo inmueble captado
+            if (typeof N8nService !== 'undefined' && N8nService.notificarNuevoInmueble) {
+                N8nService.notificarNuevoInmueble({
+                    codigo,
+                    titulo,
+                    tipo,
+                    operacion,
+                    precio: `${precio} ${moneda || 'USD'}`,
+                    comision: comision ? `${comision}%` : '5%',
+                    ubicacion,
+                    habitaciones,
+                    banos,
+                    m2,
+                    asesor_nombre: asesor.nombre,
+                    asesor_email: asesor.email || 'contacto@maximusinmobiliaria.com',
+                    imagen: nuevoInmueble.fotos[0]
+                });
+            }
+
+            mostrarToast('✅ Inmueble guardado y notificación de captación enviada');
             
             // Limpiar formulario
             document.getElementById('form-cargar-inmueble').reset();
