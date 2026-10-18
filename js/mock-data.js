@@ -236,47 +236,352 @@ const MOCK_DATA = {
         },
     ],
 
-    // ===== LEADS / CLIENTES =====
+    // ===== LEADS / CLIENTES (CRM ASESORES) =====
     leads: [
         {
             id: 'lead-001',
             nombre: 'María Antonieta Rojas',
             telefono: '+58 424-1234567',
             email: 'maria.rojas@email.com',
-            inmueble_interes_id: 'inm-001',
+            temperatura: 'caliente',
+            operacion: 'compra',
+            tipo_inmueble: 'casa',
+            presupuesto: 280000,
+            presupuesto_min: 250000,
+            presupuesto_max: 300000,
+            moneda: 'USD',
+            zonas_interes: ['Urb. Guaparo', 'Pueblo Nuevo'],
+            requisitos: '4 habitaciones, piscina privada, planta eléctrica 100%, estacionamiento para 3 vehículos.',
+            inmueble_interes_id: 'inm-1',
             inmueble_interes_titulo: 'Quinta moderna con piscina y jardín',
-            origen: 'whatsapp',       // 'web' | 'whatsapp' | 'meta_ads' | 'referido' | 'llamada'
-            estatus: 'nuevo',         // 'nuevo' | 'contactado' | 'en_negociacion' | 'cerrado' | 'descartado'
-            notas: 'Busca algo con piscina para su familia.',
-            agente_id: 'mock-agente-001',
-            created_at: '2024-10-06T08:00:00Z',
+            inmueble_interes_precio: 270000,
+            origen: 'whatsapp',
+            estatus: 'nuevo',
+            asesor_id: 'asesor-1',
+            asesor_nombre: 'José Guerrero',
+            notas: 'Cliente con alta capacidad de compra inmediata. Busca residencia principal familiar.',
+            actividades: [
+                {
+                    id: 'act-101',
+                    tipo: 'whatsapp',
+                    titulo: 'Mensaje de Primer Contacto',
+                    descripcion: 'El cliente escribió solicitando fotos y detalles de la Quinta en Guaparo.',
+                    fecha: '2024-10-17T09:30:00Z',
+                    autor: 'José Guerrero'
+                },
+                {
+                    id: 'act-102',
+                    tipo: 'nota',
+                    titulo: 'Perfil Financiero Calificado',
+                    descripcion: 'Dispone de fondos listos para transferencia internacional. Urgencia media-alta.',
+                    fecha: '2024-10-17T11:00:00Z',
+                    autor: 'José Guerrero'
+                }
+            ],
+            created_at: '2024-10-17T09:15:00Z',
+            updated_at: '2024-10-17T11:00:00Z'
         },
         {
             id: 'lead-002',
             nombre: 'Dr. Fernando Gómez',
             telefono: '+58 414-7654321',
             email: 'fgomez@clinica.com',
-            inmueble_interes_id: 'inm-003',
+            temperatura: 'caliente',
+            operacion: 'compra',
+            tipo_inmueble: 'apartamento',
+            presupuesto: 125000,
+            presupuesto_min: 110000,
+            presupuesto_max: 130000,
+            moneda: 'USD',
+            zonas_interes: ['Residencias El Bosque', 'Pueblo Nuevo'],
+            requisitos: 'Piso medio o alto, 2 habitaciones, amoblado completo, pozo de agua.',
+            inmueble_interes_id: 'inm-3',
             inmueble_interes_titulo: 'Apartamento amoblado piso medio',
+            inmueble_interes_precio: 120000,
             origen: 'meta_ads',
             estatus: 'en_negociacion',
-            notas: 'Interesado en invertir, puede pagar de contado.',
-            agente_id: 'mock-agente-001',
-            created_at: '2024-10-06T09:30:00Z',
+            asesor_id: 'asesor-2',
+            asesor_nombre: 'Valeria Méndez',
+            notas: 'Presentó contraoferta formal por escrito de $115,000 USD de contado.',
+            actividades: [
+                {
+                    id: 'act-201',
+                    tipo: 'llamada',
+                    titulo: 'Llamada de Calificación',
+                    descripcion: 'Se conversó sobre el método de pago y tiempos de entrega deseados.',
+                    fecha: '2024-10-14T10:15:00Z',
+                    autor: 'Valeria Méndez'
+                },
+                {
+                    id: 'act-202',
+                    tipo: 'visita',
+                    titulo: 'Visita Guiada al Inmueble',
+                    descripcion: 'Recorrido presencial exitoso en Residencias El Bosque. El doctor quedó fascinado con la vista.',
+                    fecha: '2024-10-15T15:00:00Z',
+                    autor: 'Valeria Méndez'
+                },
+                {
+                    id: 'act-203',
+                    tipo: 'propuesta',
+                    titulo: 'Envío de Propuesta Formal',
+                    descripcion: 'Propuesta enviada al propietario. Esperando confirmación de aceptación.',
+                    fecha: '2024-10-16T17:30:00Z',
+                    autor: 'Valeria Méndez'
+                }
+            ],
+            created_at: '2024-10-14T08:00:00Z',
+            updated_at: '2024-10-16T17:30:00Z'
         },
         {
             id: 'lead-003',
-            nombre: 'Inversiones Andinas CA',
+            nombre: 'Inversiones Andinas C.A.',
             telefono: '+58 212-5551234',
             email: 'contacto@andinasca.com',
-            inmueble_interes_id: 'inm-002',
+            temperatura: 'tibio',
+            operacion: 'alquiler',
+            tipo_inmueble: 'local',
+            presupuesto: 2500,
+            presupuesto_min: 1500,
+            presupuesto_max: 3000,
+            moneda: 'USD',
+            zonas_interes: ['C.C. Sambil', 'Pueblo Nuevo'],
+            requisitos: 'Local comercial en nivel feria o alto tráfico peatonal, mínimo 70 m² con punto de agua.',
+            inmueble_interes_id: 'inm-2',
             inmueble_interes_titulo: 'Local comercial Nivel Feria',
+            inmueble_interes_precio: 1500,
             origen: 'web',
             estatus: 'contactado',
-            notas: 'Empresa que busca local para franquicia.',
-            agente_id: 'mock-agente-001',
-            created_at: '2024-10-05T16:00:00Z',
+            asesor_id: 'asesor-4',
+            asesor_nombre: 'Andrea Colmenares',
+            notas: 'Franquicia gastronómica nacional en expansión a San Cristóbal.',
+            actividades: [
+                {
+                    id: 'act-301',
+                    tipo: 'email',
+                    titulo: 'Solicitud Web Recibida',
+                    descripcion: 'Formulario de contacto completado desde el catálogo web de locales.',
+                    fecha: '2024-10-15T16:00:00Z',
+                    autor: 'Sistema MAXIMUS'
+                },
+                {
+                    id: 'act-302',
+                    tipo: 'whatsapp',
+                    titulo: 'Envío de Dossier de Opciones',
+                    descripcion: 'Se envió dossier en PDF con 3 locales comerciales disponibles.',
+                    fecha: '2024-10-16T10:45:00Z',
+                    autor: 'Andrea Colmenares'
+                }
+            ],
+            created_at: '2024-10-15T16:00:00Z',
+            updated_at: '2024-10-16T10:45:00Z'
         },
+        {
+            id: 'lead-004',
+            nombre: 'Ing. Ricardo Morales',
+            telefono: '+58 412-3456789',
+            email: 'ricardo.morales@techve.com',
+            temperatura: 'tibio',
+            operacion: 'compra',
+            tipo_inmueble: 'apartamento',
+            presupuesto: 140000,
+            presupuesto_min: 110000,
+            presupuesto_max: 150000,
+            moneda: 'USD',
+            zonas_interes: ['Barrio Obrero', 'Pirineos'],
+            requisitos: 'Apartamento moderno con fibra óptica de alta velocidad y 2 puestos de estacionamiento.',
+            inmueble_interes_id: 'inm-5',
+            inmueble_interes_titulo: 'Apartamento Luxury Downtown',
+            inmueble_interes_precio: 120000,
+            origen: 'web',
+            estatus: 'nuevo',
+            asesor_id: 'asesor-2',
+            asesor_nombre: 'Valeria Méndez',
+            notas: 'Trabaja en remoto para empresa extranjera. Compra para vivienda personal.',
+            actividades: [
+                {
+                    id: 'act-401',
+                    tipo: 'nota',
+                    titulo: 'Lead Registrado vía Catálogo Web',
+                    descripcion: 'Interesado en opciones residenciales con conectividad garantizada.',
+                    fecha: '2024-10-17T14:20:00Z',
+                    autor: 'Valeria Méndez'
+                }
+            ],
+            created_at: '2024-10-17T14:20:00Z',
+            updated_at: '2024-10-17T14:20:00Z'
+        },
+        {
+            id: 'lead-005',
+            nombre: 'Dra. Sofía Colmenares',
+            telefono: '+58 424-9876543',
+            email: 'sofia.colmenares@saludandina.com',
+            temperatura: 'caliente',
+            operacion: 'compra',
+            tipo_inmueble: 'casa',
+            presupuesto: 480000,
+            presupuesto_min: 400000,
+            presupuesto_max: 550000,
+            moneda: 'USD',
+            zonas_interes: ['Urb. El Parral', 'Altos de Paramillo'],
+            requisitos: 'Casa de estilo vanguardista o contemporáneo, amplio jardín, circuito cerrado de seguridad.',
+            inmueble_interes_id: 'inm-4',
+            inmueble_interes_titulo: 'Villa Moderna San Cristóbal',
+            inmueble_interes_precio: 450000,
+            origen: 'referido',
+            estatus: 'visita_agendada',
+            asesor_id: 'asesor-1',
+            asesor_nombre: 'José Guerrero',
+            notas: 'Referida directa por cliente VIP previo. Cita programada para recorrido privado.',
+            actividades: [
+                {
+                    id: 'act-501',
+                    tipo: 'llamada',
+                    titulo: 'Llamada de Bienvenida VIP',
+                    descripcion: 'Se conversó en detalle sobre sus expectativas de privacidad y seguridad.',
+                    fecha: '2024-10-15T11:00:00Z',
+                    autor: 'José Guerrero'
+                },
+                {
+                    id: 'act-502',
+                    tipo: 'cita',
+                    titulo: 'Visita Agendada en Villa Moderna',
+                    descripcion: 'Cita coordinada para el viernes a las 10:00 AM con recorrido exclusivo.',
+                    fecha: '2024-10-16T15:30:00Z',
+                    autor: 'José Guerrero'
+                }
+            ],
+            created_at: '2024-10-15T09:00:00Z',
+            updated_at: '2024-10-16T15:30:00Z'
+        },
+        {
+            id: 'lead-006',
+            nombre: 'Grupo Corporativo Los Andes',
+            telefono: '+58 412-8889900',
+            email: 'presidencia@corporativolosandes.com',
+            temperatura: 'tibio',
+            operacion: 'compra',
+            tipo_inmueble: 'terreno',
+            presupuesto: 350000,
+            presupuesto_min: 300000,
+            presupuesto_max: 400000,
+            moneda: 'USD',
+            zonas_interes: ['Las Lomas', 'Paramillo'],
+            requisitos: 'Terreno comercial o residencial con zonificación aprobada para desarrollo de townhouses.',
+            inmueble_interes_id: 'inm-6',
+            inmueble_interes_titulo: 'Residencia Exclusiva Altos de Paramillo',
+            inmueble_interes_precio: 850000,
+            origen: 'llamada',
+            estatus: 'en_negociacion',
+            asesor_id: 'asesor-3',
+            asesor_nombre: 'Carlos Santander',
+            notas: 'Se evalúa proyecto de parcelamiento y esquema de pago financiado en 3 partes.',
+            actividades: [
+                {
+                    id: 'act-601',
+                    tipo: 'llamada',
+                    titulo: 'Reunión Telefónica con Directores',
+                    descripcion: 'Definición del perfil de desarrollo arquitectónico buscado.',
+                    fecha: '2024-10-12T16:00:00Z',
+                    autor: 'Carlos Santander'
+                },
+                {
+                    id: 'act-602',
+                    tipo: 'propuesta',
+                    titulo: 'Presentación de Dossier de Oportunidades',
+                    descripcion: 'Dossier financiero entregado con proyecciones de plusvalía y retorno.',
+                    fecha: '2024-10-14T11:45:00Z',
+                    autor: 'Carlos Santander'
+                }
+            ],
+            created_at: '2024-10-12T15:00:00Z',
+            updated_at: '2024-10-14T11:45:00Z'
+        },
+        {
+            id: 'lead-007',
+            nombre: 'Lic. Carmen Elena Vivas',
+            telefono: '+58 414-3322110',
+            email: 'carmen.vivas@notaria.org',
+            temperatura: 'caliente',
+            operacion: 'compra',
+            tipo_inmueble: 'casa',
+            presupuesto: 310000,
+            presupuesto_min: 280000,
+            presupuesto_max: 330000,
+            moneda: 'USD',
+            zonas_interes: ['Urb. Guaparo'],
+            requisitos: 'Casa lista para habitar sin remodelaciones pendientes.',
+            inmueble_interes_id: 'inm-1',
+            inmueble_interes_titulo: 'Quinta moderna con piscina y jardín',
+            inmueble_interes_precio: 270000,
+            origen: 'whatsapp',
+            estatus: 'en_tramite',
+            asesor_id: 'asesor-1',
+            asesor_nombre: 'José Guerrero',
+            notas: 'Trámite notarial en proceso de solvencias municipales y catastro en Notaría 2da.',
+            actividades: [
+                {
+                    id: 'act-701',
+                    tipo: 'visita',
+                    titulo: 'Inspección Técnica Realizada',
+                    descripcion: 'Inspección con perito técnico aprobada con 100% de conformidad.',
+                    fecha: '2024-10-10T10:00:00Z',
+                    autor: 'José Guerrero'
+                },
+                {
+                    id: 'act-702',
+                    tipo: 'nota',
+                    titulo: 'Expediente Entregado a Notaría',
+                    descripcion: 'Documentos radicados en Notaría 2da. Fecha estimada de firma: martes 22.',
+                    fecha: '2024-10-16T09:00:00Z',
+                    autor: 'José Guerrero'
+                }
+            ],
+            created_at: '2024-10-08T10:00:00Z',
+            updated_at: '2024-10-16T09:00:00Z'
+        },
+        {
+            id: 'lead-008',
+            nombre: 'Lcdo. Alejandro Rivas',
+            telefono: '+58 424-6543210',
+            email: 'alejandro.rivas@export.com',
+            temperatura: 'frio',
+            operacion: 'compra',
+            tipo_inmueble: 'casa',
+            presupuesto: 270000,
+            presupuesto_min: 250000,
+            presupuesto_max: 290000,
+            moneda: 'USD',
+            zonas_interes: ['Pueblo Nuevo'],
+            requisitos: 'Quinta cerrada con acabados de lujo.',
+            inmueble_interes_id: 'inm-1',
+            inmueble_interes_titulo: 'Quinta moderna con piscina y jardín',
+            inmueble_interes_precio: 270000,
+            origen: 'referido',
+            estatus: 'cerrado',
+            asesor_id: 'asesor-1',
+            asesor_nombre: 'José Guerrero',
+            notas: 'Cierre registrado exitosamente. Liquidación de comisión 70/30 ejecutada.',
+            actividades: [
+                {
+                    id: 'act-801',
+                    tipo: 'visita',
+                    titulo: 'Visita de Cierre',
+                    descripcion: 'Visita final con firma de opción de compra-venta.',
+                    fecha: '2024-09-25T11:00:00Z',
+                    autor: 'José Guerrero'
+                },
+                {
+                    id: 'act-802',
+                    tipo: 'nota',
+                    titulo: 'Firma en Notaría y Entrega de Llaves',
+                    descripcion: 'Transacción protocolizada. Cliente muy satisfecho con la gestión de MAXIMUS.',
+                    fecha: '2024-10-02T16:00:00Z',
+                    autor: 'José Guerrero'
+                }
+            ],
+            created_at: '2024-09-18T09:00:00Z',
+            updated_at: '2024-10-02T16:00:00Z'
+        }
     ],
 
     // ===== CITAS / AGENDA =====

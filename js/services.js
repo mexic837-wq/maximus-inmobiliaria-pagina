@@ -128,44 +128,141 @@ const InmuebleService = {
 
 
 // ============================================
-// SERVICIO DE LEADS (CLIENTES)
+// SERVICIO DE LEADS (CLIENTES & CRM ASESORES)
 // ============================================
 const LeadService = {
 
+    _getStoredLeads() {
+        try {
+            const raw = localStorage.getItem('maximus_crm_leads');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    if (typeof MOCK_DATA !== 'undefined') MOCK_DATA.leads = parsed;
+                    return parsed;
+                }
+            }
+        } catch (_) {}
+
+        const defaultLeads = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads))
+            ? [...MOCK_DATA.leads]
+            : [];
+        this._saveStoredLeads(defaultLeads);
+        return defaultLeads;
+    },
+
+    _saveStoredLeads(leads) {
+        try {
+            localStorage.setItem('maximus_crm_leads', JSON.stringify(leads));
+        } catch (_) {}
+        if (typeof MOCK_DATA !== 'undefined') {
+            MOCK_DATA.leads = leads;
+        }
+    },
+
     async getAll(filtros = {}) {
         if (APP_CONFIG.USE_MOCK_DATA) {
-            let data = [...MOCK_DATA.leads];
-            if (filtros.estatus) data = data.filter(l => l.estatus === filtros.estatus);
-            if (filtros.origen) data = data.filter(l => l.origen === filtros.origen);
+            let data = this._getStoredLeads();
+            if (filtros.estatus && filtros.estatus !== 'todos') {
+                data = data.filter(l => l.estatus === filtros.estatus);
+            }
+            if (filtros.origen && filtros.origen !== 'todos') {
+                data = data.filter(l => l.origen === filtros.origen);
+            }
+            if (filtros.asesor_id && filtros.asesor_id !== 'todos') {
+                data = data.filter(l => l.asesor_id === filtros.asesor_id);
+            }
+            if (filtros.temperatura && filtros.temperatura !== 'todos') {
+                data = data.filter(l => l.temperatura === filtros.temperatura);
+            }
+            if (filtros.busqueda) {
+                const q = filtros.busqueda.toLowerCase().trim();
+                data = data.filter(l =>
+                    (l.nombre && l.nombre.toLowerCase().includes(q)) ||
+                    (l.email && l.email.toLowerCase().includes(q)) ||
+                    (l.telefono && l.telefono.toLowerCase().includes(q)) ||
+                    (l.inmueble_interes_titulo && l.inmueble_interes_titulo.toLowerCase().includes(q))
+                );
+            }
             return { data, error: null };
         }
         const sb = getSupabase();
         let query = sb.from(APP_CONFIG.TABLES.LEADS).select('*');
-        if (filtros.estatus) query = query.eq('estatus', filtros.estatus);
-        if (filtros.origen) query = query.eq('origen', filtros.origen);
+        if (filtros.estatus && filtros.estatus !== 'todos') query = query.eq('estatus', filtros.estatus);
+        if (filtros.origen && filtros.origen !== 'todos') query = query.eq('origen', filtros.origen);
+        if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
+        if (filtros.temperatura && filtros.temperatura !== 'todos') query = query.eq('temperatura', filtros.temperatura);
         query = query.order('created_at', { ascending: false });
         return await query;
     },
 
+    async getById(id) {
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const leads = this._getStoredLeads();
+            const lead = leads.find(l => l.id === id);
+            return { data: lead || null, error: lead ? null : 'Cliente no encontrado' };
+        }
+        const sb = getSupabase();
+        return await sb.from(APP_CONFIG.TABLES.LEADS).select('*').eq('id', id).single();
+    },
+
+    async getByAsesor(asesorId) {
+        return this.getAll({ asesor_id: asesorId });
+    },
+
     async create(leadData) {
         let res;
+        const nuevo = {
+            id: leadData.id || ('lead-' + Date.now()),
+            nombre: leadData.nombre || 'Nuevo Cliente',
+            email: leadData.email || '',
+            telefono: leadData.telefono || '',
+            temperatura: leadData.temperatura || 'caliente',
+            operacion: leadData.operacion || 'compra',
+            tipo_inmueble: leadData.tipo_inmueble || 'casa',
+            presupuesto: leadData.presupuesto ? Number(leadData.presupuesto) : 0,
+            presupuesto_min: leadData.presupuesto_min ? Number(leadData.presupuesto_min) : 0,
+            presupuesto_max: leadData.presupuesto_max ? Number(leadData.presupuesto_max) : (leadData.presupuesto ? Number(leadData.presupuesto) : 0),
+            moneda: leadData.moneda || 'USD',
+            zonas_interes: Array.isArray(leadData.zonas_interes) ? leadData.zonas_interes : (leadData.zonas_interes ? [leadData.zonas_interes] : []),
+            requisitos: leadData.requisitos || '',
+            inmueble_interes_id: leadData.inmueble_interes_id || '',
+            inmueble_interes_titulo: leadData.inmueble_interes_titulo || '',
+            inmueble_interes_precio: leadData.inmueble_interes_precio ? Number(leadData.inmueble_interes_precio) : 0,
+            origen: leadData.origen || 'web',
+            estatus: leadData.estatus || 'nuevo',
+            asesor_id: leadData.asesor_id || 'asesor-1',
+            asesor_nombre: leadData.asesor_nombre || 'Asesor MAXIMUS',
+            notas: leadData.notas || '',
+            actividades: leadData.actividades || [
+                {
+                    id: 'act-' + Date.now(),
+                    tipo: 'nota',
+                    titulo: 'Cliente Registrado en CRM',
+                    descripcion: leadData.notas || 'Cliente ingresado a la cartera comercial.',
+                    fecha: new Date().toISOString(),
+                    autor: leadData.asesor_nombre || 'Asesor MAXIMUS'
+                }
+            ],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            ...leadData
+        };
+
         if (APP_CONFIG.USE_MOCK_DATA) {
-            const nuevo = { id: 'lead-' + Date.now(), ...leadData, created_at: new Date().toISOString() };
-            if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads)) {
-                MOCK_DATA.leads.unshift(nuevo);
-            }
+            const leads = this._getStoredLeads();
+            leads.unshift(nuevo);
+            this._saveStoredLeads(leads);
             res = { data: nuevo, error: null };
         } else {
             try {
                 const sb = getSupabase();
                 res = await sb.from(APP_CONFIG.TABLES.LEADS).insert(leadData).select().single();
                 if (res && res.error) {
-                    const fallback = { id: 'lead-' + Date.now(), ...leadData, created_at: new Date().toISOString() };
-                    res = { data: fallback, error: null };
+                    res = { data: nuevo, error: null };
                 }
             } catch (err) {
-                const fallback = { id: 'lead-' + Date.now(), ...leadData, created_at: new Date().toISOString() };
-                res = { data: fallback, error: null };
+                res = { data: nuevo, error: null };
             }
         }
 
@@ -177,16 +274,37 @@ const LeadService = {
 
     async updateEstatus(id, nuevoEstatus) {
         let res;
+        const nombreEtapas = {
+            'nuevo': 'Prospección / Nuevo',
+            'contactado': 'Contactado / Calificación',
+            'visita_agendada': 'Búsqueda / Visita Agendada',
+            'en_negociacion': 'En Negociación / Propuesta',
+            'en_tramite': 'En Trámite / Notaría',
+            'cerrado': 'Cerrado / Ganado'
+        };
+
         if (APP_CONFIG.USE_MOCK_DATA) {
-            const lead = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads))
-                ? MOCK_DATA.leads.find(l => l.id === id)
-                : null;
-            if (lead) lead.estatus = nuevoEstatus;
+            const leads = this._getStoredLeads();
+            const lead = leads.find(l => l.id === id);
+            if (lead) {
+                lead.estatus = nuevoEstatus;
+                lead.updated_at = new Date().toISOString();
+                if (!Array.isArray(lead.actividades)) lead.actividades = [];
+                lead.actividades.unshift({
+                    id: 'act-' + Date.now(),
+                    tipo: 'nota',
+                    titulo: 'Fase de Pipeline Actualizada',
+                    descripcion: `El cliente avanzó a la etapa: "${nombreEtapas[nuevoEstatus] || nuevoEstatus}".`,
+                    fecha: new Date().toISOString(),
+                    autor: lead.asesor_nombre || 'Asesor CRM'
+                });
+                this._saveStoredLeads(leads);
+            }
             res = { data: lead || { id, estatus: nuevoEstatus }, error: null };
         } else {
             try {
                 const sb = getSupabase();
-                res = await sb.from(APP_CONFIG.TABLES.LEADS).update({ estatus: nuevoEstatus }).eq('id', id).select().single();
+                res = await sb.from(APP_CONFIG.TABLES.LEADS).update({ estatus: nuevoEstatus, updated_at: new Date().toISOString() }).eq('id', id).select().single();
             } catch (err) {
                 res = { data: { id, estatus: nuevoEstatus }, error: null };
             }
@@ -196,16 +314,71 @@ const LeadService = {
             const leadInfo = (res && res.data) ? res.data : { id, estatus: nuevoEstatus };
             N8nService.notificarAgente(
                 leadInfo.asesor_id || 'admin',
-                `Cambio de Estatus de Lead: ${leadInfo.nombre || id}`,
-                `El lead ${leadInfo.nombre || id} (${leadInfo.email || 'sin correo'}) pasó al estatus "${nuevoEstatus}".`
+                `Pipeline CRM: ${leadInfo.nombre || id}`,
+                `El cliente ${leadInfo.nombre || id} (${leadInfo.email || 'sin correo'}) avanzó a "${nombreEtapas[nuevoEstatus] || nuevoEstatus}".`
             ).catch(() => {});
         }
         return res;
     },
 
+    async updateDetalles(id, updates) {
+        let res;
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const leads = this._getStoredLeads();
+            const idx = leads.findIndex(l => l.id === id);
+            if (idx !== -1) {
+                leads[idx] = {
+                    ...leads[idx],
+                    ...updates,
+                    updated_at: new Date().toISOString()
+                };
+                this._saveStoredLeads(leads);
+                res = { data: leads[idx], error: null };
+            } else {
+                res = { data: null, error: 'Cliente no encontrado' };
+            }
+        } else {
+            try {
+                const sb = getSupabase();
+                res = await sb.from(APP_CONFIG.TABLES.LEADS).update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+            } catch (err) {
+                res = { data: { id, ...updates }, error: null };
+            }
+        }
+        return res;
+    },
+
+    async addActividad(leadId, actividad) {
+        const itemActividad = {
+            id: actividad.id || ('act-' + Date.now()),
+            tipo: actividad.tipo || 'nota',
+            titulo: actividad.titulo || 'Nota en Bitácora',
+            descripcion: actividad.descripcion || actividad.texto || '',
+            fecha: actividad.fecha || new Date().toISOString(),
+            autor: actividad.autor || 'Asesor CRM'
+        };
+
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const leads = this._getStoredLeads();
+            const lead = leads.find(l => l.id === leadId);
+            if (lead) {
+                if (!Array.isArray(lead.actividades)) lead.actividades = [];
+                lead.actividades.unshift(itemActividad);
+                lead.updated_at = new Date().toISOString();
+                this._saveStoredLeads(leads);
+                return { data: itemActividad, lead, error: null };
+            }
+            return { data: null, error: 'Cliente no encontrado' };
+        }
+
+        return { data: itemActividad, error: null };
+    },
+
     async delete(id) {
         if (APP_CONFIG.USE_MOCK_DATA) {
-            MOCK_DATA.leads = MOCK_DATA.leads.filter(l => l.id !== id);
+            let leads = this._getStoredLeads();
+            leads = leads.filter(l => l.id !== id);
+            this._saveStoredLeads(leads);
             return { error: null };
         }
         const sb = getSupabase();

@@ -956,6 +956,13 @@
                 <p class="sidebar-category staff-only text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
                 <div class="sidebar-collapsed-divider staff-only"></div>
 
+                <!-- Mis Clientes / CRM del Asesor -->
+                <a href="#" id="nav-mis-clientes" data-target="view-mis-clientes" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Mis Clientes / CRM Asesor">
+                    <i class="ph ph-user-list text-xl text-emerald-600 flex-shrink-0"></i>
+                    <span class="sidebar-label">Mis Clientes (CRM)</span>
+                    <span class="sidebar-tooltip">Mis Clientes (CRM)</span>
+                </a>
+
                 <!-- Sección Exclusiva para Asesores MAXIMUS y Dirección -->
                 <a href="#" id="nav-historico-asesores" data-target="view-historico-asesores" class="nav-link asesor-maximus-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Histórico de Asesores & Comisiones">
                     <i class="ph ph-chart-polar text-xl text-emerald-600 flex-shrink-0"></i>
@@ -3978,6 +3985,285 @@
             </section>
 
             <!-- ==========================================
+                 M. VISTA DEDICADA: MIS CLIENTES (CRM ASESORES)
+                 ========================================== -->
+            <section id="view-mis-clientes" class="view-section max-w-[1400px] mx-auto space-y-4 sm:space-y-6">
+                <!-- Header Superior y Controles -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40">
+                                CRM Comercial Inmobiliario
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium">·</span>
+                            <span class="text-xs text-gray-500 font-semibold flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Sincronizado con n8n
+                            </span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Gestión de Clientes & Embudo de Ventas</h1>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium">Monitorea cada oportunidad desde prospección hasta firma y comisiones en notaría.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <!-- Selector de Vista (Kanban / Tabla) -->
+                        <div class="flex items-center p-1 bg-gray-100 dark:bg-[#071F1A] rounded-2xl border border-gray-200/80 dark:border-emerald-900/40 shadow-xs">
+                            <button id="crm-view-btn-kanban" onclick="setCRMViewMode('kanban')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 bg-white dark:bg-[#0E352C] text-emerald-800 dark:text-emerald-200 shadow-sm cursor-pointer">
+                                <i class="ph-bold ph-kanban text-sm"></i>
+                                <span>Pipeline Kanban</span>
+                            </button>
+                            <button id="crm-view-btn-tabla" onclick="setCRMViewMode('tabla')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-maximus-dark dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="ph-bold ph-table text-sm"></i>
+                                <span>Tabla Lista</span>
+                            </button>
+                        </div>
+
+                        <!-- Botón Nuevo Cliente -->
+                        <button onclick="abrirModalNuevoClienteCRM()" class="px-4 sm:px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                            <i class="ph-bold ph-user-plus text-base"></i>
+                            <span>Nuevo Cliente</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Tarjetas KPIs de Cartera -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <!-- KPI 1: Total Clientes -->
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-emerald-400/80 block mb-1">Total en Cartera</span>
+                            <strong id="crm-kpi-total" class="text-2xl sm:text-3xl font-black text-maximus-dark dark:text-white leading-none">0</strong>
+                            <span class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 block mt-1.5">Clientes registrados</span>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-xl shrink-0">
+                            <i class="ph-fill ph-users-three"></i>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Clientes Activos (Calientes/Tibios) -->
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-rose-500 dark:text-rose-400 block mb-1">Clientes Activos</span>
+                            <strong id="crm-kpi-activos" class="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 leading-none">0</strong>
+                            <span class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 block mt-1.5">🔥 Calientes y ⚡ Tibios</span>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl shrink-0">
+                            <i class="ph-fill ph-fire"></i>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Conversión a Visita/Propuesta -->
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block mb-1">En Citas / Propuesta</span>
+                            <strong id="crm-kpi-ratio" class="text-2xl sm:text-3xl font-black text-amber-600 dark:text-amber-400 leading-none">0%</strong>
+                            <span class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 block mt-1.5">Fases avanzadas de compra</span>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl shrink-0">
+                            <i class="ph-fill ph-chart-line-up"></i>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: Volumen Potencial en Cartera -->
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs hover:shadow-sm transition-all flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-teal-600 dark:text-teal-400 block mb-1">Demanda Potencial</span>
+                            <strong id="crm-kpi-volumen" class="text-xl sm:text-2xl font-black text-emerald-900 dark:text-emerald-200 leading-none">$0</strong>
+                            <span class="text-[11px] font-semibold text-gray-400 dark:text-gray-500 block mt-1.5">Suma de presupuestos</span>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-300 flex items-center justify-center text-xl shrink-0">
+                            <i class="ph-fill ph-currency-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra de Filtros y Búsqueda -->
+                <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-xs p-3 sm:p-4 border border-gray-100 dark:border-emerald-900/40 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                    <!-- Buscador -->
+                    <div class="relative flex-1 min-w-[240px]">
+                        <i class="ph-bold ph-magnifying-glass text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 text-sm"></i>
+                        <input type="text" id="crm-filtro-busqueda" oninput="filtrarCRMEnVivo()" placeholder="Buscar cliente por nombre, teléfono, correo o propiedad..." class="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200/80 dark:border-emerald-900/50 focus:border-emerald-500 focus:bg-white dark:focus:bg-[#0A1F1B] text-xs font-semibold text-maximus-dark dark:text-white placeholder-gray-400 outline-none transition-all">
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Filtro Asesor (para Admin y Dirección) -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">Asesor:</span>
+                            <select id="crm-filtro-asesor" onchange="filtrarCRMEnVivo()" class="px-3 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200/80 dark:border-emerald-900/50 text-xs font-semibold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                                <option value="todos">Todos los Asesores</option>
+                                <option value="asesor-1">José Guerrero</option>
+                                <option value="asesor-2">Valeria Méndez</option>
+                                <option value="asesor-3">Carlos Santander</option>
+                                <option value="asesor-4">Andrea Colmenares</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtro Temperatura -->
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">Interés:</span>
+                            <select id="crm-filtro-temperatura" onchange="filtrarCRMEnVivo()" class="px-3 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200/80 dark:border-emerald-900/50 text-xs font-semibold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                                <option value="todos">Todas las Temperaturas</option>
+                                <option value="caliente">🔥 Caliente (Listo para comprar)</option>
+                                <option value="tibio">⚡ Tibio (Evaluando opciones)</option>
+                                <option value="frio">❄️ Frío (Prospección a futuro)</option>
+                            </select>
+                        </div>
+
+                        <!-- Filtro Operación -->
+                        <select id="crm-filtro-operacion" onchange="filtrarCRMEnVivo()" class="px-3 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200/80 dark:border-emerald-900/50 text-xs font-semibold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="todos">Cualquier Operación</option>
+                            <option value="compra">Compra</option>
+                            <option value="alquiler">Alquiler</option>
+                            <option value="venta">Venta</option>
+                        </select>
+
+                        <button onclick="limpiarFiltrosCRM()" class="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-[#0D2822] text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" title="Restablecer filtros">
+                            <i class="ph-bold ph-arrow-counter-clockwise text-base"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VISTA 1: TABLERO KANBAN DE 6 COLUMNAS -->
+                <div id="crm-vista-kanban" class="w-full overflow-x-auto pb-4 scrollbar-none">
+                    <div class="flex gap-4 min-w-[1360px] items-start">
+                        <!-- Columna 1: Prospección / Nuevo -->
+                        <div class="flex-1 bg-gray-50/80 dark:bg-[#071B17] rounded-2xl p-3 border border-gray-200/60 dark:border-emerald-900/40 flex flex-col min-w-[215px]">
+                            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-200 dark:border-emerald-900/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                    <h3 class="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200">1. Prospección</h3>
+                                </div>
+                                <span id="col-count-nuevo" class="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 text-[11px] font-black">0</span>
+                            </div>
+                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-2 flex justify-between">
+                                <span>Etapa Inicial</span>
+                                <span id="col-monto-nuevo" class="text-emerald-700 dark:text-emerald-400 font-extrabold">$0</span>
+                            </div>
+                            <div id="col-cards-nuevo" class="space-y-3 min-h-[300px]">
+                                <!-- Leads generados dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Columna 2: Contactado / Calificación -->
+                        <div class="flex-1 bg-gray-50/80 dark:bg-[#071B17] rounded-2xl p-3 border border-gray-200/60 dark:border-emerald-900/40 flex flex-col min-w-[215px]">
+                            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-200 dark:border-emerald-900/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                    <h3 class="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200">2. Contactado</h3>
+                                </div>
+                                <span id="col-count-contactado" class="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 text-[11px] font-black">0</span>
+                            </div>
+                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-2 flex justify-between">
+                                <span>Calificación activa</span>
+                                <span id="col-monto-contactado" class="text-emerald-700 dark:text-emerald-400 font-extrabold">$0</span>
+                            </div>
+                            <div id="col-cards-contactado" class="space-y-3 min-h-[300px]">
+                                <!-- Leads generados dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Columna 3: Búsqueda / Visita Agendada -->
+                        <div class="flex-1 bg-gray-50/80 dark:bg-[#071B17] rounded-2xl p-3 border border-gray-200/60 dark:border-emerald-900/40 flex flex-col min-w-[215px]">
+                            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-200 dark:border-emerald-900/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                    <h3 class="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200">3. Visita Agendada</h3>
+                                </div>
+                                <span id="col-count-visita_agendada" class="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 text-[11px] font-black">0</span>
+                            </div>
+                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-2 flex justify-between">
+                                <span>Citas en agenda</span>
+                                <span id="col-monto-visita_agendada" class="text-emerald-700 dark:text-emerald-400 font-extrabold">$0</span>
+                            </div>
+                            <div id="col-cards-visita_agendada" class="space-y-3 min-h-[300px]">
+                                <!-- Leads generados dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Columna 4: En Negociación / Propuesta -->
+                        <div class="flex-1 bg-gray-50/80 dark:bg-[#071B17] rounded-2xl p-3 border border-gray-200/60 dark:border-emerald-900/40 flex flex-col min-w-[215px]">
+                            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-200 dark:border-emerald-900/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+                                    <h3 class="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200">4. Negociación</h3>
+                                </div>
+                                <span id="col-count-en_negociacion" class="px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-950/70 text-orange-700 dark:text-orange-300 text-[11px] font-black">0</span>
+                            </div>
+                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-2 flex justify-between">
+                                <span>Propuesta / Contraoferta</span>
+                                <span id="col-monto-en_negociacion" class="text-emerald-700 dark:text-emerald-400 font-extrabold">$0</span>
+                            </div>
+                            <div id="col-cards-en_negociacion" class="space-y-3 min-h-[300px]">
+                                <!-- Leads generados dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Columna 5: En Trámite / Notaría -->
+                        <div class="flex-1 bg-gray-50/80 dark:bg-[#071B17] rounded-2xl p-3 border border-gray-200/60 dark:border-emerald-900/40 flex flex-col min-w-[215px]">
+                            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-200 dark:border-emerald-900/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                                    <h3 class="text-xs font-black uppercase tracking-wider text-gray-700 dark:text-gray-200">5. Trámite Notarial</h3>
+                                </div>
+                                <span id="col-count-en_tramite" class="px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 text-[11px] font-black">0</span>
+                            </div>
+                            <div class="text-[10px] font-bold text-gray-400 dark:text-gray-500 mb-2 flex justify-between">
+                                <span>Documentos / Firma</span>
+                                <span id="col-monto-en_tramite" class="text-emerald-700 dark:text-emerald-400 font-extrabold">$0</span>
+                            </div>
+                            <div id="col-cards-en_tramite" class="space-y-3 min-h-[300px]">
+                                <!-- Leads generados dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Columna 6: Cerrado / Ganado -->
+                        <div class="flex-1 bg-emerald-50/60 dark:bg-[#06241E]/80 rounded-2xl p-3 border border-emerald-200/80 dark:border-emerald-800/50 flex flex-col min-w-[215px]">
+                            <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-emerald-200 dark:border-emerald-900/50">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <h3 class="text-xs font-black uppercase tracking-wider text-emerald-950 dark:text-emerald-200">6. Cerrado / Ganado</h3>
+                                </div>
+                                <span id="col-count-cerrado" class="px-2 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200 text-[11px] font-black">0</span>
+                            </div>
+                            <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 mb-2 flex justify-between">
+                                <span>Comisiones 70/30</span>
+                                <span id="col-monto-cerrado" class="text-emerald-800 dark:text-emerald-300 font-black">$0</span>
+                            </div>
+                            <div id="col-cards-cerrado" class="space-y-3 min-h-[300px]">
+                                <!-- Leads generados dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 2: TABLA LISTA -->
+                <div id="crm-vista-tabla" class="hidden bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-xs border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-50/80 dark:bg-[#071B17] text-[11px] font-black uppercase tracking-wider text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-emerald-900/40">
+                                <tr>
+                                    <th class="py-3.5 px-4">Cliente</th>
+                                    <th class="py-3.5 px-4">Etapa Pipeline</th>
+                                    <th class="py-3.5 px-4">Interés</th>
+                                    <th class="py-3.5 px-4">Presupuesto & Búsqueda</th>
+                                    <th class="py-3.5 px-4">Asesor Asignado</th>
+                                    <th class="py-3.5 px-4">Última Actividad</th>
+                                    <th class="py-3.5 px-4 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crm-tabla-leads-tbody" class="divide-y divide-gray-100 dark:divide-emerald-900/30 font-medium text-gray-700 dark:text-gray-200">
+                                <!-- Generado por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="crm-tabla-empty" class="hidden text-center py-12">
+                        <i class="ph-bold ph-user-circle text-4xl text-gray-300 dark:text-gray-600 mb-2"></i>
+                        <p class="text-xs font-bold text-gray-500 dark:text-gray-400">No se encontraron clientes con los filtros seleccionados.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
                  L. VISTA DEDICADA: MI PERFIL & SEGURIDAD DEL ASESOR
                  ========================================== -->
             <section id="view-perfil" class="view-section max-w-6xl mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-16">
@@ -4660,11 +4946,432 @@
                     </button>
                 </div>
             </div>
+    </div>
+
+    <!-- ==========================================
+         MODALES CRM: FICHA 360°, NUEVO CLIENTE & AGENDAR VISITA
+         ========================================== -->
+
+    <!-- 1. MODAL FICHA 360° DEL CLIENTE -->
+    <div id="modalFichaCliente360" class="fixed inset-0 z-[125] hidden flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalFichaCliente360()">
+        <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
+            <!-- Header Ficha 360° -->
+            <div class="px-5 sm:px-7 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 via-emerald-50/20 to-gray-50/90 dark:from-[#08221D] dark:to-[#071714] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                    <div id="ficha360-avatar" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-800 text-white font-black text-lg flex items-center justify-center shadow-md shrink-0">
+                        CL
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 id="ficha360-nombre" class="text-xl font-black text-maximus-dark dark:text-white leading-tight">Nombre del Cliente</h3>
+                            <span id="ficha360-badge-temp" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">🔥 Caliente</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">
+                            <span id="ficha360-telefono" class="flex items-center gap-1"><i class="ph-bold ph-phone text-emerald-600"></i> +58 424-0000000</span>
+                            <span id="ficha360-email" class="flex items-center gap-1"><i class="ph-bold ph-envelope text-emerald-600"></i> cliente@email.com</span>
+                            <span id="ficha360-origen" class="px-2 py-0.2 rounded-md bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-emerald-300 text-[10px] font-extrabold uppercase">WhatsApp</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 self-end sm:self-center">
+                    <!-- Selector de Temperatura en Vivo -->
+                    <select id="ficha360-select-temp" onchange="cambiarTemperaturaClienteFicha(this.value)" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/60 text-xs font-bold text-gray-700 dark:text-gray-200 outline-none focus:border-emerald-500 cursor-pointer shadow-2xs">
+                        <option value="caliente">🔥 Caliente (Alta Prioridad)</option>
+                        <option value="tibio">⚡ Tibio (En Búsqueda)</option>
+                        <option value="frio">❄️ Frío (A Futuro)</option>
+                    </select>
+
+                    <button onclick="cerrarModalFichaCliente360()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#0D2822] hover:bg-gray-200 dark:hover:bg-[#123830] text-gray-500 dark:text-gray-300 flex items-center justify-center transition-all cursor-pointer">
+                        <i class="ph-bold ph-x text-base"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Toolbar de Acciones Rápidas con Automatizaciones n8n -->
+            <div class="px-5 sm:px-7 py-2.5 bg-gray-50/90 dark:bg-[#061C18] border-b border-gray-100 dark:border-emerald-900/40 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Dropdown Plantillas WhatsApp -->
+                    <div class="relative">
+                        <button onclick="toggleMenuPlantillasWA()" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="ph-fill ph-whatsapp-logo text-sm"></i>
+                            <span>WhatsApp con Plantilla</span>
+                            <i class="ph-bold ph-caret-down text-[10px]"></i>
+                        </button>
+                        <div id="menuPlantillasWA" class="hidden absolute left-0 mt-1 w-64 bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-xl border border-gray-100 dark:border-emerald-900/60 py-2 z-50 text-xs font-semibold">
+                            <button onclick="enviarPlantillaWA(1)" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 dark:hover:bg-[#0E352C] text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                                <i class="ph-bold ph-hand-waving text-emerald-600"></i>
+                                <span>1. Primer Contacto & Saludo VIP</span>
+                            </button>
+                            <button onclick="enviarPlantillaWA(2)" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 dark:hover:bg-[#0E352C] text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                                <i class="ph-bold ph-folder-star text-amber-500"></i>
+                                <span>2. Dossier de Opciones Seleccionadas</span>
+                            </button>
+                            <button onclick="enviarPlantillaWA(3)" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 dark:hover:bg-[#0E352C] text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                                <i class="ph-bold ph-calendar-check text-blue-500"></i>
+                                <span>3. Confirmación de Cita / Visita</span>
+                            </button>
+                            <button onclick="enviarPlantillaWA(4)" class="w-full text-left px-3.5 py-2 hover:bg-emerald-50 dark:hover:bg-[#0E352C] text-gray-700 dark:text-gray-200 flex items-center gap-2">
+                                <i class="ph-bold ph-handshake text-purple-500"></i>
+                                <span>4. Seguimiento de Negociación</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Enviar Dossier VIP por Correo -->
+                    <button onclick="enviarDossierDesdeFicha360()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/60 hover:bg-gray-100 dark:hover:bg-[#0D2822] text-maximus-dark dark:text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-envelope-simple text-emerald-600 dark:text-emerald-400"></i>
+                        <span>Enviar Dossier VIP (n8n)</span>
+                    </button>
+
+                    <!-- Agendar Visita -->
+                    <button onclick="abrirModalAgendarVisitaDesdeFicha()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/60 hover:bg-gray-100 dark:hover:bg-[#0D2822] text-maximus-dark dark:text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-calendar-plus text-amber-500"></i>
+                        <span>Agendar Visita</span>
+                    </button>
+                </div>
+
+                <!-- Botón Registrar Cierre de Venta (70/30) -->
+                <button onclick="abrirCierreDesdeFicha360()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="ph-fill ph-seal-check text-sm"></i>
+                    <span>Registrar Cierre & Liquidación</span>
+                </button>
+            </div>
+
+            <!-- Contenido Scrollable con los 4 Bloques -->
+            <div class="p-5 sm:p-7 overflow-y-auto space-y-6 flex-1 text-xs">
+                <!-- Grid de Bloque 1 & 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Bloque 1: Perfil y Datos Personales -->
+                    <div class="bg-gray-50/70 dark:bg-[#071B17] rounded-2xl p-4 sm:p-5 border border-gray-200/60 dark:border-emerald-900/40 space-y-3.5">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                            <i class="ph-fill ph-user-circle text-base"></i>
+                            <span>Perfil & Contacto</span>
+                        </h4>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white dark:bg-[#0A1F1B] p-2.5 rounded-xl border border-gray-100 dark:border-emerald-900/30">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-0.5">Asesor Asignado</span>
+                                <strong id="ficha360-asesor-nombre" class="text-xs font-bold text-maximus-dark dark:text-white block truncate">José Guerrero</strong>
+                            </div>
+                            <div class="bg-white dark:bg-[#0A1F1B] p-2.5 rounded-xl border border-gray-100 dark:border-emerald-900/30">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-0.5">Fecha Registro</span>
+                                <strong id="ficha360-fecha-registro" class="text-xs font-bold text-maximus-dark dark:text-white block">15 Oct 2024</strong>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-[#0A1F1B] p-3 rounded-xl border border-gray-100 dark:border-emerald-900/30 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fase en Embudo</span>
+                                <select id="ficha360-select-etapa" onchange="cambiarEtapaClienteFicha(this.value)" class="px-2 py-1 rounded-lg bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300 outline-none cursor-pointer">
+                                    <option value="nuevo">1. Prospección / Nuevo</option>
+                                    <option value="contactado">2. Contactado / Calificación</option>
+                                    <option value="visita_agendada">3. Búsqueda / Visita Agendada</option>
+                                    <option value="en_negociacion">4. En Negociación / Propuesta</option>
+                                    <option value="en_tramite">5. En Trámite / Notaría</option>
+                                    <option value="cerrado">6. Cerrado / Ganado</option>
+                                </select>
+                            </div>
+                            <p id="ficha360-notas-generales" class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                                Notas generales del cliente...
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bloque 2: Criterios de Búsqueda y Presupuesto -->
+                    <div class="bg-gray-50/70 dark:bg-[#071B17] rounded-2xl p-4 sm:p-5 border border-gray-200/60 dark:border-emerald-900/40 space-y-3.5">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                            <i class="ph-fill ph-sliders-horizontal text-base"></i>
+                            <span>Criterios de Búsqueda & Presupuesto</span>
+                        </h4>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white dark:bg-[#0A1F1B] p-2.5 rounded-xl border border-gray-100 dark:border-emerald-900/30">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-0.5">Presupuesto Máximo</span>
+                                <strong id="ficha360-presupuesto" class="text-sm font-black text-emerald-700 dark:text-emerald-400 block">$280,000 USD</strong>
+                            </div>
+                            <div class="bg-white dark:bg-[#0A1F1B] p-2.5 rounded-xl border border-gray-100 dark:border-emerald-900/30">
+                                <span class="text-[10px] font-bold text-gray-400 block mb-0.5">Operación & Tipo</span>
+                                <strong id="ficha360-operacion-tipo" class="text-xs font-bold text-maximus-dark dark:text-white block capitalize">Compra · Casa</strong>
+                            </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-[#0A1F1B] p-3 rounded-xl border border-gray-100 dark:border-emerald-900/30 space-y-2">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 block mb-1 uppercase tracking-wider">Zonas de Interés</span>
+                                <div id="ficha360-zonas-container" class="flex flex-wrap gap-1.5">
+                                    <span class="px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">Urb. Guaparo</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 block mb-0.5 uppercase tracking-wider">Requisitos Indispensables</span>
+                                <p id="ficha360-requisitos" class="text-xs text-gray-600 dark:text-gray-300 font-medium">4 habs, piscina, planta eléctrica.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque 3: Matching Engine de Inmuebles Compatible -->
+                <div class="bg-gray-50/70 dark:bg-[#071B17] rounded-2xl p-4 sm:p-5 border border-gray-200/60 dark:border-emerald-900/40 space-y-3.5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                                <i class="ph-fill ph-sparkle text-amber-500 text-base"></i>
+                                <span>Matching Engine de Inmuebles Compatibles</span>
+                            </h4>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">Propiedades activas en inventario que cumplen el presupuesto y zona del cliente.</p>
+                        </div>
+                        <span id="ficha360-matching-count" class="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/70 text-emerald-800 dark:text-emerald-200 text-[10px] font-black">0 Propiedades</span>
+                    </div>
+
+                    <div id="ficha360-matching-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Bloque 4: Bitácora de Actividades & Timeline -->
+                <div class="bg-gray-50/70 dark:bg-[#071B17] rounded-2xl p-4 sm:p-5 border border-gray-200/60 dark:border-emerald-900/40 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                            <i class="ph-fill ph-clock-counter-clockwise text-base"></i>
+                            <span>Bitácora de Actividades & Cronología</span>
+                        </h4>
+                        <span class="text-[10px] font-bold text-gray-400">Actualizado en tiempo real</span>
+                    </div>
+
+                    <!-- Input Rápido para Nueva Nota -->
+                    <div class="bg-white dark:bg-[#0A1F1B] p-3 rounded-xl border border-gray-200/80 dark:border-emerald-900/40 space-y-2.5">
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <select id="crm-nueva-actividad-tipo" class="px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                                <option value="nota">📝 Nota Interna</option>
+                                <option value="llamada">📞 Llamada Telefónica</option>
+                                <option value="whatsapp">💬 WhatsApp Enviado</option>
+                                <option value="visita">📅 Visita Realizada</option>
+                                <option value="propuesta">🤝 Propuesta Presentada</option>
+                            </select>
+                            <input type="text" id="crm-nueva-actividad-texto" placeholder="Escribe el resultado de la llamada, nota o acuerdo comercial..." class="flex-1 px-3 py-2 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white placeholder-gray-400 outline-none focus:border-emerald-500">
+                            <button onclick="guardarNuevaActividadFicha360()" class="px-4 py-2 rounded-xl bg-maximus-dark hover:bg-emerald-900 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
+                                <i class="ph-bold ph-plus-circle"></i>
+                                <span>Agregar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timeline de Actividades -->
+                    <div id="ficha360-timeline-container" class="space-y-3">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="px-6 py-3 border-t border-gray-100 dark:border-emerald-900/40 bg-gray-50/80 dark:bg-[#071B17] flex justify-end">
+                <button onclick="cerrarModalFichaCliente360()" class="px-5 py-2 rounded-xl bg-gray-200 dark:bg-[#0E352C] hover:bg-gray-300 dark:hover:bg-[#14473c] text-gray-700 dark:text-gray-200 font-bold text-xs transition-colors cursor-pointer">
+                    Cerrar Ficha
+                </button>
+            </div>
         </div>
     </div>
 
 
+    <!-- 2. MODAL NUEVO / EDITAR CLIENTE CRM -->
+    <div id="modalNuevoClienteCRM" class="fixed inset-0 z-[125] hidden flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalNuevoClienteCRM()">
+        <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 to-emerald-50/30 dark:from-[#08221D] dark:to-[#071714] flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-2.5 py-0.5 rounded-full">
+                        CRM Inmobiliario MAXIMUS
+                    </span>
+                    <h3 id="modalNuevoClienteCRMTitulo" class="text-xl font-black text-maximus-dark dark:text-white mt-1">Registrar Nuevo Cliente</h3>
+                </div>
+                <button onclick="cerrarModalNuevoClienteCRM()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#0D2822] hover:bg-gray-200 dark:hover:bg-[#123830] text-gray-500 dark:text-gray-300 flex items-center justify-center transition-all cursor-pointer">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
 
+            <!-- Formulario Scrollable -->
+            <form id="form-nuevo-cliente-crm" onsubmit="event.preventDefault(); guardarClienteCRM();" class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+                <input type="hidden" id="crm-input-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Nombre Completo *</label>
+                        <input type="text" id="crm-input-nombre" required placeholder="Ej: Dr. Roberto Méndez" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Correo Electrónico *</label>
+                        <input type="email" id="crm-input-email" required placeholder="cliente@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Teléfono / WhatsApp *</label>
+                        <input type="text" id="crm-input-telefono" required placeholder="+58 424-1234567" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Interés / Temperatura *</label>
+                        <select id="crm-input-temperatura" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="caliente">🔥 Caliente (Listo para comprar)</option>
+                            <option value="tibio" selected>⚡ Tibio (Evaluando opciones)</option>
+                            <option value="frio">❄️ Frío (Prospección a futuro)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Origen del Lead</label>
+                        <select id="crm-input-origen" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="web">Página Web MAXIMUS</option>
+                            <option value="meta_ads">Meta Ads (Instagram/FB)</option>
+                            <option value="referido">Referido VIP</option>
+                            <option value="llamada">Llamada Directa</option>
+                            <option value="portal">Portal Inmobiliario</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Operación *</label>
+                        <select id="crm-input-operacion" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="compra">Compra</option>
+                            <option value="alquiler">Alquiler</option>
+                            <option value="venta">Venta (Captación)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Tipo de Inmueble</label>
+                        <select id="crm-input-tipo-inmueble" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="casa">Casa / Quinta</option>
+                            <option value="apartamento">Apartamento</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="local">Local Comercial</option>
+                            <option value="terreno">Terreno</option>
+                            <option value="oficina">Oficina</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Asesor Asignado *</label>
+                        <select id="crm-input-asesor" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="asesor-1">José Guerrero</option>
+                            <option value="asesor-2">Valeria Méndez</option>
+                            <option value="asesor-3">Carlos Santander</option>
+                            <option value="asesor-4">Andrea Colmenares</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Presupuesto Estimado ($ USD) *</label>
+                        <input type="number" id="crm-input-presupuesto" required placeholder="Ej: 250000" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Etapa Inicial en Embudo</label>
+                        <select id="crm-input-estatus" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="nuevo">1. Prospección / Nuevo</option>
+                            <option value="contactado">2. Contactado / Calificación</option>
+                            <option value="visita_agendada">3. Búsqueda / Visita Agendada</option>
+                            <option value="en_negociacion">4. En Negociación / Propuesta</option>
+                            <option value="en_tramite">5. En Trámite / Notaría</option>
+                            <option value="cerrado">6. Cerrado / Ganado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Zonas de Interés (Separadas por comas)</label>
+                    <input type="text" id="crm-input-zonas" placeholder="Ej: Pueblo Nuevo, Urb. Guaparo, Pirineos" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Requisitos Específicos & Criterios</label>
+                    <textarea id="crm-input-requisitos" rows="2" placeholder="Ej: Mínimo 4 habitaciones, piscina privada, planta eléctrica 100%..." class="w-full px-3.5 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Notas Comerciales & Bitácora Inicial</label>
+                    <textarea id="crm-input-notas" rows="2" placeholder="Detalles de la conversación inicial o requerimientos particulares..." class="w-full px-3.5 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div class="pt-3 border-t border-gray-100 dark:border-emerald-900/40 flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="cerrarModalNuevoClienteCRM()" class="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/60 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#0D2822] transition-colors cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-floppy-disk text-base"></i>
+                        <span>Guardar Cliente & Notificar n8n</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- 3. MODAL AGENDAR VISITA CRM -->
+    <div id="modalAgendarVisitaCRM" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalAgendarVisitaCRM()">
+        <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-lg w-full shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 to-amber-50/30 dark:from-[#08221D] dark:to-[#071714] flex items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-wider text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 px-2.5 py-0.5 rounded-full">
+                        Agenda Comercial
+                    </span>
+                    <h3 class="text-xl font-black text-maximus-dark dark:text-white mt-1">Agendar Visita a Inmueble</h3>
+                </div>
+                <button onclick="cerrarModalAgendarVisitaCRM()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#0D2822] hover:bg-gray-200 dark:hover:bg-[#123830] text-gray-500 dark:text-gray-300 flex items-center justify-center transition-all cursor-pointer">
+                    <i class="ph-bold ph-x text-base"></i>
+                </button>
+            </div>
+
+            <form id="form-agendar-visita-crm" onsubmit="event.preventDefault(); guardarCitaVisitaCRM();" class="p-6 space-y-4 text-xs">
+                <input type="hidden" id="cita-crm-lead-id">
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Cliente</label>
+                    <input type="text" id="cita-crm-cliente-nombre" readonly class="w-full px-3.5 py-2.5 rounded-xl bg-gray-100 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-gray-600 dark:text-gray-300 outline-none">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Inmueble a Visitar *</label>
+                    <select id="cita-crm-inmueble-select" required class="w-full px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                        <!-- Llenado dinámicamente con propiedades -->
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Fecha *</label>
+                        <input type="date" id="cita-crm-fecha" required class="w-full px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Hora *</label>
+                        <input type="time" id="cita-crm-hora" required value="10:00" class="w-full px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Punto de Encuentro / Instrucciones</label>
+                    <input type="text" id="cita-crm-lugar" placeholder="Ej: Directamente en la garita del urbanismo" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Notas Especiales</label>
+                    <textarea id="cita-crm-notas" rows="2" placeholder="Recordar llevar llaves auxiliares y ficha impresa..." class="w-full px-3.5 py-2 rounded-xl bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div class="pt-3 border-t border-gray-100 dark:border-emerald-900/40 flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="cerrarModalAgendarVisitaCRM()" class="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/60 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#0D2822] transition-colors cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-calendar-check text-base"></i>
+                        <span>Confirmar Cita & Notificar (n8n)</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         // ==========================================
@@ -5671,7 +6378,8 @@
                 'view-resumen', 'view-metricas', 'view-historico-asesores', 
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales'
+                'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales',
+                'view-mis-clientes'
             ];
 
             if (currentUserRole === 'cliente' && vistasRestringidasCliente.includes(targetId)) {
@@ -5758,6 +6466,9 @@
             }
             if (targetId === 'view-colecciones') {
                 if (typeof inicializarColeccionesVIP === 'function') inicializarColeccionesVIP();
+            }
+            if (targetId === 'view-mis-clientes') {
+                if (typeof inicializarMisClientesCRM === 'function') inicializarMisClientesCRM();
             }
             if (targetId === 'view-perfil') {
                 if (typeof cargarDatosVistaPerfil === 'function') cargarDatosVistaPerfil();
@@ -7742,6 +8453,1012 @@
                 (c.nota && c.nota.toLowerCase().includes(q))
             );
             renderColeccionesVIP(filtrados);
+        }
+
+        // ==========================================
+        // GESTIÓN COMERCIAL CRM & EMBUDO DE VENTAS (MIS CLIENTES)
+        // ==========================================
+        let crmLeadsList = [];
+        let crmCurrentViewMode = 'kanban';
+        let crmSelectedLeadId = null;
+
+        const CRM_ETAPAS_CONFIG = [
+            { id: 'nuevo', label: 'Prospección', color: 'blue', icon: 'ph-tray' },
+            { id: 'contactado', label: 'Contactado', color: 'purple', icon: 'ph-phone-call' },
+            { id: 'visita_agendada', label: 'Visita Agendada', color: 'amber', icon: 'ph-magnifying-glass' },
+            { id: 'en_negociacion', label: 'Negociación', color: 'orange', icon: 'ph-handshake' },
+            { id: 'en_tramite', label: 'Trámite Notaría', color: 'indigo', icon: 'ph-file-text' },
+            { id: 'cerrado', label: 'Cerrado / Ganado', color: 'emerald', icon: 'ph-trophy' }
+        ];
+
+        async function inicializarMisClientesCRM() {
+            try {
+                if (window.LeadService) {
+                    const res = await LeadService.getAll();
+                    if (res && res.data) {
+                        crmLeadsList = res.data;
+                    }
+                }
+            } catch (err) {
+                console.warn('Error al cargar leads desde LeadService:', err);
+                if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads)) {
+                    crmLeadsList = [...MOCK_DATA.leads];
+                }
+            }
+
+            popularSelectAsesoresCRM();
+            popularSelectInmueblesCitaCRM();
+            filtrarCRMEnVivo();
+        }
+
+        function popularSelectAsesoresCRM() {
+            const selectFiltro = document.getElementById('crm-filtro-asesor');
+            const selectModal = document.getElementById('crm-input-asesor');
+            const asesores = (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA))
+                ? ASESORES_MAXIMUS_DATA
+                : [
+                    { id: 'asesor-1', nombre: 'José Guerrero' },
+                    { id: 'asesor-2', nombre: 'Valeria Méndez' },
+                    { id: 'asesor-3', nombre: 'Carlos Santander' },
+                    { id: 'asesor-4', nombre: 'Andrea Colmenares' }
+                ];
+
+            if (selectFiltro) {
+                const currentVal = selectFiltro.value || 'todos';
+                selectFiltro.innerHTML = '<option value="todos">Todos los Asesores</option>';
+                asesores.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = a.nombre;
+                    selectFiltro.appendChild(opt);
+                });
+                selectFiltro.value = currentVal;
+            }
+
+            if (selectModal) {
+                selectModal.innerHTML = '';
+                asesores.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = a.nombre;
+                    selectModal.appendChild(opt);
+                });
+            }
+        }
+
+        function popularSelectInmueblesCitaCRM() {
+            const select = document.getElementById('cita-crm-inmueble-select');
+            if (!select) return;
+
+            select.innerHTML = '';
+            if (typeof INMUEBLES_DETALLE_DATA !== 'undefined') {
+                Object.values(INMUEBLES_DETALLE_DATA).forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `${p.codigo || ''} - ${p.titulo} (${p.precio} ${p.moneda || 'USD'})`;
+                    select.appendChild(opt);
+                });
+            } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
+                MOCK_DATA.inmuebles.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `${p.titulo} ($${p.precio} ${p.moneda || 'USD'})`;
+                    select.appendChild(opt);
+                });
+            }
+        }
+
+        function setCRMViewMode(mode) {
+            crmCurrentViewMode = mode;
+            const btnKanban = document.getElementById('crm-view-btn-kanban');
+            const btnTabla = document.getElementById('crm-view-btn-tabla');
+            const vKanban = document.getElementById('crm-vista-kanban');
+            const vTabla = document.getElementById('crm-vista-tabla');
+
+            if (mode === 'kanban') {
+                btnKanban.className = 'px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 bg-white dark:bg-[#0E352C] text-emerald-800 dark:text-emerald-200 shadow-sm cursor-pointer';
+                btnTabla.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-maximus-dark dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer';
+                if (vKanban) vKanban.classList.remove('hidden');
+                if (vTabla) vTabla.classList.add('hidden');
+            } else {
+                btnTabla.className = 'px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 bg-white dark:bg-[#0E352C] text-emerald-800 dark:text-emerald-200 shadow-sm cursor-pointer';
+                btnKanban.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-maximus-dark dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer';
+                if (vKanban) vKanban.classList.add('hidden');
+                if (vTabla) vTabla.classList.remove('hidden');
+            }
+
+            filtrarCRMEnVivo();
+        }
+
+        function formatMontoUSD(num) {
+            const val = Number(num) || 0;
+            return '$' + val.toLocaleString('en-US') + ' USD';
+        }
+
+        function getBadgeTemperaturaHTML(temp) {
+            const t = (temp || '').toLowerCase();
+            if (t === 'caliente') {
+                return '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/80 dark:border-rose-900/50">🔥 Caliente</span>';
+            }
+            if (t === 'tibio') {
+                return '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/80 dark:border-amber-900/50">⚡ Tibio</span>';
+            }
+            return '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200/80 dark:border-sky-900/50">❄️ Frío</span>';
+        }
+
+        function filtrarCRMEnVivo() {
+            const txtBusqueda = (document.getElementById('crm-filtro-busqueda')?.value || '').toLowerCase().trim();
+            const fAsesor = document.getElementById('crm-filtro-asesor')?.value || 'todos';
+            const fTemp = document.getElementById('crm-filtro-temperatura')?.value || 'todos';
+            const fOperacion = document.getElementById('crm-filtro-operacion')?.value || 'todos';
+
+            const leadsFiltrados = crmLeadsList.filter(l => {
+                if (fAsesor !== 'todos' && l.asesor_id !== fAsesor) return false;
+                if (fTemp !== 'todos' && l.temperatura !== fTemp) return false;
+                if (fOperacion !== 'todos' && l.operacion !== fOperacion) return false;
+                if (txtBusqueda) {
+                    const coincideNombre = (l.nombre || '').toLowerCase().includes(txtBusqueda);
+                    const coincideTel = (l.telefono || '').toLowerCase().includes(txtBusqueda);
+                    const coincideEmail = (l.email || '').toLowerCase().includes(txtBusqueda);
+                    const coincideInmueble = (l.inmueble_interes_titulo || '').toLowerCase().includes(txtBusqueda);
+                    if (!coincideNombre && !coincideTel && !coincideEmail && !coincideInmueble) return false;
+                }
+                return true;
+            });
+
+            // Actualizar 4 KPIs
+            actualizarKPIsCRM(leadsFiltrados);
+
+            // Renderizar la vista activa
+            if (crmCurrentViewMode === 'kanban') {
+                renderCRMTableroKanban(leadsFiltrados);
+            } else {
+                renderCRMTablaLista(leadsFiltrados);
+            }
+        }
+
+        function actualizarKPIsCRM(leads) {
+            const total = leads.length;
+            const activos = leads.filter(l => l.temperatura === 'caliente' || l.temperatura === 'tibio').length;
+            const avanzadas = leads.filter(l => ['visita_agendada', 'en_negociacion', 'en_tramite'].includes(l.estatus)).length;
+            const ratio = total > 0 ? Math.round((avanzadas / total) * 100) : 0;
+            const volumenTotal = leads
+                .filter(l => l.estatus !== 'cerrado')
+                .reduce((acc, curr) => acc + (Number(curr.presupuesto) || Number(curr.presupuesto_max) || 0), 0);
+
+            const elTotal = document.getElementById('crm-kpi-total');
+            const elActivos = document.getElementById('crm-kpi-activos');
+            const elRatio = document.getElementById('crm-kpi-ratio');
+            const elVolumen = document.getElementById('crm-kpi-volumen');
+
+            if (elTotal) elTotal.textContent = total;
+            if (elActivos) elActivos.textContent = activos;
+            if (elRatio) elRatio.textContent = ratio + '%';
+            if (elVolumen) elVolumen.textContent = '$' + volumenTotal.toLocaleString('en-US');
+        }
+
+        function renderCRMTableroKanban(leads) {
+            CRM_ETAPAS_CONFIG.forEach(etapa => {
+                const leadsEtapa = leads.filter(l => l.estatus === etapa.id);
+                const sumMonto = leadsEtapa.reduce((acc, l) => acc + (Number(l.presupuesto) || 0), 0);
+
+                const countEl = document.getElementById(`col-count-${etapa.id}`);
+                const montoEl = document.getElementById(`col-monto-${etapa.id}`);
+                const cardsContainer = document.getElementById(`col-cards-${etapa.id}`);
+
+                if (countEl) countEl.textContent = leadsEtapa.length;
+                if (montoEl) montoEl.textContent = '$' + sumMonto.toLocaleString('en-US');
+                if (!cardsContainer) return;
+
+                cardsContainer.innerHTML = '';
+
+                if (leadsEtapa.length === 0) {
+                    cardsContainer.innerHTML = `
+                        <div class="p-4 rounded-xl border border-dashed border-gray-200 dark:border-emerald-900/40 text-center text-gray-400 dark:text-gray-500 text-[11px] font-bold">
+                            Sin clientes en esta etapa
+                        </div>
+                    `;
+                    return;
+                }
+
+                leadsEtapa.forEach(lead => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white dark:bg-[#0A1F1B] rounded-2xl p-3.5 border border-gray-200/80 dark:border-emerald-900/40 shadow-xs hover:shadow-md transition-all duration-200 space-y-2.5 group';
+                    
+                    const selectorEtapasHtml = `
+                        <select onchange="moverLeadEtapa('${lead.id}', this.value)" class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-lg bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-gray-600 dark:text-gray-300 outline-none cursor-pointer" title="Mover a otra etapa">
+                            ${CRM_ETAPAS_CONFIG.map(e => `
+                                <option value="${e.id}" ${e.id === lead.estatus ? 'selected' : ''}>
+                                    ${e.label}
+                                </option>
+                            `).join('')}
+                        </select>
+                    `;
+
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-1.5">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                ${getBadgeTemperaturaHTML(lead.temperatura)}
+                                <span class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-100 dark:bg-emerald-950/50 text-gray-600 dark:text-emerald-300">
+                                    ${lead.operacion || 'Compra'}
+                                </span>
+                            </div>
+                            ${selectorEtapasHtml}
+                        </div>
+
+                        <div>
+                            <h4 onclick="abrirModalFichaCliente360('${lead.id}')" class="font-extrabold text-xs text-maximus-dark dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors cursor-pointer line-clamp-1" title="${lead.nombre}">
+                                ${lead.nombre}
+                            </h4>
+                            <p class="text-[11px] font-black text-emerald-700 dark:text-emerald-400 mt-0.5">
+                                ${formatMontoUSD(lead.presupuesto)}
+                            </p>
+                        </div>
+
+                        <div class="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1 flex items-center gap-1">
+                            <i class="ph-fill ph-house-line text-emerald-600"></i>
+                            <span class="truncate">${lead.inmueble_interes_titulo || (lead.zonas_interes && lead.zonas_interes[0]) || 'Interés general'}</span>
+                        </div>
+
+                        <div class="pt-2 border-t border-gray-100 dark:border-emerald-900/30 flex items-center justify-between text-[10px]">
+                            <div class="flex items-center gap-1.5 text-gray-400 truncate max-w-[90px]" title="${lead.asesor_nombre}">
+                                <i class="ph-bold ph-user text-xs"></i>
+                                <span class="truncate font-semibold">${lead.asesor_nombre ? lead.asesor_nombre.split(' ')[0] : 'Asesor'}</span>
+                            </div>
+
+                            <div class="flex items-center gap-1">
+                                <button onclick="contactarClienteWhatsApp('${lead.id}')" class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-500 hover:text-white text-emerald-600 dark:text-emerald-300 flex items-center justify-center transition-colors cursor-pointer" title="WhatsApp Directo">
+                                    <i class="ph-fill ph-whatsapp-logo text-xs"></i>
+                                </button>
+                                <a href="tel:${lead.telefono}" class="w-7 h-7 rounded-lg bg-gray-100 dark:bg-[#071714] hover:bg-gray-200 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-colors" title="Llamar">
+                                    <i class="ph-bold ph-phone text-xs"></i>
+                                </a>
+                                <button onclick="abrirModalFichaCliente360('${lead.id}')" class="px-2 py-1 rounded-lg bg-maximus-dark hover:bg-emerald-900 text-white font-extrabold text-[10px] flex items-center gap-1 transition-colors cursor-pointer" title="Ver Ficha 360°">
+                                    <span>360°</span>
+                                    <i class="ph-bold ph-arrow-right text-[9px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    cardsContainer.appendChild(card);
+                });
+            });
+        }
+
+        function renderCRMTablaLista(leads) {
+            const tbody = document.getElementById('crm-tabla-leads-tbody');
+            const emptyEl = document.getElementById('crm-tabla-empty');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            if (leads.length === 0) {
+                if (emptyEl) emptyEl.classList.remove('hidden');
+                return;
+            }
+            if (emptyEl) emptyEl.classList.add('hidden');
+
+            leads.forEach(lead => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50/80 dark:hover:bg-[#071F1A] transition-colors';
+
+                const ultimaAct = (lead.actividades && lead.actividades.length > 0)
+                    ? lead.actividades[0].titulo
+                    : 'Registro de cliente';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 text-white font-black text-xs flex items-center justify-center shrink-0">
+                                ${(lead.nombre || 'C').charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <h4 onclick="abrirModalFichaCliente360('${lead.id}')" class="font-extrabold text-xs text-maximus-dark dark:text-white hover:text-emerald-600 cursor-pointer line-clamp-1">
+                                    ${lead.nombre}
+                                </h4>
+                                <div class="text-[10px] text-gray-400 flex items-center gap-2 mt-0.5">
+                                    <span>${lead.telefono || 'Sin teléfono'}</span>
+                                    <span>•</span>
+                                    <span>${lead.email || 'Sin correo'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <select onchange="moverLeadEtapa('${lead.id}', this.value)" class="text-[11px] font-bold px-2 py-1 rounded-lg bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-gray-700 dark:text-gray-200 outline-none cursor-pointer">
+                            ${CRM_ETAPAS_CONFIG.map(e => `
+                                <option value="${e.id}" ${e.id === lead.estatus ? 'selected' : ''}>
+                                    ${e.label}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </td>
+                    <td class="py-3 px-4">
+                        ${getBadgeTemperaturaHTML(lead.temperatura)}
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="font-black text-emerald-700 dark:text-emerald-400 block">${formatMontoUSD(lead.presupuesto)}</span>
+                        <span class="text-[10px] text-gray-400 capitalize">${lead.operacion || 'compra'} · ${lead.tipo_inmueble || 'inmueble'}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="font-bold text-gray-700 dark:text-gray-200">${lead.asesor_nombre || 'Asesor'}</span>
+                    </td>
+                    <td class="py-3 px-4 text-gray-500 dark:text-gray-400 text-[11px]">
+                        <span class="line-clamp-1 font-medium">${ultimaAct}</span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button onclick="contactarClienteWhatsApp('${lead.id}')" class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-500 hover:text-white text-emerald-600 dark:text-emerald-300 transition-colors cursor-pointer" title="WhatsApp">
+                                <i class="ph-fill ph-whatsapp-logo text-sm"></i>
+                            </button>
+                            <button onclick="abrirModalFichaCliente360('${lead.id}')" class="px-2.5 py-1 rounded-lg bg-maximus-dark hover:bg-emerald-900 text-white font-extrabold text-[10px] transition-colors cursor-pointer">
+                                Ficha 360°
+                            </button>
+                            <button onclick="eliminarClienteCRM('${lead.id}')" class="p-1.5 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-50 transition-colors" title="Eliminar cliente">
+                                <i class="ph-bold ph-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function moverLeadEtapa(leadId, nuevoEstatus) {
+            try {
+                if (window.LeadService) {
+                    await LeadService.updateEstatus(leadId, nuevoEstatus);
+                    const res = await LeadService.getAll();
+                    if (res && res.data) crmLeadsList = res.data;
+                } else {
+                    const lead = crmLeadsList.find(l => l.id === leadId);
+                    if (lead) lead.estatus = nuevoEstatus;
+                }
+                const etapaObj = CRM_ETAPAS_CONFIG.find(e => e.id === nuevoEstatus);
+                mostrarToastNotificacion(`🔄 Cliente movido a la etapa "${etapaObj ? etapaObj.label : nuevoEstatus}"`);
+                filtrarCRMEnVivo();
+
+                // Si está abierta la Ficha 360° del mismo cliente, actualizar selector
+                if (crmSelectedLeadId === leadId) {
+                    const select = document.getElementById('ficha360-select-etapa');
+                    if (select) select.value = nuevoEstatus;
+                }
+            } catch (err) {
+                console.error('Error al mover etapa:', err);
+                mostrarToastNotificacion('⚠️ Error al actualizar etapa');
+            }
+        }
+
+        function limpiarFiltrosCRM() {
+            const inputBusqueda = document.getElementById('crm-filtro-busqueda');
+            const selectAsesor = document.getElementById('crm-filtro-asesor');
+            const selectTemp = document.getElementById('crm-filtro-temperatura');
+            const selectOp = document.getElementById('crm-filtro-operacion');
+
+            if (inputBusqueda) inputBusqueda.value = '';
+            if (selectAsesor) selectAsesor.value = 'todos';
+            if (selectTemp) selectTemp.value = 'todos';
+            if (selectOp) selectOp.value = 'todos';
+
+            filtrarCRMEnVivo();
+            mostrarToastNotificacion('Filtros restablecidos');
+        }
+
+        function contactarClienteWhatsApp(leadId) {
+            const lead = crmLeadsList.find(l => l.id === leadId);
+            if (!lead) return;
+            const tel = (lead.telefono || '').replace(/[^0-9]/g, '');
+            const msg = encodeURIComponent(`Hola ${lead.nombre}, te saluda ${lead.asesor_nombre || 'tu asesor de MAXIMUS Inmobiliaria'}. Me comunico contigo para darte seguimiento exclusivo respecto a tus opciones inmobiliarias en San Cristóbal.`);
+            const url = tel ? `https://api.whatsapp.com/send?phone=${tel}&text=${msg}` : `https://api.whatsapp.com/send?text=${msg}`;
+            window.open(url, '_blank');
+        }
+
+        // ==========================================
+        // FICHA 360° DEL CLIENTE (DRAWER / MODAL)
+        // ==========================================
+        async function abrirModalFichaCliente360(leadId) {
+            let lead = crmLeadsList.find(l => l.id === leadId);
+            if (!lead && window.LeadService) {
+                const res = await LeadService.getById(leadId);
+                if (res && res.data) lead = res.data;
+            }
+            if (!lead) return;
+
+            crmSelectedLeadId = leadId;
+
+            // Header Ficha 360°
+            document.getElementById('ficha360-avatar').textContent = (lead.nombre || 'CL').slice(0, 2).toUpperCase();
+            document.getElementById('ficha360-nombre').textContent = lead.nombre;
+            document.getElementById('ficha360-telefono').innerHTML = `<i class="ph-bold ph-phone text-emerald-600"></i> ${lead.telefono || 'Sin teléfono'}`;
+            document.getElementById('ficha360-email').innerHTML = `<i class="ph-bold ph-envelope text-emerald-600"></i> ${lead.email || 'Sin correo'}`;
+            document.getElementById('ficha360-origen').textContent = lead.origen || 'Web';
+            
+            const badgeTemp = document.getElementById('ficha360-badge-temp');
+            if (badgeTemp) {
+                badgeTemp.outerHTML = `<div id="ficha360-badge-temp">${getBadgeTemperaturaHTML(lead.temperatura)}</div>`;
+            }
+            const selectTemp = document.getElementById('ficha360-select-temp');
+            if (selectTemp) selectTemp.value = lead.temperatura || 'caliente';
+
+            // Bloque 1: Perfil
+            document.getElementById('ficha360-asesor-nombre').textContent = lead.asesor_nombre || 'Asesor MAXIMUS';
+            const fReg = lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente';
+            document.getElementById('ficha360-fecha-registro').textContent = fReg;
+            
+            const selectEtapa = document.getElementById('ficha360-select-etapa');
+            if (selectEtapa) selectEtapa.value = lead.estatus || 'nuevo';
+            document.getElementById('ficha360-notas-generales').textContent = lead.notas || 'Sin notas registradas aún.';
+
+            // Bloque 2: Criterios
+            document.getElementById('ficha360-presupuesto').textContent = formatMontoUSD(lead.presupuesto);
+            document.getElementById('ficha360-operacion-tipo').textContent = `${lead.operacion || 'Compra'} · ${lead.tipo_inmueble || 'Inmueble'}`;
+            
+            const zonasContainer = document.getElementById('ficha360-zonas-container');
+            if (zonasContainer) {
+                zonasContainer.innerHTML = '';
+                const zonas = Array.isArray(lead.zonas_interes) ? lead.zonas_interes : (lead.zonas_interes ? [lead.zonas_interes] : ['San Cristóbal']);
+                zonas.forEach(z => {
+                    const tag = document.createElement('span');
+                    tag.className = 'px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold border border-emerald-200/60 dark:border-emerald-800/40';
+                    tag.textContent = z;
+                    zonasContainer.appendChild(tag);
+                });
+            }
+            document.getElementById('ficha360-requisitos').textContent = lead.requisitos || 'No especificados.';
+
+            // Bloque 3: Matching Engine
+            renderMatchingEngineFicha(lead);
+
+            // Bloque 4: Bitácora & Timeline
+            renderTimelineBitacoraFicha(lead);
+
+            const modal = document.getElementById('modalFichaCliente360');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function cerrarModalFichaCliente360() {
+            const modal = document.getElementById('modalFichaCliente360');
+            if (modal) modal.classList.add('hidden');
+            const menuWA = document.getElementById('menuPlantillasWA');
+            if (menuWA) menuWA.classList.add('hidden');
+        }
+
+        function renderMatchingEngineFicha(lead) {
+            const container = document.getElementById('ficha360-matching-container');
+            const counter = document.getElementById('ficha360-matching-count');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            let properties = [];
+            if (typeof INMUEBLES_DETALLE_DATA !== 'undefined') {
+                properties = Object.values(INMUEBLES_DETALLE_DATA);
+            } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
+                properties = MOCK_DATA.inmuebles;
+            }
+
+            const pTarget = Number(lead.presupuesto) || 200000;
+            const zonasTarget = (Array.isArray(lead.zonas_interes) ? lead.zonas_interes : [lead.zonas_interes || '']).map(z => (z || '').toLowerCase());
+            const tipoTarget = (lead.tipo_inmueble || '').toLowerCase();
+
+            // Calcular afinidad
+            const scoredProps = properties.map(p => {
+                let score = 60; // Base score
+                const pPrice = Number(p.precio) || 0;
+                
+                // Afinidad por precio
+                const diff = Math.abs(pPrice - pTarget) / (pTarget || 1);
+                if (diff < 0.1) score += 25;
+                else if (diff < 0.25) score += 15;
+                else if (diff < 0.4) score += 5;
+
+                // Afinidad por tipo
+                if (p.tipo && tipoTarget && p.tipo.toLowerCase().includes(tipoTarget)) {
+                    score += 10;
+                }
+
+                // Afinidad por zona
+                const pUbic = (p.ubicacion || '').toLowerCase();
+                const coincideZona = zonasTarget.some(z => z && pUbic.includes(z));
+                if (coincideZona) score += 10;
+
+                score = Math.min(score, 99);
+                return { prop: p, score };
+            });
+
+            scoredProps.sort((a, b) => b.score - a.score);
+            const topMatches = scoredProps.slice(0, 3);
+
+            if (counter) counter.textContent = `${topMatches.length} Compatibles`;
+
+            if (topMatches.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400">No se encontraron propiedades compatibles en inventario.</p>';
+                return;
+            }
+
+            topMatches.forEach(({ prop, score }) => {
+                const img = (prop.fotos && prop.fotos[0]) || prop.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80';
+                const item = document.createElement('div');
+                item.className = 'bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/80 dark:border-emerald-900/40 p-3 flex flex-col justify-between shadow-xs hover:shadow-md transition-all space-y-2';
+                item.innerHTML = `
+                    <div class="relative h-28 rounded-xl overflow-hidden bg-gray-100">
+                        <img src="${img}" class="w-full h-full object-cover">
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white text-[9px] font-black uppercase">
+                            ${prop.codigo || '#MAX'}
+                        </span>
+                        <span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-black shadow-sm">
+                            ⭐ ${score}% Match
+                        </span>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-0.5">
+                            <span class="font-black text-emerald-700 dark:text-emerald-400">$${(Number(prop.precio) || 0).toLocaleString()} USD</span>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase">${prop.operacion || 'Venta'}</span>
+                        </div>
+                        <h5 class="font-extrabold text-xs text-maximus-dark dark:text-white line-clamp-1" title="${prop.titulo}">
+                            ${prop.titulo}
+                        </h5>
+                        <p class="text-[10px] text-gray-400 line-clamp-1 mt-0.5">
+                            <i class="ph-fill ph-map-pin text-emerald-600"></i> ${prop.ubicacion}
+                        </p>
+                    </div>
+
+                    <div class="pt-2 border-t border-gray-100 dark:border-emerald-900/30 flex items-center justify-between gap-1.5">
+                        <button onclick="abrirDetalleInmuebleAirbnb('${prop.id}')" class="px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-[#071714] hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-bold text-[10px] transition-colors cursor-pointer">
+                            Ver
+                        </button>
+                        <button onclick="enviarFichaVipDirectaCRM('${lead.id}', '${prop.id}')" class="flex-1 py-1.5 px-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-2xs transition-all cursor-pointer">
+                            <i class="ph-bold ph-paper-plane-tilt"></i>
+                            <span>Enviar Ficha VIP</span>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function renderTimelineBitacoraFicha(lead) {
+            const container = document.getElementById('ficha360-timeline-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+            const actividades = (lead.actividades && Array.isArray(lead.actividades)) ? lead.actividades : [];
+
+            if (actividades.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic">No hay actividades registradas en la bitácora aún.</p>';
+                return;
+            }
+
+            const iconosTipo = {
+                whatsapp: { icon: 'ph-whatsapp-logo', color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60' },
+                llamada: { icon: 'ph-phone-call', color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/60' },
+                cita: { icon: 'ph-calendar-check', color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/60' },
+                visita: { icon: 'ph-house-line', color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/60' },
+                propuesta: { icon: 'ph-handshake', color: 'text-orange-600 bg-orange-50 dark:bg-orange-950/60' },
+                email: { icon: 'ph-envelope-simple', color: 'text-teal-600 bg-teal-50 dark:bg-teal-950/60' },
+                nota: { icon: 'ph-note-pencil', color: 'text-gray-600 bg-gray-100 dark:bg-gray-800' }
+            };
+
+            actividades.forEach(act => {
+                const conf = iconosTipo[act.tipo] || iconosTipo.nota;
+                const fechaStr = act.fecha ? new Date(act.fecha).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Reciente';
+                
+                const item = document.createElement('div');
+                item.className = 'flex items-start gap-3 p-3 rounded-xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-900/30';
+                item.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl ${conf.color} flex items-center justify-center text-sm font-bold shrink-0">
+                        <i class="ph-bold ${conf.icon}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <h5 class="font-extrabold text-xs text-maximus-dark dark:text-white truncate">${act.titulo || 'Actividad Comercial'}</h5>
+                            <span class="text-[10px] font-bold text-gray-400 shrink-0">${fechaStr}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed font-medium">
+                            ${act.descripcion || ''}
+                        </p>
+                        <span class="text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block mt-1">
+                            ${act.autor || 'Asesor CRM'}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function guardarNuevaActividadFicha360() {
+            if (!crmSelectedLeadId) return;
+            const inputTexto = document.getElementById('crm-nueva-actividad-texto');
+            const selectTipo = document.getElementById('crm-nueva-actividad-tipo');
+            const texto = (inputTexto?.value || '').trim();
+            if (!texto) {
+                alert('Por favor escribe el contenido de la nota o actividad.');
+                return;
+            }
+
+            const tipo = selectTipo?.value || 'nota';
+            const titulos = {
+                nota: 'Nota Interna Registrada',
+                llamada: 'Llamada Comercial Realizada',
+                whatsapp: 'Interacción vía WhatsApp',
+                visita: 'Visita Guiada Coordinada',
+                propuesta: 'Propuesta / Contraoferta Formal'
+            };
+
+            const actividad = {
+                tipo,
+                titulo: titulos[tipo] || 'Actividad Comercial',
+                descripcion: texto,
+                autor: 'José Guerrero (Asesor)'
+            };
+
+            if (window.LeadService) {
+                await LeadService.addActividad(crmSelectedLeadId, actividad);
+                const res = await LeadService.getById(crmSelectedLeadId);
+                if (res && res.data) {
+                    renderTimelineBitacoraFicha(res.data);
+                    // Actualizar en memoria
+                    const idx = crmLeadsList.findIndex(l => l.id === crmSelectedLeadId);
+                    if (idx !== -1) crmLeadsList[idx] = res.data;
+                }
+            }
+
+            inputTexto.value = '';
+            mostrarToastNotificacion('📝 Actividad guardada en bitácora');
+        }
+
+        async function cambiarTemperaturaClienteFicha(nuevaTemp) {
+            if (!crmSelectedLeadId) return;
+            if (window.LeadService) {
+                await LeadService.updateDetalles(crmSelectedLeadId, { temperatura: nuevaTemp });
+                const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
+                if (lead) lead.temperatura = nuevaTemp;
+            }
+            const badgeTemp = document.getElementById('ficha360-badge-temp');
+            if (badgeTemp) {
+                badgeTemp.outerHTML = `<div id="ficha360-badge-temp">${getBadgeTemperaturaHTML(nuevaTemp)}</div>`;
+            }
+            filtrarCRMEnVivo();
+            mostrarToastNotificacion(`Nivel de interés actualizado a: ${nuevaTemp.toUpperCase()}`);
+        }
+
+        async function cambiarEtapaClienteFicha(nuevaEtapa) {
+            if (!crmSelectedLeadId) return;
+            await moverLeadEtapa(crmSelectedLeadId, nuevaEtapa);
+        }
+
+        function toggleMenuPlantillasWA() {
+            const menu = document.getElementById('menuPlantillasWA');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        async function enviarPlantillaWA(tipo) {
+            const menu = document.getElementById('menuPlantillasWA');
+            if (menu) menu.classList.add('hidden');
+
+            const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
+            if (!lead) return;
+
+            const tel = (lead.telefono || '').replace(/[^0-9]/g, '');
+            const asesor = lead.asesor_nombre || 'Asesor MAXIMUS';
+            let texto = '';
+
+            switch (tipo) {
+                case 1:
+                    texto = `Estimado(a) ${lead.nombre}, es un placer saludarte. Te contacta ${asesor} de MAXIMUS Inmobiliaria. Hemos recibido tu interés en propiedades exclusivas en San Cristóbal y estamos a tu entera disposición para asesorarte con la máxima discreción y excelencia.`;
+                    break;
+                case 2:
+                    texto = `Hola ${lead.nombre}, te escribe ${asesor} de MAXIMUS. Hemos seleccionado un portafolio de propiedades que se adaptan con precisión a tu presupuesto de ${formatMontoUSD(lead.presupuesto)} y requerimientos. ¿En qué momento tendrías unos minutos para que revisemos las mejores opciones?`;
+                    break;
+                case 3:
+                    texto = `Hola ${lead.nombre}, te confirmo los detalles de la visita guiada que coordinamos para conocer la propiedad de tu interés en San Cristóbal. Nuestro equipo estará esperándote puntualmente para ofrecerte el recorrido VIP.`;
+                    break;
+                case 4:
+                    texto = `Estimado(a) ${lead.nombre}, te escribe ${asesor} de MAXIMUS para hacer seguimiento al estado de la propuesta comercial presentada. Estamos listos para acompañarte en la fase de estructuración del documento y firmas en notaría.`;
+                    break;
+            }
+
+            // Registrar actividad en bitácora
+            if (window.LeadService) {
+                await LeadService.addActividad(lead.id, {
+                    tipo: 'whatsapp',
+                    titulo: `Plantilla WA #${tipo} Enviada`,
+                    descripcion: `Se disparó plantilla personalizada al WhatsApp ${lead.telefono}.`,
+                    autor: asesor
+                });
+                const updated = await LeadService.getById(lead.id);
+                if (updated && updated.data) renderTimelineBitacoraFicha(updated.data);
+            }
+
+            const url = tel ? `https://api.whatsapp.com/send?phone=${tel}&text=${encodeURIComponent(texto)}` : `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
+            mostrarToastNotificacion('💬 Mensaje personalizado preparado para WhatsApp');
+        }
+
+        async function enviarDossierDesdeFicha360() {
+            const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
+            if (!lead) return;
+
+            if (typeof N8nService !== 'undefined') {
+                await N8nService.enviarDossierVip({
+                    cliente: lead.nombre,
+                    cliente_email: lead.email,
+                    telefono: lead.telefono,
+                    titulo: `Portafolio Exclusivo para ${lead.nombre}`,
+                    nota: `Selección curada para presupuesto ${formatMontoUSD(lead.presupuesto)}.`,
+                    asesor: lead.asesor_nombre || 'Asesor MAXIMUS'
+                });
+            }
+
+            if (window.LeadService) {
+                await LeadService.addActividad(lead.id, {
+                    tipo: 'email',
+                    titulo: 'Dossier VIP Enviado vía n8n',
+                    descripcion: `Se disparó la automatización de correo VIP con la colección curada al correo ${lead.email}.`,
+                    autor: lead.asesor_nombre || 'Asesor CRM'
+                });
+                const updated = await LeadService.getById(lead.id);
+                if (updated && updated.data) renderTimelineBitacoraFicha(updated.data);
+            }
+
+            mostrarToastNotificacion(`📧 Dossier VIP enviado con éxito a ${lead.email} vía n8n`);
+        }
+
+        function abrirModalAgendarVisitaDesdeFicha() {
+            const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
+            if (!lead) return;
+
+            document.getElementById('cita-crm-lead-id').value = lead.id;
+            document.getElementById('cita-crm-cliente-nombre').value = `${lead.nombre} (${lead.telefono || ''})`;
+            document.getElementById('cita-crm-fecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('cita-crm-lugar').value = (lead.zonas_interes && lead.zonas_interes[0]) ? `Inmueble en ${lead.zonas_interes[0]}` : 'Urb. Guaparo';
+            document.getElementById('cita-crm-notas').value = `Visita coordinada con ${lead.nombre}.`;
+
+            const modal = document.getElementById('modalAgendarVisitaCRM');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function cerrarModalAgendarVisitaCRM() {
+            const modal = document.getElementById('modalAgendarVisitaCRM');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function guardarCitaVisitaCRM() {
+            const leadId = document.getElementById('cita-crm-lead-id').value;
+            const inmuebleId = document.getElementById('cita-crm-inmueble-select').value;
+            const fecha = document.getElementById('cita-crm-fecha').value;
+            const hora = document.getElementById('cita-crm-hora').value;
+            const lugar = document.getElementById('cita-crm-lugar').value;
+            const notas = document.getElementById('cita-crm-notas').value;
+
+            const lead = crmLeadsList.find(l => l.id === leadId);
+            let inmuebleTitulo = 'Propiedad MAXIMUS';
+            if (typeof INMUEBLES_DETALLE_DATA !== 'undefined' && INMUEBLES_DETALLE_DATA[inmuebleId]) {
+                inmuebleTitulo = INMUEBLES_DETALLE_DATA[inmuebleId].titulo;
+            }
+
+            const citaData = {
+                titulo: `Visita Guiada: ${inmuebleTitulo}`,
+                lead_id: leadId,
+                cliente_nombre: lead ? lead.nombre : 'Cliente',
+                cliente_email: lead ? lead.email : '',
+                cliente_telefono: lead ? lead.telefono : '',
+                inmueble_id: inmuebleId,
+                inmueble_titulo: inmuebleTitulo,
+                fecha,
+                hora,
+                ubicacion: lugar,
+                notas: `${lugar} - ${notas}`,
+                asesor_nombre: lead ? lead.asesor_nombre : 'Asesor MAXIMUS'
+            };
+
+            if (window.CitaService) {
+                await CitaService.create(citaData);
+            }
+
+            if (window.LeadService && leadId) {
+                await LeadService.addActividad(leadId, {
+                    tipo: 'cita',
+                    titulo: 'Visita Agendada a Propiedad',
+                    descripcion: `Cita coordinada para el ${fecha} a las ${hora}. Inmueble: ${inmuebleTitulo}. Punto de encuentro: ${lugar}`,
+                    autor: lead ? lead.asesor_nombre : 'Asesor'
+                });
+                // Actualizar estatus a visita_agendada
+                await LeadService.updateEstatus(leadId, 'visita_agendada');
+            }
+
+            cerrarModalAgendarVisitaCRM();
+            mostrarToastNotificacion(`📅 Cita agendada para el ${fecha} ${hora} y notificada en n8n`);
+            
+            // Recargar datos y timeline
+            const res = await LeadService.getAll();
+            if (res && res.data) crmLeadsList = res.data;
+            filtrarCRMEnVivo();
+
+            if (crmSelectedLeadId === leadId) {
+                const updated = await LeadService.getById(leadId);
+                if (updated && updated.data) {
+                    renderTimelineBitacoraFicha(updated.data);
+                    const sel = document.getElementById('ficha360-select-etapa');
+                    if (sel) sel.value = 'visita_agendada';
+                }
+            }
+        }
+
+        function abrirCierreDesdeFicha360() {
+            const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
+            cerrarModalFichaCliente360();
+
+            if (typeof abrirModalNuevoCierre === 'function') {
+                abrirModalNuevoCierre();
+                // Prellenar datos en el formulario de cierre existente
+                const compInput = document.getElementById('cierre-comprador');
+                if (compInput && lead) compInput.value = lead.nombre;
+                const asesorSelect = document.getElementById('cierre-asesor-id');
+                if (asesorSelect && lead && lead.asesor_id) asesorSelect.value = lead.asesor_id;
+                mostrarToastNotificacion(`🤝 Formulario de Cierre listo para ${lead ? lead.nombre : 'el cliente'}`);
+            }
+        }
+
+        async function enviarFichaVipDirectaCRM(leadId, propId) {
+            const lead = crmLeadsList.find(l => l.id === leadId);
+            let prop = null;
+            if (typeof INMUEBLES_DETALLE_DATA !== 'undefined' && INMUEBLES_DETALLE_DATA[propId]) {
+                prop = INMUEBLES_DETALLE_DATA[propId];
+            }
+
+            if (!lead || !prop) return;
+
+            if (typeof N8nService !== 'undefined') {
+                await N8nService.enviarFichaVipCorreo({
+                    cliente_nombre: lead.nombre,
+                    cliente_email: lead.email,
+                    codigo: prop.codigo,
+                    titulo: prop.titulo,
+                    precio: `${prop.precio} ${prop.moneda || 'USD'}`,
+                    ubicacion: prop.ubicacion,
+                    habitaciones: prop.habitaciones,
+                    banos: prop.banos,
+                    m2: prop.m2,
+                    foto: (prop.fotos && prop.fotos[0]) || '',
+                    asesor_nombre: lead.asesor_nombre || 'Asesor MAXIMUS'
+                });
+            }
+
+            if (window.LeadService) {
+                await LeadService.addActividad(leadId, {
+                    tipo: 'email',
+                    titulo: `Ficha VIP Enviada: ${prop.codigo}`,
+                    descripcion: `Se despachó la ficha detallada de ${prop.titulo} a ${lead.email} vía webhook n8n.`,
+                    autor: lead.asesor_nombre || 'Asesor CRM'
+                });
+                const updated = await LeadService.getById(leadId);
+                if (updated && updated.data) renderTimelineBitacoraFicha(updated.data);
+            }
+
+            mostrarToastNotificacion(`✉️ Ficha VIP (${prop.codigo}) enviada a ${lead.email}`);
+        }
+
+        // ==========================================
+        // MODAL NUEVO / EDITAR CLIENTE CRM
+        // ==========================================
+        function abrirModalNuevoClienteCRM(leadId = null) {
+            const form = document.getElementById('form-nuevo-cliente-crm');
+            if (form) form.reset();
+
+            const titleEl = document.getElementById('modalNuevoClienteCRMTitulo');
+            const hiddenId = document.getElementById('crm-input-id');
+
+            if (leadId) {
+                const lead = crmLeadsList.find(l => l.id === leadId);
+                if (lead) {
+                    if (titleEl) titleEl.textContent = 'Editar Cliente CRM';
+                    if (hiddenId) hiddenId.value = lead.id;
+                    document.getElementById('crm-input-nombre').value = lead.nombre || '';
+                    document.getElementById('crm-input-email').value = lead.email || '';
+                    document.getElementById('crm-input-telefono').value = lead.telefono || '';
+                    document.getElementById('crm-input-temperatura').value = lead.temperatura || 'caliente';
+                    document.getElementById('crm-input-origen').value = lead.origen || 'web';
+                    document.getElementById('crm-input-operacion').value = lead.operacion || 'compra';
+                    document.getElementById('crm-input-tipo-inmueble').value = lead.tipo_inmueble || 'casa';
+                    document.getElementById('crm-input-asesor').value = lead.asesor_id || 'asesor-1';
+                    document.getElementById('crm-input-presupuesto').value = lead.presupuesto || '';
+                    document.getElementById('crm-input-estatus').value = lead.estatus || 'nuevo';
+                    document.getElementById('crm-input-zonas').value = Array.isArray(lead.zonas_interes) ? lead.zonas_interes.join(', ') : (lead.zonas_interes || '');
+                    document.getElementById('crm-input-requisitos').value = lead.requisitos || '';
+                    document.getElementById('crm-input-notas').value = lead.notas || '';
+                }
+            } else {
+                if (titleEl) titleEl.textContent = 'Registrar Nuevo Cliente';
+                if (hiddenId) hiddenId.value = '';
+            }
+
+            const modal = document.getElementById('modalNuevoClienteCRM');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function cerrarModalNuevoClienteCRM() {
+            const modal = document.getElementById('modalNuevoClienteCRM');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function guardarClienteCRM() {
+            const id = document.getElementById('crm-input-id').value;
+            const nombre = document.getElementById('crm-input-nombre').value.trim();
+            const email = document.getElementById('crm-input-email').value.trim();
+            const telefono = document.getElementById('crm-input-telefono').value.trim();
+            const temperatura = document.getElementById('crm-input-temperatura').value;
+            const origen = document.getElementById('crm-input-origen').value;
+            const operacion = document.getElementById('crm-input-operacion').value;
+            const tipo_inmueble = document.getElementById('crm-input-tipo-inmueble').value;
+            const asesor_id = document.getElementById('crm-input-asesor').value;
+            const presupuesto = Number(document.getElementById('crm-input-presupuesto').value) || 0;
+            const estatus = document.getElementById('crm-input-estatus').value;
+            const zonasStr = document.getElementById('crm-input-zonas').value.trim();
+            const requisitos = document.getElementById('crm-input-requisitos').value.trim();
+            const notas = document.getElementById('crm-input-notas').value.trim();
+
+            const asesorSelect = document.getElementById('crm-input-asesor');
+            const asesor_nombre = asesorSelect.options[asesorSelect.selectedIndex]?.textContent || 'Asesor MAXIMUS';
+            const zonas_interes = zonasStr ? zonasStr.split(',').map(s => s.trim()).filter(Boolean) : ['San Cristóbal'];
+
+            const payload = {
+                nombre,
+                email,
+                telefono,
+                temperatura,
+                origen,
+                operacion,
+                tipo_inmueble,
+                asesor_id,
+                asesor_nombre,
+                presupuesto,
+                estatus,
+                zonas_interes,
+                requisitos,
+                notas
+            };
+
+            if (id) {
+                // Actualizar
+                if (window.LeadService) {
+                    await LeadService.updateDetalles(id, payload);
+                }
+                mostrarToastNotificacion(`✅ Cliente ${nombre} actualizado`);
+            } else {
+                // Crear
+                if (window.LeadService) {
+                    await LeadService.create(payload);
+                }
+                mostrarToastNotificacion(`✅ Cliente ${nombre} creado y notificado a n8n`);
+            }
+
+            cerrarModalNuevoClienteCRM();
+            
+            // Recargar
+            if (window.LeadService) {
+                const res = await LeadService.getAll();
+                if (res && res.data) crmLeadsList = res.data;
+            }
+            filtrarCRMEnVivo();
+        }
+
+        async function eliminarClienteCRM(leadId) {
+            const lead = crmLeadsList.find(l => l.id === leadId);
+            if (!confirm(`¿Estás seguro de eliminar a ${lead ? lead.nombre : 'este cliente'} de la cartera comercial?`)) return;
+
+            if (window.LeadService) {
+                await LeadService.delete(leadId);
+                const res = await LeadService.getAll();
+                if (res && res.data) crmLeadsList = res.data;
+            } else {
+                crmLeadsList = crmLeadsList.filter(l => l.id !== leadId);
+            }
+
+            mostrarToastNotificacion('🗑️ Cliente eliminado de la cartera');
+            filtrarCRMEnVivo();
         }
 
         // ==========================================
