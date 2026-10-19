@@ -3877,7 +3877,7 @@
             </section>
 
             <!-- K. VISTA DEDICADA: DETALLE DE INMUEBLE ESTILO AIRBNB (Ajustada y Compacta) -->
-            <section id="view-detalle-inmueble" class="view-section max-w-[1240px] mx-auto space-y-3.5 pb-8 w-full max-w-full overflow-hidden box-border">
+            <section id="view-detalle-inmueble" class="view-section max-w-[1240px] mx-auto space-y-2.5 pb-6 w-full max-w-full overflow-hidden box-border">
                 <!-- Barra de Navegación y Acciones Superiores -->
                 <div class="flex items-center justify-between gap-2 pt-1 pb-1 border-b border-gray-200/70 w-full">
                     <div class="flex items-center gap-2 min-w-0">
@@ -3899,7 +3899,7 @@
                 </div>
 
                 <!-- Contenedor Principal Blanco Dedicado (Proporciones Óptimas y Elegantes) -->
-                <div class="bg-white rounded-[24px] shadow-premium p-3.5 sm:p-5 border border-maximus-silver/20 space-y-3 sm:space-y-3.5 w-full max-w-full overflow-hidden box-border">
+                <div class="bg-white rounded-[24px] shadow-premium p-3 sm:p-4 border border-maximus-silver/20 space-y-2.5 sm:space-y-3 w-full max-w-full overflow-hidden box-border">
                     
                     <!-- Encabezado de la Propiedad (Título, Ubicación y Badges) -->
                     <div class="space-y-1">
@@ -3910,7 +3910,7 @@
                             <span id="airbnb-modal-badge-operacion" class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm">VENTA</span>
                             <span id="airbnb-modal-badge-tipo" class="bg-emerald-50 text-maximus-accent border border-emerald-200 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">CASA</span>
                         </div>
-                        <h1 id="airbnb-modal-title" class="text-lg sm:text-xl md:text-2xl font-extrabold text-maximus-dark tracking-tight leading-snug break-words">Quinta moderna con piscina y jardín</h1>
+                        <h1 id="airbnb-modal-title" class="text-base sm:text-lg md:text-xl font-extrabold text-maximus-dark tracking-tight leading-snug break-words">Quinta moderna con piscina y jardín</h1>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500 font-semibold min-w-0">
                             <span class="flex items-center gap-1 text-emerald-700 font-extrabold shrink-0">
                                 <i class="ph-bold ph-shield-check text-emerald-600"></i> Verificado
@@ -3923,30 +3923,30 @@
                     </div>
 
                     <!-- Galería de Fotos Proporcionada y Equilibrada (Desktop: Mosaico Panorámico de 5 fotos | Móvil: Cuadrícula 2x2) -->
-                    <div id="airbnb-galeria-container" class="relative rounded-[16px] sm:rounded-[20px] overflow-hidden grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-1.5 md:gap-2 h-[200px] sm:h-[240px] lg:h-[265px] xl:h-[280px] bg-gray-100 shadow-sm">
+                    <div id="airbnb-galeria-container" class="relative rounded-[16px] sm:rounded-[20px] overflow-hidden grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-1.5 md:gap-2 h-[165px] sm:h-[195px] lg:h-[215px] xl:h-[225px] bg-gray-100 shadow-sm">
                         <!-- Foto 1 (Principal en Desktop | Top-Left en móvil) -->
                         <div onclick="abrirGaleriaCompleta(0)" class="relative overflow-hidden cursor-pointer group h-full md:col-span-2 md:row-span-2 active:scale-[0.98] transition-transform">
-                            <img id="airbnb-img-0" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto principal">
+                            <img id="airbnb-img-0" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto principal">
                             <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 2 (Top der 1 en Desktop | Top-Right en móvil) -->
                         <div onclick="abrirGaleriaCompleta(1)" class="relative overflow-hidden cursor-pointer group h-full active:scale-[0.98] transition-transform">
-                            <img id="airbnb-img-1" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 2">
+                            <img id="airbnb-img-1" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1000&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 2">
                             <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 3 (Top der 2 en Desktop | Bottom-Left en móvil) -->
                         <div onclick="abrirGaleriaCompleta(2)" class="relative overflow-hidden cursor-pointer group h-full active:scale-[0.98] transition-transform">
-                            <img id="airbnb-img-2" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 3">
+                            <img id="airbnb-img-2" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1000&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 3">
                             <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 4 (Bottom der 1 en Desktop | Bottom-Right en móvil) -->
                         <div onclick="abrirGaleriaCompleta(3)" class="relative overflow-hidden cursor-pointer group h-full active:scale-[0.98] transition-transform">
-                            <img id="airbnb-img-3" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 4">
+                            <img id="airbnb-img-3" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1000&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 4">
                             <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         <!-- Foto 5 (Bottom der 2 en Desktop | Oculta en móvil) -->
                         <div onclick="abrirGaleriaCompleta(4)" class="hidden md:block relative overflow-hidden cursor-pointer group h-full">
-                            <img id="airbnb-img-4" src="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 5">
+                            <img id="airbnb-img-4" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1000&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto 5">
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         </div>
                         
@@ -3958,13 +3958,13 @@
                     </div>
 
                     <!-- Grilla 2 Columnas Estilo Airbnb (Detalles a la Izquierda, Tarjeta Flotante a la Derecha) -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5 lg:gap-5 items-start">
                         
                         <!-- Columna Izquierda (Contenido y Especificaciones) -->
-                        <div class="lg:col-span-7 space-y-4">
+                        <div class="lg:col-span-7 space-y-3.5">
                             
                             <!-- Tarjeta de Asesor / Anfitrión Asignado (Compacta y Refinada) -->
-                            <div class="p-3 sm:p-3.5 rounded-2xl bg-gray-50/80 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 w-full overflow-hidden box-border">
+                            <div class="p-2.5 sm:p-3 rounded-2xl bg-gray-50/80 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 w-full overflow-hidden box-border">
                                 <div class="flex items-center gap-2.5 min-w-0">
                                     <div class="relative shrink-0">
                                         <img id="airbnb-asesor-avatar" src="" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover shadow-sm">
@@ -3978,11 +3978,6 @@
                                             <span class="text-[8px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
                                         </h3>
                                         <p id="airbnb-asesor-cargo" class="text-[10px] sm:text-[11px] font-semibold text-gray-500 truncate">Director & Captador Principal MAXIMUS</p>
-                                        <div class="flex items-center gap-2 mt-0.5 text-[10px] text-gray-400 font-bold flex-wrap">
-                                            <span id="airbnb-asesor-rating" class="text-amber-500 flex items-center gap-1 shrink-0"><i class="ph-fill ph-star"></i> 5.0 (28 Cierres)</span>
-                                            <span class="text-gray-300">•</span>
-                                            <span id="airbnb-asesor-exp" class="shrink-0">4 años en la red</span>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="flex sm:flex-col gap-1.5 shrink-0 w-full sm:w-auto">
@@ -4081,10 +4076,10 @@
 
                         <!-- Columna Derecha (Tarjeta Flotante de Precio y Conversión) -->
                         <div class="lg:col-span-5 w-full max-w-full">
-                            <div class="sticky top-20 bg-white rounded-[22px] border border-gray-200/80 shadow-lg p-3.5 sm:p-4 space-y-3 w-full max-w-full box-border">
+                            <div class="sticky top-20 bg-white rounded-[20px] border border-gray-200/80 shadow-md p-3 sm:p-3.5 space-y-2.5 w-full max-w-full box-border">
                                 
                                 <!-- Precio y Tipo -->
-                                <div class="flex items-baseline justify-between border-b border-gray-100 pb-3">
+                                <div class="flex items-baseline justify-between border-b border-gray-100 pb-2.5">
                                     <div>
                                         <span class="text-[9px] uppercase font-extrabold text-gray-400 block tracking-widest mb-0.5">Precio de Publicación</span>
                                         <div class="flex items-baseline gap-1.5">
@@ -4094,39 +4089,39 @@
                                         <span id="airbnb-card-preciom2" class="text-[10px] font-extrabold text-maximus-accent block mt-0.5">$771 USD / m²</span>
                                     </div>
                                     <div class="text-right">
-                                        <span id="airbnb-card-comision" class="inline-flex items-center gap-1 text-[9px] font-black text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-                                            <i class="ph-bold ph-shield-check"></i> Comisión Verificada
+                                        <span class="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/70 px-2 py-0.5 rounded-full">
+                                            <i class="ph-bold ph-seal-check text-emerald-600"></i> Verificado MAXIMUS
                                         </span>
                                     </div>
                                 </div>
 
                                 <!-- Botones de Acción Primaria -->
                                 <div class="space-y-1.5 pt-0.5">
-                                    <button onclick="solicitarVisitaWhatsApp()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 group hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                                    <button onclick="solicitarVisitaWhatsApp()" class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 group hover:scale-[1.005] active:scale-[0.99] cursor-pointer">
                                         <i class="ph-fill ph-whatsapp-logo text-sm"></i>
                                         <span>Contactar Asesor por WhatsApp</span>
                                     </button>
                                     
-                                    <button onclick="abrirModalFichaVIP()" class="w-full py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200/80 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:scale-[1.01] active:scale-[0.99]">
+                                    <button onclick="abrirModalFichaVIP()" class="w-full py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200/80 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:scale-[1.005] active:scale-[0.99]">
                                         <i class="ph-bold ph-share-network text-xs text-emerald-700"></i>
                                         <span>Ficha VIP & Compartir WhatsApp</span>
                                     </button>
 
-                                    <button onclick="descargarFichaPDF()" class="w-full py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <button onclick="descargarFichaPDF()" class="w-full py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                         <i class="ph-bold ph-file-pdf text-xs text-red-500"></i>
                                         <span>Descargar Ficha Técnica PDF</span>
                                     </button>
                                 </div>
 
                                 <!-- Garantías y Confianza MAXIMUS -->
-                                <div class="space-y-1.5 pt-2 border-t border-gray-100 text-[10px] text-gray-500 font-medium">
-                                    <div class="flex items-start gap-2">
+                                <div class="space-y-1 pt-1.5 border-t border-gray-100 text-[10px] text-gray-500 font-medium">
+                                    <div class="flex items-start gap-1.5">
                                         <i class="ph-bold ph-shield-check text-emerald-600 text-xs mt-0.5 shrink-0"></i>
                                         <span><strong>100% Verificado:</strong> Documentación y título revisados.</span>
                                     </div>
-                                    <div class="flex items-start gap-2">
+                                    <div class="flex items-start gap-1.5">
                                         <i class="ph-bold ph-handshake text-emerald-600 text-xs mt-0.5 shrink-0"></i>
-                                        <span><strong>Comisión Protegida:</strong> Exclusividad firmada con MAXIMUS.</span>
+                                        <span><strong>Gestión Segura:</strong> Operación respaldada legalmente por MAXIMUS.</span>
                                     </div>
                                 </div>
                             </div>
@@ -7627,14 +7622,25 @@
             if (badgeTipo) badgeTipo.textContent = data.badgeTipo;
 
             // 2. Poblar Fotos en la Galería de 5
-            lightboxFotosActuales = data.fotos || [];
+            lightboxFotosActuales = (data.fotos && data.fotos.length > 0) ? data.fotos : [
+                'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85',
+                'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1000&q=80',
+                'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80',
+                'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1000&q=80',
+                'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1000&q=80'
+            ];
             const elTotalCount = document.getElementById('airbnb-total-fotos-count');
             if (elTotalCount) elTotalCount.textContent = lightboxFotosActuales.length;
 
+            const fallbackImg = lightboxFotosActuales[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80';
             for (let i = 0; i < 5; i++) {
                 const imgEl = document.getElementById(`airbnb-img-${i}`);
                 if (imgEl) {
-                    imgEl.src = lightboxFotosActuales[i] || lightboxFotosActuales[0] || '';
+                    imgEl.src = lightboxFotosActuales[i] || fallbackImg;
+                    imgEl.onerror = function() {
+                        this.onerror = null;
+                        this.src = fallbackImg;
+                    };
                 }
             }
 
@@ -7647,12 +7653,6 @@
 
             const elAsesorCargo = document.getElementById('airbnb-asesor-cargo');
             if (elAsesorCargo) elAsesorCargo.textContent = data.asesor.cargo;
-
-            const elAsesorRating = document.getElementById('airbnb-asesor-rating');
-            if (elAsesorRating) elAsesorRating.innerHTML = `<i class="ph-fill ph-star"></i> ${data.asesor.rating}`;
-
-            const elAsesorExp = document.getElementById('airbnb-asesor-exp');
-            if (elAsesorExp) elAsesorExp.textContent = data.asesor.experiencia;
             
             const waMsg = encodeURIComponent(`Hola ${data.asesor.nombre}, te escribo desde la plataforma MAXIMUS por la propiedad ${data.codigo} (${data.titulo}). Me gustaría coordinar una visita.`);
             const elWaBtn = document.getElementById('airbnb-asesor-whatsapp-btn');
@@ -7731,7 +7731,7 @@
             if (elPrecioM2) elPrecioM2.textContent = data.precioM2;
 
             const elComision = document.getElementById('airbnb-card-comision');
-            if (elComision) elComision.innerHTML = `<i class="ph-bold ph-handshake"></i> ${data.comision} Comisión`;
+            if (elComision) elComision.style.display = 'none';
 
             // 10. Activar Vista Dedicada con animación suave y scroll al inicio
             activateTab('view-detalle-inmueble', true);
@@ -9784,7 +9784,7 @@
                                 asesor: asesorData,
                                 aspectosDestacados: inm.aspectos_destacados || existing.aspectosDestacados || [
                                     { icono: 'ph-shield-check', titulo: 'Documentación 100% Verificada', desc: 'Libre de gravamen y lista para firmar en registro.' },
-                                    { icono: 'ph-handshake', titulo: 'Comisión 50/50 Garantizada', desc: 'Respeto absoluto al acuerdo entre corredores.' }
+                                    { icono: 'ph-handshake', titulo: 'Comisión Compartida Garantizada', desc: 'Respeto absoluto al acuerdo entre corredores.' }
                                 ],
                                 descripcion: inm.descripcion || existing.descripcion || 'Propiedad captada con respaldo legal integral MAXIMUS.',
                                 amenidades: inm.amenidades || existing.amenidades || [
