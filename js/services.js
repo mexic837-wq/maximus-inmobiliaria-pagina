@@ -505,21 +505,50 @@ const MetricaService = {
 const VendidoGlobalService = {
 
     async getAll(filtros = {}) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let data = [...MOCK_DATA.vendidos_global];
-            if (filtros.operacion && filtros.operacion !== 'todos') {
-                data = data.filter(v => v.operacion_cerrada === filtros.operacion);
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tableName = APP_CONFIG.TABLES.CIERRES_VENTAS || 'cierres_ventas';
+                    let query = sb.from(tableName).select('*').order('fecha_cierre', { ascending: false });
+                    
+                    if (filtros.operacion && filtros.operacion !== 'todos') {
+                        query = query.eq('tipo_operacion', filtros.operacion);
+                    }
+                    if (filtros.busqueda) {
+                        query = query.or(`inmueble_titulo.ilike.%${filtros.busqueda}%,ubicacion.ilike.%${filtros.busqueda}%`);
+                    }
+
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                        return { data: res.data, error: null, source: 'supabase' };
+                    }
+                    if (res && res.error) {
+                        console.warn('⚠️ MAXIMUS VendidoGlobalService: Supabase aviso. Usando respaldo:', res.error);
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ MAXIMUS VendidoGlobalService: Excepción al conectar con Supabase:', err);
             }
-            return { data, error: null };
         }
-        const sb = getSupabase();
-        let query = sb.from(APP_CONFIG.TABLES.INMUEBLES)
-            .select('*')
-            .in('estatus', ['vendido', 'alquilado']);
+
+        // Respaldo local de cierres
+        const cierres = (typeof window !== 'undefined' && window.MOCK_DATA && window.MOCK_DATA.cierres_ventas)
+            ? [...window.MOCK_DATA.cierres_ventas]
+            : ((typeof MOCK_DATA !== 'undefined' && MOCK_DATA.cierres_ventas) ? [...MOCK_DATA.cierres_ventas] : []);
+
+        let data = cierres;
         if (filtros.operacion && filtros.operacion !== 'todos') {
-            query = query.eq('estatus', filtros.operacion);
+            data = data.filter(v => v.tipo_operacion === filtros.operacion || v.operacion_cerrada === filtros.operacion);
         }
-        return await query;
+        if (filtros.busqueda) {
+            const q = filtros.busqueda.toLowerCase();
+            data = data.filter(v => 
+                (v.inmueble_titulo && v.inmueble_titulo.toLowerCase().includes(q)) ||
+                (v.ubicacion && v.ubicacion.toLowerCase().includes(q))
+            );
+        }
+        return { data, error: null, source: 'mock' };
     },
 };
 

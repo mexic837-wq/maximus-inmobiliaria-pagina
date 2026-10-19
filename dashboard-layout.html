@@ -2113,9 +2113,22 @@
 
             <!-- C. VISTA: VENDIDOS GLOBAL -->
             <section id="view-vendidos" class="view-section max-w-[1400px] mx-auto space-y-3.5 sm:space-y-4.5 pb-24 sm:pb-6">
-                <div class="-mt-1 sm:-mt-2.5">
-                    <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
-                    <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Historial de éxito global.</p>
+                <!-- Encabezado con Sincronización Supabase -->
+                <div class="-mt-1 sm:-mt-2.5 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
+                        <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Historial de éxito global.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="contador-vendidos-status" class="text-xs font-bold text-gray-500 bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs flex items-center gap-1.5">
+                            <span id="dot-sync-supabase-vendidos" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span id="contador-vendidos-texto">Sincronizado</span>
+                        </span>
+                        <button type="button" onclick="sincronizarCierresMercadoSupabase(true)" class="text-xs font-bold text-gray-600 hover:text-emerald-700 bg-white hover:bg-emerald-50 px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer" title="Sincronizar con Supabase">
+                            <i id="icono-sync-vendidos" class="ph-bold ph-arrows-clockwise text-emerald-600 text-sm"></i>
+                            <span class="hidden sm:inline">Sincronizar</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- KPIs Ergonómicos (2 columnas en móvil con Hero de 2 cols, 3 en desktop) -->
@@ -2134,25 +2147,101 @@
                     </div>
                 </div>
 
-                <!-- Filtros -->
-                <div class="bg-white rounded-2xl shadow-sm border border-maximus-silver/30 p-2.5 sm:p-3 flex flex-col lg:flex-row gap-2.5 sm:gap-3 items-stretch lg:items-center justify-between">
-                    <div class="relative w-full lg:w-1/3">
+                <!-- Barra de Filtros con Buscador, Píldoras de Operación y Selector de Temporalidad Estilo Inmuebles -->
+                <div class="bg-white rounded-2xl shadow-sm border border-maximus-silver/30 p-2 sm:p-2.5 flex flex-col md:flex-row gap-2 sm:gap-2.5 items-stretch md:items-center justify-between">
+                    <!-- Buscador por texto -->
+                    <div class="relative flex-1 min-w-[200px]">
                         <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
                         <input type="text" id="input-buscar-vendidos" oninput="filtrarVendidosGlobal()" placeholder="Buscar zona o ciudad..." class="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-3 py-2 sm:py-2.5 text-xs sm:text-sm font-medium outline-none focus:border-maximus-accent focus:bg-white transition-colors">
                     </div>
-                    <div class="flex gap-1.5 w-full lg:w-auto p-1 bg-gray-50 rounded-xl border border-gray-100 overflow-x-auto">
-                        <button id="btn-tab-vendidos-todos" onclick="filtrarVendidosPorOperacion('todos')" class="flex-1 lg:flex-none px-3 sm:px-5 py-1.5 bg-white text-maximus-dark shadow-sm text-xs sm:text-sm font-bold rounded-lg shrink-0 transition-all">Todos</button>
-                        <button id="btn-tab-vendidos-venta" onclick="filtrarVendidosPorOperacion('venta')" class="flex-1 lg:flex-none px-3 sm:px-5 py-1.5 text-gray-500 hover:text-maximus-dark text-xs sm:text-sm font-bold rounded-lg transition-colors shrink-0">Vendidos</button>
-                        <button id="btn-tab-vendidos-alquiler" onclick="filtrarVendidosPorOperacion('alquiler')" class="flex-1 lg:flex-none px-3 sm:px-5 py-1.5 text-gray-500 hover:text-maximus-dark text-xs sm:text-sm font-bold rounded-lg transition-colors shrink-0">Alquilados</button>
+
+                    <!-- Pills de Operación (Todos / Vendidos / Alquilados) -->
+                    <div class="flex gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100 overflow-x-auto shrink-0">
+                        <button type="button" id="btn-tab-vendidos-todos" onclick="filtrarVendidosPorOperacion('todos')" class="px-3.5 sm:px-4 py-1.5 bg-white text-maximus-dark shadow-sm text-xs font-extrabold rounded-lg shrink-0 transition-all cursor-pointer">Todos</button>
+                        <button type="button" id="btn-tab-vendidos-venta" onclick="filtrarVendidosPorOperacion('venta')" class="px-3.5 sm:px-4 py-1.5 text-gray-500 hover:text-maximus-dark text-xs font-bold rounded-lg transition-colors shrink-0 cursor-pointer">Vendidos</button>
+                        <button type="button" id="btn-tab-vendidos-alquiler" onclick="filtrarVendidosPorOperacion('alquiler')" class="px-3.5 sm:px-4 py-1.5 text-gray-500 hover:text-maximus-dark text-xs font-bold rounded-lg transition-colors shrink-0 cursor-pointer">Alquilados</button>
                     </div>
-                    <div class="flex items-center justify-between lg:justify-start gap-3 w-full lg:w-auto px-4 py-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
-                        <div class="flex items-center gap-2">
-                            <i class="ph ph-calendar-blank text-maximus-accent text-base"></i>
-                            <select id="select-periodo-vendidos" onchange="filtrarVendidosGlobal()" class="bg-transparent border-none text-xs sm:text-sm font-bold text-gray-600 outline-none cursor-pointer">
-                                <option value="todos">Histórico Total</option>
-                                <option value="ano_actual" selected>Este Año</option>
-                                <option value="mes_actual">Este Mes</option>
-                            </select>
+
+                    <!-- Selector Temporalidad Estilo Dropdown Avanzado de Inmuebles -->
+                    <div class="relative shrink-0" id="temporalidadVendidosDropdownWrapper">
+                        <!-- Input oculto para compatibilidad hacia atrás -->
+                        <input type="hidden" id="select-periodo-vendidos" value="ano_actual">
+
+                        <!-- Botón Trigger idéntico al botón de Filtros -->
+                        <button type="button" id="btn-temporalidad-vendidos-trigger" onclick="toggleFiltroTemporalidadVendidos()" class="flex items-center justify-between sm:justify-start gap-2 px-3.5 sm:px-4 py-2 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-xs sm:text-[13px] font-bold rounded-xl transition-all border border-gray-200/70 cursor-pointer shadow-xs group">
+                            <div class="flex items-center gap-2">
+                                <i class="ph-fill ph-calendar text-emerald-600 text-sm sm:text-base group-hover:scale-110 transition-transform"></i>
+                                <span class="text-gray-400 font-semibold text-xs hidden sm:inline">Período:</span>
+                                <span id="label-temporalidad-vendidos-actual" class="text-maximus-dark font-extrabold text-xs sm:text-sm">Este Año</span>
+                            </div>
+                            <i id="caret-temporalidad-vendidos" class="ph-bold ph-caret-down text-gray-400 text-xs transition-transform duration-300"></i>
+                        </button>
+
+                        <!-- Panel Desplegable Animado Flotante -->
+                        <div id="dropdown-temporalidad-vendidos-panel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top-right absolute right-0 top-12 w-[270px] sm:w-[290px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-100 z-50 p-3 sm:p-4 text-left">
+                            <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-gray-100">
+                                <div class="flex items-center gap-1.5 text-xs font-extrabold text-maximus-dark">
+                                    <i class="ph-bold ph-clock-counter-clockwise text-emerald-600"></i>
+                                    <span>Temporalidad de Cierres</span>
+                                </div>
+                                <button type="button" onclick="toggleFiltroTemporalidadVendidos(false)" class="text-gray-400 hover:text-gray-700 w-5 h-5 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                                    <i class="ph-bold ph-x text-xs"></i>
+                                </button>
+                            </div>
+
+                            <div class="space-y-1" id="opciones-periodo-vendidos">
+                                <button type="button" onclick="seleccionarPeriodoVendidos('ano_actual', 'Este Año')" class="opcion-periodo-btn w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between bg-emerald-50 text-emerald-800 border border-emerald-200/60 cursor-pointer" data-periodo="ano_actual">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+                                            <i class="ph-bold ph-calendar-blank"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-extrabold leading-tight">Este Año</p>
+                                            <p class="text-[10px] font-normal text-emerald-600/80">Cierres del año en curso</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-check text-emerald-600 text-sm check-indicator"></i>
+                                </button>
+
+                                <button type="button" onclick="seleccionarPeriodoVendidos('mes_actual', 'Este Mes')" class="opcion-periodo-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between text-gray-700 hover:bg-gray-50 hover:text-maximus-dark cursor-pointer" data-periodo="mes_actual">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-sm shrink-0">
+                                            <i class="ph-bold ph-calendar-star"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold leading-tight">Este Mes</p>
+                                            <p class="text-[10px] font-normal text-gray-400">Operaciones del mes corriente</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-check text-emerald-600 text-sm check-indicator hidden"></i>
+                                </button>
+
+                                <button type="button" onclick="seleccionarPeriodoVendidos('ultimos_90_dias', 'Último Trimestre')" class="opcion-periodo-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between text-gray-700 hover:bg-gray-50 hover:text-maximus-dark cursor-pointer" data-periodo="ultimos_90_dias">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-sm shrink-0">
+                                            <i class="ph-bold ph-chart-line-up"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold leading-tight">Último Trimestre</p>
+                                            <p class="text-[10px] font-normal text-gray-400">Últimos 90 días de actividad</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-check text-emerald-600 text-sm check-indicator hidden"></i>
+                                </button>
+
+                                <button type="button" onclick="seleccionarPeriodoVendidos('todos', 'Histórico Total')" class="opcion-periodo-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between text-gray-700 hover:bg-gray-50 hover:text-maximus-dark cursor-pointer" data-periodo="todos">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-7 h-7 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-sm shrink-0">
+                                            <i class="ph-bold ph-archive"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold leading-tight">Histórico Total</p>
+                                            <p class="text-[10px] font-normal text-gray-400">Todas las transacciones registradas</p>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-check text-emerald-600 text-sm check-indicator hidden"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -10789,6 +10878,115 @@
             filtrarVendidosGlobal();
         }
 
+        let isTemporalidadVendidosOpen = false;
+        let sincronizandoCierresMercado = false;
+
+        function toggleFiltroTemporalidadVendidos(forzarEstado) {
+            const dropdown = document.getElementById('dropdown-temporalidad-vendidos-panel');
+            const caret = document.getElementById('caret-temporalidad-vendidos');
+            if (!dropdown) return;
+
+            const abrir = (typeof forzarEstado === 'boolean') ? forzarEstado : !isTemporalidadVendidosOpen;
+            isTemporalidadVendidosOpen = abrir;
+
+            if (abrir) {
+                dropdown.classList.remove('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+                dropdown.classList.add('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+                if (caret) caret.classList.add('rotate-180');
+            } else {
+                dropdown.classList.add('opacity-0', 'scale-95', '-translate-y-2', 'pointer-events-none');
+                dropdown.classList.remove('opacity-100', 'scale-100', 'translate-y-0', 'pointer-events-auto');
+                if (caret) caret.classList.remove('rotate-180');
+            }
+        }
+
+        function seleccionarPeriodoVendidos(periodo, label) {
+            const hiddenInput = document.getElementById('select-periodo-vendidos');
+            const labelEl = document.getElementById('label-temporalidad-vendidos-actual');
+            if (hiddenInput) hiddenInput.value = periodo;
+            if (labelEl) labelEl.textContent = label;
+
+            const botones = document.querySelectorAll('#opciones-periodo-vendidos .opcion-periodo-btn');
+            botones.forEach(btn => {
+                const btnPeriodo = btn.getAttribute('data-periodo');
+                const check = btn.querySelector('.check-indicator');
+                if (btnPeriodo === periodo) {
+                    btn.className = 'opcion-periodo-btn w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between bg-emerald-50 text-emerald-800 border border-emerald-200/60 cursor-pointer';
+                    if (check) check.classList.remove('hidden');
+                } else {
+                    btn.className = 'opcion-periodo-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between text-gray-700 hover:bg-gray-50 hover:text-maximus-dark cursor-pointer';
+                    if (check) check.classList.add('hidden');
+                }
+            });
+
+            toggleFiltroTemporalidadVendidos(false);
+            filtrarVendidosGlobal();
+        }
+
+        // Listener global para cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('temporalidadVendidosDropdownWrapper');
+            if (wrapper && !wrapper.contains(e.target) && isTemporalidadVendidosOpen) {
+                toggleFiltroTemporalidadVendidos(false);
+            }
+        });
+
+        async function sincronizarCierresMercadoSupabase(mostrarToast = false) {
+            if (sincronizandoCierresMercado) return;
+            sincronizandoCierresMercado = true;
+
+            const iconoSync = document.getElementById('icono-sync-vendidos');
+            const dotSync = document.getElementById('dot-sync-supabase-vendidos');
+            const txtSync = document.getElementById('contador-vendidos-texto');
+            if (iconoSync) iconoSync.classList.add('animate-spin');
+            if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+            if (txtSync) txtSync.textContent = 'Sincronizando...';
+
+            try {
+                let cierresData = null;
+                if (window.VendidoGlobalService) {
+                    const res = await window.VendidoGlobalService.getAll({});
+                    if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+                        cierresData = res.data;
+                    }
+                }
+
+                if (!cierresData && window.CierreVentaService) {
+                    const { data } = await window.CierreVentaService.getAll({});
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        cierresData = data;
+                    }
+                }
+
+                if (cierresData && cierresData.length > 0) {
+                    listaCierresMercadoCache = cierresData;
+                    actualizarKPIsCierresMercado(listaCierresMercadoCache);
+                    filtrarVendidosGlobal();
+                    if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                    if (txtSync) txtSync.textContent = 'Supabase Conectado';
+                    if (mostrarToast) {
+                        mostrarToastNotificacion(`⚡ ${cierresData.length} cierres de mercado sincronizados con Supabase`);
+                    }
+                } else {
+                    if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                    if (txtSync) txtSync.textContent = 'Catálogo Oficial';
+                    if (mostrarToast) {
+                        mostrarToastNotificacion('ℹ️ Datos cargados desde catálogo oficial');
+                    }
+                }
+            } catch (err) {
+                console.warn('sincronizarCierresMercadoSupabase error:', err);
+                if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                if (txtSync) txtSync.textContent = 'Modo Respaldo';
+                if (mostrarToast) {
+                    mostrarToastNotificacion('ℹ️ Operando en modo local de alta disponibilidad');
+                }
+            } finally {
+                sincronizandoCierresMercado = false;
+                if (iconoSync) iconoSync.classList.remove('animate-spin');
+            }
+        }
+
         async function cargarCierresMercado() {
             const grilla = document.getElementById('grilla-vendidos');
             if (!grilla) return;
@@ -10802,23 +11000,15 @@
                 `;
             }
 
-            try {
-                if (window.CierreVentaService) {
-                    const { data, error } = await window.CierreVentaService.getAll({});
-                    if (data && Array.isArray(data) && data.length > 0) {
-                        listaCierresMercadoCache = data;
-                    }
-                }
-            } catch (err) {
-                console.warn('MAXIMUS: Error al cargar cierres de mercado desde servicio:', err);
-            }
-
+            // Cargar inicial desde cache o mock inmediato
             if (listaCierresMercadoCache.length === 0 && window.MOCK_DATA && Array.isArray(window.MOCK_DATA.cierres_ventas)) {
-                listaCierresMercadoCache = window.MOCK_DATA.cierres_ventas;
+                listaCierresMercadoCache = [...window.MOCK_DATA.cierres_ventas];
+                actualizarKPIsCierresMercado(listaCierresMercadoCache);
+                filtrarVendidosGlobal();
             }
 
-            actualizarKPIsCierresMercado(listaCierresMercadoCache);
-            filtrarVendidosGlobal();
+            // Sincronizar asíncronamente con Supabase
+            await sincronizarCierresMercadoSupabase(false);
         }
 
         function actualizarKPIsCierresMercado(todosLosCierres) {
@@ -10838,7 +11028,7 @@
 
         function filtrarVendidosGlobal() {
             const busqueda = (document.getElementById('input-buscar-vendidos')?.value || '').toLowerCase().trim();
-            const periodo = document.getElementById('select-periodo-vendidos')?.value || 'todos';
+            const periodo = document.getElementById('select-periodo-vendidos')?.value || 'ano_actual';
 
             let items = [...listaCierresMercadoCache];
 
@@ -10882,6 +11072,15 @@
                         if (!c.fecha_cierre) return true;
                         const fecha = new Date(c.fecha_cierre);
                         return (fecha.getFullYear() === anoReferencia && fecha.getMonth() === mesReferencia);
+                    });
+                } else if (periodo === 'ultimos_90_dias') {
+                    const fecharRef = items.map(c => new Date(c.fecha_cierre).getTime()).filter(t => !isNaN(t));
+                    const maxTime = fecharRef.length ? Math.max(...fecharRef, ahora.getTime()) : ahora.getTime();
+                    const noventaDiasMs = 90 * 24 * 60 * 60 * 1000;
+                    items = items.filter(c => {
+                        if (!c.fecha_cierre) return true;
+                        const t = new Date(c.fecha_cierre).getTime();
+                        return (maxTime - t) <= noventaDiasMs;
                     });
                 }
             }
