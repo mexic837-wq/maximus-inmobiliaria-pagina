@@ -108,19 +108,38 @@ CREATE TABLE IF NOT EXISTS public.inmuebles (
 );
 
 
--- ===== 4. TABLA: LEADS (Prospectos y Clientes) =====
+-- ===== 4. TABLA: LEADS (Prospectos y Clientes CRM) =====
 CREATE TABLE IF NOT EXISTS public.leads (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     nombre TEXT NOT NULL,
     telefono TEXT,
     email TEXT,
     inmueble_interes_id UUID REFERENCES public.inmuebles(id) ON DELETE SET NULL,
-    origen TEXT DEFAULT 'web' CHECK (origen IN ('web', 'whatsapp', 'meta_ads', 'referido', 'llamada', 'instagram')),
-    estatus TEXT DEFAULT 'nuevo' CHECK (estatus IN ('nuevo', 'contactado', 'en_negociacion', 'cerrado', 'descartado')),
+    inmueble_interes_titulo TEXT,
+    origen TEXT DEFAULT 'web' CHECK (origen IN ('web', 'whatsapp', 'meta_ads', 'referido', 'llamada', 'instagram', 'crm_manual', 'landing_lead_magnet_vende_con_nosotros', 'otro')),
+    estatus TEXT DEFAULT 'nuevo' CHECK (estatus IN ('nuevo', 'contactado', 'visita_agendada', 'en_negociacion', 'en_tramite', 'cerrado', 'descartado')),
+    temperatura TEXT DEFAULT 'caliente' CHECK (temperatura IN ('caliente', 'tibio', 'frio')),
+    presupuesto NUMERIC(14,2) DEFAULT 0,
+    tipo_operacion TEXT DEFAULT 'compra' CHECK (tipo_operacion IN ('compra', 'venta', 'alquiler')),
+    tipo_inmueble_interes TEXT DEFAULT 'casa',
+    zonas_interes TEXT[] DEFAULT '{}',
+    requisitos_indispensables TEXT[] DEFAULT '{}',
     notas TEXT,
     agente_id UUID REFERENCES public.usuarios(id) ON DELETE SET NULL,
+    ultimo_contacto_at TIMESTAMPTZ DEFAULT now(),
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- ===== 4.1. TABLA: LEAD_ACTIVIDADES (Bitácora & Timeline 360°) =====
+CREATE TABLE IF NOT EXISTS public.lead_actividades (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    lead_id UUID NOT NULL REFERENCES public.leads(id) ON DELETE CASCADE,
+    agente_id UUID REFERENCES public.usuarios(id) ON DELETE SET NULL,
+    tipo TEXT NOT NULL CHECK (tipo IN ('nota', 'llamada', 'whatsapp', 'visita', 'email', 'cambio_etapa', 'propuesta', 'cierre')),
+    descripcion TEXT NOT NULL,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT now()
 );
 
 
@@ -422,6 +441,25 @@ CREATE POLICY "Notificaciones: ver propias" ON public.notificaciones
 DROP POLICY IF EXISTS "Notificaciones: actualizar propias" ON public.notificaciones;
 CREATE POLICY "Notificaciones: actualizar propias" ON public.notificaciones
     FOR UPDATE USING (auth.uid() IS NOT NULL OR usuario_id IS NULL);
+
+-- Actividades de Leads (CRM)
+ALTER TABLE public.lead_actividades ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Actividades: ver auth" ON public.lead_actividades;
+CREATE POLICY "Actividades: ver auth" ON public.lead_actividades
+    FOR SELECT TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Actividades: insertar auth" ON public.lead_actividades;
+CREATE POLICY "Actividades: insertar auth" ON public.lead_actividades
+    FOR INSERT TO authenticated WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Actividades: modificar auth" ON public.lead_actividades;
+CREATE POLICY "Actividades: modificar auth" ON public.lead_actividades
+    FOR UPDATE TO authenticated USING (true);
+
+DROP POLICY IF EXISTS "Actividades: eliminar auth" ON public.lead_actividades;
+CREATE POLICY "Actividades: eliminar auth" ON public.lead_actividades
+    FOR DELETE TO authenticated USING (true);
 
 
 -- ===== TRIGGERS: ACTUALIZAR updated_at AUTOMÁTICAMENTE =====
