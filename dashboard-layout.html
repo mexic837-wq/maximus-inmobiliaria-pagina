@@ -2036,25 +2036,16 @@
                         </div>
 
                         <!-- Indicadores Clave en Cristal Dinámicos -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full lg:w-auto">
-                            <div class="bg-white/5 border border-white/10 backdrop-blur-md p-3.5 rounded-2xl text-center hover:bg-white/10 transition-all hover:scale-105">
+                        <div class="grid grid-cols-2 gap-3.5 w-full sm:w-auto shrink-0">
+                            <div class="bg-white/5 border border-white/10 backdrop-blur-md px-5 py-3.5 rounded-2xl text-center hover:bg-white/10 transition-all hover:scale-105 min-w-[125px] sm:min-w-[135px]">
                                 <p class="text-[9px] font-extrabold text-emerald-300 uppercase tracking-widest">Captaciones</p>
-                                <h3 id="stat-captaciones-count" class="text-2xl font-black text-white mt-1">--</h3>
+                                <h3 id="stat-captaciones-count" class="text-2xl sm:text-3xl font-black text-white mt-0.5">--</h3>
                                 <span class="text-[9px] text-emerald-400 font-semibold">100% Directas</span>
                             </div>
-                            <div class="bg-white/5 border border-white/10 backdrop-blur-md p-3.5 rounded-2xl text-center hover:bg-white/10 transition-all hover:scale-105">
+                            <div class="bg-white/5 border border-white/10 backdrop-blur-md px-5 py-3.5 rounded-2xl text-center hover:bg-white/10 transition-all hover:scale-105 min-w-[125px] sm:min-w-[135px]">
                                 <p class="text-[9px] font-extrabold text-emerald-300 uppercase tracking-widest">Asesores</p>
-                                <h3 id="stat-asesores-count" class="text-2xl font-black text-white mt-1">--</h3>
+                                <h3 id="stat-asesores-count" class="text-2xl sm:text-3xl font-black text-white mt-0.5">--</h3>
                                 <span class="text-[9px] text-emerald-300 font-semibold">Certificados</span>
-                            </div>
-                            <div class="bg-white/5 border border-white/10 backdrop-blur-md p-3.5 rounded-2xl text-center col-span-2 sm:col-span-1 hover:bg-white/10 transition-all hover:scale-105">
-                                <p class="text-[9px] font-extrabold text-gray-300 uppercase tracking-widest">Comisión</p>
-                                <h3 class="text-2xl font-black text-emerald-300 mt-1 flex items-center justify-center gap-1">
-                                    50/50
-                                </h3>
-                                <span class="text-[9px] text-emerald-300 font-semibold flex items-center justify-center gap-1">
-                                    <i class="ph-bold ph-shield-check text-emerald-400"></i> Protegida
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -9749,14 +9740,12 @@
                                 }
                             }
 
-                            // Determinar si es captación directa MAXIMUS
+                            // Determinar si es captación directa MAXIMUS (estricto: solo si is_maximus es true, o tiene código #MAX- o ya existía como captación exclusiva)
                             const esMaximus = Boolean(
                                 inm.is_maximus === true ||
                                 inm.isMaximus === true ||
-                                inm.en_oferta === true ||
-                                (inm.codigo && inm.codigo.includes('MAX')) ||
-                                (existing.isMaximus === true) ||
-                                (inm.comision_porcentaje && Number(inm.comision_porcentaje) >= 5)
+                                (inm.codigo && String(inm.codigo).toUpperCase().includes('MAX-') && inm.is_maximus !== false) ||
+                                (existing && existing.isMaximus === true && inm.is_maximus !== false && !String(idKey).startsWith('inm-00'))
                             );
 
                             INMUEBLES_DETALLE_DATA[idKey] = {
