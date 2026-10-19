@@ -1205,7 +1205,30 @@ const ColeccionesVipService = {
     _getStoredColecciones() {
         try {
             const raw = localStorage.getItem(this._STORAGE_KEY);
-            if (raw) return JSON.parse(raw);
+            if (raw) {
+                let parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    // Migración retroactiva: asegurar que tengan asesor_id y asesor_email
+                    return parsed.map(c => {
+                        if (!c.asesor_id) {
+                            if (c.asesor === 'José Guerrero' || c.id === 'col-1') {
+                                c.asesor_id = 'mock-admin-001';
+                                c.asesor_email = 'admin@maximus.com';
+                                c.creado_por = 'mock-admin-001';
+                            } else if (c.asesor === 'Carlos Santander' || c.id === 'col-2') {
+                                c.asesor_id = 'asesor-3';
+                                c.asesor_email = 'carlos.santander@maximusinmobiliaria.com';
+                                c.creado_por = 'asesor-3';
+                            } else if (c.asesor === 'Valeria Méndez' || c.id === 'col-3') {
+                                c.asesor_id = 'asesor-2';
+                                c.asesor_email = 'asesor.maximus@maximus.com';
+                                c.creado_por = 'asesor-2';
+                            }
+                        }
+                        return c;
+                    });
+                }
+            }
         } catch (e) {
             console.error('Error leyendo colecciones de localStorage:', e);
         }
@@ -1223,68 +1246,117 @@ const ColeccionesVipService = {
     },
 
     async getAll(filtros = {}) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let data = this._getStoredColecciones();
+        let colecciones = null;
+
+        // Intentar consultar Supabase si está en modo producción
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    let query = sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*');
+                    if (filtros.busqueda) {
+                        query = query.or(`cliente.ilike.%${filtros.busqueda}%,titulo.ilike.%${filtros.busqueda}%`);
+                    }
+                    if (filtros.asesor_id) {
+                        query = query.or(`asesor_id.eq.${filtros.asesor_id},creado_por.eq.${filtros.asesor_id}`);
+                    } else if (filtros.asesor_email) {
+                        query = query.eq('asesor_email', filtros.asesor_email);
+                    }
+                    query = query.order('created_at', { ascending: false });
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                        colecciones = res.data;
+                    } else if (res && res.error) {
+                        console.warn('⚠️ Supabase colecciones_vip fallback:', res.error);
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ Error conectando a Supabase colecciones_vip:', err);
+            }
+        }
+
+        if (!colecciones) {
+            colecciones = this._getStoredColecciones();
             if (filtros.busqueda) {
                 const q = filtros.busqueda.toLowerCase();
-                data = data.filter(c => 
+                colecciones = colecciones.filter(c => 
                     (c.cliente && c.cliente.toLowerCase().includes(q)) || 
                     (c.titulo && c.titulo.toLowerCase().includes(q)) ||
                     (c.nota && c.nota.toLowerCase().includes(q))
                 );
             }
-            return { data, error: null };
+            if (filtros.asesor_id || filtros.asesor_email) {
+                colecciones = colecciones.filter(c => 
+                    (filtros.asesor_id && (c.asesor_id === filtros.asesor_id || c.creado_por === filtros.asesor_id)) ||
+                    (filtros.asesor_email && c.asesor_email && c.asesor_email.toLowerCase() === filtros.asesor_email.toLowerCase())
+                );
+            }
         }
 
-        // Supabase Real
-        try {
-            const sb = getSupabase();
-            let query = sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*');
-            if (filtros.busqueda) {
-                query = query.or(`cliente.ilike.%${filtros.busqueda}%,titulo.ilike.%${filtros.busqueda}%`);
-            }
-            query = query.order('created_at', { ascending: false });
-            const res = await query;
-            if (res && !res.error && Array.isArray(res.data)) {
-                return res;
-            }
-        } catch (e) {}
-
-        let data = this._getStoredColecciones();
-        return { data, error: null };
+        return { data: colecciones, error: null };
     },
 
     async getById(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const col = this._getStoredColecciones().find(c => c.id === id);
-            return { data: col || null, error: col ? null : 'Colección no encontrada' };
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const res = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*').eq('id', id).single();
+                    if (res && !res.error && res.data) return res;
+                }
+            } catch(e) {}
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*').eq('id', id).single();
+        const col = this._getStoredColecciones().find(c => c.id === id);
+        return { data: col || null, error: col ? null : 'Colección no encontrada' };
     },
 
     async create(coleccionData) {
         const nueva = {
             id: coleccionData.id || ('col-' + Date.now()),
             ...coleccionData,
-            created_at: new Date().toISOString()
+            created_at: coleccionData.created_at || new Date().toISOString()
         };
 
         // Guardar respaldo en localStorage siempre para reactividad inmediata
         const cols = this._getStoredColecciones();
-        cols.unshift(nueva);
+        const existingIdx = cols.findIndex(c => c.id === nueva.id);
+        if (existingIdx !== -1) {
+            cols[existingIdx] = nueva;
+        } else {
+            cols.unshift(nueva);
+        }
         this._saveStoredColecciones(cols);
 
         let res = { data: nueva, error: null };
 
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
-                const sb = getSupabase();
-                const sbRes = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).insert(coleccionData).select().single();
-                if (sbRes && !sbRes.error && sbRes.data) {
-                    res = sbRes;
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const payloadSupabase = {
+                        id: nueva.id,
+                        cliente: nueva.cliente,
+                        email: nueva.email || nueva.cliente_email || null,
+                        telefono: nueva.telefono || null,
+                        titulo: nueva.titulo,
+                        nota: nueva.nota || null,
+                        fecha: nueva.fecha || null,
+                        inmuebles: nueva.inmuebles || [],
+                        inmuebles_detalle: nueva.inmuebles_detalle || [],
+                        asesor_id: nueva.asesor_id || null,
+                        asesor: nueva.asesor || null,
+                        asesor_email: nueva.asesor_email || null,
+                        creado_por: nueva.creado_por || null,
+                        created_at: nueva.created_at
+                    };
+                    const sbRes = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).upsert(payloadSupabase).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn('⚠️ Error guardando coleccion en Supabase:', e);
+            }
         }
 
         if (typeof N8nService !== 'undefined' && !coleccionData._skipN8nDossier) {
@@ -1295,31 +1367,43 @@ const ColeccionesVipService = {
     },
 
     async update(id, updates) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let cols = this._getStoredColecciones();
-            const idx = cols.findIndex(c => c.id === id);
-            if (idx !== -1) {
-                cols[idx] = { ...cols[idx], ...updates, updated_at: new Date().toISOString() };
-                this._saveStoredColecciones(cols);
-                return { data: cols[idx], error: null };
-            }
-            return { data: null, error: 'No encontrado' };
+        let cols = this._getStoredColecciones();
+        const idx = cols.findIndex(c => c.id === id);
+        if (idx !== -1) {
+            cols[idx] = { ...cols[idx], ...updates, updated_at: new Date().toISOString() };
+            this._saveStoredColecciones(cols);
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).update(updates).eq('id', id).select().single();
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const res = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).update(updates).eq('id', id).select().single();
+                    if (res && !res.error && res.data) return res;
+                }
+            } catch(e) {}
+        }
+
+        return { data: cols[idx] || null, error: idx !== -1 ? null : 'No encontrado' };
     },
 
     async delete(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let cols = this._getStoredColecciones();
-            cols = cols.filter(c => c.id !== id);
-            this._saveStoredColecciones(cols);
-            return { error: null };
+        let cols = this._getStoredColecciones();
+        cols = cols.filter(c => c.id !== id);
+        this._saveStoredColecciones(cols);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).delete().eq('id', id);
+                }
+            } catch(e) {
+                console.warn('⚠️ Error eliminando coleccion de Supabase:', e);
+            }
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).delete().eq('id', id);
+        return { error: null };
     }
 };
 

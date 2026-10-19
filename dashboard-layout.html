@@ -8297,7 +8297,7 @@
         });
 
         // ==========================================
-        // 15. GESTIÓN DE COLECCIONES VIP PARA CLIENTES
+        // 15. GESTIÓN DE COLECCIONES VIP PARA CLIENTES (Sincronizado Supabase & Privado por Asesor)
         // ==========================================
         const COLECCIONES_VIP_DEFAULTS = [
             {
@@ -8309,7 +8309,10 @@
                 nota: 'Estimado Dr. Mendoza, he preparado personalmente esta selección de quintas de primer nivel que cumplen con sus requerimientos de privacidad, piscina climatizada y planta eléctrica 100% operativa.',
                 fecha: '14 Oct 2026',
                 inmuebles: ['inm-1', 'inm-4'],
-                asesor: 'José Guerrero'
+                asesor_id: 'mock-admin-001',
+                asesor: 'José Guerrero',
+                asesor_email: 'admin@maximus.com',
+                creado_por: 'mock-admin-001'
             },
             {
                 id: 'col-2',
@@ -8320,7 +8323,10 @@
                 nota: 'Estimado equipo de inversión, adjunto los activos comerciales con mayor flujo peatonal e industrial del Táchira disponibles para arrendamiento inmediato.',
                 fecha: '12 Oct 2026',
                 inmuebles: ['inm-2', 'inm-6'],
-                asesor: 'Carlos Santander'
+                asesor_id: 'asesor-3',
+                asesor: 'Carlos Santander',
+                asesor_email: 'carlos.santander@maximusinmobiliaria.com',
+                creado_por: 'asesor-3'
             },
             {
                 id: 'col-3',
@@ -8331,17 +8337,66 @@
                 nota: 'Hola Mariana, te comparto estas dos excelentes opciones residenciales en Paramillo y El Bosque ideales para vivienda familiar de alto estándar.',
                 fecha: '10 Oct 2026',
                 inmuebles: ['inm-3', 'inm-5'],
-                asesor: 'Valeria Méndez'
+                asesor_id: 'asesor-2',
+                asesor: 'Valeria Méndez',
+                asesor_email: 'asesor.maximus@maximus.com',
+                creado_por: 'asesor-2'
             }
         ];
 
         let coleccionesVipList = [];
         let currentDossierId = null;
 
+        function obtenerColeccionesFiltradasPorRol(lista) {
+            const arr = Array.isArray(lista) ? lista : coleccionesVipList;
+            let currentUser = null;
+            try {
+                currentUser = JSON.parse(localStorage.getItem('maximus_user'));
+            } catch(e) {}
+
+            const esAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'director');
+            if (esAdmin) {
+                // Cuenta Administrador ve absolutamente todo
+                return arr;
+            }
+
+            if (!currentUser) return arr;
+
+            const cId = (currentUser.id || '').toLowerCase().trim();
+            const cEmail = (currentUser.email || '').toLowerCase().trim();
+            const cName = (currentUser.name || '').toLowerCase().trim();
+
+            return arr.filter(col => {
+                const colAsesorId = (col.asesor_id || '').toLowerCase().trim();
+                const colAsesorEmail = (col.asesor_email || '').toLowerCase().trim();
+                const colCreadoPor = (col.creado_por || '').toLowerCase().trim();
+                const colAsesor = (col.asesor || '').toLowerCase().trim();
+
+                const coincideId = colAsesorId && cId && (colAsesorId === cId);
+                const coincideEmail = colAsesorEmail && cEmail && (colAsesorEmail === cEmail);
+                const coincideCreador = colCreadoPor && (colCreadoPor === cId || colCreadoPor === cEmail);
+                const coincideNombre = colAsesor && cName && (colAsesor === cName || colAsesor.includes(cName) || cName.includes(colAsesor));
+
+                return coincideId || coincideEmail || coincideCreador || coincideNombre;
+            });
+        }
+
         async function inicializarColeccionesVIP() {
+            let currentUser = null;
+            try {
+                currentUser = JSON.parse(localStorage.getItem('maximus_user'));
+            } catch (e) {}
+
+            const esAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'director');
+
             try {
                 if (window.ColeccionesVipService) {
-                    const { data, error } = await ColeccionesVipService.getAll();
+                    const filtros = {};
+                    if (!esAdmin && currentUser) {
+                        filtros.asesor_id = currentUser.id;
+                        filtros.asesor_email = currentUser.email;
+                    }
+                    const { data, error } = await ColeccionesVipService.getAll(filtros);
                     if (!error && data && data.length > 0) {
                         coleccionesVipList = data;
                     } else if (!data || data.length === 0) {
@@ -8363,11 +8418,17 @@
             const emptyState = document.getElementById('colecciones-empty-state');
             if (!container) return;
 
-            const list = itemsToRender || coleccionesVipList;
+            let currentUser = null;
+            try {
+                currentUser = JSON.parse(localStorage.getItem('maximus_user'));
+            } catch(e) {}
+            const esAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'director');
+
+            const list = itemsToRender || obtenerColeccionesFiltradasPorRol(coleccionesVipList);
 
             // Actualizar KPIs
             const totalColecciones = list.length;
-            const uniqueClients = new Set(list.map(c => c.cliente.toLowerCase())).size;
+            const uniqueClients = new Set(list.map(c => (c.cliente || '').toLowerCase())).size;
             let totalInmuebles = 0;
             list.forEach(c => totalInmuebles += (c.inmuebles ? c.inmuebles.length : 0));
 
@@ -8426,9 +8487,16 @@
                                     <i class="ph-bold ph-folder-star text-base"></i>
                                 </div>
                                 <div class="truncate">
-                                    <span class="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-                                        CLIENTE
-                                    </span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                            CLIENTE
+                                        </span>
+                                        ${esAdmin ? `
+                                            <span class="text-[9px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md border border-gray-200 flex items-center gap-1" title="Asesor creador de la colección">
+                                                <i class="ph-bold ph-user text-[10px] text-emerald-600"></i> ${col.asesor || 'Asesor'}
+                                            </span>
+                                        ` : ''}
+                                    </div>
                                     <h4 class="font-extrabold text-sm text-maximus-dark line-clamp-1 mt-0.5 truncate" title="${col.cliente}">${col.cliente}</h4>
                                 </div>
                             </div>
@@ -8552,6 +8620,7 @@
             } catch(e) {}
             const advisorName = currentUser?.name || 'Asesor MAXIMUS';
             const advisorEmail = currentUser?.email || 'contacto@maximusinmobiliaria.com';
+            const advisorId = currentUser?.id || ('asesor-' + (currentUser?.name || 'maximus').toLowerCase().replace(/\s+/g, '-'));
 
             const hoy = new Date();
             const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -8583,8 +8652,10 @@
                 fecha: fechaStr,
                 inmuebles: selectedProps,
                 inmuebles_detalle: inmueblesDetalle,
+                asesor_id: advisorId,
                 asesor: advisorName,
                 asesor_email: advisorEmail,
+                creado_por: advisorId,
                 _skipN8nDossier: true
             };
 
@@ -8820,15 +8891,17 @@
         }
 
         function buscarColecciones(query) {
+            const baseList = obtenerColeccionesFiltradasPorRol(coleccionesVipList);
             const q = (query || '').toLowerCase().trim();
             if (!q) {
-                renderColeccionesVIP();
+                renderColeccionesVIP(baseList);
                 return;
             }
-            const filtrados = coleccionesVipList.filter(c => 
-                c.cliente.toLowerCase().includes(q) ||
-                c.titulo.toLowerCase().includes(q) ||
-                (c.nota && c.nota.toLowerCase().includes(q))
+            const filtrados = baseList.filter(c => 
+                (c.cliente && c.cliente.toLowerCase().includes(q)) ||
+                (c.titulo && c.titulo.toLowerCase().includes(q)) ||
+                (c.nota && c.nota.toLowerCase().includes(q)) ||
+                (c.asesor && c.asesor.toLowerCase().includes(q))
             );
             renderColeccionesVIP(filtrados);
         }
