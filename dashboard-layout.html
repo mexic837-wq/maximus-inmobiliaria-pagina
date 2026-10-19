@@ -2114,21 +2114,9 @@
             <!-- C. VISTA: VENDIDOS GLOBAL -->
             <section id="view-vendidos" class="view-section max-w-[1400px] mx-auto space-y-3.5 sm:space-y-4.5 pb-24 sm:pb-6">
                 <!-- Encabezado con Sincronización Supabase -->
-                <div class="-mt-1 sm:-mt-2.5 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-                    <div>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
-                        <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Historial de éxito global.</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span id="contador-vendidos-status" class="text-xs font-bold text-gray-500 bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs flex items-center gap-1.5">
-                            <span id="dot-sync-supabase-vendidos" class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span id="contador-vendidos-texto">Sincronizado</span>
-                        </span>
-                        <button type="button" onclick="sincronizarCierresMercadoSupabase(true)" class="text-xs font-bold text-gray-600 hover:text-emerald-700 bg-white hover:bg-emerald-50 px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer" title="Sincronizar con Supabase">
-                            <i id="icono-sync-vendidos" class="ph-bold ph-arrows-clockwise text-emerald-600 text-sm"></i>
-                            <span class="hidden sm:inline">Sincronizar</span>
-                        </button>
-                    </div>
+                <div class="-mt-1 sm:-mt-2.5">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
+                    <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Historial de éxito global.</p>
                 </div>
 
                 <!-- KPIs Ergonómicos (2 columnas en móvil con Hero de 2 cols, 3 en desktop) -->
@@ -6701,11 +6689,18 @@
                 }
             }
 
+            // Registrar la última vista válida para volver exactamente a donde estaba el usuario
+            if (targetId && targetId !== 'view-detalle-inmueble') {
+                vistaOrigenInmueble = targetId;
+                try { localStorage.setItem('maximus_vista_origen_inmueble', targetId); } catch(e) {}
+            }
+
             // 5. Actualizar estilos visuales del menú lateral (Sidebar) y breadcrumb
             let sectionName = 'Resumen';
+            const vistaOrigenEfectiva = vistaOrigenInmueble || localStorage.getItem('maximus_vista_origen_inmueble') || 'view-inmuebles';
             navLinks.forEach(link => {
                 const target = link.getAttribute('data-target');
-                const isMatch = target === targetId || (targetId === 'view-detalle-inmueble' && target === 'view-inmuebles');
+                const isMatch = target === targetId || (targetId === 'view-detalle-inmueble' && target === vistaOrigenEfectiva);
                 const icon = link.querySelector('i');
 
                 if (isMatch) {
@@ -6731,7 +6726,7 @@
             const clientPills = document.querySelectorAll('#clientDesktopNav .client-nav-pill');
             clientPills.forEach(pill => {
                 const target = pill.getAttribute('data-target');
-                const isMatch = target === targetId || (targetId === 'view-detalle-inmueble' && target === 'view-inmuebles');
+                const isMatch = target === targetId || (targetId === 'view-detalle-inmueble' && target === vistaOrigenEfectiva);
                 const icon = pill.querySelector('i');
                 if (isMatch) {
                     pill.classList.remove('text-gray-500', 'hover:text-maximus-dark', 'hover:bg-gray-50', 'dark:text-gray-300', 'dark:hover:text-white', 'dark:hover:bg-[#0D2822]');
@@ -6754,7 +6749,19 @@
             const breadcrumb = document.getElementById('breadcrumbSectionName');
             if (breadcrumb) {
                 if (targetId === 'view-detalle-inmueble' && currentInmuebleAirbnb) {
-                    breadcrumb.textContent = `Inmuebles / ${currentInmuebleAirbnb.titulo}`;
+                    const MAPA_TITULOS_VISTAS = {
+                        'view-inmuebles': 'Inmuebles',
+                        'view-vendidos': 'Histórico Global',
+                        'view-captaciones': 'Captaciones MAXIMUS',
+                        'view-colecciones': 'Colecciones',
+                        'view-historico-asesores': 'Histórico Asesores',
+                        'view-mis-clientes': 'Mis Clientes (CRM)',
+                        'view-resumen': 'Panorama & Métricas',
+                        'view-cotizador': 'Cotizador Express',
+                        'view-tutoriales': 'Material Informativo'
+                    };
+                    const labelOrigen = MAPA_TITULOS_VISTAS[vistaOrigenEfectiva] || 'Inmuebles';
+                    breadcrumb.textContent = `${labelOrigen} / ${currentInmuebleAirbnb.titulo}`;
                 } else {
                     breadcrumb.textContent = sectionName;
                 }
@@ -7721,8 +7728,19 @@
         let currentInmuebleAirbnb = null;
         let lightboxFotosActuales = [];
         let lightboxFotoIndex = 0;
+        let vistaOrigenInmueble = localStorage.getItem('maximus_vista_origen_inmueble') || 'view-inmuebles';
 
-        function abrirDetalleInmuebleAirbnb(id) {
+        function abrirDetalleInmuebleAirbnb(id, origenForzado) {
+            if (origenForzado) {
+                vistaOrigenInmueble = origenForzado;
+                try { localStorage.setItem('maximus_vista_origen_inmueble', origenForzado); } catch(e) {}
+            } else {
+                const vistaActiva = document.querySelector('.view-section.active');
+                if (vistaActiva && vistaActiva.id && vistaActiva.id !== 'view-detalle-inmueble') {
+                    vistaOrigenInmueble = vistaActiva.id;
+                    try { localStorage.setItem('maximus_vista_origen_inmueble', vistaActiva.id); } catch(e) {}
+                }
+            }
             const data = INMUEBLES_DETALLE_DATA[id] || INMUEBLES_DETALLE_DATA['inm-1'];
             currentInmuebleAirbnb = data;
 
@@ -7885,7 +7903,11 @@
         }
 
         function volverACatalogoInmuebles() {
-            activateTab('view-inmuebles', true);
+            let destino = vistaOrigenInmueble || localStorage.getItem('maximus_vista_origen_inmueble') || 'view-inmuebles';
+            if (!document.getElementById(destino) || destino === 'view-detalle-inmueble') {
+                destino = 'view-inmuebles';
+            }
+            activateTab(destino, true);
             const mainEl = document.querySelector('main');
             if (mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -10931,16 +10953,9 @@
             }
         });
 
-        async function sincronizarCierresMercadoSupabase(mostrarToast = false) {
+        async function sincronizarCierresMercadoSupabase() {
             if (sincronizandoCierresMercado) return;
             sincronizandoCierresMercado = true;
-
-            const iconoSync = document.getElementById('icono-sync-vendidos');
-            const dotSync = document.getElementById('dot-sync-supabase-vendidos');
-            const txtSync = document.getElementById('contador-vendidos-texto');
-            if (iconoSync) iconoSync.classList.add('animate-spin');
-            if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
-            if (txtSync) txtSync.textContent = 'Sincronizando...';
 
             try {
                 let cierresData = null;
@@ -10962,28 +10977,11 @@
                     listaCierresMercadoCache = cierresData;
                     actualizarKPIsCierresMercado(listaCierresMercadoCache);
                     filtrarVendidosGlobal();
-                    if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                    if (txtSync) txtSync.textContent = 'Supabase Conectado';
-                    if (mostrarToast) {
-                        mostrarToastNotificacion(`⚡ ${cierresData.length} cierres de mercado sincronizados con Supabase`);
-                    }
-                } else {
-                    if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                    if (txtSync) txtSync.textContent = 'Catálogo Oficial';
-                    if (mostrarToast) {
-                        mostrarToastNotificacion('ℹ️ Datos cargados desde catálogo oficial');
-                    }
                 }
             } catch (err) {
                 console.warn('sincronizarCierresMercadoSupabase error:', err);
-                if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                if (txtSync) txtSync.textContent = 'Modo Respaldo';
-                if (mostrarToast) {
-                    mostrarToastNotificacion('ℹ️ Operando en modo local de alta disponibilidad');
-                }
             } finally {
                 sincronizandoCierresMercado = false;
-                if (iconoSync) iconoSync.classList.remove('animate-spin');
             }
         }
 
@@ -11137,7 +11135,7 @@
                 const ubicacion = item.ubicacion || 'San Cristóbal, Táchira';
                 const asesorNombre = item.asesor_nombre || 'Asesor MAXIMUS';
                 const asesorAvatar = item.asesor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(asesorNombre)}&background=0B4A3F&color=fff&bold=true`;
-                const clickDetalle = item.inmueble_id ? `onclick="if(typeof abrirDetalleInmuebleAirbnb==='function') abrirDetalleInmuebleAirbnb('${item.inmueble_id}');"` : '';
+                const clickDetalle = item.inmueble_id ? `onclick="if(typeof abrirDetalleInmuebleAirbnb==='function') abrirDetalleInmuebleAirbnb('${item.inmueble_id}', 'view-vendidos');"` : '';
 
                 return `
                     <div ${clickDetalle} class="bg-white rounded-2xl sm:rounded-[24px] shadow-sm border border-maximus-silver/30 overflow-hidden relative group hover:shadow-md transition-all duration-300 ${item.inmueble_id ? 'cursor-pointer' : ''}">
