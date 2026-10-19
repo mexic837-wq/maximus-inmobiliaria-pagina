@@ -1034,16 +1034,10 @@
                     <span class="sidebar-tooltip">Captaciones MAXIMUS</span>
                 </a>
 
-                <a href="#" data-target="view-resumen" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Resumen">
+                <a href="#" data-target="view-resumen" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Panorama & Métricas">
                     <i class="ph-fill ph-squares-four text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Panorama & Resumen</span>
-                    <span class="sidebar-tooltip">Panorama & Resumen</span>
-                </a>
-
-                <a href="#" data-target="view-metricas" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Métricas">
-                    <i class="ph ph-chart-line-up text-xl flex-shrink-0"></i>
-                    <span class="sidebar-label">Métricas</span>
-                    <span class="sidebar-tooltip">Métricas</span>
+                    <span class="sidebar-label">Panorama & Métricas</span>
+                    <span class="sidebar-tooltip">Panorama & Métricas</span>
                 </a>
                 
                 <!-- Gestión -->
@@ -1414,8 +1408,8 @@
             <section id="view-resumen" class="view-section active max-w-[1400px] mx-auto space-y-3.5 sm:space-y-5">
                 <div class="flex flex-col sm:flex-row justify-between sm:items-end gap-2.5 sm:gap-3">
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Panorama Inmobiliario</h1>
-                        <p id="resumenSubtitle" class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Un vistazo rápido al rendimiento de tu portafolio.</p>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Panorama & Métricas</h1>
+                        <p id="resumenSubtitle" class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Un vistazo integral al rendimiento, estadísticas avanzadas y actividad de tu portafolio.</p>
                     </div>
                     <!-- Botones de Temporalidad (Funcionales en Móvil y Desktop) -->
                     <div class="flex bg-white rounded-full p-1 shadow-sm border border-gray-100 self-start sm:self-auto" id="timePeriodButtons">
@@ -1516,6 +1510,95 @@
                             <span class="absolute bottom-0 text-[10px] sm:text-[11px] font-bold text-gray-400" style="left: 48%">Mié</span>
                             <span class="absolute bottom-0 text-[10px] sm:text-[11px] font-bold text-gray-400" style="left: 68%">Jue</span>
                             <span class="absolute bottom-0 text-[10px] sm:text-[11px] font-bold text-gray-400" style="left: 88%">Vie</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque Integrado de Inteligencia de Datos & Métricas -->
+                <div class="pt-2 sm:pt-4">
+                    <div class="flex items-center gap-2 mb-3 sm:mb-4">
+                        <i class="ph-bold ph-chart-donut text-lg text-maximus-accent"></i>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-maximus-dark tracking-tight">Inteligencia de Datos & Distribución</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- Tarjeta 1: Pie Chart Elegante -->
+                    <div class="bg-white rounded-2xl sm:rounded-[22px] shadow-premium p-4 sm:p-6 sm:p-8 flex flex-col border border-maximus-silver/15">
+                        <h3 class="font-extrabold text-base sm:text-lg text-maximus-dark tracking-tight mb-4 sm:mb-6">Distribución de Inmuebles</h3>
+                        <div class="flex-1 flex items-center justify-center gap-6 sm:gap-10 flex-col sm:flex-row">
+                            <!-- Pie Moderno (CSS) -->
+                            <div class="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full shrink-0 shadow-inner" style="background: conic-gradient(#10B981 0% 55%, #3B82F6 55% 80%, #F1F5F9 80% 100%);">
+                                <div class="absolute inset-0 m-auto w-24 h-24 sm:w-32 sm:h-32 bg-white dark:bg-[#0A1F1B] rounded-full flex flex-col items-center justify-center shadow-sm">
+                                    <span class="text-2xl sm:text-3xl font-black text-maximus-dark dark:text-white">45</span>
+                                    <span class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Total</span>
+                                </div>
+                            </div>
+                            <!-- Leyenda Limpia -->
+                            <div class="space-y-2.5 sm:space-y-3.5 w-full sm:w-auto">
+                                <div class="flex items-center justify-between gap-6 p-2 sm:p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0D2822] transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-maximus-accent shadow-sm"></div>
+                                        <span class="text-xs sm:text-sm font-bold text-maximus-dark dark:text-gray-200">Casas</span>
+                                    </div>
+                                    <span class="text-xs sm:text-sm font-extrabold text-maximus-accent">55%</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-6 p-2 sm:p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0D2822] transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
+                                        <span class="text-xs sm:text-sm font-bold text-maximus-dark dark:text-gray-200">Apartamentos</span>
+                                    </div>
+                                    <span class="text-xs sm:text-sm font-extrabold text-blue-500">25%</span>
+                                </div>
+                                <div class="flex items-center justify-between gap-6 p-2 sm:p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0D2822] transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-3 h-3 rounded-full bg-gray-200 shadow-sm"></div>
+                                        <span class="text-xs sm:text-sm font-bold text-maximus-dark dark:text-gray-200">Locales</span>
+                                    </div>
+                                    <span class="text-xs sm:text-sm font-extrabold text-gray-400">20%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Line Chart Area -->
+                    <div class="bg-white rounded-2xl sm:rounded-[22px] shadow-premium p-4 sm:p-6 sm:p-8 flex flex-col border border-maximus-silver/15">
+                        <div class="flex justify-between items-center mb-4 sm:mb-6">
+                            <div>
+                                <h3 class="font-extrabold text-base sm:text-lg text-maximus-dark tracking-tight">Evolución de Publicaciones</h3>
+                                <p class="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest mt-0.5">Últimos 30 días</p>
+                            </div>
+                            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-50 dark:bg-[#0D2822] flex items-center justify-center text-maximus-dark dark:text-gray-200 cursor-pointer hover:bg-maximus-accent hover:text-white transition-colors">
+                                <i class="ph-bold ph-dots-three"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Gráfico de barras moderno -->
+                        <div class="flex-1 w-full rounded-2xl bg-gray-50/50 dark:bg-[#0D2822]/40 flex items-end justify-between gap-3 relative px-4 pb-4 pt-10 min-h-[190px]">
+                            <!-- Líneas de fondo -->
+                            <div class="absolute inset-0 flex flex-col justify-between px-4 py-4 z-0">
+                                <div class="border-b border-gray-100/80 dark:border-emerald-950/40 w-full"></div>
+                                <div class="border-b border-gray-100/80 dark:border-emerald-950/40 w-full"></div>
+                                <div class="border-b border-gray-100/80 dark:border-emerald-950/40 w-full"></div>
+                                <div class="border-b border-gray-100/80 dark:border-emerald-950/40 w-full"></div>
+                            </div>
+                            
+                            <!-- Barras con gradiente -->
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[30%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[50%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[40%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-dark to-[#0f6052] rounded-t-lg h-[80%] relative z-10 shadow-lg cursor-pointer transform -translate-y-2">
+                                <!-- Tooltip destacado -->
+                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-maximus-black text-white text-[10px] font-bold py-0.5 px-2 rounded-md shadow-md">MAX</div>
+                            </div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[60%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[90%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
+                        </div>
+                        <div class="flex justify-between text-[10.5px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-3.5 px-2">
+                            <span>Semana 1</span>
+                            <span>Semana 2</span>
+                            <span>Semana 3</span>
+                            <span>Semana 4</span>
                         </div>
                     </div>
                 </div>
@@ -2548,94 +2631,6 @@
                 </div>
             </div>
 
-            <!-- D. VISTA: MÉTRICAS -->
-            <section id="view-metricas" class="view-section max-w-[1400px] mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-6">
-                <div class="pt-2 sm:pt-4">
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Inteligencia de Datos</h2>
-                    <p class="text-gray-500 mt-0.5 sm:mt-1 text-xs sm:text-base font-medium">Estadísticas avanzadas de tu cuenta.</p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
-                    <!-- Tarjeta 1: Pie Chart Elegante -->
-                    <div class="bg-white rounded-2xl sm:rounded-[24px] shadow-premium p-4 sm:p-10 flex flex-col">
-                        <h3 class="font-extrabold text-lg sm:text-xl text-maximus-dark tracking-tight mb-4 sm:mb-10">Distribución de Inmuebles</h3>
-                        <div class="flex-1 flex items-center justify-center gap-6 sm:gap-12 flex-col sm:flex-row">
-                            <!-- Pie Moderno (CSS) -->
-                            <div class="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full shrink-0 shadow-inner" style="background: conic-gradient(#10B981 0% 55%, #3B82F6 55% 80%, #F1F5F9 80% 100%);">
-                                <div class="absolute inset-0 m-auto w-28 h-28 sm:w-36 sm:h-36 bg-white rounded-full flex flex-col items-center justify-center shadow-sm">
-                                    <span class="text-2xl sm:text-3xl font-black text-maximus-dark">45</span>
-                                    <span class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Total</span>
-                                </div>
-                            </div>
-                            <!-- Leyenda Limpia -->
-                            <div class="space-y-3 sm:space-y-5 w-full sm:w-auto">
-                                <div class="flex items-center justify-between gap-6 p-2.5 sm:p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-3 h-3 rounded-full bg-maximus-accent shadow-sm"></div>
-                                        <span class="text-xs sm:text-sm font-bold text-maximus-dark">Casas</span>
-                                    </div>
-                                    <span class="text-xs sm:text-sm font-extrabold text-maximus-accent">55%</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-6 p-2.5 sm:p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
-                                        <span class="text-xs sm:text-sm font-bold text-maximus-dark">Apartamentos</span>
-                                    </div>
-                                    <span class="text-xs sm:text-sm font-extrabold text-blue-500">25%</span>
-                                </div>
-                                <div class="flex items-center justify-between gap-6 p-2.5 sm:p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-3 h-3 rounded-full bg-gray-200 shadow-sm"></div>
-                                        <span class="text-xs sm:text-sm font-bold text-maximus-dark">Locales</span>
-                                    </div>
-                                    <span class="text-xs sm:text-sm font-extrabold text-gray-400">20%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 2: Line Chart Area -->
-                    <div class="bg-white rounded-2xl sm:rounded-[24px] shadow-premium p-4 sm:p-10 flex flex-col">
-                        <div class="flex justify-between items-center mb-4 sm:mb-8">
-                            <div>
-                                <h3 class="font-extrabold text-lg sm:text-xl text-maximus-dark tracking-tight">Evolución de Publicaciones</h3>
-                                <p class="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">ÚLTIMOS 30 DÍAS</p>
-                            </div>
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-50 flex items-center justify-center text-maximus-dark cursor-pointer hover:bg-maximus-accent hover:text-white transition-colors">
-                                <i class="ph-bold ph-dots-three"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Gráfico de barras moderno -->
-                        <div class="flex-1 w-full rounded-2xl bg-gray-50/50 flex items-end justify-between gap-3 relative px-4 pb-4 pt-12 min-h-[220px]">
-                            <!-- Líneas de fondo -->
-                            <div class="absolute inset-0 flex flex-col justify-between px-4 py-4 z-0">
-                                <div class="border-b border-gray-100/80 w-full"></div>
-                                <div class="border-b border-gray-100/80 w-full"></div>
-                                <div class="border-b border-gray-100/80 w-full"></div>
-                                <div class="border-b border-gray-100/80 w-full"></div>
-                            </div>
-                            
-                            <!-- Barras con gradiente -->
-                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[30%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
-                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[50%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
-                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[40%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
-                            <div class="w-full bg-gradient-to-t from-maximus-dark to-[#0f6052] rounded-t-lg h-[80%] relative z-10 shadow-lg cursor-pointer transform -translate-y-2">
-                                <!-- Tooltip destacado -->
-                                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-maximus-black text-white text-[10px] font-bold py-1 px-2 rounded-md shadow-md">MAX</div>
-                            </div>
-                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[60%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
-                            <div class="w-full bg-gradient-to-t from-maximus-accent to-emerald-300 rounded-t-lg h-[90%] relative z-10 hover:opacity-80 cursor-pointer transition-opacity"></div>
-                        </div>
-                        <div class="flex justify-between text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-4 px-2">
-                            <span>Semana 1</span>
-                            <span>Semana 2</span>
-                            <span>Semana 3</span>
-                            <span>Semana 4</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <!-- E. VISTA: PAGOS / RENOVAR -->
             <section id="view-pagos" class="view-section agente-only max-w-[1400px] mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-6">
@@ -6544,6 +6539,10 @@
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
                 'view-admin-config', 'view-admin-equipo-web', 'view-admin-tutoriales'
             ];
+
+            if (targetId === 'view-metricas') {
+                targetId = 'view-resumen';
+            }
 
             if (currentUserRole === 'cliente' && vistasRestringidasCliente.includes(targetId)) {
                 targetId = 'view-inmuebles';
