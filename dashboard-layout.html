@@ -183,31 +183,6 @@
             height: 0px !important;
         }
 
-        /* =======================================================
-           VISTA DETALLE INMUEBLE: EFECTO ZOOM OUT PANORÁMICO
-           En pantallas medianas y de escritorio (≥1024px), aplica
-           zoom proporcional por defecto (85%) para que todo el
-           contenido superior (mosaico de 5 fotos, datos del asesor,
-           especificaciones y tarjeta flotante con todos sus botones)
-           se visualice de forma armónica y completa en primer plano
-           sin recortes verticales. En móvil se preserva al 100%.
-           ======================================================= */
-        @media (min-width: 1024px) {
-            #view-detalle-inmueble {
-                zoom: 0.85;
-            }
-        }
-        @media (min-width: 1440px) {
-            #view-detalle-inmueble {
-                zoom: 0.88;
-            }
-        }
-        @media (max-width: 1023px) {
-            #view-detalle-inmueble {
-                zoom: 1 !important;
-            }
-        }
-
         /* ==========================================
            MAXIMUS LUXURY DARK MODE THEME SYSTEM
            Paleta Oficial: Forest Obsidian & Jade (#071714 / #0A1F1B / #0C221D / #10B981)
@@ -3901,8 +3876,8 @@
                 </div>
             </section>
 
-            <!-- K. VISTA DEDICADA: DETALLE DE INMUEBLE ESTILO AIRBNB (Zoom Panorámico) -->
-            <section id="view-detalle-inmueble" class="view-section max-w-[1360px] mx-auto space-y-3 pb-8 w-full max-w-full overflow-hidden box-border">
+            <!-- K. VISTA DEDICADA: DETALLE DE INMUEBLE ESTILO AIRBNB (Ajustada y Compacta) -->
+            <section id="view-detalle-inmueble" class="view-section max-w-[1240px] mx-auto space-y-2.5 pb-6 w-full max-w-full overflow-hidden box-border">
                 <!-- Barra de Navegación y Acciones Superiores -->
                 <div class="flex items-center justify-between gap-2 pt-1 pb-1 border-b border-gray-200/70 w-full">
                     <div class="flex items-center gap-2 min-w-0">
@@ -3913,17 +3888,7 @@
                         <span id="airbnb-modal-codigo" class="text-xs font-black px-2.5 py-1 bg-emerald-50 text-maximus-accent rounded-lg border border-emerald-100 shrink-0">#MAX-101</span>
                     </div>
 
-                    <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                        <!-- Control de Zoom Panorámico -->
-                        <div class="hidden sm:flex items-center gap-1 bg-white border border-gray-200/90 rounded-xl px-2 py-1 shadow-xs" title="Ajuste de Zoom de la Vista">
-                            <i class="ph-bold ph-magnifying-glass text-emerald-600 text-xs"></i>
-                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Zoom</span>
-                            <button onclick="ajustarZoomDetalle(-0.05)" class="w-5 h-5 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-700 font-black text-xs transition-colors cursor-pointer" title="Reducir zoom">-</button>
-                            <span id="detalle-zoom-indicator" class="text-[11px] font-black text-maximus-dark min-w-[32px] text-center">85%</span>
-                            <button onclick="ajustarZoomDetalle(0.05)" class="w-5 h-5 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-700 font-black text-xs transition-colors cursor-pointer" title="Aumentar zoom">+</button>
-                            <button onclick="resetZoomDetalle()" class="text-[9px] font-extrabold text-gray-400 hover:text-emerald-700 px-1 py-0.5 rounded hover:bg-gray-100 transition-colors cursor-pointer" title="Restablecer 100%">100%</button>
-                        </div>
-
+                    <div class="flex items-center gap-1.5 shrink-0">
                         <button onclick="abrirModalFichaVIP()" class="flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer" title="Ficha VIP WhatsApp">
                             <i class="ph-bold ph-share-network text-sm text-emerald-600"></i> <span class="hidden sm:inline">Ficha VIP WhatsApp</span>
                         </button>
@@ -3934,7 +3899,7 @@
                 </div>
 
                 <!-- Contenedor Principal Blanco Dedicado (Proporciones Óptimas y Elegantes) -->
-                <div class="bg-white rounded-[24px] shadow-premium p-3.5 sm:p-5 border border-maximus-silver/20 space-y-3 sm:space-y-3.5 w-full max-w-full overflow-hidden box-border">
+                <div class="bg-white rounded-[24px] shadow-premium p-3 sm:p-4 border border-maximus-silver/20 space-y-2.5 sm:space-y-3 w-full max-w-full overflow-hidden box-border">
                     
                     <!-- Encabezado de la Propiedad (Título, Ubicación y Badges) -->
                     <div class="space-y-1">
@@ -3945,7 +3910,7 @@
                             <span id="airbnb-modal-badge-operacion" class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm">VENTA</span>
                             <span id="airbnb-modal-badge-tipo" class="bg-emerald-50 text-maximus-accent border border-emerald-200 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">CASA</span>
                         </div>
-                        <h1 id="airbnb-modal-title" class="text-lg sm:text-xl md:text-2xl font-extrabold text-maximus-dark tracking-tight leading-snug break-words">Quinta moderna con piscina y jardín</h1>
+                        <h1 id="airbnb-modal-title" class="text-base sm:text-lg md:text-xl font-extrabold text-maximus-dark tracking-tight leading-snug break-words">Quinta moderna con piscina y jardín</h1>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500 font-semibold min-w-0">
                             <span class="flex items-center gap-1 text-emerald-700 font-extrabold shrink-0">
                                 <i class="ph-bold ph-shield-check text-emerald-600"></i> Verificado
@@ -3958,7 +3923,7 @@
                     </div>
 
                     <!-- Galería de Fotos Proporcionada y Equilibrada (Desktop: Mosaico Panorámico de 5 fotos | Móvil: Cuadrícula 2x2) -->
-                    <div id="airbnb-galeria-container" class="relative rounded-[16px] sm:rounded-[20px] overflow-hidden grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-1.5 md:gap-2 h-[185px] sm:h-[225px] lg:h-[255px] xl:h-[275px] bg-gray-100 shadow-sm">
+                    <div id="airbnb-galeria-container" class="relative rounded-[16px] sm:rounded-[20px] overflow-hidden grid grid-cols-2 md:grid-cols-4 grid-rows-2 gap-1.5 md:gap-2 h-[165px] sm:h-[195px] lg:h-[215px] xl:h-[225px] bg-gray-100 shadow-sm">
                         <!-- Foto 1 (Principal en Desktop | Top-Left en móvil) -->
                         <div onclick="abrirGaleriaCompleta(0)" class="relative overflow-hidden cursor-pointer group h-full md:col-span-2 md:row-span-2 active:scale-[0.98] transition-transform">
                             <img id="airbnb-img-0" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Foto principal">
@@ -4131,18 +4096,18 @@
                                 </div>
 
                                 <!-- Botones de Acción Primaria -->
-                                <div class="space-y-2 pt-1">
-                                    <button onclick="solicitarVisitaWhatsApp()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-1.5 group hover:scale-[1.005] active:scale-[0.99] cursor-pointer">
+                                <div class="space-y-1.5 pt-0.5">
+                                    <button onclick="solicitarVisitaWhatsApp()" class="w-full py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 group hover:scale-[1.005] active:scale-[0.99] cursor-pointer">
                                         <i class="ph-fill ph-whatsapp-logo text-sm"></i>
                                         <span>Contactar Asesor por WhatsApp</span>
                                     </button>
                                     
-                                    <button onclick="abrirModalFichaVIP()" class="w-full py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200/80 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:scale-[1.005] active:scale-[0.99]">
+                                    <button onclick="abrirModalFichaVIP()" class="w-full py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200/80 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:scale-[1.005] active:scale-[0.99]">
                                         <i class="ph-bold ph-share-network text-xs text-emerald-700"></i>
                                         <span>Ficha VIP & Compartir WhatsApp</span>
                                     </button>
 
-                                    <button onclick="descargarFichaPDF()" class="w-full py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <button onclick="descargarFichaPDF()" class="w-full py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                         <i class="ph-bold ph-file-pdf text-xs text-red-500"></i>
                                         <span>Descargar Ficha Técnica PDF</span>
                                     </button>
@@ -7625,37 +7590,10 @@
         let currentInmuebleAirbnb = null;
         let lightboxFotosActuales = [];
         let lightboxFotoIndex = 0;
-        let currentDetalleZoom = (typeof window !== 'undefined' && window.innerWidth >= 1440) ? 0.88 : ((typeof window !== 'undefined' && window.innerWidth >= 1024) ? 0.85 : 1);
-
-        function aplicarZoomDetalle(z) {
-            currentDetalleZoom = Math.min(1.2, Math.max(0.65, Math.round(z * 100) / 100));
-            const sec = document.getElementById('view-detalle-inmueble');
-            if (sec) {
-                sec.style.zoom = currentDetalleZoom;
-            }
-            const ind = document.getElementById('detalle-zoom-indicator');
-            if (ind) {
-                ind.textContent = `${Math.round(currentDetalleZoom * 100)}%`;
-            }
-        }
-
-        function ajustarZoomDetalle(delta) {
-            aplicarZoomDetalle(currentDetalleZoom + delta);
-        }
-
-        function resetZoomDetalle() {
-            aplicarZoomDetalle(1);
-        }
 
         function abrirDetalleInmuebleAirbnb(id) {
             const data = INMUEBLES_DETALLE_DATA[id] || INMUEBLES_DETALLE_DATA['inm-1'];
             currentInmuebleAirbnb = data;
-
-            // Sincronizar zoom panorámico
-            if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-                const defaultZ = window.innerWidth >= 1440 ? 0.88 : 0.85;
-                aplicarZoomDetalle(defaultZ);
-            }
 
             // 1. Encabezado y badges
             const elCodigo = document.getElementById('airbnb-modal-codigo');
