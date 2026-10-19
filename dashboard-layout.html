@@ -2182,68 +2182,46 @@
                     </div>
                 </div>
 
-                <!-- 1. Tarjetas Métricas / KPIs de Rendimiento (Diseño Minimalista Cohesivo) -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
-                    <!-- KPI 1: Inmuebles Vendidos / Cerrados -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Inmuebles Cerrados</span>
-                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm">
-                                <i class="ph-fill ph-house-line"></i>
+                <!-- 1. Tarjetas Métricas / KPIs de Rendimiento (Ventas, Alquileres, Comisión Bruta) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5">
+                    <!-- KPI 1: Ventas -->
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ventas</span>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">
+                                <i class="ph-fill ph-tag"></i>
                             </div>
                         </div>
-                        <h3 class="text-2xl sm:text-3xl font-black text-maximus-dark tracking-tight" id="kpi-total-vendidos">0</h3>
-                        <p class="text-[11px] font-bold text-emerald-700 mt-1 flex items-center gap-1" id="kpi-sub-cierres">
-                            <i class="ph-bold ph-check-circle"></i> <span>0 Ventas • 0 Alquileres</span>
+                        <h3 class="text-3xl sm:text-4xl font-black text-maximus-dark tracking-tight" id="kpi-ventas-count">0</h3>
+                        <p class="text-xs font-bold text-emerald-700 mt-1.5 flex items-center gap-1.5" id="kpi-sub-ventas">
+                            <i class="ph-bold ph-check-circle"></i> <span>0 Operaciones</span>
                         </p>
                     </div>
 
-                    <!-- KPI 2: Volumen Total Cerrado -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Volumen Facturado</span>
-                            <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center text-sm">
-                                <i class="ph-fill ph-trend-up"></i>
+                    <!-- KPI 2: Alquileres -->
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-maximus-silver/20 hover:border-blue-300 transition-all group">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Alquileres</span>
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-lg">
+                                <i class="ph-fill ph-key"></i>
                             </div>
                         </div>
-                        <h3 class="text-2xl sm:text-3xl font-black text-maximus-dark tracking-tight" id="kpi-volumen-total">$0</h3>
-                        <p class="text-[11px] font-medium text-gray-400 mt-1">Total transado en USD</p>
+                        <h3 class="text-3xl sm:text-4xl font-black text-maximus-dark tracking-tight" id="kpi-alquileres-count">0</h3>
+                        <p class="text-xs font-bold text-blue-700 mt-1.5 flex items-center gap-1.5" id="kpi-sub-alquileres">
+                            <i class="ph-bold ph-calendar-check"></i> <span>0 Contratos</span>
+                        </p>
                     </div>
 
-                    <!-- KPI 3: Comisión Bruta Total -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Comisión Bruta</span>
-                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm">
+                    <!-- KPI 3: Comisión Bruta -->
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Comisión Bruta</span>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">
                                 <i class="ph-fill ph-currency-dollar"></i>
                             </div>
                         </div>
-                        <h3 class="text-2xl sm:text-3xl font-black text-maximus-dark tracking-tight" id="kpi-comision-bruta">$0</h3>
-                        <p class="text-[11px] font-medium text-emerald-700 mt-1">Facturación total corretaje</p>
-                    </div>
-
-                    <!-- KPI 4: Comisión Neta Asesores -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Comisión Neta Equipo</span>
-                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm">
-                                <i class="ph-fill ph-wallet"></i>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight" id="kpi-comision-neta">$0</h3>
-                        <p class="text-[11px] font-medium text-gray-400 mt-1" id="kpi-sub-liquidadas">0 transacciones liquidadas</p>
-                    </div>
-
-                    <!-- KPI 5: Margen Oficina MAXIMUS -->
-                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-maximus-silver/20 hover:border-emerald-300 transition-all group col-span-2 md:col-span-1">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Retención MAXIMUS</span>
-                            <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-sm">
-                                <i class="ph-fill ph-buildings"></i>
-                            </div>
-                        </div>
-                        <h3 class="text-2xl sm:text-3xl font-black text-blue-700 tracking-tight" id="kpi-comision-oficina">$0</h3>
-                        <p class="text-[11px] font-medium text-gray-400 mt-1">Operatividad & Publicidad</p>
+                        <h3 class="text-3xl sm:text-4xl font-black text-emerald-700 tracking-tight" id="kpi-comision-bruta">$0</h3>
+                        <p class="text-xs font-medium text-gray-500 mt-1.5" id="kpi-sub-comision-bruta">Facturación total corretaje</p>
                     </div>
                 </div>
 
@@ -11144,21 +11122,21 @@
 
         function renderMetricasHistorico(m) {
             if (!m) return;
-            const elTotal = document.getElementById('kpi-total-vendidos');
-            const elSubCierres = document.getElementById('kpi-sub-cierres');
-            const elVol = document.getElementById('kpi-volumen-total');
+            const elVentas = document.getElementById('kpi-ventas-count');
+            const elSubVentas = document.getElementById('kpi-sub-ventas');
+            const elAlquileres = document.getElementById('kpi-alquileres-count');
+            const elSubAlquileres = document.getElementById('kpi-sub-alquileres');
             const elBruta = document.getElementById('kpi-comision-bruta');
-            const elNeta = document.getElementById('kpi-comision-neta');
-            const elSubLiq = document.getElementById('kpi-sub-liquidadas');
-            const elOficina = document.getElementById('kpi-comision-oficina');
+            const elSubBruta = document.getElementById('kpi-sub-comision-bruta');
 
-            if (elTotal) elTotal.textContent = m.total_inmuebles_vendidos;
-            if (elSubCierres) elSubCierres.innerHTML = `<i class="ph-bold ph-check-circle"></i> <span>${m.liquidadas_count} Liquidadas • ${m.pendientes_count} En Trámite</span>`;
-            if (elVol) elVol.textContent = formatUSD(m.volumen_total_cerrado);
-            if (elBruta) elBruta.textContent = formatUSD(m.comision_bruta_total);
-            if (elNeta) elNeta.textContent = formatUSD(m.comision_neta_asesores);
-            if (elSubLiq) elSubLiq.textContent = `${m.liquidadas_count} liquidadas • Promedio: ${formatUSD(m.ticket_promedio)}`;
-            if (elOficina) elOficina.textContent = formatUSD(m.comision_oficina_total);
+            if (elVentas) elVentas.textContent = m.ventas_count !== undefined ? m.ventas_count : (m.total_inmuebles_vendidos || 0);
+            if (elSubVentas) elSubVentas.innerHTML = `<i class="ph-bold ph-check-circle"></i> <span>${m.ventas_count || 0} Ventas (${formatUSD(m.volumen_ventas || m.volumen_total_cerrado || 0)})</span>`;
+
+            if (elAlquileres) elAlquileres.textContent = m.alquileres_count !== undefined ? m.alquileres_count : 0;
+            if (elSubAlquileres) elSubAlquileres.innerHTML = `<i class="ph-bold ph-calendar-check"></i> <span>${m.alquileres_count || 0} Alquileres (${formatUSD(m.volumen_alquileres || 0)})</span>`;
+
+            if (elBruta) elBruta.textContent = formatUSD(m.comision_bruta_total || 0);
+            if (elSubBruta) elSubBruta.textContent = `${m.liquidadas_count || 0} liquidadas • ${m.pendientes_count || 0} en trámite`;
         }
 
         function renderTablaCierres(lista) {

@@ -1007,6 +1007,10 @@ const CierreVentaService = {
         let comisionOficinaTotal = 0;
         let liquidadasCount = 0;
         let pendientesCount = 0;
+        let ventasCount = 0;
+        let alquileresCount = 0;
+        let volumenVentas = 0;
+        let volumenAlquileres = 0;
 
         const asesorMap = {};
 
@@ -1020,6 +1024,14 @@ const CierreVentaService = {
             comisionBrutaTotal += bruta;
             comisionNetaTotal += neta;
             comisionOficinaTotal += oficina;
+
+            if (c.tipo_operacion === 'alquiler') {
+                alquileresCount++;
+                volumenAlquileres += precio;
+            } else {
+                ventasCount++;
+                volumenVentas += precio;
+            }
 
             if (c.estatus_comision === 'liquidada') liquidadasCount++;
             else pendientesCount++;
@@ -1049,6 +1061,10 @@ const CierreVentaService = {
 
         return {
             total_inmuebles_vendidos: totalVendidos,
+            ventas_count: ventasCount,
+            alquileres_count: alquileresCount,
+            volumen_ventas: volumenVentas,
+            volumen_alquileres: volumenAlquileres,
             volumen_total_cerrado: volumenTotal,
             comision_bruta_total: comisionBrutaTotal,
             comision_neta_asesores: comisionNetaTotal,
