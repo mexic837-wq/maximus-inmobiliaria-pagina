@@ -1907,6 +1907,141 @@ const NotificacionService = {
     }
 };
 
+// ============================================
+// SERVICIO DE MATERIAL INFORMATIVO & ACADEMIA
+// ============================================
+const MaterialInformativoService = {
+
+    _normalizarItem(row) {
+        if (!row) return null;
+        return {
+            id: row.id,
+            orden: row.orden || 1,
+            titulo: row.titulo || 'Sin título',
+            desc: row.desc || row.descripcion || '',
+            descripcion: row.descripcion || row.desc || '',
+            categoria: row.categoria || 'primeros-pasos',
+            categoria_nombre: row.categoria_nombre || row.categoriaNombre || 'General',
+            categoriaNombre: row.categoria_nombre || row.categoriaNombre || 'General',
+            tipo: row.tipo || 'video',
+            tipo_label: row.tipo_label || row.tipoLabel || 'Tutorial',
+            tipoLabel: row.tipo_label || row.tipoLabel || 'Tutorial',
+            duracion: row.duracion || '05:00 min',
+            badge: row.badge || 'VIP',
+            badge_color: row.badge_color || row.badgeColor || 'bg-emerald-600',
+            badgeColor: row.badge_color || row.badgeColor || 'bg-emerald-600',
+            imagen: row.imagen || row.imagen_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+            url_recurso: row.url_recurso || row.url || '#',
+            resumen_puntos: Array.isArray(row.resumen_puntos) ? row.resumen_puntos : (Array.isArray(row.resumenPuntos) ? row.resumenPuntos : []),
+            resumenPuntos: Array.isArray(row.resumen_puntos) ? row.resumen_puntos : (Array.isArray(row.resumenPuntos) ? row.resumenPuntos : []),
+            activo: row.activo !== false,
+            created_at: row.created_at || new Date().toISOString()
+        };
+    },
+
+    async getAll(filtros = {}) {
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tableName = APP_CONFIG.TABLES.MATERIAL_INFORMATIVO || 'material_informativo';
+                    let query = sb.from(tableName).select('*').order('orden', { ascending: true });
+                    
+                    if (filtros.categoria && filtros.categoria !== 'todos') {
+                        query = query.eq('categoria', filtros.categoria);
+                    }
+                    if (filtros.tipo && filtros.tipo !== 'todos') {
+                        query = query.eq('tipo', filtros.tipo);
+                    }
+                    if (filtros.activo !== undefined) {
+                        query = query.eq('activo', filtros.activo);
+                    }
+
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                        const normalizados = res.data.map(r => this._normalizarItem(r));
+                        return { data: normalizados, error: null, source: 'supabase' };
+                    }
+                    if (res && res.error) {
+                        console.warn('⚠️ MAXIMUS MaterialInformativoService: Supabase devolvió aviso. Usando respaldo local:', res.error.message || res.error);
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ MAXIMUS MaterialInformativoService: Excepción al conectar con Supabase. Usando respaldo local:', err);
+            }
+        }
+
+        // Respaldo local desde MOCK_DATA
+        let data = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.material_informativo))
+            ? MOCK_DATA.material_informativo.map(r => this._normalizarItem(r))
+            : [];
+
+        if (filtros.categoria && filtros.categoria !== 'todos') {
+            data = data.filter(m => m.categoria === filtros.categoria);
+        }
+        if (filtros.busqueda) {
+            const q = filtros.busqueda.toLowerCase();
+            data = data.filter(m => 
+                m.titulo.toLowerCase().includes(q) ||
+                m.desc.toLowerCase().includes(q) ||
+                m.categoriaNombre.toLowerCase().includes(q)
+            );
+        }
+
+        return { data, error: null, source: 'mock' };
+    },
+
+    async getById(id) {
+        const { data } = await this.getAll();
+        const found = data.find(m => m.id === id);
+        return { data: found || null, error: found ? null : 'No encontrado' };
+    },
+
+    async create(nuevoItem) {
+        const itemNormalizado = this._normalizarItem({
+            id: nuevoItem.id || 'mat-' + Date.now(),
+            ...nuevoItem,
+            created_at: new Date().toISOString()
+        });
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tableName = APP_CONFIG.TABLES.MATERIAL_INFORMATIVO || 'material_informativo';
+                    const res = await sb.from(tableName).insert([{
+                        id: itemNormalizado.id,
+                        orden: itemNormalizado.orden,
+                        titulo: itemNormalizado.titulo,
+                        descripcion: itemNormalizado.desc,
+                        categoria: itemNormalizado.categoria,
+                        categoria_nombre: itemNormalizado.categoriaNombre,
+                        tipo: itemNormalizado.tipo,
+                        tipo_label: itemNormalizado.tipoLabel,
+                        duracion: itemNormalizado.duracion,
+                        badge: itemNormalizado.badge,
+                        badge_color: itemNormalizado.badgeColor,
+                        imagen: itemNormalizado.imagen,
+                        url_recurso: itemNormalizado.url_recurso,
+                        resumen_puntos: itemNormalizado.resumenPuntos,
+                        activo: true
+                    }]).select().single();
+                    if (res && !res.error) {
+                        return { data: this._normalizarItem(res.data), error: null };
+                    }
+                }
+            } catch (e) {
+                console.warn('MaterialInformativoService.create: Error en Supabase:', e);
+            }
+        }
+
+        if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.material_informativo)) {
+            MOCK_DATA.material_informativo.push(itemNormalizado);
+        }
+        return { data: itemNormalizado, error: null };
+    }
+};
+
 // Exportar todos los servicios
 if (typeof window !== 'undefined') {
     window.InmuebleService = InmuebleService;
@@ -1926,5 +2061,6 @@ if (typeof window !== 'undefined') {
     window.EquipoWebService = EquipoWebService;
     window.AsesorMaximusService = AsesorMaximusService;
     window.NotificacionService = NotificacionService;
+    window.MaterialInformativoService = MaterialInformativoService;
 }
 

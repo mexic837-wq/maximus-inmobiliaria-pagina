@@ -2594,59 +2594,64 @@
             </section>
 
             <!-- F. VISTA: MATERIAL INFORMATIVO & CAPACITACIÓN -->
-            <section id="view-tutoriales" class="view-section agente-only max-w-[1400px] mx-auto space-y-6 pb-24 sm:pb-8">
-                <!-- Encabezado Principal -->
-                <div class="pt-2 sm:pt-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <section id="view-tutoriales" class="view-section agente-only max-w-[1400px] mx-auto space-y-3.5 sm:space-y-4.5 pb-24 sm:pb-8">
+                <!-- Encabezado Principal (Espaciado Reducido y Optimizado) -->
+                <div class="-mt-1 sm:-mt-2.5 flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-4">
                     <div>
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider mb-2 border border-emerald-200/60">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider mb-1.5 border border-emerald-200/60">
                             <i class="ph-bold ph-book-open text-xs text-emerald-600"></i> Centro de Conocimiento MAXIMUS
                         </div>
-                        <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Material Informativo & Academia</h2>
-                        <p class="text-gray-500 mt-1 text-xs sm:text-base font-medium max-w-2xl">Tutoriales en video, guías operativas, manuales de captación y formatos contractuales para el equipo.</p>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Material Informativo & Academia</h2>
+                        <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium max-w-2xl">Tutoriales en video, guías operativas, manuales de captación y formatos contractuales para el equipo.</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span id="contador-material-informativo" class="text-xs font-bold text-gray-500 bg-white px-4 py-2.5 rounded-full border border-gray-200 shadow-xs">
-                            Cargando materiales...
+                        <span id="contador-material-informativo" class="text-xs font-bold text-gray-500 bg-white px-3.5 py-1.5 rounded-full border border-gray-200 shadow-xs flex items-center gap-1.5">
+                            <span id="dot-sync-supabase-material" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span id="contador-material-texto">6 materiales disponibles</span>
                         </span>
+                        <button type="button" onclick="sincronizarMaterialInformativoSupabase(true)" class="text-xs font-bold text-gray-600 hover:text-emerald-700 bg-white hover:bg-emerald-50 px-3 py-1.5 rounded-full border border-gray-200 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer" title="Sincronizar con Supabase">
+                            <i id="icono-sync-material" class="ph-bold ph-arrows-clockwise text-emerald-600 text-sm"></i>
+                            <span class="hidden sm:inline">Sincronizar</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Barra de Búsqueda y Filtros de Categoría -->
-                <div class="space-y-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-[24px] shadow-sm border border-maximus-silver/20">
+                <div class="space-y-2.5 bg-white p-3.5 sm:p-4 rounded-2xl shadow-sm border border-maximus-silver/20">
                     <!-- Input de Búsqueda -->
                     <div class="relative w-full">
                         <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
-                        <input type="text" id="buscador-material-informativo" oninput="filtrarMaterialInformativo()" placeholder="Buscar por título, categoría o palabra clave (ej: cargar inmueble, comisiones, captación, legal)..." class="w-full bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl pl-11 pr-10 py-3 text-xs sm:text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition-all shadow-inner">
+                        <input type="text" id="buscador-material-informativo" oninput="filtrarMaterialInformativo()" placeholder="Buscar por título, categoría o palabra clave (ej: cargar inmueble, comisiones, captación, legal)..." class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-10 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition-all shadow-inner">
                         <button type="button" id="btn-limpiar-busqueda-material" onclick="limpiarBuscadorMaterial()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 w-6 h-6 items-center justify-center rounded-full hover:bg-gray-200 transition-colors">
                             <i class="ph-bold ph-x text-xs"></i>
                         </button>
                     </div>
 
                     <!-- Filtros Pills Categoría -->
-                    <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pt-1" id="pills-categorias-material">
-                        <button type="button" onclick="seleccionarCategoriaMaterial('todos', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-maximus-dark text-white shadow-sm flex items-center gap-1.5 active">
+                    <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pt-0.5" id="pills-categorias-material">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('todos', this)" class="btn-pill-cat shrink-0 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-maximus-dark text-white shadow-sm flex items-center gap-1.5 active">
                             <span>Todos</span> <span class="text-[10px] opacity-75 font-normal" id="cat-count-todos">(6)</span>
                         </button>
-                        <button type="button" onclick="seleccionarCategoriaMaterial('primeros-pasos', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('primeros-pasos', this)" class="btn-pill-cat shrink-0 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
                             <i class="ph-bold ph-rocket-launch text-emerald-600"></i> Primeros pasos
                         </button>
-                        <button type="button" onclick="seleccionarCategoriaMaterial('inmuebles', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('inmuebles', this)" class="btn-pill-cat shrink-0 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
                             <i class="ph-bold ph-buildings text-teal-600"></i> Inmuebles & Captaciones
                         </button>
-                        <button type="button" onclick="seleccionarCategoriaMaterial('metricas', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('metricas', this)" class="btn-pill-cat shrink-0 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
                             <i class="ph-bold ph-chart-bar text-blue-600"></i> Métricas & Finanzas
                         </button>
-                        <button type="button" onclick="seleccionarCategoriaMaterial('ventas', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('ventas', this)" class="btn-pill-cat shrink-0 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
                             <i class="ph-bold ph-handshake text-purple-600"></i> Ventas & Negociación
                         </button>
-                        <button type="button" onclick="seleccionarCategoriaMaterial('legal', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('legal', this)" class="btn-pill-cat shrink-0 px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
                             <i class="ph-bold ph-file-text text-amber-600"></i> Legal & Contratos
                         </button>
                     </div>
                 </div>
 
                 <!-- Grilla Dinámica de Materiales -->
-                <div id="grid-material-informativo" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pt-1">
+                <div id="grid-material-informativo" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 pt-0.5">
                     <!-- Se renderiza dinámicamente con JavaScript -->
                 </div>
             </section>
@@ -12300,11 +12305,60 @@
             }
         ];
 
+        let listaMaterialInformativo = [...MATERIAL_INFORMATIVO_DATA];
         let categoriaMaterialActual = 'todos';
         let materialActualSeleccionado = null;
+        let sincronizandoMaterial = false;
 
-        function inicializarMaterialInformativo() {
+        async function inicializarMaterialInformativo() {
             filtrarMaterialInformativo();
+            await sincronizarMaterialInformativoSupabase(false);
+        }
+
+        async function sincronizarMaterialInformativoSupabase(mostrarFeedback = false) {
+            if (sincronizandoMaterial) return;
+            sincronizandoMaterial = true;
+
+            const iconoSync = document.getElementById('icono-sync-material');
+            const dotSync = document.getElementById('dot-sync-supabase-material');
+            if (iconoSync) iconoSync.classList.add('animate-spin');
+            if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+
+            try {
+                if (window.MaterialInformativoService) {
+                    const res = await MaterialInformativoService.getAll();
+                    if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+                        listaMaterialInformativo = res.data;
+                        actualizarConteoCategoriasMaterial();
+                        filtrarMaterialInformativo();
+                        if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                        if (mostrarFeedback) {
+                            mostrarToastNotificacion(`⚡ ${res.data.length} materiales sincronizados con Supabase`);
+                        }
+                    } else {
+                        if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                        if (mostrarFeedback) {
+                            mostrarToastNotificacion('ℹ️ Material cargado desde catálogo oficial');
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('sincronizarMaterialInformativoSupabase error:', err);
+                if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                if (mostrarFeedback) {
+                    mostrarToastNotificacion('ℹ️ Catálogo activo en modo local de alta disponibilidad');
+                }
+            } finally {
+                sincronizandoMaterial = false;
+                if (iconoSync) iconoSync.classList.remove('animate-spin');
+            }
+        }
+
+        function actualizarConteoCategoriasMaterial() {
+            const countTodos = document.getElementById('cat-count-todos');
+            if (countTodos) {
+                countTodos.textContent = `(${listaMaterialInformativo.length})`;
+            }
         }
 
         function filtrarMaterialInformativo() {
@@ -12322,7 +12376,7 @@
                 }
             }
 
-            let filtrados = MATERIAL_INFORMATIVO_DATA;
+            let filtrados = Array.isArray(listaMaterialInformativo) ? listaMaterialInformativo : MATERIAL_INFORMATIVO_DATA;
 
             // Filtro por categoría
             if (categoriaMaterialActual && categoriaMaterialActual !== 'todos') {
@@ -12332,20 +12386,25 @@
             // Filtro por texto de búsqueda
             if (q) {
                 filtrados = filtrados.filter(m => 
-                    m.titulo.toLowerCase().includes(q) ||
-                    m.desc.toLowerCase().includes(q) ||
-                    m.categoriaNombre.toLowerCase().includes(q) ||
-                    m.tipoLabel.toLowerCase().includes(q) ||
+                    (m.titulo && m.titulo.toLowerCase().includes(q)) ||
+                    (m.desc && m.desc.toLowerCase().includes(q)) ||
+                    (m.categoriaNombre && m.categoriaNombre.toLowerCase().includes(q)) ||
+                    (m.tipoLabel && m.tipoLabel.toLowerCase().includes(q)) ||
                     (m.resumenPuntos && m.resumenPuntos.some(p => p.toLowerCase().includes(q)))
                 );
             }
 
             // Actualizar contadores
+            const contadorTexto = document.getElementById('contador-material-texto');
             const contadorEl = document.getElementById('contador-material-informativo');
-            if (contadorEl) {
-                contadorEl.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'material disponible' : 'materiales disponibles'}`;
+            const labelConteo = `${filtrados.length} ${filtrados.length === 1 ? 'material disponible' : 'materiales disponibles'}`;
+            if (contadorTexto) {
+                contadorTexto.textContent = labelConteo;
+            } else if (contadorEl) {
+                contadorEl.textContent = labelConteo;
             }
 
+            actualizarConteoCategoriasMaterial();
             renderMaterialInformativo(filtrados);
         }
 
@@ -12454,7 +12513,7 @@
         }
 
         function abrirModalMaterialInformativo(id) {
-            const item = MATERIAL_INFORMATIVO_DATA.find(m => m.id === id);
+            const item = (listaMaterialInformativo || []).find(m => m.id === id) || MATERIAL_INFORMATIVO_DATA.find(m => m.id === id);
             if (!item) return;
 
             materialActualSeleccionado = item;

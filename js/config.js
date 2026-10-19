@@ -82,6 +82,8 @@ const APP_CONFIG = {
         SECCIONES_WEB: 'secciones_web',
         ASESORES_MAXIMUS: 'asesores_maximus',
         NOTIFICACIONES: 'notificaciones',
+        MATERIAL_INFORMATIVO: 'material_informativo',
+        TUTORIALES: 'material_informativo',
     },
 };
 
