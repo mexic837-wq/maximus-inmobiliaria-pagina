@@ -2119,74 +2119,6 @@
                         <!-- Las tarjetas se generan dinámicamente vía JS -->
                     </div>
                 </div>
-
-                <!-- MODAL: FICHA / DETALLE DE ASESOR OFICIAL MAXIMUS -->
-                <div id="modal-perfil-asesor-maximus" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
-                    <div class="bg-white rounded-[28px] max-w-xl w-full p-6 md:p-8 shadow-2xl border border-gray-100 relative max-h-[90vh] overflow-y-auto space-y-6">
-                        <button onclick="cerrarModalPerfilAsesor()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition-colors">
-                            <i class="ph-bold ph-x text-base"></i>
-                        </button>
-
-                        <div class="flex items-center gap-4">
-                            <div class="relative">
-                                <img id="modal-asesor-avatar" src="" class="w-20 h-20 rounded-2xl object-cover shadow-lg border-2 border-emerald-500">
-                                <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs shadow-md ring-2 ring-white">
-                                    <i class="ph-bold ph-check"></i>
-                                </span>
-                            </div>
-                            <div>
-                                <span id="modal-asesor-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider"></span>
-                                <h3 id="modal-asesor-nombre" class="text-xl font-extrabold text-maximus-dark mt-1"></h3>
-                                <p id="modal-asesor-cargo" class="text-xs font-bold text-gray-500"></p>
-                                <div class="flex items-center gap-2 mt-1 text-xs">
-                                    <span class="text-emerald-700 flex items-center gap-1.5 font-bold">
-                                        <i class="ph-bold ph-handshake text-emerald-600 text-sm"></i> <span id="modal-asesor-cierres"></span>
-                                    </span>
-                                    <span id="modal-asesor-rating" class="hidden"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bio -->
-                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Trayectoria & Enfoque</p>
-                            <p id="modal-asesor-bio" class="text-xs text-gray-600 leading-relaxed font-medium"></p>
-                        </div>
-
-                        <!-- Métricas del Asesor -->
-                        <div class="grid grid-cols-2 gap-3 text-center">
-                            <div class="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100">
-                                <p class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Captaciones Activas</p>
-                                <h4 id="modal-asesor-captaciones-count" class="text-2xl font-black text-emerald-950 mt-0.5">--</h4>
-                            </div>
-                            <div class="p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Especialidad</p>
-                                <h4 id="modal-asesor-especialidad" class="text-xs font-extrabold text-maximus-dark mt-1 truncate">--</h4>
-                            </div>
-                        </div>
-
-                        <!-- Lista de Inmuebles del Asesor -->
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-maximus-dark">Inmuebles a su cargo</h4>
-                                <span class="text-[10px] text-gray-400 font-bold">Comisión 50/50</span>
-                            </div>
-                            <div id="modal-asesor-inmuebles-list" class="space-y-2 max-h-52 overflow-y-auto pr-1">
-                                <!-- Generado dinámicamente -->
-                            </div>
-                        </div>
-
-                        <!-- Botones de Acción -->
-                        <div class="grid grid-cols-2 gap-3 pt-2">
-                            <a id="modal-asesor-whatsapp-btn" href="#" target="_blank" class="py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs text-center flex items-center justify-center gap-2 shadow-md transition-all">
-                                <i class="ph-fill ph-whatsapp-logo text-base"></i> Chatear por WhatsApp
-                            </a>
-                            <button id="modal-asesor-ver-captaciones-btn" onclick="" class="py-3 px-4 rounded-xl bg-maximus-dark hover:bg-black text-white font-extrabold text-xs text-center flex items-center justify-center gap-2 transition-all">
-                                <i class="ph-bold ph-buildings text-base"></i> Filtrar sus Inmuebles
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </section>
 
 
@@ -4815,6 +4747,83 @@
         <!-- Miniaturas inferiores -->
         <div class="flex items-center justify-center gap-2 overflow-x-auto py-3 px-2" id="lightbox-thumbnails">
             <!-- Generado por JS -->
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL: FICHA / DETALLE DE ASESOR OFICIAL MAXIMUS
+         ========================================== -->
+    <div id="modal-perfil-asesor-maximus" 
+         class="fixed inset-0 z-[125] hidden flex items-center justify-center p-3 sm:p-5 bg-black/65 backdrop-blur-md opacity-0 transition-opacity duration-300 ease-out" 
+         onclick="if(event.target === this) cerrarModalPerfilAsesor()">
+        <div id="modal-perfil-asesor-card" 
+             class="relative bg-white rounded-[24px] sm:rounded-[28px] max-w-lg w-full p-4.5 sm:p-6 shadow-2xl border border-gray-100 max-h-[85vh] overflow-y-auto space-y-4 transform scale-95 opacity-0 transition-all duration-300 ease-out">
+            
+            <!-- Botón Cerrar -->
+            <button onclick="cerrarModalPerfilAsesor()" 
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-maximus-dark flex items-center justify-center transition-colors cursor-pointer shadow-xs" 
+                    title="Cerrar ficha">
+                <i class="ph-bold ph-x text-sm"></i>
+            </button>
+
+            <!-- Cabecera del Asesor -->
+            <div class="flex items-center gap-3.5 pr-8">
+                <div class="relative shrink-0">
+                    <img id="modal-asesor-avatar" src="" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80'" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shadow-md border-2 border-emerald-500">
+                    <span class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm ring-2 ring-white">
+                        <i class="ph-bold ph-check"></i>
+                    </span>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <span id="modal-asesor-badge" class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-[9px] font-extrabold uppercase tracking-wider inline-block">DIRECTOR & CAPTADOR</span>
+                    <h3 id="modal-asesor-nombre" class="text-base sm:text-lg font-black text-maximus-dark truncate mt-0.5">Carlos Santander</h3>
+                    <p id="modal-asesor-cargo" class="text-[11px] font-bold text-gray-500 truncate">Especialista en Inversiones & Locales</p>
+                    <div class="flex items-center gap-2 mt-1 text-[11px]">
+                        <span class="text-emerald-700 flex items-center gap-1 font-bold">
+                            <i class="ph-bold ph-shield-check text-emerald-600"></i> Asesor Verificado MAXIMUS
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trayectoria & Enfoque -->
+            <div class="bg-gray-50/90 p-3 sm:p-3.5 rounded-2xl border border-gray-100">
+                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Trayectoria & Enfoque</p>
+                <p id="modal-asesor-bio" class="text-xs text-gray-600 leading-relaxed font-medium"></p>
+            </div>
+
+            <!-- Métricas Clave del Asesor -->
+            <div class="grid grid-cols-2 gap-2.5 text-center">
+                <div class="p-2.5 sm:p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100/90 shadow-none">
+                    <p class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-wider">Captaciones Activas</p>
+                    <h4 id="modal-asesor-captaciones-count" class="text-xl sm:text-2xl font-black text-emerald-950 mt-0.5">--</h4>
+                </div>
+                <div class="p-2.5 sm:p-3 rounded-2xl bg-gray-50 border border-gray-100 shadow-none">
+                    <p class="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Especialidad</p>
+                    <h4 id="modal-asesor-especialidad" class="text-xs font-black text-maximus-dark mt-1 truncate">--</h4>
+                </div>
+            </div>
+
+            <!-- Inmuebles asignados -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-maximus-dark">Inmuebles a su cargo</h4>
+                    <span class="text-[10px] text-emerald-700 font-extrabold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">Exclusivas MAXIMUS</span>
+                </div>
+                <div id="modal-asesor-inmuebles-list" class="space-y-1.5 max-h-44 sm:max-h-48 overflow-y-auto pr-1">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <a id="modal-asesor-whatsapp-btn" href="#" target="_blank" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs text-center flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer">
+                    <i class="ph-fill ph-whatsapp-logo text-sm"></i> Chatear por WhatsApp
+                </a>
+                <button id="modal-asesor-ver-captaciones-btn" type="button" class="py-2.5 px-3 rounded-xl bg-maximus-dark hover:bg-black text-white font-extrabold text-xs text-center flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                    <i class="ph-bold ph-buildings text-sm"></i> Filtrar sus Inmuebles
+                </button>
+            </div>
         </div>
     </div>
 
@@ -8118,6 +8127,11 @@
                     cerrarModalVerDossier();
                     return;
                 }
+                const modalPerfilAsesor = document.getElementById('modal-perfil-asesor-maximus');
+                if (modalPerfilAsesor && !modalPerfilAsesor.classList.contains('hidden')) {
+                    cerrarModalPerfilAsesor();
+                    return;
+                }
                 const modalVip = document.getElementById('modalFichaVIP');
                 if (modalVip && !modalVip.classList.contains('hidden')) {
                     cerrarModalFichaVIP();
@@ -10080,31 +10094,55 @@
             });
         }
 
-        // Abrir Ficha / Perfil del Asesor en Modal
+        // Abrir Ficha / Perfil del Asesor en Modal (Con Animación Suave y 100% Sincronizado con Supabase)
         async function abrirModalPerfilAsesor(asesorId) {
             const modal = document.getElementById('modal-perfil-asesor-maximus');
+            const card = document.getElementById('modal-perfil-asesor-card');
             if (!modal) return;
 
+            // 1. Sincronizar catálogo consolidado desde Supabase
+            try {
+                if (typeof sincronizarInmueblesDesdeDB === 'function') {
+                    await sincronizarInmueblesDesdeDB();
+                }
+            } catch (e) {}
+
             const asesores = await obtenerAsesoresMaximusActuales();
-            const asesor = asesores.find(a => a.id === asesorId);
+            const asesor = asesores.find(a => String(a.id) === String(asesorId)) || 
+                           asesores.find(a => (a.nombre || '').toLowerCase().includes(String(asesorId).toLowerCase())) || 
+                           asesores[0];
             if (!asesor) return;
 
-            document.getElementById('modal-asesor-avatar').src = asesor.avatar;
+            // Avatar con fallback SVG de alta resolución integrado
+            const iniciales = (asesor.nombre || 'Asesor').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'AM';
+            const svgFallback = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B4A3F'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='800' font-size='38'>${iniciales}</text></svg>`;
+            
+            const avatarImg = document.getElementById('modal-asesor-avatar');
+            if (avatarImg) {
+                avatarImg.src = asesor.avatar || svgFallback;
+                avatarImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = svgFallback;
+                };
+            }
+
             document.getElementById('modal-asesor-nombre').textContent = asesor.nombre;
             document.getElementById('modal-asesor-cargo').textContent = asesor.cargo;
-            document.getElementById('modal-asesor-badge').textContent = asesor.badge_texto || 'Asesor Certificado';
-            document.getElementById('modal-asesor-rating').textContent = asesor.rating || '5.0';
-            document.getElementById('modal-asesor-cierres').textContent = `${asesor.cierres || 0} Cierres Exitosos`;
+            document.getElementById('modal-asesor-badge').textContent = asesor.badge_texto || 'Asesor Oficial MAXIMUS';
             document.getElementById('modal-asesor-bio').textContent = asesor.bio || 'Asesor inmobiliario oficial de MAXIMUS con amplia experiencia en propiedades residenciales y comerciales en Táchira.';
-            document.getElementById('modal-asesor-especialidad').textContent = asesor.especialidad;
-            document.getElementById('modal-asesor-whatsapp-btn').href = `https://wa.me/${asesor.whatsapp || asesor.telefono}?text=Hola%20${encodeURIComponent(asesor.nombre.split(' ')[0])},%20te%20contacto%20desde%20la%20plataforma%20MAXIMUS%20para%20coordinar%20una%20visita.`;
+            document.getElementById('modal-asesor-especialidad').textContent = asesor.especialidad || 'Luxury & Residencial';
+            
+            const numTelf = (asesor.whatsapp || asesor.telefono || '+584241234567').replace(/[^0-9]/g, '');
+            document.getElementById('modal-asesor-whatsapp-btn').href = `https://wa.me/${numTelf}?text=Hola%20${encodeURIComponent((asesor.nombre || '').split(' ')[0])},%20te%20contacto%20desde%20la%20plataforma%20MAXIMUS%20para%20coordinar%20una%20visita.`;
 
-            // Inmuebles asignados
-            const propsDelAsesor = Object.values(INMUEBLES_DETALLE_DATA).filter(inm => 
+            // Inmuebles asignados desde la base de datos sincronizada
+            const allProps = Object.values(INMUEBLES_DETALLE_DATA);
+            const propsDelAsesor = allProps.filter(inm => 
                 inm.isMaximus && (
-                    (inm.asesor && inm.asesor.nombre && inm.asesor.nombre.toLowerCase() === asesor.nombre.toLowerCase()) ||
+                    (inm.asesor && inm.asesor.nombre && inm.asesor.nombre.toLowerCase().trim() === asesor.nombre.toLowerCase().trim()) ||
                     (inm.asesor_id === asesor.id) ||
-                    (inm.asesor && inm.asesor.id === asesor.id)
+                    (inm.asesor && inm.asesor.id === asesor.id) ||
+                    (asesor.inmuebles_ids && Array.isArray(asesor.inmuebles_ids) && asesor.inmuebles_ids.includes(inm.id))
                 )
             );
 
@@ -10117,17 +10155,17 @@
                     listContainer.innerHTML = '<p class="text-xs text-gray-400 py-3 text-center">No tiene inmuebles asignados actualmente.</p>';
                 } else {
                     propsDelAsesor.forEach(inm => {
-                        const img = (inm.fotos && inm.fotos.length > 0) ? inm.fotos[0] : '';
+                        const img = (inm.fotos && inm.fotos.length > 0) ? inm.fotos[0] : 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80';
                         listContainer.innerHTML += `
-                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-gray-50 hover:bg-emerald-50/50 border border-gray-100 transition-colors cursor-pointer" onclick="cerrarModalPerfilAsesor(); abrirDetalleInmuebleAirbnb('${inm.id}')">
-                                <div class="flex items-center gap-3">
-                                    <img src="${img}" class="w-12 h-10 rounded-lg object-cover">
-                                    <div>
-                                        <p class="text-xs font-bold text-maximus-dark line-clamp-1">${inm.titulo}</p>
-                                        <p class="text-[10px] text-gray-500 font-medium">${inm.sectorNombre || inm.ubicacion}</p>
+                            <div class="flex items-center justify-between p-2 rounded-xl bg-gray-50/80 hover:bg-emerald-50/60 border border-gray-100 transition-colors cursor-pointer group" onclick="cerrarModalPerfilAsesor(); abrirDetalleInmuebleAirbnb('${inm.id}')">
+                                <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                                    <img src="${img}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80'" class="w-11 h-9 rounded-lg object-cover shrink-0">
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold text-maximus-dark line-clamp-1 group-hover:text-emerald-700 transition-colors">${inm.titulo}</p>
+                                        <p class="text-[10px] text-gray-400 font-semibold truncate">${inm.sectorNombre || inm.ubicacion}</p>
                                     </div>
                                 </div>
-                                <span class="text-xs font-black text-emerald-800">${inm.precio}</span>
+                                <span class="text-xs font-black text-emerald-800 shrink-0">${inm.precio}</span>
                             </div>
                         `;
                     });
@@ -10139,15 +10177,34 @@
                 seleccionarAsesorParaFiltro(asesor.nombre);
             };
 
+            // Animación suave de entrada (Smooth in)
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                if (card) {
+                    card.classList.remove('scale-95', 'opacity-0');
+                    card.classList.add('scale-100', 'opacity-100');
+                }
+            });
         }
 
         function cerrarModalPerfilAsesor() {
             const modal = document.getElementById('modal-perfil-asesor-maximus');
+            const card = document.getElementById('modal-perfil-asesor-card');
             if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                // Animación suave de salida (Smooth out)
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
+                if (card) {
+                    card.classList.remove('scale-100', 'opacity-100');
+                    card.classList.add('scale-95', 'opacity-0');
+                }
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 250);
             }
         }
 
