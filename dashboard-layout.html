@@ -3967,7 +3967,7 @@
                             <div class="p-2.5 sm:p-3 rounded-2xl bg-gray-50/80 border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 w-full overflow-hidden box-border">
                                 <div class="flex items-center gap-2.5 min-w-0">
                                     <div class="relative shrink-0">
-                                        <img id="airbnb-asesor-avatar" src="" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover shadow-sm">
+                                        <img id="airbnb-asesor-avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B4A3F'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='800' font-size='38'>JG</text></svg>" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true'" class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl object-cover shadow-sm" alt="José Guerrero - Asesor MAXIMUS">
                                         <span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[8px] shadow-sm ring-1 ring-white">
                                             <i class="ph-bold ph-check"></i>
                                         </span>
@@ -6674,6 +6674,12 @@
             if (targetId === 'view-vendidos') {
                 if (typeof cargarCierresMercado === 'function') cargarCierresMercado();
             }
+            if (targetId === 'view-detalle-inmueble') {
+                if (!currentInmuebleAirbnb && typeof abrirDetalleInmuebleAirbnb === 'function') {
+                    const lastInmId = localStorage.getItem('maximus_ultimo_inmueble_id') || 'inm-1';
+                    abrirDetalleInmuebleAirbnb(lastInmId);
+                }
+            }
         }
 
         // Listener de clic en los enlaces del menú lateral
@@ -7646,7 +7652,21 @@
 
             // 3. Asesor / Anfitrión
             const elAvatar = document.getElementById('airbnb-asesor-avatar');
-            if (elAvatar) elAvatar.src = data.asesor.avatar;
+            if (elAvatar) {
+                const nombreAsesor = (data.asesor && data.asesor.nombre) ? data.asesor.nombre : 'José Guerrero';
+                const iniciales = nombreAsesor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'JG';
+                const svgFallback = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230B4A3F'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='sans-serif' font-weight='800' font-size='38'>${iniciales}</text></svg>`;
+                const targetSrc = (data.asesor && data.asesor.avatar) ? data.asesor.avatar : svgFallback;
+                elAvatar.src = targetSrc;
+                elAvatar.onerror = function() {
+                    this.onerror = null;
+                    this.src = svgFallback;
+                };
+            }
+
+            try {
+                localStorage.setItem('maximus_ultimo_inmueble_id', id || 'inm-1');
+            } catch (e) {}
 
             const elAsesorNombre = document.getElementById('airbnb-asesor-nombre');
             if (elAsesorNombre) elAsesorNombre.textContent = data.asesor.nombre;
