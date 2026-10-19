@@ -2112,38 +2112,38 @@
 
 
             <!-- C. VISTA: VENDIDOS GLOBAL -->
-            <section id="view-vendidos" class="view-section max-w-[1400px] mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-6">
-                <div class="pt-2 sm:pt-4">
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
-                    <p class="text-gray-500 mt-0.5 sm:mt-1 text-xs sm:text-base font-medium">Historial de éxito global.</p>
+            <section id="view-vendidos" class="view-section max-w-[1400px] mx-auto space-y-3.5 sm:space-y-4.5 pb-24 sm:pb-6">
+                <div class="-mt-1 sm:-mt-2.5">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Cierres de Mercado</h2>
+                    <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Historial de éxito global.</p>
                 </div>
 
                 <!-- KPIs Ergonómicos (2 columnas en móvil con Hero de 2 cols, 3 en desktop) -->
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6">
-                    <div class="col-span-2 md:col-span-1 bg-maximus-dark text-white p-4 sm:p-6 rounded-2xl sm:rounded-[20px] shadow-premium">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-4">
+                    <div class="col-span-2 md:col-span-1 bg-maximus-dark text-white p-3.5 sm:p-5 rounded-2xl shadow-premium">
                         <p class="text-[10px] sm:text-[11px] font-bold text-emerald-300 uppercase tracking-wider mb-0.5 sm:mb-1">Total Cerrados</p>
-                        <h3 id="kpi-vendidos-total" class="text-2xl sm:text-4xl font-extrabold tracking-tight">1,240</h3>
+                        <h3 id="kpi-vendidos-total" class="text-2xl sm:text-3xl font-extrabold tracking-tight">1,240</h3>
                     </div>
-                    <div class="col-span-1 bg-white border border-maximus-silver/30 p-3.5 sm:p-6 rounded-2xl sm:rounded-[20px] shadow-sm">
+                    <div class="col-span-1 bg-white border border-maximus-silver/30 p-3.5 sm:p-5 rounded-2xl shadow-sm">
                         <p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5 sm:mb-1">Total Vendidos</p>
-                        <h3 id="kpi-vendidos-ventas" class="text-2xl sm:text-4xl font-extrabold text-maximus-accent tracking-tight">850</h3>
+                        <h3 id="kpi-vendidos-ventas" class="text-2xl sm:text-3xl font-extrabold text-maximus-accent tracking-tight">850</h3>
                     </div>
-                    <div class="col-span-1 bg-white border border-maximus-silver/30 p-3.5 sm:p-6 rounded-2xl sm:rounded-[20px] shadow-sm">
+                    <div class="col-span-1 bg-white border border-maximus-silver/30 p-3.5 sm:p-5 rounded-2xl shadow-sm">
                         <p class="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-0.5 sm:mb-1">Total Alquilados</p>
-                        <h3 id="kpi-vendidos-alquileres" class="text-2xl sm:text-4xl font-extrabold text-blue-500 tracking-tight">390</h3>
+                        <h3 id="kpi-vendidos-alquileres" class="text-2xl sm:text-3xl font-extrabold text-blue-500 tracking-tight">390</h3>
                     </div>
                 </div>
 
                 <!-- Filtros -->
-                <div class="bg-white rounded-2xl sm:rounded-[20px] shadow-sm border border-maximus-silver/30 p-2.5 sm:p-3 flex flex-col lg:flex-row gap-2.5 sm:gap-3 items-stretch lg:items-center justify-between">
+                <div class="bg-white rounded-2xl shadow-sm border border-maximus-silver/30 p-2.5 sm:p-3 flex flex-col lg:flex-row gap-2.5 sm:gap-3 items-stretch lg:items-center justify-between">
                     <div class="relative w-full lg:w-1/3">
                         <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                        <input type="text" id="input-buscar-vendidos" oninput="filtrarVendidosGlobal()" placeholder="Buscar zona o ciudad..." class="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-3 py-2 sm:py-3 text-xs sm:text-sm font-medium outline-none focus:border-maximus-accent focus:bg-white transition-colors">
+                        <input type="text" id="input-buscar-vendidos" oninput="filtrarVendidosGlobal()" placeholder="Buscar zona o ciudad..." class="w-full bg-gray-50 border border-gray-100 rounded-xl pl-9 pr-3 py-2 sm:py-2.5 text-xs sm:text-sm font-medium outline-none focus:border-maximus-accent focus:bg-white transition-colors">
                     </div>
                     <div class="flex gap-1.5 w-full lg:w-auto p-1 bg-gray-50 rounded-xl border border-gray-100 overflow-x-auto">
-                        <button id="btn-tab-vendidos-todos" onclick="filtrarVendidosPorOperacion('todos')" class="flex-1 lg:flex-none px-3 sm:px-6 py-1.5 sm:py-2 bg-white text-maximus-dark shadow-sm text-xs sm:text-sm font-bold rounded-lg shrink-0 transition-all">Todos</button>
-                        <button id="btn-tab-vendidos-venta" onclick="filtrarVendidosPorOperacion('venta')" class="flex-1 lg:flex-none px-3 sm:px-6 py-1.5 sm:py-2 text-gray-500 hover:text-maximus-dark text-xs sm:text-sm font-bold rounded-lg transition-colors shrink-0">Vendidos</button>
-                        <button id="btn-tab-vendidos-alquiler" onclick="filtrarVendidosPorOperacion('alquiler')" class="flex-1 lg:flex-none px-3 sm:px-6 py-1.5 sm:py-2 text-gray-500 hover:text-maximus-dark text-xs sm:text-sm font-bold rounded-lg transition-colors shrink-0">Alquilados</button>
+                        <button id="btn-tab-vendidos-todos" onclick="filtrarVendidosPorOperacion('todos')" class="flex-1 lg:flex-none px-3 sm:px-5 py-1.5 bg-white text-maximus-dark shadow-sm text-xs sm:text-sm font-bold rounded-lg shrink-0 transition-all">Todos</button>
+                        <button id="btn-tab-vendidos-venta" onclick="filtrarVendidosPorOperacion('venta')" class="flex-1 lg:flex-none px-3 sm:px-5 py-1.5 text-gray-500 hover:text-maximus-dark text-xs sm:text-sm font-bold rounded-lg transition-colors shrink-0">Vendidos</button>
+                        <button id="btn-tab-vendidos-alquiler" onclick="filtrarVendidosPorOperacion('alquiler')" class="flex-1 lg:flex-none px-3 sm:px-5 py-1.5 text-gray-500 hover:text-maximus-dark text-xs sm:text-sm font-bold rounded-lg transition-colors shrink-0">Alquilados</button>
                     </div>
                     <div class="flex items-center justify-between lg:justify-start gap-3 w-full lg:w-auto px-4 py-2 bg-white border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50">
                         <div class="flex items-center gap-2">
@@ -2158,7 +2158,7 @@
                 </div>
 
                 <!-- Grilla de Cierres de Mercado -->
-                <div id="grilla-vendidos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                <div id="grilla-vendidos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Dinámicamente inyectado desde Supabase / Mock -->
                 </div>
             </section>
@@ -2166,56 +2166,56 @@
             <!-- ========================================================
                  VISTA EXCLUSIVA: REGISTRO HISTÓRICO Y COMISIONES (ASESORES MAXIMUS)
                  ======================================================== -->
-            <section id="view-historico-asesores" class="view-section asesor-maximus-only max-w-[1450px] mx-auto space-y-8 pb-12">
+            <section id="view-historico-asesores" class="view-section asesor-maximus-only max-w-[1450px] mx-auto space-y-3.5 sm:space-y-4.5 pb-12">
                 
-                <!-- Encabezado -->
-                <div class="pt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <!-- Encabezado (Espaciado Reducido y Optimizado) -->
+                <div class="-mt-1 sm:-mt-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
                     <div>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Registro Histórico & Comisiones</h2>
-                        <p class="text-gray-500 mt-1 text-sm sm:text-base font-medium">Auditoría centralizada de transacciones cerradas, desglose de comisión bruta vs neta y volumen de ventas del equipo.</p>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Registro Histórico & Comisiones</h2>
+                        <p class="text-gray-500 mt-0.5 text-xs sm:text-sm font-medium">Auditoría centralizada de transacciones cerradas, desglose de comisión bruta vs neta y volumen de ventas del equipo.</p>
                     </div>
                 </div>
 
                 <!-- 1. Tarjetas Métricas / KPIs de Rendimiento (Ventas, Alquileres, Comisión Bruta) -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                     <!-- KPI 1: Ventas -->
-                    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2.5">
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
+                        <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ventas</span>
-                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-base">
                                 <i class="ph-fill ph-tag"></i>
                             </div>
                         </div>
-                        <h3 class="text-3xl sm:text-4xl font-black text-maximus-dark tracking-tight" id="kpi-ventas-count">0</h3>
-                        <p class="text-xs font-bold text-emerald-700 mt-1.5 flex items-center gap-1.5" id="kpi-sub-ventas">
+                        <h3 class="text-2xl sm:text-3xl font-black text-maximus-dark tracking-tight" id="kpi-ventas-count">0</h3>
+                        <p class="text-xs font-bold text-emerald-700 mt-1 flex items-center gap-1.5" id="kpi-sub-ventas">
                             <i class="ph-bold ph-check-circle"></i> <span>0 Operaciones</span>
                         </p>
                     </div>
 
                     <!-- KPI 2: Alquileres -->
-                    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-maximus-silver/20 hover:border-blue-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2.5">
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-maximus-silver/20 hover:border-blue-300 transition-all group">
+                        <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Alquileres</span>
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-lg">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-base">
                                 <i class="ph-fill ph-key"></i>
                             </div>
                         </div>
-                        <h3 class="text-3xl sm:text-4xl font-black text-maximus-dark tracking-tight" id="kpi-alquileres-count">0</h3>
-                        <p class="text-xs font-bold text-blue-700 mt-1.5 flex items-center gap-1.5" id="kpi-sub-alquileres">
+                        <h3 class="text-2xl sm:text-3xl font-black text-maximus-dark tracking-tight" id="kpi-alquileres-count">0</h3>
+                        <p class="text-xs font-bold text-blue-700 mt-1 flex items-center gap-1.5" id="kpi-sub-alquileres">
                             <i class="ph-bold ph-calendar-check"></i> <span>0 Contratos</span>
                         </p>
                     </div>
 
                     <!-- KPI 3: Comisión Bruta -->
-                    <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
-                        <div class="flex items-center justify-between mb-2.5">
+                    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-maximus-silver/20 hover:border-emerald-300 transition-all group">
+                        <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Comisión Bruta</span>
-                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-base">
                                 <i class="ph-fill ph-currency-dollar"></i>
                             </div>
                         </div>
-                        <h3 class="text-3xl sm:text-4xl font-black text-emerald-700 tracking-tight" id="kpi-comision-bruta">$0</h3>
-                        <p class="text-xs font-medium text-gray-500 mt-1.5" id="kpi-sub-comision-bruta">Facturación total corretaje</p>
+                        <h3 class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight" id="kpi-comision-bruta">$0</h3>
+                        <p class="text-xs font-medium text-gray-500 mt-1" id="kpi-sub-comision-bruta">Facturación total corretaje</p>
                     </div>
                 </div>
 
@@ -2325,15 +2325,15 @@
                 </div>
 
                 <!-- 3. Sub-Vista A: Grid de Ranking & Productividad por Asesor (Predeterminada) -->
-                <div id="contenedor-subvista-ranking" class="space-y-6">
+                <div id="contenedor-subvista-ranking" class="space-y-3.5 sm:space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-2xl font-extrabold text-maximus-dark">Productividad de Asesores Oficiales</h3>
-                            <p class="text-gray-500 text-sm font-medium">Resumen consolidado del desempeño individual en ventas, comisiones brutas facturadas y netas percibidas.</p>
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-maximus-dark tracking-tight">Productividad de Asesores Oficiales</h3>
+                            <p class="text-gray-500 text-xs sm:text-sm font-medium mt-0.5">Resumen consolidado del desempeño individual en ventas, comisiones brutas facturadas y netas percibidas.</p>
                         </div>
                     </div>
 
-                    <div id="grid-ranking-asesores" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div id="grid-ranking-asesores" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                         <!-- Poblado por JS -->
                     </div>
                 </div>
