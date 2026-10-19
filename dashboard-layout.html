@@ -9756,7 +9756,7 @@
                                         cargo: matchAsesor.cargo,
                                         telefono: matchAsesor.telefono,
                                         avatar: matchAsesor.avatar,
-                                        rating: `${matchAsesor.rating || '5.0'} (${matchAsesor.cierres || 0} Cierres)`,
+                                        rating: `${matchAsesor.rating || '5.0'}`,
                                         experiencia: 'Asesor Certificado MAXIMUS'
                                     };
                                 }
@@ -9907,9 +9907,9 @@
                             <div class="min-w-0 flex-1">
                                 <h4 class="font-extrabold text-sm text-maximus-dark group-hover:text-maximus-accent transition-colors truncate">${asesor.nombre}</h4>
                                 <p class="text-[10px] font-bold text-gray-400 truncate">${asesor.cargo}</p>
-                                <div class="flex items-center gap-1.5 mt-0.5 text-emerald-700 text-[11px] font-bold">
-                                    <i class="ph-bold ph-handshake text-xs text-emerald-600"></i>
-                                    <span>${asesor.cierres || 0} operaciones cerradas</span>
+                                <div class="flex items-center gap-1 mt-0.5 text-emerald-700 text-[11px] font-bold">
+                                    <i class="ph-bold ph-shield-check text-xs text-emerald-600"></i>
+                                    <span>Asesor Verificado</span>
                                 </div>
                             </div>
                         </div>
@@ -10567,7 +10567,7 @@
                         telefono: asesorBuscado.telefono,
                         email: asesorBuscado.email || 'contacto@maximusinmobiliaria.com',
                         avatar: asesorBuscado.avatar,
-                        rating: `${asesorBuscado.rating} (${asesorBuscado.cierres} Cierres)`,
+                        rating: `${asesorBuscado.rating || '5.0'}`,
                         experiencia: 'Asesor Oficial MAXIMUS'
                     };
                 }
