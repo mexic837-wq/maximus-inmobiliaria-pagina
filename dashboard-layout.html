@@ -1115,16 +1115,10 @@
                 <p class="sidebar-category staff-only text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8 agente-only">Soporte & Recursos</p>
                 <div class="sidebar-collapsed-divider staff-only"></div>
 
-                <a href="#" class="agente-only staff-only text-gray-500 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Bot Whatsapp">
-                    <i class="ph ph-whatsapp-logo text-xl flex-shrink-0"></i>
-                    <span class="sidebar-label">Bot Whatsapp</span>
-                    <span class="sidebar-tooltip">Bot Whatsapp</span>
-                </a>
-
-                <a href="#" data-target="view-tutoriales" class="nav-link agente-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Tutoriales VIP">
-                    <i class="ph ph-play-circle text-xl flex-shrink-0"></i>
-                    <span class="sidebar-label">Tutoriales VIP</span>
-                    <span class="sidebar-tooltip">Tutoriales VIP</span>
+                <a href="#" data-target="view-tutoriales" class="nav-link agente-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Material Informativo">
+                    <i class="ph ph-book-open text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Material Informativo</span>
+                    <span class="sidebar-tooltip">Material Informativo</span>
                 </a>
 
                 <!-- Configuración & Cuenta -->
@@ -2599,65 +2593,61 @@
                 </div>
             </section>
 
-            <!-- F. VISTA: VIDEO TUTORIALES -->
-            <section id="view-tutoriales" class="view-section agente-only max-w-[1400px] mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-6">
-                <div class="pt-2 sm:pt-4">
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Academia MAXIMUS</h2>
-                    <p class="text-gray-500 mt-0.5 sm:mt-1 text-xs sm:text-base font-medium">Domina la plataforma con nuestros tutoriales en video.</p>
+            <!-- F. VISTA: MATERIAL INFORMATIVO & CAPACITACIÓN -->
+            <section id="view-tutoriales" class="view-section agente-only max-w-[1400px] mx-auto space-y-6 pb-24 sm:pb-8">
+                <!-- Encabezado Principal -->
+                <div class="pt-2 sm:pt-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider mb-2 border border-emerald-200/60">
+                            <i class="ph-bold ph-book-open text-xs text-emerald-600"></i> Centro de Conocimiento MAXIMUS
+                        </div>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Material Informativo & Academia</h2>
+                        <p class="text-gray-500 mt-1 text-xs sm:text-base font-medium max-w-2xl">Tutoriales en video, guías operativas, manuales de captación y formatos contractuales para el equipo.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="contador-material-informativo" class="text-xs font-bold text-gray-500 bg-white px-4 py-2.5 rounded-full border border-gray-200 shadow-xs">
+                            Cargando materiales...
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Filtros Pills Estilo Premium -->
-                <div class="flex items-center gap-3 overflow-x-auto hide-scrollbar py-2">
-                    <button class="shrink-0 bg-maximus-dark text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-md">Todos</button>
-                    <button class="shrink-0 bg-white border border-gray-200 text-maximus-dark hover:bg-gray-50 px-6 py-2.5 rounded-full text-sm font-bold transition-colors">Primeros pasos</button>
-                    <button class="shrink-0 bg-white border border-gray-200 text-maximus-dark hover:bg-gray-50 px-6 py-2.5 rounded-full text-sm font-bold transition-colors">Inmuebles</button>
-                    <button class="shrink-0 bg-white border border-gray-200 text-maximus-dark hover:bg-gray-50 px-6 py-2.5 rounded-full text-sm font-bold transition-colors">Métricas</button>
+                <!-- Barra de Búsqueda y Filtros de Categoría -->
+                <div class="space-y-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-[24px] shadow-sm border border-maximus-silver/20">
+                    <!-- Input de Búsqueda -->
+                    <div class="relative w-full">
+                        <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                        <input type="text" id="buscador-material-informativo" oninput="filtrarMaterialInformativo()" placeholder="Buscar por título, categoría o palabra clave (ej: cargar inmueble, comisiones, captación, legal)..." class="w-full bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl pl-11 pr-10 py-3 text-xs sm:text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition-all shadow-inner">
+                        <button type="button" id="btn-limpiar-busqueda-material" onclick="limpiarBuscadorMaterial()" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 w-6 h-6 items-center justify-center rounded-full hover:bg-gray-200 transition-colors">
+                            <i class="ph-bold ph-x text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Filtros Pills Categoría -->
+                    <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar pt-1" id="pills-categorias-material">
+                        <button type="button" onclick="seleccionarCategoriaMaterial('todos', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-maximus-dark text-white shadow-sm flex items-center gap-1.5 active">
+                            <span>Todos</span> <span class="text-[10px] opacity-75 font-normal" id="cat-count-todos">(6)</span>
+                        </button>
+                        <button type="button" onclick="seleccionarCategoriaMaterial('primeros-pasos', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                            <i class="ph-bold ph-rocket-launch text-emerald-600"></i> Primeros pasos
+                        </button>
+                        <button type="button" onclick="seleccionarCategoriaMaterial('inmuebles', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                            <i class="ph-bold ph-buildings text-teal-600"></i> Inmuebles & Captaciones
+                        </button>
+                        <button type="button" onclick="seleccionarCategoriaMaterial('metricas', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                            <i class="ph-bold ph-chart-bar text-blue-600"></i> Métricas & Finanzas
+                        </button>
+                        <button type="button" onclick="seleccionarCategoriaMaterial('ventas', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                            <i class="ph-bold ph-handshake text-purple-600"></i> Ventas & Negociación
+                        </button>
+                        <button type="button" onclick="seleccionarCategoriaMaterial('legal', this)" class="btn-pill-cat shrink-0 px-4 sm:px-5 py-2 rounded-xl text-xs font-bold transition-all bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center gap-1.5">
+                            <i class="ph-bold ph-file-text text-amber-600"></i> Legal & Contratos
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Grilla de Videos -->
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pt-2">
-                    <!-- Video Card Premium -->
-                    <div class="group cursor-pointer">
-                        <div class="relative w-full aspect-video rounded-[20px] overflow-hidden mb-4 shadow-sm group-hover:shadow-premium-hover transition-all duration-300">
-                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80" class="w-full h-full object-cover">
-                            <!-- Overlay Oscuro Suave -->
-                            <div class="absolute inset-0 bg-maximus-dark/20 group-hover:bg-maximus-dark/40 transition-colors"></div>
-                            
-                            <!-- Botón Play Central -->
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-16 h-16 bg-white/90 backdrop-blur rounded-full text-maximus-accent flex items-center justify-center text-2xl shadow-xl transform group-hover:scale-110 transition-transform duration-300">
-                                    <i class="ph-fill ph-play ml-1"></i>
-                                </div>
-                            </div>
-                            
-                            <!-- Badges Esquinas -->
-                            <span class="absolute bottom-4 right-4 bg-black/70 backdrop-blur text-white text-[11px] font-bold px-2.5 py-1 rounded-md">05:24</span>
-                            <span class="absolute top-4 left-4 bg-maximus-accent text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">PASO 1</span>
-                        </div>
-                        <div class="px-2">
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors">Cargar tu primer inmueble sin errores</h4>
-                            <p class="text-sm text-gray-500 font-medium line-clamp-2">Aprende los conceptos básicos para subir propiedades con fotos HD y optimizar tu título.</p>
-                        </div>
-                    </div>
-
-                    <!-- Video Card Premium 2 -->
-                    <div class="group cursor-pointer">
-                        <div class="relative w-full aspect-video rounded-[20px] overflow-hidden mb-4 shadow-sm group-hover:shadow-premium-hover transition-all duration-300">
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-maximus-dark/20 group-hover:bg-maximus-dark/40 transition-colors"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-16 h-16 bg-white/90 backdrop-blur rounded-full text-maximus-accent flex items-center justify-center text-2xl shadow-xl transform group-hover:scale-110 transition-transform duration-300">
-                                    <i class="ph-fill ph-play ml-1"></i>
-                                </div>
-                            </div>
-                            <span class="absolute bottom-4 right-4 bg-black/70 backdrop-blur text-white text-[11px] font-bold px-2.5 py-1 rounded-md">12:10</span>
-                            <span class="absolute top-4 left-4 bg-blue-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">ANÁLISIS</span>
-                        </div>
-                        <div class="px-2">
-                            <h4 class="font-extrabold text-lg text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors">Lectura avanzada del panel de métricas</h4>
-                            <p class="text-sm text-gray-500 font-medium line-clamp-2">Una guía para leer los gráficos del sistema y tomar decisiones basadas 100% en datos.</p>
-                        </div>
-                    </div>
+                <!-- Grilla Dinámica de Materiales -->
+                <div id="grid-material-informativo" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pt-1">
+                    <!-- Se renderiza dinámicamente con JavaScript -->
                 </div>
             </section>
 
@@ -4801,6 +4791,65 @@
     </div>
 
     <!-- ==========================================
+         MODAL: DETALLE & REPRODUCTOR DE MATERIAL INFORMATIVO
+         ========================================== -->
+    <div id="modalVerMaterialInformativo" 
+         class="fixed inset-0 z-[130] hidden flex items-center justify-center p-3 sm:p-5 bg-black/75 backdrop-blur-md opacity-0 transition-opacity duration-300 ease-out"
+         onclick="if(event.target === this) cerrarModalMaterialInformativo()">
+        <div id="modal-material-card" 
+             class="relative bg-white dark:bg-[#06231D] rounded-[24px] sm:rounded-[28px] max-w-2xl w-full p-5 sm:p-7 shadow-2xl border border-gray-100 dark:border-emerald-900/40 max-h-[88vh] overflow-y-auto space-y-4 transform scale-95 opacity-0 transition-all duration-300 ease-out">
+            
+            <!-- Botón Cerrar -->
+            <button onclick="cerrarModalMaterialInformativo()" 
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-500 hover:text-maximus-dark dark:text-gray-300 flex items-center justify-center transition-colors cursor-pointer shadow-xs z-20" 
+                    title="Cerrar modal">
+                <i class="ph-bold ph-x text-sm"></i>
+            </button>
+
+            <!-- Encabezado -->
+            <div class="space-y-1 pr-8">
+                <span id="modal-mat-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white inline-block shadow-xs bg-emerald-600"></span>
+                <h3 id="modal-mat-titulo" class="text-lg sm:text-2xl font-black text-maximus-dark dark:text-white leading-snug"></h3>
+                <p id="modal-mat-categoria" class="text-xs font-bold text-emerald-700 dark:text-emerald-400"></p>
+            </div>
+
+            <!-- Contenedor Visual (Video / Preview) -->
+            <div id="modal-mat-media-container" class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-md border border-gray-200/50">
+                <img id="modal-mat-img" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-white/95 text-emerald-700 flex items-center justify-center text-2xl shadow-2xl transform hover:scale-110 transition-transform">
+                        <i class="ph-fill ph-play ml-1"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="bg-gray-50 dark:bg-[#0A1F1B] p-4 rounded-2xl border border-gray-100 dark:border-emerald-950">
+                <p class="text-[10px] font-black uppercase text-gray-400 dark:text-emerald-400 tracking-wider mb-1">Descripción y Objetivos</p>
+                <p id="modal-mat-desc" class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-medium"></p>
+            </div>
+
+            <!-- Puntos Clave / Recomendaciones -->
+            <div class="space-y-2">
+                <h4 class="text-xs font-extrabold text-maximus-dark dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="ph-bold ph-check-circle text-emerald-600"></i> Puntos Clave del Recurso
+                </h4>
+                <ul id="modal-mat-puntos" class="space-y-2 text-xs text-gray-600 dark:text-gray-300 font-medium"></ul>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+                <button type="button" onclick="cerrarModalMaterialInformativo()" class="flex-1 py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-colors cursor-pointer">
+                    Cerrar
+                </button>
+                <button type="button" onclick="marcarMaterialCompletado()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                    <i class="ph-bold ph-check"></i> <span>Marcar como Revisado</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
          MODAL: FICHA VIP & COMPARTIR WHATSAPP
          ========================================== -->
     <div id="modalFichaVIP" class="fixed inset-0 z-[125] hidden flex items-center justify-center p-3 sm:p-5 bg-black/70 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalFichaVIP()">
@@ -6652,6 +6701,9 @@
             }
             if (targetId === 'view-vendidos') {
                 if (typeof cargarCierresMercado === 'function') cargarCierresMercado();
+            }
+            if (targetId === 'view-tutoriales') {
+                if (typeof inicializarMaterialInformativo === 'function') inicializarMaterialInformativo();
             }
             if (targetId === 'view-detalle-inmueble') {
                 if (!currentInmuebleAirbnb && typeof abrirDetalleInmuebleAirbnb === 'function') {
@@ -12132,6 +12184,343 @@
 
         function editarAsesorWeb(id) {
             abrirModalAsesorWeb(id);
+        }
+
+        // ========================================================
+        // MATERIAL INFORMATIVO & CAPACITACIÓN MAXIMUS
+        // ========================================================
+        const MATERIAL_INFORMATIVO_DATA = [
+            {
+                id: 'mat-1',
+                titulo: 'Cargar tu primer inmueble sin errores',
+                desc: 'Aprende los conceptos básicos para subir propiedades con fotos HD, geolocalización precisa y optimización de título para el catálogo MAXIMUS.',
+                categoria: 'primeros-pasos',
+                categoriaNombre: 'Primeros pasos',
+                tipo: 'video',
+                tipoLabel: 'Video Tutorial',
+                duracion: '05:24 min',
+                badge: 'PASO 1',
+                badgeColor: 'bg-emerald-600',
+                imagen: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+                resumenPuntos: [
+                    'Verificación previa de linderos y ficha catastral.',
+                    'Carga secuencial de fotografías (sala, cocina, habitaciones, exteriores).',
+                    'Configuración de precio, comisión y asignación al captador oficial.'
+                ]
+            },
+            {
+                id: 'mat-2',
+                titulo: 'Lectura avanzada del panel de métricas',
+                desc: 'Una guía completa para interpretar los gráficos de actividad, transacciones de ventas vs alquileres y liquidación de comisiones brutas.',
+                categoria: 'metricas',
+                categoriaNombre: 'Métricas & Finanzas',
+                tipo: 'video',
+                tipoLabel: 'Video Tutorial',
+                duracion: '12:10 min',
+                badge: 'FINANZAS',
+                badgeColor: 'bg-blue-600',
+                imagen: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
+                resumenPuntos: [
+                    'Cálculo automático de comisión bruta y retención corporativa.',
+                    'Seguimiento a transacciones en trámite vs liquidadas.',
+                    'Análisis de conversión por zona y tipología de propiedad.'
+                ]
+            },
+            {
+                id: 'mat-3',
+                titulo: 'Guía de Captación Directa & Exclusividades',
+                desc: 'Protocolo formal para presentar la propuesta de valor MAXIMUS a propietarios, blindar acuerdos de exclusividad y fijar comisiones acordadas.',
+                categoria: 'inmuebles',
+                categoriaNombre: 'Inmuebles & Captaciones',
+                tipo: 'guia',
+                tipoLabel: 'Guía Práctica',
+                duracion: 'Lectura 7 min',
+                badge: 'CAPTACIÓN',
+                badgeColor: 'bg-teal-600',
+                imagen: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
+                resumenPuntos: [
+                    'Argumentario de venta frente a ventas directas sin inmobiliaria.',
+                    'Revisión legal de tradición de propiedad de 20 a 30 años.',
+                    'Firma del contrato de mandato exclusivo de intermediación.'
+                ]
+            },
+            {
+                id: 'mat-4',
+                titulo: 'Manual de Cierre y Liquidación 70/30',
+                desc: 'Procedimiento operativo estándar para registrar una venta en notaría, documentar cheques/transferencias y emitir recibos contables oficiales.',
+                categoria: 'ventas',
+                categoriaNombre: 'Ventas & Negociación',
+                tipo: 'video',
+                tipoLabel: 'Video Masterclass',
+                duracion: '08:45 min',
+                badge: 'CIERRES',
+                badgeColor: 'bg-purple-600',
+                imagen: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80',
+                resumenPuntos: [
+                    'Documentación obligatoria del comprador y vendedor.',
+                    'Split de comisión oficial (70% asesor oficial / 50% externo).',
+                    'Emisión del comprobante de liquidación y archivo digital.'
+                ]
+            },
+            {
+                id: 'mat-5',
+                titulo: 'Formato Legal: Opción a Compraventa & Arrendamiento',
+                desc: 'Modelos contractuales oficiales redactados por el departamento jurídico de MAXIMUS, listos para descargar y personalizar.',
+                categoria: 'legal',
+                categoriaNombre: 'Legal & Contratos',
+                tipo: 'documento',
+                tipoLabel: 'Plantilla Oficial',
+                duracion: 'Documento DOCX',
+                badge: 'LEGAL',
+                badgeColor: 'bg-amber-600',
+                imagen: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=800&q=80',
+                resumenPuntos: [
+                    'Cláusulas penales por desistimiento y arras.',
+                    'Condiciones de pago en divisas y transferencias internacionales.',
+                    'Tiempos de prórroga para finiquito de créditos y solvencias.'
+                ]
+            },
+            {
+                id: 'mat-6',
+                titulo: 'Presentación de Dossiers VIP y Matching de Clientes',
+                desc: 'Cómo utilizar el módulo de Colecciones VIP para enviar portafolios interactivos con tu marca personal y seguimiento automatizado n8n.',
+                categoria: 'primeros-pasos',
+                categoriaNombre: 'Primeros pasos',
+                tipo: 'video',
+                tipoLabel: 'Video Tutorial',
+                duracion: '06:15 min',
+                badge: 'CRM VIP',
+                badgeColor: 'bg-emerald-700',
+                imagen: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
+                resumenPuntos: [
+                    'Creación de colección temática para clientes inversionistas.',
+                    'Envío por WhatsApp con mensaje predeterminado.',
+                    'Disparo de webhooks n8n para confirmación de entrega por correo.'
+                ]
+            }
+        ];
+
+        let categoriaMaterialActual = 'todos';
+        let materialActualSeleccionado = null;
+
+        function inicializarMaterialInformativo() {
+            filtrarMaterialInformativo();
+        }
+
+        function filtrarMaterialInformativo() {
+            const buscador = document.getElementById('buscador-material-informativo');
+            const btnLimpiar = document.getElementById('btn-limpiar-busqueda-material');
+            const q = buscador ? buscador.value.toLowerCase().trim() : '';
+
+            if (btnLimpiar) {
+                if (q.length > 0) {
+                    btnLimpiar.classList.remove('hidden');
+                    btnLimpiar.classList.add('flex');
+                } else {
+                    btnLimpiar.classList.add('hidden');
+                    btnLimpiar.classList.remove('flex');
+                }
+            }
+
+            let filtrados = MATERIAL_INFORMATIVO_DATA;
+
+            // Filtro por categoría
+            if (categoriaMaterialActual && categoriaMaterialActual !== 'todos') {
+                filtrados = filtrados.filter(m => m.categoria === categoriaMaterialActual);
+            }
+
+            // Filtro por texto de búsqueda
+            if (q) {
+                filtrados = filtrados.filter(m => 
+                    m.titulo.toLowerCase().includes(q) ||
+                    m.desc.toLowerCase().includes(q) ||
+                    m.categoriaNombre.toLowerCase().includes(q) ||
+                    m.tipoLabel.toLowerCase().includes(q) ||
+                    (m.resumenPuntos && m.resumenPuntos.some(p => p.toLowerCase().includes(q)))
+                );
+            }
+
+            // Actualizar contadores
+            const contadorEl = document.getElementById('contador-material-informativo');
+            if (contadorEl) {
+                contadorEl.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'material disponible' : 'materiales disponibles'}`;
+            }
+
+            renderMaterialInformativo(filtrados);
+        }
+
+        function seleccionarCategoriaMaterial(categoria, btn) {
+            categoriaMaterialActual = categoria;
+            const contenedor = document.getElementById('pills-categorias-material');
+            if (contenedor) {
+                contenedor.querySelectorAll('.btn-pill-cat').forEach(b => {
+                    b.classList.remove('bg-maximus-dark', 'text-white', 'shadow-sm', 'active');
+                    b.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                });
+            }
+            if (btn) {
+                btn.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+                btn.classList.add('bg-maximus-dark', 'text-white', 'shadow-sm', 'active');
+            }
+            filtrarMaterialInformativo();
+        }
+
+        function limpiarBuscadorMaterial() {
+            const buscador = document.getElementById('buscador-material-informativo');
+            if (buscador) {
+                buscador.value = '';
+                filtrarMaterialInformativo();
+                buscador.focus();
+            }
+        }
+
+        function renderMaterialInformativo(items) {
+            const grid = document.getElementById('grid-material-informativo');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center bg-gray-50 dark:bg-[#06231D] rounded-2xl sm:rounded-3xl border border-dashed border-gray-200 dark:border-emerald-900/40 p-8 space-y-3">
+                        <i class="ph ph-magnifying-glass text-4xl text-gray-400"></i>
+                        <h4 class="text-base font-extrabold text-maximus-dark dark:text-white">No encontramos materiales que coincidan</h4>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Prueba buscando con otros términos o selecciona "Todos" en las categorías superiores.</p>
+                        <button onclick="limpiarBuscadorMaterial(); seleccionarCategoriaMaterial('todos', document.querySelector('.btn-pill-cat'));" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer">
+                            Ver todo el material
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'group bg-white dark:bg-[#071F1A] rounded-2xl sm:rounded-[22px] border border-gray-100 dark:border-emerald-900/30 overflow-hidden shadow-xs hover:shadow-premium-hover transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between';
+                card.onclick = () => abrirModalMaterialInformativo(item.id);
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative w-full aspect-video overflow-hidden">
+                            <img src="${item.imagen}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                            
+                            <!-- Botón Play / Icono central -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-white/90 backdrop-blur rounded-full text-emerald-700 flex items-center justify-center text-xl sm:text-2xl shadow-xl transform group-hover:scale-110 transition-transform duration-300">
+                                    <i class="ph-fill ${item.tipo === 'video' ? 'ph-play ml-0.5' : 'ph-file-text'}"></i>
+                                </div>
+                            </div>
+
+                            <!-- Badges -->
+                            <span class="absolute top-3 left-3 ${item.badgeColor || 'bg-emerald-600'} text-white text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md">
+                                ${item.badge}
+                            </span>
+                            <span class="absolute bottom-3 right-3 bg-black/75 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <i class="ph-bold ${item.tipo === 'video' ? 'ph-clock' : 'ph-file'}"></i> ${item.duracion}
+                            </span>
+                        </div>
+
+                        <div class="p-4 sm:p-5 space-y-2">
+                            <div class="flex items-center justify-between text-[11px]">
+                                <span class="font-extrabold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-md">
+                                    ${item.categoriaNombre}
+                                </span>
+                                <span class="text-gray-400 font-semibold text-[10px]">
+                                    ${item.tipoLabel}
+                                </span>
+                            </div>
+                            <h4 class="font-extrabold text-base text-maximus-dark dark:text-white leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
+                                ${item.titulo}
+                            </h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium line-clamp-2 leading-relaxed">
+                                ${item.desc}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="px-4 sm:px-5 pb-4 pt-1 flex items-center justify-between border-t border-gray-100 dark:border-emerald-900/30 text-xs">
+                        <span class="text-gray-400 font-bold text-[11px] flex items-center gap-1">
+                            <i class="ph-fill ph-check-circle text-emerald-500"></i> MAXIMUS Oficial
+                        </span>
+                        <span class="text-emerald-700 dark:text-emerald-400 font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                            <span>Ver recurso</span> <i class="ph-bold ph-arrow-right text-xs"></i>
+                        </span>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function abrirModalMaterialInformativo(id) {
+            const item = MATERIAL_INFORMATIVO_DATA.find(m => m.id === id);
+            if (!item) return;
+
+            materialActualSeleccionado = item;
+
+            const modal = document.getElementById('modalVerMaterialInformativo');
+            const card = document.getElementById('modal-material-card');
+            const badge = document.getElementById('modal-mat-badge');
+            const titulo = document.getElementById('modal-mat-titulo');
+            const categoria = document.getElementById('modal-mat-categoria');
+            const img = document.getElementById('modal-mat-img');
+            const desc = document.getElementById('modal-mat-desc');
+            const puntosList = document.getElementById('modal-mat-puntos');
+
+            if (badge) {
+                badge.textContent = `${item.badge} • ${item.tipoLabel.toUpperCase()}`;
+                badge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white inline-block shadow-xs ${item.badgeColor || 'bg-emerald-600'}`;
+            }
+            if (titulo) titulo.textContent = item.titulo;
+            if (categoria) categoria.textContent = `${item.categoriaNombre} — ${item.duracion}`;
+            if (img) img.src = item.imagen;
+            if (desc) desc.textContent = item.desc;
+
+            if (puntosList) {
+                puntosList.innerHTML = '';
+                (item.resumenPuntos || []).forEach(p => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start gap-2 text-xs text-gray-600 dark:text-gray-300';
+                    li.innerHTML = `<i class="ph-bold ph-check text-emerald-600 shrink-0 mt-0.5"></i> <span>${p}</span>`;
+                    puntosList.appendChild(li);
+                });
+            }
+
+            if (modal && card) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.classList.add('opacity-100');
+                    card.classList.remove('scale-95', 'opacity-0');
+                    card.classList.add('scale-100', 'opacity-100');
+                });
+            }
+        }
+
+        function cerrarModalMaterialInformativo() {
+            const modal = document.getElementById('modalVerMaterialInformativo');
+            const card = document.getElementById('modal-material-card');
+            if (modal && card) {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
+                card.classList.remove('scale-100', 'opacity-100');
+                card.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
+
+        function marcarMaterialCompletado() {
+            if (materialActualSeleccionado && typeof mostrarToastNotificacion === 'function') {
+                mostrarToastNotificacion(`✅ "${materialActualSeleccionado.titulo}" marcado como revisado`);
+            }
+            cerrarModalMaterialInformativo();
         }
     </script>
 
