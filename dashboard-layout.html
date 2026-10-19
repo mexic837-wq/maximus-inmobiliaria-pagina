@@ -12,6 +12,12 @@
         if (localStorage.getItem('maximus_sidebar_collapsed') === 'true') {
             document.documentElement.classList.add('sidebar-is-collapsed');
         }
+        try {
+            const _cachedUser = JSON.parse(localStorage.getItem('maximus_user') || sessionStorage.getItem('maximus_user'));
+            if (_cachedUser && (_cachedUser.role === 'cliente' || _cachedUser.role === 'usuario')) {
+                document.documentElement.classList.add('role-cliente');
+            }
+        } catch (e) {}
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -85,6 +91,73 @@
         /* 4. Asesores Oficiales y Admin: no ven cosas exclusivas de Asesor Externo */
         body.role-asesor_maximus .asesor-externo-only,
         body.role-admin .asesor-externo-only {
+            display: none !important;
+        }
+
+        /* =======================================================
+           CLIENT ROLE (USUARIO NORMAL) DESKTOP TOP HEADER NAV
+           En desktop (≥768px): ocultar sidebar y mostrar header nav
+           En móvil (≤767px): mantener drawer y app shell idénticos
+           ======================================================= */
+        @media (min-width: 768px) {
+            body.role-cliente #sidebar,
+            html.role-cliente body #sidebar {
+                display: none !important;
+            }
+            body.role-cliente #clientDesktopHeaderBrand,
+            html.role-cliente #clientDesktopHeaderBrand {
+                display: flex !important;
+            }
+            body.role-cliente #clientDesktopNav,
+            html.role-cliente #clientDesktopNav {
+                display: flex !important;
+            }
+            body.role-cliente #breadcrumbWrapper,
+            html.role-cliente #breadcrumbWrapper {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            #clientDesktopHeaderBrand,
+            #clientDesktopNav {
+                display: none !important;
+            }
+        }
+
+        body:not(.role-cliente) #clientDesktopHeaderBrand,
+        body:not(.role-cliente) #clientDesktopNav,
+        html:not(.role-cliente) body:not(.role-cliente) #clientDesktopHeaderBrand,
+        html:not(.role-cliente) body:not(.role-cliente) #clientDesktopNav {
+            display: none !important;
+        }
+
+        /* Estilo interactivo para las pestañas (pills) de navegación del header de cliente */
+        .client-nav-pill {
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .client-nav-pill.active {
+            background-color: #0B4A3F !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 14px -1px rgba(11, 74, 63, 0.25) !important;
+        }
+        html.dark .client-nav-pill.active {
+            background-color: #10B981 !important;
+            color: #06231D !important;
+            box-shadow: 0 4px 14px -1px rgba(16, 185, 129, 0.35) !important;
+        }
+        .client-nav-pill.active i {
+            color: #10B981 !important;
+        }
+        html.dark .client-nav-pill.active i {
+            color: #06231D !important;
+        }
+
+        /* Items del Tab Bar móvil específicos para cliente */
+        body.role-cliente #mobileTabBar .cliente-only {
+            display: flex !important;
+        }
+        body:not(.role-cliente) #mobileTabBar .cliente-only {
             display: none !important;
         }
 
@@ -1080,13 +1153,69 @@
         <!-- ==========================================
              2. TOP BAR (BARRA SUPERIOR)
              ========================================== -->
-        <header class="h-[90px] bg-maximus-bg flex items-center justify-between px-10 pt-3 relative z-40 flex-shrink-0">
-            <!-- Izquierda: Título Dinámico o Breadcrumb -->
-            <div class="flex items-center gap-4">
+        <header class="h-[90px] bg-maximus-bg dark:bg-[#071714] flex items-center justify-between px-4 sm:px-10 pt-3 relative z-40 flex-shrink-0 transition-colors">
+            <!-- Izquierda: Brand / Logo para Cliente en Desktop O Breadcrumb para Staff -->
+            <div class="flex items-center gap-3 sm:gap-6">
+                <!-- Botón Menú & Logo para Móvil (permanece idéntico) -->
                 <button id="mobileMenuBtn" type="button" onclick="toggleMobileDrawer(true)" aria-label="Abrir menú"><i class="ph-bold ph-list"></i></button>
                 <span id="mobileHeaderLogo">MAXIMUS<span class="text-maximus-accent">.</span></span>
-                <div class="hidden md:block">
-                    <p class="text-sm font-semibold text-gray-500">Panel Central / <span id="breadcrumbSectionName" class="text-maximus-dark font-bold">Vista Actual</span></p>
+
+                <!-- Logo & Brand oficial MAXIMUS en Header para Usuario Normal (Desktop) -->
+                <div id="clientDesktopHeaderBrand" class="hidden items-center gap-3 pr-6 border-r border-maximus-silver/30 dark:border-emerald-900/40 cursor-pointer group" onclick="activateTab('view-inmuebles')" title="Ir a Inmuebles">
+                    <div class="w-10 h-10 rounded-xl bg-maximus-dark dark:bg-[#06231D] dark:border dark:border-emerald-500/30 flex items-center justify-center text-white shadow-md shadow-maximus-dark/20 relative overflow-hidden group-hover:scale-105 transition-transform flex-shrink-0">
+                        <svg class="w-6 h-6" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="client-hdr-silver" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#FFFFFF"/>
+                                    <stop offset="40%" stop-color="#F8FAFC"/>
+                                    <stop offset="80%" stop-color="#CBD5E1"/>
+                                    <stop offset="100%" stop-color="#94A3B8"/>
+                                </linearGradient>
+                                <linearGradient id="client-hdr-green" x1="10" y1="24" x2="29" y2="3" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#059669"/>
+                                    <stop offset="50%" stop-color="#10B981"/>
+                                    <stop offset="100%" stop-color="#34D399"/>
+                                </linearGradient>
+                                <filter id="client-hdr-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="1" stdDeviation="0.8" flood-color="#000000" flood-opacity="0.35"/>
+                                </filter>
+                            </defs>
+                            <g filter="url(#client-hdr-shadow)">
+                                <rect x="7.4" y="6" width="2.4" height="6.5" rx="0.5" fill="url(#client-hdr-silver)"/>
+                                <path d="M6 17.5V26.5" stroke="url(#client-hdr-silver)" stroke-width="2.5" stroke-linecap="round"/>
+                                <path d="M24.5 17.5V26.5" stroke="url(#client-hdr-silver)" stroke-width="2.5" stroke-linecap="round"/>
+                                <path d="M3.5 17.5L15 7.5L26.5 17.5" stroke="url(#client-hdr-silver)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <g filter="url(#client-hdr-shadow)">
+                                <path d="M10.5 15.5L15 21L24.2 9.2" stroke="url(#client-hdr-green)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polygon points="29,4 21.5,6.8 26.2,13.8" fill="url(#client-hdr-green)"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-extrabold tracking-tight text-maximus-dark dark:text-white">
+                        MAXIMUS<span class="text-maximus-accent">.</span>
+                    </span>
+                </div>
+
+                <!-- Barra de Navegación Superior para Usuario Normal (Pill Tabs de Alta Gama) -->
+                <nav id="clientDesktopNav" class="hidden items-center gap-1.5 p-1.5 bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-sm border border-gray-200/70 dark:border-emerald-950/60" aria-label="Navegación de Usuario Normal">
+                    <a href="#" data-target="view-inmuebles" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
+                        <i class="ph ph-house-line text-base"></i>
+                        <span>Inmuebles</span>
+                    </a>
+                    <a href="#" data-target="view-exclusivas-maximus" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
+                        <i class="ph ph-buildings text-base text-maximus-accent"></i>
+                        <span>Captaciones MAXIMUS</span>
+                    </a>
+                    <a href="#" data-target="view-perfil" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
+                        <i class="ph ph-user-circle text-base text-emerald-600"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                </nav>
+
+                <!-- Breadcrumb estándar para Staff (Admin / Asesores con Sidebar) -->
+                <div id="breadcrumbWrapper" class="hidden md:block">
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Panel Central / <span id="breadcrumbSectionName" class="text-maximus-dark dark:text-emerald-300 font-bold">Vista Actual</span></p>
                 </div>
             </div>
             
@@ -5576,9 +5705,14 @@
                 }
             }
 
-            // Añadir clase de rol al body para reglas CSS directas
+            // Añadir clase de rol al body y html para reglas CSS directas
             document.body.classList.remove('role-admin', 'role-asesor_maximus', 'role-asesor_externo', 'role-cliente', 'role-agente');
             document.body.classList.add('role-' + userRole);
+            if (userRole === 'cliente') {
+                document.documentElement.classList.add('role-cliente');
+            } else {
+                document.documentElement.classList.remove('role-cliente');
+            }
 
             // Sincronizar estado visual del toggle de Modo Oscuro
             actualizarUIModoOscuro(document.documentElement.classList.contains('dark'));
@@ -6467,6 +6601,29 @@
                 }
             });
 
+            // Sincronizar pills del menú superior para usuarios normales (Desktop Header Nav)
+            const clientPills = document.querySelectorAll('#clientDesktopNav .client-nav-pill');
+            clientPills.forEach(pill => {
+                const target = pill.getAttribute('data-target');
+                const isMatch = target === targetId || (targetId === 'view-detalle-inmueble' && target === 'view-inmuebles');
+                const icon = pill.querySelector('i');
+                if (isMatch) {
+                    pill.classList.remove('text-gray-500', 'hover:text-maximus-dark', 'hover:bg-gray-50', 'dark:text-gray-300', 'dark:hover:text-white', 'dark:hover:bg-[#0D2822]');
+                    pill.classList.add('active');
+                    if (icon) {
+                        icon.classList.remove('ph');
+                        icon.classList.add('ph-fill');
+                    }
+                } else {
+                    pill.classList.remove('active');
+                    pill.classList.add('text-gray-500', 'hover:text-maximus-dark', 'hover:bg-gray-50', 'dark:text-gray-300', 'dark:hover:text-white', 'dark:hover:bg-[#0D2822]');
+                    if (icon) {
+                        icon.classList.remove('ph-fill');
+                        icon.classList.add('ph');
+                    }
+                }
+            });
+
             // Actualizar breadcrumb
             const breadcrumb = document.getElementById('breadcrumbSectionName');
             if (breadcrumb) {
@@ -6515,11 +6672,20 @@
             }
         }
 
-        // Listener de clic en los enlaces del menú
+        // Listener de clic en los enlaces del menú lateral
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = link.getAttribute('data-target');
+                if (targetId) activateTab(targetId, true);
+            });
+        });
+
+        // Listener de clic en las pestañas del menú superior de cliente
+        document.querySelectorAll('#clientDesktopNav .client-nav-pill').forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = pill.getAttribute('data-target');
                 if (targetId) activateTab(targetId, true);
             });
         });
@@ -11744,8 +11910,9 @@
     <div id="mobileDrawerOverlay" onclick="toggleMobileDrawer(false)"></div>
     <nav id="mobileTabBar" aria-label="Navegación principal">
         <button type="button" data-tab="view-inmuebles"><i class="ph-fill ph-house"></i><span>Inmuebles</span></button>
-        <button type="button" data-tab="view-resumen"><i class="ph-fill ph-squares-four"></i><span>Panorama</span></button>
-        <button type="button" data-tab="view-colecciones"><i class="ph-fill ph-folder-simple"></i><span>Colecciones</span></button>
+        <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-buildings"></i><span>Captaciones</span></button>
+        <button type="button" data-tab="view-resumen" class="staff-only"><i class="ph-fill ph-squares-four"></i><span>Panorama</span></button>
+        <button type="button" data-tab="view-colecciones" class="staff-only"><i class="ph-fill ph-folder-simple"></i><span>Colecciones</span></button>
         <button type="button" data-tab="view-perfil"><i class="ph-fill ph-user-circle"></i><span>Perfil</span></button>
         <button type="button" data-tab="__menu"><i class="ph-bold ph-dots-three-outline"></i><span>Más</span></button>
     </nav>
