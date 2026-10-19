@@ -30,6 +30,11 @@ const InmuebleService = {
                     if (filtros.operacion && filtros.operacion !== 'todos') query = query.eq('operacion', filtros.operacion);
                     if (filtros.estatus) query = query.eq('estatus', filtros.estatus);
                     if (filtros.tipo) query = query.eq('tipo', filtros.tipo);
+                    if (filtros.is_maximus !== undefined) {
+                        try {
+                            query = query.or(`is_maximus.eq.${filtros.is_maximus},en_oferta.eq.${filtros.is_maximus}`);
+                        } catch(e) {}
+                    }
                     if (filtros.busqueda) query = query.ilike('titulo', `%${filtros.busqueda}%`);
                     query = query.order('created_at', { ascending: false });
                     const res = await query;
@@ -50,6 +55,9 @@ const InmuebleService = {
         if (filtros.operacion && filtros.operacion !== 'todos') data = data.filter(i => i.operacion === filtros.operacion);
         if (filtros.estatus) data = data.filter(i => i.estatus === filtros.estatus);
         if (filtros.tipo) data = data.filter(i => i.tipo === filtros.tipo);
+        if (filtros.is_maximus !== undefined) {
+            data = data.filter(i => Boolean(i.is_maximus || i.en_oferta || (i.comision_porcentaje && i.comision_porcentaje >= 5)) === Boolean(filtros.is_maximus));
+        }
         if (filtros.busqueda) {
             const q = filtros.busqueda.toLowerCase();
             data = data.filter(i => 

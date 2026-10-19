@@ -96,6 +96,15 @@ CREATE TABLE IF NOT EXISTS public.inmuebles (
     foto_principal TEXT,
     fotos TEXT[] DEFAULT '{}',
     en_oferta BOOLEAN DEFAULT false,
+    -- Captaciones Exclusivas & Branding
+    codigo TEXT,
+    subtitulo TEXT,
+    is_maximus BOOLEAN DEFAULT false,
+    sector_nombre TEXT,
+    sector_desc TEXT,
+    estacionamientos INT DEFAULT 0,
+    aspectos_destacados JSONB DEFAULT '[]'::jsonb,
+    amenidades JSONB DEFAULT '[]'::jsonb,
     -- Datos Privados (solo agentes / admin)
     propietario_nombre TEXT,
     propietario_telefono TEXT,
@@ -283,6 +292,9 @@ CREATE TABLE IF NOT EXISTS public.asesores_maximus (
     destacado BOOLEAN DEFAULT false,
     activo BOOLEAN DEFAULT true,
     orden INT DEFAULT 1,
+    bio TEXT,
+    tipo_cuenta TEXT DEFAULT 'maximus',
+    split_comision TEXT DEFAULT '70%',
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
