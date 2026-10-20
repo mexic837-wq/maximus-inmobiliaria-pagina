@@ -7156,6 +7156,10 @@
         var pdfTemporalDataUrl = '';
         var imagenTemporalDataUrl = '';
         var portadaCustomDataUrl = '';
+        var filtroVendidosOperacion = 'todos';
+        var listaCierresMercadoCache = [];
+        var isTemporalidadVendidosOpen = false;
+        var sincronizandoCierresMercado = false;
 
         function activateTab(targetId, animate = true) {
             // Verificar restricciones para usuarios normales
@@ -11892,8 +11896,8 @@
         // ========================================================
         // 12.B. MÓDULO: CIERRES DE MERCADO (HISTÓRICO GLOBAL)
         // ========================================================
-        let filtroVendidosOperacion = 'todos';
-        let listaCierresMercadoCache = [];
+        filtroVendidosOperacion = filtroVendidosOperacion || 'todos';
+        listaCierresMercadoCache = listaCierresMercadoCache || [];
 
         function filtrarVendidosPorOperacion(operacion) {
             filtroVendidosOperacion = operacion;
@@ -11912,8 +11916,8 @@
             filtrarVendidosGlobal();
         }
 
-        let isTemporalidadVendidosOpen = false;
-        let sincronizandoCierresMercado = false;
+        isTemporalidadVendidosOpen = isTemporalidadVendidosOpen || false;
+        sincronizandoCierresMercado = sincronizandoCierresMercado || false;
 
         function toggleFiltroTemporalidadVendidos(forzarEstado) {
             const dropdown = document.getElementById('dropdown-temporalidad-vendidos-panel');
@@ -11987,11 +11991,19 @@
 
                 if (cierresData && cierresData.length > 0) {
                     listaCierresMercadoCache = cierresData;
-                    actualizarKPIsCierresMercado(listaCierresMercadoCache);
-                    filtrarVendidosGlobal();
+                } else if (listaCierresMercadoCache.length === 0 && window.MOCK_DATA && Array.isArray(window.MOCK_DATA.cierres_ventas)) {
+                    listaCierresMercadoCache = [...window.MOCK_DATA.cierres_ventas];
                 }
+
+                actualizarKPIsCierresMercado(listaCierresMercadoCache);
+                filtrarVendidosGlobal();
             } catch (err) {
                 console.warn('sincronizarCierresMercadoSupabase error:', err);
+                if (listaCierresMercadoCache.length === 0 && window.MOCK_DATA && Array.isArray(window.MOCK_DATA.cierres_ventas)) {
+                    listaCierresMercadoCache = [...window.MOCK_DATA.cierres_ventas];
+                }
+                actualizarKPIsCierresMercado(listaCierresMercadoCache);
+                filtrarVendidosGlobal();
             } finally {
                 sincronizandoCierresMercado = false;
             }
@@ -12001,20 +12013,21 @@
             const grilla = document.getElementById('grilla-vendidos');
             if (!grilla) return;
 
-            if (listaCierresMercadoCache.length === 0) {
+            // Cargar inicial desde cache o mock inmediato sin bloqueo
+            if (listaCierresMercadoCache.length === 0 && window.MOCK_DATA && Array.isArray(window.MOCK_DATA.cierres_ventas)) {
+                listaCierresMercadoCache = [...window.MOCK_DATA.cierres_ventas];
+            }
+
+            if (listaCierresMercadoCache.length > 0) {
+                actualizarKPIsCierresMercado(listaCierresMercadoCache);
+                filtrarVendidosGlobal();
+            } else {
                 grilla.innerHTML = `
                     <div class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400">
                         <i class="ph ph-spinner animate-spin text-3xl text-maximus-accent mb-2"></i>
                         <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Cargando cierres de mercado...</span>
                     </div>
                 `;
-            }
-
-            // Cargar inicial desde cache o mock inmediato
-            if (listaCierresMercadoCache.length === 0 && window.MOCK_DATA && Array.isArray(window.MOCK_DATA.cierres_ventas)) {
-                listaCierresMercadoCache = [...window.MOCK_DATA.cierres_ventas];
-                actualizarKPIsCierresMercado(listaCierresMercadoCache);
-                filtrarVendidosGlobal();
             }
 
             // Sincronizar asíncronamente con Supabase
@@ -12085,7 +12098,7 @@
                     });
                 } else if (periodo === 'ultimos_90_dias') {
                     const fecharRef = items.map(c => new Date(c.fecha_cierre).getTime()).filter(t => !isNaN(t));
-                    const maxTime = fecharRef.length ? Math.max(...fecharRef, ahora.getTime()) : ahora.getTime();
+                    const maxTime = fecharRef.length ? Math.max(...fecharRef) : ahora.getTime();
                     const noventaDiasMs = 90 * 24 * 60 * 60 * 1000;
                     items = items.filter(c => {
                         if (!c.fecha_cierre) return true;
