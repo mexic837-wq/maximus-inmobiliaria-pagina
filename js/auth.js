@@ -342,7 +342,7 @@ const AuthService = {
             await window.N8nService.solicitarRecuperacionPassword(payload);
         } else if (typeof window !== 'undefined' && window.APP_CONFIG && window.APP_CONFIG.ENABLE_N8N_WEBHOOKS) {
             try {
-                const url = (window.APP_CONFIG.N8N_BASE_URL || 'https://n8n.tudominio.com') + (window.APP_CONFIG.N8N_WEBHOOKS?.AUTH_RECUPERAR_PASSWORD || '/webhook/auth-recuperar-password');
+                const url = (window.APP_CONFIG.N8N_BASE_URL || 'https://n8n.maximusinmobiliaria.tech') + (window.APP_CONFIG.N8N_WEBHOOKS?.AUTH_RECUPERAR_PASSWORD || '/webhook/auth-recuperar-password');
                 await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

@@ -30,7 +30,7 @@ const APP_CONFIG = {
     // ========== N8N (Webhooks de Automatización) ==========
     ENABLE_N8N_WEBHOOKS: true,
     COMPANY_NOTIFY_EMAIL: 'contacto@maximusinmobiliaria.com',
-    N8N_BASE_URL: 'https://n8n.tudominio.com',              // ← Cambia esto por tu URL real de n8n
+    N8N_BASE_URL: 'https://n8n.maximusinmobiliaria.tech',
     N8N_WEBHOOKS: {
         // Cada webhook es un endpoint de n8n que dispara un workflow
         NUEVO_LEAD:              '/webhook/nuevo-lead',

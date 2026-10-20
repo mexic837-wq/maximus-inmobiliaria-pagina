@@ -583,9 +583,10 @@ const N8nService = {
             return { success: true, mock: true, payload: enrichedPayload };
         }
 
-        const url = (APP_CONFIG.N8N_BASE_URL || 'https://n8n.tudominio.com') + webhookPath;
+        const url = (APP_CONFIG.N8N_BASE_URL || 'https://n8n.maximusinmobiliaria.tech') + webhookPath;
 
         if (APP_CONFIG.ENABLE_N8N_WEBHOOKS) {
+            console.log(`🚀 [N8N Webhook] Enviando evento "${webhookKey}" a: ${url}`, enrichedPayload);
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -598,11 +599,11 @@ const N8nService = {
                 } catch (_) {
                     data = { status: response.status };
                 }
-                console.log(`🟢 N8N Webhook "${webhookKey}" enviado a ${url}:`, enrichedPayload);
+                console.log(`🟢 [N8N Webhook] "${webhookKey}" procesado exitosamente (${response.status}):`, data);
                 return { success: response.ok, data, payload: enrichedPayload };
             } catch (err) {
-                console.info(`📡 N8N Webhook "${webhookKey}" registrado (servidor n8n en espera de conexión en ${url}):`, enrichedPayload);
-                return { success: true, queued: true, payload: enrichedPayload, warning: err.message };
+                console.error(`⚠️ [N8N Webhook] Error al conectar con ${url}:`, err);
+                return { success: false, queued: false, payload: enrichedPayload, warning: err.message };
             }
         }
 
@@ -1587,11 +1588,13 @@ const PerfilService = {
         if (window.N8nService) {
             await N8nService.trigger('AUTH_VERIFICACION_2FA', {
                 codigo: otpCode,
+                codigo_otp: otpCode,
                 metodo: method,
                 email: emailDestino,
-                telefono: user?.telefono,
-                nombre: user?.name,
-                validez_minutos: 10
+                telefono: user?.telefono || '',
+                nombre: user?.name || 'Asesor MAXIMUS',
+                validez_minutos: 10,
+                evento: 'AUTH_VERIFICACION_2FA'
             });
         }
 
