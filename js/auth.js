@@ -72,6 +72,86 @@ const AuthService = {
     },
 
     /**
+     * Valida credenciales sin guardar la sesión automáticamente (útil para verificar 2FA).
+     */
+    async validateCredentials(email, password) {
+        const cleanEmail = (email || '').trim().toLowerCase();
+        let result = null;
+
+        const demoAccounts = [
+            'admin@maximus.com', 
+            'asesor.maximus@maximus.com', 
+            'asesor.externo@maximus.com', 
+            'agente@maximus.com',
+            'cliente@maximus.com',
+            'usuario@maximus.com'
+        ];
+        if (demoAccounts.includes(cleanEmail)) {
+            const demoRes = this._mockLogin(cleanEmail, password);
+            if (demoRes.success) {
+                return demoRes;
+            }
+        }
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                result = await this._supabaseLogin(cleanEmail, password);
+                if (result.success && result.user) {
+                    return result;
+                }
+            } catch (err) {
+                console.warn('Supabase login check error:', err);
+            }
+        }
+
+        if (!result || !result.success) {
+            const fallbackRes = this._mockLogin(cleanEmail, password);
+            if (fallbackRes.success) {
+                return fallbackRes;
+            }
+        }
+
+        return result || { success: false, error: 'Credenciales inválidas. Verifique su correo y contraseña.' };
+    },
+
+    /**
+     * Completar el restablecimiento de contraseña para un usuario.
+     */
+    async completePasswordReset(email, newPassword) {
+        const cleanEmail = (email || '').trim().toLowerCase();
+        if (!newPassword || newPassword.length < 6) {
+            return { success: false, error: 'La nueva contraseña debe tener al menos 6 caracteres.' };
+        }
+
+        const mockUsers = this._getRegisteredUsers();
+        if (mockUsers[cleanEmail]) {
+            mockUsers[cleanEmail].password = newPassword;
+            localStorage.setItem(this.KEYS.REGISTERED_USERS, JSON.stringify(mockUsers));
+        }
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+                if (sb && sb.auth) {
+                    await sb.auth.updateUser({ password: newPassword });
+                }
+            } catch (_) {}
+        }
+
+        if (typeof window !== 'undefined' && window.N8nService) {
+            await window.N8nService.trigger('AUTH_CAMBIO_PASSWORD', {
+                email: cleanEmail,
+                nombre: cleanEmail.split('@')[0],
+                timestamp: new Date().toISOString(),
+                ip: 'Sesión Segura Navegador Web',
+                dispositivo: typeof navigator !== 'undefined' ? navigator.userAgent : 'Navegador Web'
+            });
+        }
+
+        return { success: true, message: 'Tu contraseña ha sido actualizada con éxito.' };
+    },
+
+    /**
      * Crear una nueva cuenta para usuario normal / cliente.
      * @param {object} data - { nombre, email, password, telefono, rememberDevice }
      * @returns {Promise<{success: boolean, user?: object, error?: string, requiresEmailConfirmation?: boolean, message?: string}>}

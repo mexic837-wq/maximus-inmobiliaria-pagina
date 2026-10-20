@@ -15,29 +15,140 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        220,
-        120
+        200,
+        160
       ],
       "webhookId": "maximus-auth-2fa"
     },
     {
       "parameters": {
-        "httpMethod": "POST",
-        "path": "auth-cambio-password",
-        "responseMode": "responseNode",
-        "options": {
-          "allowedOrigins": "*"
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2fa-1",
+              "name": "email",
+              "value": "={{ $json.body.email || $json.email || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-2",
+              "name": "nombre",
+              "value": "={{ $json.body.nombre || $json.nombre || 'Usuario MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-3",
+              "name": "codigo",
+              "value": "={{ $json.body.codigo || $json.body.codigo_otp || $json.codigo || '849201' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-4",
+              "name": "codigo_otp",
+              "value": "={{ $json.body.codigo || $json.body.codigo_otp || $json.codigo || '849201' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-5",
+              "name": "validez_minutos",
+              "value": "={{ $json.body.validez_minutos || $json.validez_minutos || '5' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-6",
+              "name": "metodo",
+              "value": "={{ $json.body.metodo || $json.metodo || 'Correo Electrónico / 2FA' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-7",
+              "name": "ip",
+              "value": "={{ $json.body.ip || $json.ip || '190.202.xx.xx (San Cristóbal, VE)' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-8",
+              "name": "dispositivo",
+              "value": "={{ $json.body.dispositivo || $json.dispositivo || 'Navegador Web' }}",
+              "type": "string"
+            },
+            {
+              "id": "2fa-9",
+              "name": "evento",
+              "value": "AUTH_VERIFICACION_2FA",
+              "type": "string"
+            }
+          ]
         }
       },
-      "id": "webhook-auth-cambio-pass",
-      "name": "Webhook Cambio Contraseña",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
+      "id": "set-auth-2fa",
+      "name": "Normalizar Código 2FA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        220,
-        280
+        500,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "toList": [
+          "={{ $json.email }}"
+        ],
+        "to": "={{ $json.email }}",
+        "subject": "=🔐 [MAXIMUS] Tu Código de Verificación 2FA: {{ $json.codigo }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Código de Verificación 2FA: {{ $json.codigo || $json.codigo_otp }} | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\" align=\"center\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🔒 Verificación en Dos Pasos (2FA) · Correo Electrónico\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Código de Verificación 2FA\n              </h2>\n\n              <p style=\"margin:0 0 28px 0; font-size:15px; line-height:1.65; color:#475569; text-align:center;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Ingresa el siguiente código de un solo uso (OTP) para verificar tu identidad y acceder a tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS CRM</strong>:\n              </p>\n\n              <!-- Caja OTP 6 Dígitos con Gradiente Esmeralda Oscuro -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); border-radius:16px; margin-bottom:24px; border:2px solid #10B981; box-shadow:0 8px 24px rgba(16, 185, 129, 0.15);\">\n                <tr>\n                  <td style=\"padding:30px 20px;\" align=\"center\">\n                    <p style=\"margin:0 0 10px 0; font-size:11px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;\">\n                      Código de Autorización de Seguridad\n                    </p>\n                    <div style=\"font-family:'Courier New', Courier, monospace; font-size:40px; font-weight:900; letter-spacing:10px; color:#10B981; background-color:rgba(255,255,255,0.06); padding:12px 28px; border-radius:12px; display:inline-block; border:1px solid rgba(16, 185, 129, 0.35); text-shadow:0 0 12px rgba(16, 185, 129, 0.4);\">\n                      {{ $json.codigo || $json.codigo_otp }}\n                    </div>\n                    <p style=\"margin:14px 0 0 0; font-size:12px; color:#94A3B8;\">\n                      Este código expirará en <strong style=\"color:#F8FAFC;\">{{ $json.validez_minutos || 10 }} minutos</strong>.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Tabla de Contexto Técnico -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:4px 0; font-size:12px; color:#64748B; width:35%;\">Cuenta:</td>\n                        <td style=\"padding:4px 0; font-size:12px; font-weight:700; color:#0F172A;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:4px 0; font-size:12px; color:#64748B;\">Dispositivo / IP:</td>\n                        <td style=\"padding:4px 0; font-size:12px; font-weight:600; color:#334155;\">{{ $json.dispositivo || 'Navegador Web' }} · <span style=\"font-family:monospace; color:#0B4A3F;\">{{ $json.ip || 'Detectada' }}</span></td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Aviso de Privacidad y Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:12px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#475569; line-height:1.6;\">\n                      <strong style=\"color:#0F172A;\">Aviso de Privacidad y Seguridad:</strong> Ningún colaborador ni administrador de MAXIMUS Inmobiliaria te solicitará este código bajo ningún motivo (llamada, WhatsApp o correo). Si tú no has intentado acceder al portal, ignora este mensaje y cambia tu clave de acceso de inmediato.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Código de Verificación 2FA: {{ $json.codigo || $json.codigo_otp }} | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\" align=\"center\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🔒 Verificación en Dos Pasos (2FA) · Correo Electrónico\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Código de Verificación 2FA\n              </h2>\n\n              <p style=\"margin:0 0 28px 0; font-size:15px; line-height:1.65; color:#475569; text-align:center;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Ingresa el siguiente código de un solo uso (OTP) para verificar tu identidad y acceder a tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS CRM</strong>:\n              </p>\n\n              <!-- Caja OTP 6 Dígitos con Gradiente Esmeralda Oscuro -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); border-radius:16px; margin-bottom:24px; border:2px solid #10B981; box-shadow:0 8px 24px rgba(16, 185, 129, 0.15);\">\n                <tr>\n                  <td style=\"padding:30px 20px;\" align=\"center\">\n                    <p style=\"margin:0 0 10px 0; font-size:11px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;\">\n                      Código de Autorización de Seguridad\n                    </p>\n                    <div style=\"font-family:'Courier New', Courier, monospace; font-size:40px; font-weight:900; letter-spacing:10px; color:#10B981; background-color:rgba(255,255,255,0.06); padding:12px 28px; border-radius:12px; display:inline-block; border:1px solid rgba(16, 185, 129, 0.35); text-shadow:0 0 12px rgba(16, 185, 129, 0.4);\">\n                      {{ $json.codigo || $json.codigo_otp }}\n                    </div>\n                    <p style=\"margin:14px 0 0 0; font-size:12px; color:#94A3B8;\">\n                      Este código expirará en <strong style=\"color:#F8FAFC;\">{{ $json.validez_minutos || 10 }} minutos</strong>.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Tabla de Contexto Técnico -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:4px 0; font-size:12px; color:#64748B; width:35%;\">Cuenta:</td>\n                        <td style=\"padding:4px 0; font-size:12px; font-weight:700; color:#0F172A;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:4px 0; font-size:12px; color:#64748B;\">Dispositivo / IP:</td>\n                        <td style=\"padding:4px 0; font-size:12px; font-weight:600; color:#334155;\">{{ $json.dispositivo || 'Navegador Web' }} · <span style=\"font-family:monospace; color:#0B4A3F;\">{{ $json.ip || 'Detectada' }}</span></td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Aviso de Privacidad y Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:12px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#475569; line-height:1.6;\">\n                      <strong style=\"color:#0F172A;\">Aviso de Privacidad y Seguridad:</strong> Ningún colaborador ni administrador de MAXIMUS Inmobiliaria te solicitará este código bajo ningún motivo (llamada, WhatsApp o correo). Si tú no has intentado acceder al portal, ignora este mensaje y cambia tu clave de acceso de inmediato.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "gmail-auth-2fa",
+      "name": "Enviar Gmail - Código 2FA",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        90
       ],
-      "webhookId": "maximus-auth-cambio-password"
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "Seguridad MAXIMUS <seguridad@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=🔐 [MAXIMUS] Tu Código de Verificación 2FA: {{ $json.codigo }}",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Código de Verificación 2FA: {{ $json.codigo || $json.codigo_otp }} | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\" align=\"center\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🔒 Verificación en Dos Pasos (2FA) · Correo Electrónico\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Código de Verificación 2FA\n              </h2>\n\n              <p style=\"margin:0 0 28px 0; font-size:15px; line-height:1.65; color:#475569; text-align:center;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Ingresa el siguiente código de un solo uso (OTP) para verificar tu identidad y acceder a tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS CRM</strong>:\n              </p>\n\n              <!-- Caja OTP 6 Dígitos con Gradiente Esmeralda Oscuro -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); border-radius:16px; margin-bottom:24px; border:2px solid #10B981; box-shadow:0 8px 24px rgba(16, 185, 129, 0.15);\">\n                <tr>\n                  <td style=\"padding:30px 20px;\" align=\"center\">\n                    <p style=\"margin:0 0 10px 0; font-size:11px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;\">\n                      Código de Autorización de Seguridad\n                    </p>\n                    <div style=\"font-family:'Courier New', Courier, monospace; font-size:40px; font-weight:900; letter-spacing:10px; color:#10B981; background-color:rgba(255,255,255,0.06); padding:12px 28px; border-radius:12px; display:inline-block; border:1px solid rgba(16, 185, 129, 0.35); text-shadow:0 0 12px rgba(16, 185, 129, 0.4);\">\n                      {{ $json.codigo || $json.codigo_otp }}\n                    </div>\n                    <p style=\"margin:14px 0 0 0; font-size:12px; color:#94A3B8;\">\n                      Este código expirará en <strong style=\"color:#F8FAFC;\">{{ $json.validez_minutos || 10 }} minutos</strong>.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Tabla de Contexto Técnico -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:4px 0; font-size:12px; color:#64748B; width:35%;\">Cuenta:</td>\n                        <td style=\"padding:4px 0; font-size:12px; font-weight:700; color:#0F172A;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:4px 0; font-size:12px; color:#64748B;\">Dispositivo / IP:</td>\n                        <td style=\"padding:4px 0; font-size:12px; font-weight:600; color:#334155;\">{{ $json.dispositivo || 'Navegador Web' }} · <span style=\"font-family:monospace; color:#0B4A3F;\">{{ $json.ip || 'Detectada' }}</span></td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Aviso de Privacidad y Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:12px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#475569; line-height:1.6;\">\n                      <strong style=\"color:#0F172A;\">Aviso de Privacidad y Seguridad:</strong> Ningún colaborador ni administrador de MAXIMUS Inmobiliaria te solicitará este código bajo ningún motivo (llamada, WhatsApp o correo). Si tú no has intentado acceder al portal, ignora este mensaje y cambia tu clave de acceso de inmediato.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "smtp-auth-2fa",
+      "name": "Enviar SMTP - Código 2FA",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        230
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"auth-seguridad\",\n  \"evento\": \"AUTH_VERIFICACION_2FA\",\n  \"email\": \"{{ $json.email }}\",\n  \"codigo_enviado\": true\n}",
+        "options": {}
+      },
+      "id": "respond-auth-2fa",
+      "name": "Responder Webhook 2FA",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        160
+      ]
     },
     {
       "parameters": {
@@ -48,15 +159,288 @@
           "allowedOrigins": "*"
         }
       },
-      "id": "webhook-auth-recuperar-pass",
+      "id": "webhook-recuperar-pass",
       "name": "Webhook Recuperar Contraseña",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        220,
-        440
+        200,
+        480
       ],
       "webhookId": "maximus-auth-recuperar-password"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rec-1",
+              "name": "email",
+              "value": "={{ $json.body.email || $json.email || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-2",
+              "name": "nombre",
+              "value": "={{ $json.body.nombre || $json.nombre || 'Usuario MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-3",
+              "name": "url_recuperacion",
+              "value": "={{ $json.body.url_recuperacion || $json.body.reset_url || $json.url_recuperacion || 'https://maximusinmobiliaria.tech/login.html' }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-4",
+              "name": "reset_url",
+              "value": "={{ $json.body.url_recuperacion || $json.body.reset_url || $json.url_recuperacion || 'https://maximusinmobiliaria.tech/login.html' }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-5",
+              "name": "ip",
+              "value": "={{ $json.body.ip || $json.ip || '190.202.xx.xx (San Cristóbal, VE)' }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-6",
+              "name": "dispositivo",
+              "value": "={{ $json.body.dispositivo || $json.dispositivo || 'Navegador Web / Windows' }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-7",
+              "name": "timestamp",
+              "value": "={{ $json.body.timestamp || $json.timestamp || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-8",
+              "name": "fecha",
+              "value": "={{ $json.body.timestamp || $json.timestamp || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "rec-9",
+              "name": "evento",
+              "value": "AUTH_RECUPERAR_PASSWORD",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "set-recuperar-pass",
+      "name": "Normalizar Recuperar Contraseña",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "toList": [
+          "={{ $json.email }}"
+        ],
+        "to": "={{ $json.email }}",
+        "subject": "=🔑 [MAXIMUS] Restablece tu Contraseña de Acceso",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Restablece tu Contraseña de Acceso | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🔑 Recuperación de Credenciales\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Restablece tu Contraseña de Acceso\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Hemos recibido una solicitud para restablecer la contraseña de acceso a tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Haz clic en el botón a continuación para ingresar una nueva clave de acceso de forma segura:\n              </p>\n\n              <!-- CTA Button Destacado en Gradiente Esmeralda -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:28px;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_recuperacion || $json.reset_url }}\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:16px 36px; border-radius:12px; font-size:14px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 8px 20px rgba(16, 185, 129, 0.3); border:1px solid #10B981;\">\n                      Restablecer mi Contraseña →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Registro Técnico de Auditoría -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Detalles Técnicos de la Solicitud\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip || 'Detectada' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Dispositivo:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo || 'Navegador Web' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Advertencia de Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:20px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#475569; line-height:1.6;\">\n                      <strong style=\"color:#0F172A;\">¿No solicitaste este cambio?</strong> Puedes ignorar este correo de forma segura. Tu contraseña actual permanecerá intacta y este enlace temporal dejará de funcionar automáticamente.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Enlace alternativo en texto plano -->\n              <p style=\"margin:0; font-size:11px; color:#94A3B8; text-align:center; word-break:break-all; line-height:1.5;\">\n                Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:<br>\n                <a href=\"{{ $json.url_recuperacion || $json.reset_url }}\" style=\"color:#0B4A3F; text-decoration:underline;\">{{ $json.url_recuperacion || $json.reset_url }}</a>\n              </p>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Restablece tu Contraseña de Acceso | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🔑 Recuperación de Credenciales\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Restablece tu Contraseña de Acceso\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Hemos recibido una solicitud para restablecer la contraseña de acceso a tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Haz clic en el botón a continuación para ingresar una nueva clave de acceso de forma segura:\n              </p>\n\n              <!-- CTA Button Destacado en Gradiente Esmeralda -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:28px;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_recuperacion || $json.reset_url }}\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:16px 36px; border-radius:12px; font-size:14px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 8px 20px rgba(16, 185, 129, 0.3); border:1px solid #10B981;\">\n                      Restablecer mi Contraseña →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Registro Técnico de Auditoría -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Detalles Técnicos de la Solicitud\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip || 'Detectada' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Dispositivo:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo || 'Navegador Web' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Advertencia de Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:20px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#475569; line-height:1.6;\">\n                      <strong style=\"color:#0F172A;\">¿No solicitaste este cambio?</strong> Puedes ignorar este correo de forma segura. Tu contraseña actual permanecerá intacta y este enlace temporal dejará de funcionar automáticamente.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Enlace alternativo en texto plano -->\n              <p style=\"margin:0; font-size:11px; color:#94A3B8; text-align:center; word-break:break-all; line-height:1.5;\">\n                Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:<br>\n                <a href=\"{{ $json.url_recuperacion || $json.reset_url }}\" style=\"color:#0B4A3F; text-decoration:underline;\">{{ $json.url_recuperacion || $json.reset_url }}</a>\n              </p>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "gmail-recuperar-pass",
+      "name": "Enviar Gmail - Recuperar Clave",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        410
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "Seguridad MAXIMUS <seguridad@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=🔑 [MAXIMUS] Restablece tu Contraseña de Acceso",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Restablece tu Contraseña de Acceso | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🔑 Recuperación de Credenciales\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Restablece tu Contraseña de Acceso\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Hemos recibido una solicitud para restablecer la contraseña de acceso a tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Haz clic en el botón a continuación para ingresar una nueva clave de acceso de forma segura:\n              </p>\n\n              <!-- CTA Button Destacado en Gradiente Esmeralda -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:28px;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_recuperacion || $json.reset_url }}\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:16px 36px; border-radius:12px; font-size:14px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 8px 20px rgba(16, 185, 129, 0.3); border:1px solid #10B981;\">\n                      Restablecer mi Contraseña →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Registro Técnico de Auditoría -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Detalles Técnicos de la Solicitud\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip || 'Detectada' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Dispositivo:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo || 'Navegador Web' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Advertencia de Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:20px;\">\n                <tr>\n                  <td style=\"padding:16px 20px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#475569; line-height:1.6;\">\n                      <strong style=\"color:#0F172A;\">¿No solicitaste este cambio?</strong> Puedes ignorar este correo de forma segura. Tu contraseña actual permanecerá intacta y este enlace temporal dejará de funcionar automáticamente.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Enlace alternativo en texto plano -->\n              <p style=\"margin:0; font-size:11px; color:#94A3B8; text-align:center; word-break:break-all; line-height:1.5;\">\n                Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:<br>\n                <a href=\"{{ $json.url_recuperacion || $json.reset_url }}\" style=\"color:#0B4A3F; text-decoration:underline;\">{{ $json.url_recuperacion || $json.reset_url }}</a>\n              </p>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "smtp-recuperar-pass",
+      "name": "Enviar SMTP - Recuperar Clave",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        550
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"auth-seguridad\",\n  \"evento\": \"AUTH_RECUPERAR_PASSWORD\",\n  \"email\": \"{{ $json.email }}\",\n  \"recuperacion_enviada\": true\n}",
+        "options": {}
+      },
+      "id": "respond-recuperar-pass",
+      "name": "Responder Webhook Recuperar",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "auth-cambio-password",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-cambio-pass",
+      "name": "Webhook Cambio Contraseña",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        200,
+        800
+      ],
+      "webhookId": "maximus-auth-cambio-password"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cam-1",
+              "name": "email",
+              "value": "={{ $json.body.email || $json.email || 'contacto@maximusinmobiliaria.com' }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-2",
+              "name": "nombre",
+              "value": "={{ $json.body.nombre || $json.nombre || 'Usuario MAXIMUS' }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-3",
+              "name": "ip",
+              "value": "={{ $json.body.ip || $json.ip || '190.202.xx.xx (San Cristóbal, VE)' }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-4",
+              "name": "dispositivo",
+              "value": "={{ $json.body.dispositivo || $json.dispositivo || 'Navegador Web / Windows' }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-5",
+              "name": "timestamp",
+              "value": "={{ $json.body.timestamp || $json.timestamp || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-6",
+              "name": "fecha",
+              "value": "={{ $json.body.timestamp || $json.timestamp || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-7",
+              "name": "url_recuperacion",
+              "value": "={{ $json.body.url_recuperacion || 'https://maximusinmobiliaria.tech/login.html' }}",
+              "type": "string"
+            },
+            {
+              "id": "cam-8",
+              "name": "evento",
+              "value": "AUTH_CAMBIO_PASSWORD",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "set-cambio-pass",
+      "name": "Normalizar Cambio Contraseña",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "toList": [
+          "={{ $json.email }}"
+        ],
+        "to": "={{ $json.email }}",
+        "subject": "=🛡️ [MAXIMUS] Confirmación: Tu Contraseña ha sido Modificada",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Confirmación: Tu Contraseña ha sido Modificada | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🛡️ Alerta de Seguridad · Contraseña Actualizada\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Confirmación: Tu Contraseña ha sido Modificada\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Te informamos que la contraseña asociada a tu cuenta en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> fue modificada con éxito. Ya puedes iniciar sesión con tu nueva credencial de seguridad.\n              </p>\n\n              <!-- Tabla de Auditoría del Cambio -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:26px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Auditoría del Evento de Seguridad\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip || 'Detectada' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Dispositivo:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo || 'Navegador Web' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Caja de Alerta Preventiva (Ámbar / Rojo Suave) -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#FEF2F2; border:1px solid #FECACA; border-left:4px solid #EF4444; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:20px 22px; text-align:left;\">\n                    <p style=\"margin:0 0 6px 0; font-size:13px; font-weight:800; color:#991B1B; text-transform:uppercase; letter-spacing:1px;\">\n                      ⚠️ ¿No reconoces esta actividad?\n                    </p>\n                    <p style=\"margin:0 0 14px 0; font-size:13px; color:#7F1D1D; line-height:1.55;\">\n                      Si tú no realizaste este cambio, alguien podría estar accediendo a tu cuenta sin tu consentimiento. Te recomendamos asegurar tu cuenta inmediatamente o contactar a la administración central de MAXIMUS.\n                    </p>\n                    <a href=\"{{ $json.url_recuperacion || 'https://maximusinmobiliaria.tech/login.html' }}\" target=\"_blank\" style=\"display:inline-block; background-color:#DC2626; color:#FFFFFF; text-decoration:none; padding:10px 20px; border-radius:8px; font-size:12px; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;\">\n                      Restablecer Clave de Inmediato →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Sesión Normal -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.tech/login.html\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:14px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ingresar al Portal MAXIMUS →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Confirmación: Tu Contraseña ha sido Modificada | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🛡️ Alerta de Seguridad · Contraseña Actualizada\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Confirmación: Tu Contraseña ha sido Modificada\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Te informamos que la contraseña asociada a tu cuenta en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> fue modificada con éxito. Ya puedes iniciar sesión con tu nueva credencial de seguridad.\n              </p>\n\n              <!-- Tabla de Auditoría del Cambio -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:26px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Auditoría del Evento de Seguridad\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip || 'Detectada' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Dispositivo:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo || 'Navegador Web' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Caja de Alerta Preventiva (Ámbar / Rojo Suave) -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#FEF2F2; border:1px solid #FECACA; border-left:4px solid #EF4444; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:20px 22px; text-align:left;\">\n                    <p style=\"margin:0 0 6px 0; font-size:13px; font-weight:800; color:#991B1B; text-transform:uppercase; letter-spacing:1px;\">\n                      ⚠️ ¿No reconoces esta actividad?\n                    </p>\n                    <p style=\"margin:0 0 14px 0; font-size:13px; color:#7F1D1D; line-height:1.55;\">\n                      Si tú no realizaste este cambio, alguien podría estar accediendo a tu cuenta sin tu consentimiento. Te recomendamos asegurar tu cuenta inmediatamente o contactar a la administración central de MAXIMUS.\n                    </p>\n                    <a href=\"{{ $json.url_recuperacion || 'https://maximusinmobiliaria.tech/login.html' }}\" target=\"_blank\" style=\"display:inline-block; background-color:#DC2626; color:#FFFFFF; text-decoration:none; padding:10px 20px; border-radius:8px; font-size:12px; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;\">\n                      Restablecer Clave de Inmediato →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Sesión Normal -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.tech/login.html\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:14px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ingresar al Portal MAXIMUS →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "gmail-cambio-pass",
+      "name": "Enviar Gmail - Cambio Contraseña",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        730
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "Seguridad MAXIMUS <seguridad@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=🛡️ [MAXIMUS] Confirmación: Tu Contraseña ha sido Modificada",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Confirmación: Tu Contraseña ha sido Modificada | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🛡️ Alerta de Seguridad · Contraseña Actualizada\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Confirmación: Tu Contraseña ha sido Modificada\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Te informamos que la contraseña asociada a tu cuenta en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> fue modificada con éxito. Ya puedes iniciar sesión con tu nueva credencial de seguridad.\n              </p>\n\n              <!-- Tabla de Auditoría del Cambio -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:26px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Auditoría del Evento de Seguridad\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip || 'Detectada' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Dispositivo:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo || 'Navegador Web' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha y Hora:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Caja de Alerta Preventiva (Ámbar / Rojo Suave) -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#FEF2F2; border:1px solid #FECACA; border-left:4px solid #EF4444; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:20px 22px; text-align:left;\">\n                    <p style=\"margin:0 0 6px 0; font-size:13px; font-weight:800; color:#991B1B; text-transform:uppercase; letter-spacing:1px;\">\n                      ⚠️ ¿No reconoces esta actividad?\n                    </p>\n                    <p style=\"margin:0 0 14px 0; font-size:13px; color:#7F1D1D; line-height:1.55;\">\n                      Si tú no realizaste este cambio, alguien podría estar accediendo a tu cuenta sin tu consentimiento. Te recomendamos asegurar tu cuenta inmediatamente o contactar a la administración central de MAXIMUS.\n                    </p>\n                    <a href=\"{{ $json.url_recuperacion || 'https://maximusinmobiliaria.tech/login.html' }}\" target=\"_blank\" style=\"display:inline-block; background-color:#DC2626; color:#FFFFFF; text-decoration:none; padding:10px 20px; border-radius:8px; font-size:12px; font-weight:800; letter-spacing:0.8px; text-transform:uppercase;\">\n                      Restablecer Clave de Inmediato →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Sesión Normal -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.tech/login.html\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:14px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ingresar al Portal MAXIMUS →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "smtp-cambio-pass",
+      "name": "Enviar SMTP - Cambio Contraseña",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        870
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"auth-seguridad\",\n  \"evento\": \"AUTH_CAMBIO_PASSWORD\",\n  \"email\": \"{{ $json.email }}\",\n  \"confirmacion_enviada\": true\n}",
+        "options": {}
+      },
+      "id": "respond-cambio-pass",
+      "name": "Responder Webhook Cambio Clave",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        800
+      ]
     },
     {
       "parameters": {
@@ -72,8 +456,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        220,
-        600
+        200,
+        1120
       ],
       "webhookId": "maximus-perfil-actualizado"
     },
@@ -82,132 +466,117 @@
         "assignments": {
           "assignments": [
             {
-              "id": "sec-1",
+              "id": "per-1",
               "name": "email",
               "value": "={{ $json.body.email || $json.email || 'contacto@maximusinmobiliaria.com' }}",
               "type": "string"
             },
             {
-              "id": "sec-2",
+              "id": "per-2",
               "name": "nombre",
               "value": "={{ $json.body.nombre || $json.nombre || 'Usuario MAXIMUS' }}",
               "type": "string"
             },
             {
-              "id": "sec-3",
-              "name": "evento",
-              "value": "={{ $json.body.evento || $json.evento || 'SEGURIDAD' }}",
-              "type": "string"
-            },
-            {
-              "id": "sec-4",
-              "name": "codigo_otp",
-              "value": "={{ $json.body.codigo_otp || $json.codigo_otp || '849201' }}",
-              "type": "string"
-            },
-            {
-              "id": "sec-5",
-              "name": "reset_url",
-              "value": "={{ $json.body.reset_url || $json.reset_url || 'https://maximusinmobiliaria.com/login.html' }}",
-              "type": "string"
-            },
-            {
-              "id": "sec-6",
-              "name": "fecha",
-              "value": "={{ new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-codigo",
-              "name": "codigo",
-              "value": "={{ $json.body.codigo || $json.body.codigo_otp || '482910' }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-metodo",
-              "name": "metodo",
-              "value": "={{ $json.body.metodo || 'Correo Electrónico / WhatsApp' }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-validez_minutos",
-              "name": "validez_minutos",
-              "value": "={{ $json.body.validez_minutos || '5' }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-ip",
-              "name": "ip",
-              "value": "={{ $json.body.ip || '190.202.xx.xx (San Cristóbal, VE)' }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-dispositivo",
-              "name": "dispositivo",
-              "value": "={{ $json.body.dispositivo || 'Navegador Web' }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-timestamp",
-              "name": "timestamp",
-              "value": "={{ $json.body.timestamp || new Date().toLocaleString('es-VE') }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-url_recuperacion",
-              "name": "url_recuperacion",
-              "value": "={{ $json.body.url_recuperacion || $json.body.reset_url || 'https://maximusinmobiliaria.tech/login.html' }}",
-              "type": "string"
-            },
-            {
-              "id": "sync-telefono",
+              "id": "per-3",
               "name": "telefono",
-              "value": "={{ $json.body.telefono || '+58 424-0000000' }}",
+              "value": "={{ $json.body.telefono || $json.telefono || '+58 424-0000000' }}",
+              "type": "string"
+            },
+            {
+              "id": "per-4",
+              "name": "two_factor_status",
+              "value": "={{ $json.body.two_factor_status || $json.body.dos_factores || $json.two_factor_status || 'Activo (Protegido con OTP)' }}",
+              "type": "string"
+            },
+            {
+              "id": "per-5",
+              "name": "timestamp",
+              "value": "={{ $json.body.timestamp || $json.timestamp || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "per-6",
+              "name": "fecha",
+              "value": "={{ $json.body.timestamp || $json.timestamp || new Date().toLocaleString('es-VE', { timeZone: 'America/Caracas' }) }}",
+              "type": "string"
+            },
+            {
+              "id": "per-7",
+              "name": "evento",
+              "value": "PERFIL_ACTUALIZADO",
               "type": "string"
             }
           ]
         }
       },
-      "id": "set-auth-seguridad",
-      "name": "Normalizar Evento de Seguridad",
+      "id": "set-perfil-actualizado",
+      "name": "Normalizar Perfil Actualizado",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        540,
-        360
+        500,
+        1120
       ]
     },
     {
       "parameters": {
-        "fromEmail": "Seguridad MAXIMUS <seguridad@maximusinmobiliaria.com>",
-        "toEmail": "={{ $json.email }}",
-        "subject": "=🔐 [SEGURIDAD MAXIMUS] Notificación de Cuenta ({{ $json.evento }})",
+        "resource": "message",
+        "operation": "send",
+        "toList": [
+          "={{ $json.email }}"
+        ],
+        "to": "={{ $json.email }}",
+        "subject": "=👤 [MAXIMUS] Tu Perfil ha sido Actualizado Exitosamente",
         "emailType": "html",
-        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Alerta de Seguridad: Cambio o Recuperación de Contraseña | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  🛡️ Alerta de Seguridad · Credenciales de Acceso\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Notificación de Seguridad en tu Cuenta MAXIMUS\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Hemos detectado una solicitud de actualización o restablecimiento de contraseña para tu cuenta corporativa en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>.\n              </p>\n\n              <!-- Registro de Auditoría -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Detalles Técnicos del Evento\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Cuenta Asociada:</td>\n                        <td style=\"padding:6px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Dirección IP:</td>\n                        <td style=\"padding:6px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0; font-family:monospace;\">{{ $json.ip }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Navegador / Equipo:</td>\n                        <td style=\"padding:6px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $json.dispositivo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:6px 0; font-size:13px; color:#64748B;\">Fecha y Hora (UTC):</td>\n                        <td style=\"padding:6px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_recuperacion }}\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Verificar o Restablecer Contraseña →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Tu Perfil Profesional ha sido Actualizado | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  👤 Perfil de Asesor Actualizado\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Tu Perfil Profesional ha sido Actualizado\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Te confirmamos que los datos de tu perfil profesional en el portal corporativo <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> (datos de contacto, biografía o configuración de seguridad 2FA) han sido actualizados y sincronizados con éxito.\n              </p>\n\n              <!-- Tabla Resumen con los Datos Actualizados -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Resumen de Credenciales y Perfil\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:42%; border-bottom:1px solid #E2E8F0;\">Nombre Completo:</td>\n                        <td style=\"padding:7px 0; font-size:14px; font-weight:800; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.nombre }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Correo Electrónico:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0B4A3F; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Teléfono / WhatsApp:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0;\">{{ $json.telefono }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Estado de Seguridad 2FA:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">\n                          <span style=\"display:inline-block; background-color:#ECFDF5; color:#059669; border:1px solid #A7F3D0; border-radius:6px; padding:2px 8px; font-size:11px;\">\n                            {{ $json.two_factor_status || 'Activo' }}\n                          </span>\n                        </td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha de Actualización:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:24px;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.tech/dashboard.html\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 34px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ir a Mi Perfil en MAXIMUS CRM →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Nota de Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px;\">\n                <tr>\n                  <td style=\"padding:14px 18px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#64748B; line-height:1.5;\">\n                      <strong style=\"color:#0F172A;\">Nota de Seguridad:</strong> Si tú no realizaste estas modificaciones en tus datos personales, por favor ponte en contacto inmediatamente con el equipo de soporte técnico y administración de MAXIMUS Inmobiliaria.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Tu Perfil Profesional ha sido Actualizado | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  👤 Perfil de Asesor Actualizado\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Tu Perfil Profesional ha sido Actualizado\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Te confirmamos que los datos de tu perfil profesional en el portal corporativo <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> (datos de contacto, biografía o configuración de seguridad 2FA) han sido actualizados y sincronizados con éxito.\n              </p>\n\n              <!-- Tabla Resumen con los Datos Actualizados -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Resumen de Credenciales y Perfil\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:42%; border-bottom:1px solid #E2E8F0;\">Nombre Completo:</td>\n                        <td style=\"padding:7px 0; font-size:14px; font-weight:800; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.nombre }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Correo Electrónico:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0B4A3F; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Teléfono / WhatsApp:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0;\">{{ $json.telefono }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Estado de Seguridad 2FA:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">\n                          <span style=\"display:inline-block; background-color:#ECFDF5; color:#059669; border:1px solid #A7F3D0; border-radius:6px; padding:2px 8px; font-size:11px;\">\n                            {{ $json.two_factor_status || 'Activo' }}\n                          </span>\n                        </td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha de Actualización:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:24px;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.tech/dashboard.html\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 34px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ir a Mi Perfil en MAXIMUS CRM →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Nota de Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px;\">\n                <tr>\n                  <td style=\"padding:14px 18px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#64748B; line-height:1.5;\">\n                      <strong style=\"color:#0F172A;\">Nota de Seguridad:</strong> Si tú no realizaste estas modificaciones en tus datos personales, por favor ponte en contacto inmediatamente con el equipo de soporte técnico y administración de MAXIMUS Inmobiliaria.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "gmail-perfil-actualizado",
+      "name": "Enviar Gmail - Perfil Actualizado",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        1050
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fromEmail": "Soporte MAXIMUS <soporte@maximusinmobiliaria.com>",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=👤 [MAXIMUS] Tu Perfil ha sido Actualizado Exitosamente",
+        "emailType": "html",
+        "html": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Tu Perfil Profesional ha sido Actualizado | MAXIMUS Inmobiliaria</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <!-- Contenedor Principal -->\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11, 74, 63, 0.10); border:1px solid #E2E8F0;\">\n          \n          <!-- Barra Superior Cromo & Esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con Identidad del Logo MAXIMUS -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:36px 32px 30px 32px; border-bottom:2px solid #10B981;\">\n              <div style=\"display:inline-block; width:56px; height:56px; line-height:56px; border-radius:16px; background-color:rgba(255,255,255,0.08); border:1px solid rgba(203, 213, 225, 0.35); margin-bottom:14px; text-align:center;\">\n                <span style=\"font-size:26px; font-weight:900; color:#F8FAFC; letter-spacing:-1px;\">M</span><span style=\"font-size:26px; font-weight:900; color:#10B981;\">↗</span>\n              </div>\n              <h1 style=\"margin:0; font-size:26px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo del Mensaje -->\n          <tr>\n            <td style=\"padding:40px 36px 32px 36px;\">\n              <!-- Badge Estado -->\n              <div style=\"margin-bottom:20px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  👤 Perfil de Asesor Actualizado\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                Tu Perfil Profesional ha sido Actualizado\n              </h2>\n\n              <p style=\"margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. Te confirmamos que los datos de tu perfil profesional en el portal corporativo <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong> (datos de contacto, biografía o configuración de seguridad 2FA) han sido actualizados y sincronizados con éxito.\n              </p>\n\n              <!-- Tabla Resumen con los Datos Actualizados -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:22px 24px;\">\n                    <p style=\"margin:0 0 14px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Resumen de Credenciales y Perfil\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:42%; border-bottom:1px solid #E2E8F0;\">Nombre Completo:</td>\n                        <td style=\"padding:7px 0; font-size:14px; font-weight:800; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.nombre }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Correo Electrónico:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0B4A3F; border-bottom:1px solid #E2E8F0;\">{{ $json.email }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Teléfono / WhatsApp:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0;\">{{ $json.telefono }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Estado de Seguridad 2FA:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">\n                          <span style=\"display:inline-block; background-color:#ECFDF5; color:#059669; border:1px solid #A7F3D0; border-radius:6px; padding:2px 8px; font-size:11px;\">\n                            {{ $json.two_factor_status || 'Activo' }}\n                          </span>\n                        </td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B;\">Fecha de Actualización:</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569;\">{{ $json.timestamp || $json.fecha }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- CTA Button -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:24px;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"https://maximusinmobiliaria.tech/dashboard.html\" target=\"_blank\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 34px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);\">\n                      Ir a Mi Perfil en MAXIMUS CRM →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Nota de Seguridad -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px;\">\n                <tr>\n                  <td style=\"padding:14px 18px; text-align:left;\">\n                    <p style=\"margin:0; font-size:12px; color:#64748B; line-height:1.5;\">\n                      <strong style=\"color:#0F172A;\">Nota de Seguridad:</strong> Si tú no realizaste estas modificaciones en tus datos personales, por favor ponte en contacto inmediatamente con el equipo de soporte técnico y administración de MAXIMUS Inmobiliaria.\n                    </p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <!-- Footer Oscuro & Plata -->\n          <tr>\n            <td style=\"background-color:#111827; padding:28px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 14px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
         "options": {}
       },
-      "id": "email-auth-seguridad",
-      "name": "Enviar Correo de Seguridad",
+      "id": "smtp-perfil-actualizado",
+      "name": "Enviar SMTP - Perfil Actualizado",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        800,
-        360
-      ]
+        820,
+        1190
+      ],
+      "continueOnFail": true
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"auth-seguridad\",\n  \"evento\": \"{{ $json.evento }}\",\n  \"email\": \"{{ $json.email }}\"\n}",
+        "responseBody": "={\n  \"ok\": true,\n  \"workflow\": \"auth-seguridad\",\n  \"evento\": \"PERFIL_ACTUALIZADO\",\n  \"email\": \"{{ $json.email }}\",\n  \"perfil_actualizado\": true\n}",
         "options": {}
       },
-      "id": "respond-auth-seguridad",
-      "name": "Responder Evento Seguridad",
+      "id": "respond-perfil-actualizado",
+      "name": "Responder Webhook Perfil",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1060,
-        360
+        1140,
+        1120
       ]
     }
   ],
@@ -216,18 +585,34 @@
       "main": [
         [
           {
-            "node": "Normalizar Evento de Seguridad",
+            "node": "Normalizar Código 2FA",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Webhook Cambio Contraseña": {
+    "Normalizar Código 2FA": {
       "main": [
         [
           {
-            "node": "Normalizar Evento de Seguridad",
+            "node": "Enviar Gmail - Código 2FA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar SMTP - Código 2FA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Gmail - Código 2FA": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook 2FA",
             "type": "main",
             "index": 0
           }
@@ -238,7 +623,72 @@
       "main": [
         [
           {
-            "node": "Normalizar Evento de Seguridad",
+            "node": "Normalizar Recuperar Contraseña",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Recuperar Contraseña": {
+      "main": [
+        [
+          {
+            "node": "Enviar Gmail - Recuperar Clave",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar SMTP - Recuperar Clave",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Gmail - Recuperar Clave": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook Recuperar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Cambio Contraseña": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Cambio Contraseña",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Cambio Contraseña": {
+      "main": [
+        [
+          {
+            "node": "Enviar Gmail - Cambio Contraseña",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar SMTP - Cambio Contraseña",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Gmail - Cambio Contraseña": {
+      "main": [
+        [
+          {
+            "node": "Responder Webhook Cambio Clave",
             "type": "main",
             "index": 0
           }
@@ -249,29 +699,34 @@
       "main": [
         [
           {
-            "node": "Normalizar Evento de Seguridad",
+            "node": "Normalizar Perfil Actualizado",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Normalizar Evento de Seguridad": {
+    "Normalizar Perfil Actualizado": {
       "main": [
         [
           {
-            "node": "Enviar Correo de Seguridad",
+            "node": "Enviar Gmail - Perfil Actualizado",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar SMTP - Perfil Actualizado",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Enviar Correo de Seguridad": {
+    "Enviar Gmail - Perfil Actualizado": {
       "main": [
         [
           {
-            "node": "Responder Evento Seguridad",
+            "node": "Responder Webhook Perfil",
             "type": "main",
             "index": 0
           }

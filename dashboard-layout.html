@@ -12007,6 +12007,9 @@
 
         function toggle2FAEstado(checked) {
             actualizarBadgeSeguridad2FA(checked);
+            const userEmail = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+            localStorage.setItem('maximus_2fa_enabled_' + userEmail, checked ? 'true' : 'false');
+            if (currentUserProfile) currentUserProfile.two_factor_enabled = checked;
             mostrarToastNotificacion(checked ? '🛡️ Verificación en Dos Pasos activada' : '⚠️ Verificación en Dos Pasos desactivada');
         }
 
@@ -12311,8 +12314,13 @@
                     feedback.classList.remove('hidden');
                     if (res.success) {
                         feedback.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800 mt-2 flex items-center gap-2 block';
-                        feedback.innerHTML = '<i class="ph-bold ph-check-circle text-base text-emerald-600 shrink-0"></i> <span><strong>¡Verificación Exitosa!</strong> El código ingresado es correcto y está vigente.</span>';
+                        feedback.innerHTML = '<i class="ph-bold ph-check-circle text-base text-emerald-600 shrink-0"></i> <span><strong>¡Verificación Exitosa!</strong> El código ingresado es correcto. Modo 2FA activado para tu cuenta.</span>';
                         mostrarToastNotificacion('✅ Código verificado correctamente');
+                        const toggle2FA = document.getElementById('perfil-toggle-2fa');
+                        if (toggle2FA && !toggle2FA.checked) {
+                            toggle2FA.checked = true;
+                            toggle2FAEstado(true);
+                        }
                     } else {
                         feedback.className = 'text-xs font-bold text-red-700 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl border border-red-200 dark:border-red-800 mt-2 flex items-center gap-2 block';
                         feedback.innerHTML = `<i class="ph-bold ph-warning-circle text-base text-red-600 shrink-0"></i> <span>${res.error}</span>`;
@@ -12398,6 +12406,18 @@
             const cardLicBadge = document.getElementById('perfil-card-licencia-badge');
             if (cardLicBadge) cardLicBadge.textContent = licencia || 'CIV-9842';
             actualizarBadgeSeguridad2FA(two_factor_enabled);
+            const userEmailClean = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+            localStorage.setItem('maximus_2fa_enabled_' + userEmailClean, two_factor_enabled ? 'true' : 'false');
+
+            if (window.N8nService) {
+                N8nService.trigger('PERFIL_ACTUALIZADO', {
+                    nombre: name,
+                    email: userEmailClean,
+                    telefono: telefono,
+                    two_factor_status: two_factor_enabled ? 'Activado (Exige OTP al Iniciar Sesión)' : 'Desactivado',
+                    fecha: new Date().toLocaleString('es-VE')
+                });
+            }
 
             mostrarToastNotificacion('👤 Perfil profesional actualizado con éxito');
         }

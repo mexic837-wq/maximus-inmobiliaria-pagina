@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Código de Seguridad 2FA: {{ $json.codigo }} | MAXIMUS Inmobiliaria</title>
+  <title>Código de Verificación 2FA: {{ $json.codigo || $json.codigo_otp }} | MAXIMUS Inmobiliaria</title>
 </head>
 <body style="margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F4F7F6; padding:32px 16px;">
@@ -38,41 +38,59 @@
               <!-- Badge Estado -->
               <div style="margin-bottom:20px;">
                 <span style="display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">
-                  🔒 Verificación en Dos Pasos (2FA) · {{ $json.metodo }}
+                  🔒 Verificación en Dos Pasos (2FA) · Correo Electrónico
                 </span>
               </div>
 
               <h2 style="margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;">
-                Código de Verificación de Seguridad
+                Código de Verificación 2FA
               </h2>
 
               <p style="margin:0 0 28px 0; font-size:15px; line-height:1.65; color:#475569; text-align:center;">
-                Hola, <strong style="color:#0F172A;">{{ $json.nombre }}</strong>. Ingresa el siguiente código único de 6 dígitos para autorizar el acceso o vincular la seguridad de tu cuenta en <strong style="color:#0B4A3F;">MAXIMUS CRM</strong>:
+                Hola, <strong style="color:#0F172A;">{{ $json.nombre }}</strong>. Ingresa el siguiente código de un solo uso (OTP) para verificar tu identidad y acceder a tu cuenta corporativa en <strong style="color:#0B4A3F;">MAXIMUS CRM</strong>:
               </p>
 
-              <!-- Caja OTP 6 Dígitos -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); border-radius:16px; margin-bottom:24px; border:2px solid #10B981;">
+              <!-- Caja OTP 6 Dígitos con Gradiente Esmeralda Oscuro -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); border-radius:16px; margin-bottom:24px; border:2px solid #10B981; box-shadow:0 8px 24px rgba(16, 185, 129, 0.15);">
                 <tr>
-                  <td style="padding:28px 20px;" align="center">
-                    <p style="margin:0 0 8px 0; font-size:11px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;">
-                      Código de Autorización OTP
+                  <td style="padding:30px 20px;" align="center">
+                    <p style="margin:0 0 10px 0; font-size:11px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;">
+                      Código de Autorización de Seguridad
                     </p>
-                    <div style="font-family:monospace; font-size:38px; font-weight:900; letter-spacing:10px; color:#10B981; background-color:rgba(255,255,255,0.06); padding:12px 24px; border-radius:12px; display:inline-block; border:1px solid rgba(16, 185, 129, 0.35);">
-                      {{ $json.codigo }}
+                    <div style="font-family:'Courier New', Courier, monospace; font-size:40px; font-weight:900; letter-spacing:10px; color:#10B981; background-color:rgba(255,255,255,0.06); padding:12px 28px; border-radius:12px; display:inline-block; border:1px solid rgba(16, 185, 129, 0.35); text-shadow:0 0 12px rgba(16, 185, 129, 0.4);">
+                      {{ $json.codigo || $json.codigo_otp }}
                     </div>
-                    <p style="margin:12px 0 0 0; font-size:12px; color:#94A3B8;">
-                      Este código expirará en <strong style="color:#F8FAFC;">{{ $json.validez_minutos }} minutos</strong>.
+                    <p style="margin:14px 0 0 0; font-size:12px; color:#94A3B8;">
+                      Este código expirará en <strong style="color:#F8FAFC;">{{ $json.validez_minutos || 10 }} minutos</strong>.
                     </p>
                   </td>
                 </tr>
               </table>
 
-              <!-- Aviso de Seguridad -->
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px;">
+              <!-- Tabla de Contexto Técnico -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; margin-bottom:24px;">
                 <tr>
                   <td style="padding:16px 20px; text-align:left;">
-                    <p style="margin:0; font-size:12px; color:#475569; line-height:1.55;">
-                      <strong style="color:#0F172A;">Aviso de Privacidad:</strong> Ningún miembro del personal de MAXIMUS Inmobiliaria te solicitará este código por teléfono o mensajería. Si no solicitaste esta verificación, ignora este mensaje y actualiza tu contraseña.
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding:4px 0; font-size:12px; color:#64748B; width:35%;">Cuenta:</td>
+                        <td style="padding:4px 0; font-size:12px; font-weight:700; color:#0F172A;">{{ $json.email }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; font-size:12px; color:#64748B;">Dispositivo / IP:</td>
+                        <td style="padding:4px 0; font-size:12px; font-weight:600; color:#334155;">{{ $json.dispositivo || 'Navegador Web' }} · <span style="font-family:monospace; color:#0B4A3F;">{{ $json.ip || 'Detectada' }}</span></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Aviso de Privacidad y Seguridad -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:12px;">
+                <tr>
+                  <td style="padding:16px 20px; text-align:left;">
+                    <p style="margin:0; font-size:12px; color:#475569; line-height:1.6;">
+                      <strong style="color:#0F172A;">Aviso de Privacidad y Seguridad:</strong> Ningún colaborador ni administrador de MAXIMUS Inmobiliaria te solicitará este código bajo ningún motivo (llamada, WhatsApp o correo). Si tú no has intentado acceder al portal, ignora este mensaje y cambia tu clave de acceso de inmediato.
                     </p>
                   </td>
                 </tr>

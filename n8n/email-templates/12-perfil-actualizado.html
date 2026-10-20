@@ -47,7 +47,7 @@
               </h2>
 
               <p style="margin:0 0 24px 0; font-size:15px; line-height:1.65; color:#475569;">
-                Hola, <strong style="color:#0F172A;">{{ $json.nombre }}</strong>. Los datos de contacto, firma comercial y preferencias de notificaciones de tu cuenta en <strong style="color:#0B4A3F;">MAXIMUS Inmobiliaria</strong> han sido sincronizados en todos nuestros canales y flujos automatizados.
+                Hola, <strong style="color:#0F172A;">{{ $json.nombre }}</strong>. Los datos de contacto, firma comercial y credenciales de seguridad de tu cuenta en <strong style="color:#0B4A3F;">MAXIMUS Inmobiliaria</strong> han sido sincronizados exitosamente en todos los módulos de la plataforma y flujos de automatización.
               </p>
 
               <!-- Resumen del Perfil -->
@@ -67,12 +67,16 @@
                         <td style="padding:6px 0; font-size:13px; font-weight:700; color:#0B4A3F; border-bottom:1px solid #E2E8F0;">{{ $json.email }}</td>
                       </tr>
                       <tr>
-                        <td style="padding:6px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Teléfono WhatsApp Fichas VIP:</td>
+                        <td style="padding:6px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Teléfono WhatsApp:</td>
                         <td style="padding:6px 0; font-size:13px; font-weight:700; color:#10B981; border-bottom:1px solid #E2E8F0;">{{ $json.telefono }}</td>
                       </tr>
                       <tr>
-                        <td style="padding:6px 0; font-size:13px; color:#64748B;">Última Actualización:</td>
-                        <td style="padding:6px 0; font-size:13px; font-weight:600; color:#475569;">{{ $json.fecha }}</td>
+                        <td style="padding:6px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Autenticación 2FA:</td>
+                        <td style="padding:6px 0; font-size:13px; font-weight:700; color:#047857; border-bottom:1px solid #E2E8F0;">{{ $json.two_factor_status }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:6px 0; font-size:13px; color:#64748B;">Fecha y Hora:</td>
+                        <td style="padding:6px 0; font-size:13px; font-weight:600; color:#475569;">{{ $json.timestamp }}</td>
                       </tr>
                     </table>
                   </td>
@@ -83,8 +87,8 @@
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
                 <tr>
                   <td align="center">
-                    <a href="https://maximusinmobiliaria.com/dashboard.html" style="display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);">
-                      Volver a Mi Panel de Configuración →
+                    <a href="https://maximusinmobiliaria.tech/dashboard.html" style="display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); color:#FFFFFF; text-decoration:none; padding:15px 32px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16, 185, 129, 0.25);">
+                      Ir al Panel de Configuración →
                     </a>
                   </td>
                 </tr>
