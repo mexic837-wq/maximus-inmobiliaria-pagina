@@ -3069,7 +3069,6 @@
                                         <th class="py-3 px-4 sm:px-6">Asesor</th>
                                         <th class="py-3 px-4">Cargo / Especialidad</th>
                                         <th class="py-3 px-4">Contacto Directo</th>
-                                        <th class="py-3 px-4 text-center">Cierres / Rating</th>
                                         <th class="py-3 px-4 text-center">Captaciones</th>
                                         <th class="py-3 px-4 text-center">Estado</th>
                                         <th class="py-3 px-4 sm:px-6 text-right">Acciones</th>
@@ -10662,18 +10661,28 @@
         // GESTIÓN ADMINISTRATIVA DE ASESORES (PANEL ADMIN)
         // ==========================================
         async function inicializarGestionAsesoresAdmin() {
+            // Sincronizar catálogo completo desde DB / localStorage antes de calcular
+            await sincronizarInmueblesDesdeDB(true);
             const asesores = await obtenerAsesoresMaximusActuales();
             const allProps = Object.values(INMUEBLES_DETALLE_DATA);
 
-            // Calcular captaciones por asesor
+            // Calcular captaciones reales por asesor
             asesores.forEach(asesor => {
-                const count = allProps.filter(inm => 
-                    inm.isMaximus && (
-                        (inm.asesor && inm.asesor.nombre && inm.asesor.nombre.toLowerCase() === asesor.nombre.toLowerCase()) ||
-                        (inm.asesor_id === asesor.id) ||
-                        (inm.asesor && inm.asesor.id === asesor.id)
-                    )
-                ).length;
+                const nombreNorm = (asesor.nombre || '').toLowerCase().trim();
+                const asesorIdStr = String(asesor.id || '').trim();
+
+                const count = allProps.filter(inm => {
+                    if (!inm) return false;
+                    const inmAsesorNombre = (inm.asesor && inm.asesor.nombre) ? inm.asesor.nombre.toLowerCase().trim() : (inm.asesor_nombre ? inm.asesor_nombre.toLowerCase().trim() : '');
+                    const inmAsesorId = inm.asesor_id ? String(inm.asesor_id).trim() : (inm.asesor && inm.asesor.id ? String(inm.asesor.id).trim() : '');
+                    const inmAgenteId = inm.agente_id ? String(inm.agente_id).trim() : '';
+
+                    const coincideNombre = Boolean(nombreNorm && inmAsesorNombre && (inmAsesorNombre === nombreNorm || inmAsesorNombre.includes(nombreNorm) || nombreNorm.includes(inmAsesorNombre)));
+                    const coincideId = Boolean(asesorIdStr && (inmAsesorId === asesorIdStr || inmAgenteId === asesorIdStr));
+
+                    return coincideNombre || coincideId;
+                }).length;
+
                 asesor.captacionesActivas = count;
             });
 
@@ -10715,7 +10724,7 @@
 
             tbody.innerHTML = '';
             if (!asesores || asesores.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-gray-400 font-medium">No hay asesores registrados.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-400 font-medium">No hay asesores registrados.</td></tr>';
                 return;
             }
 
@@ -10741,15 +10750,9 @@
                             <i class="ph-fill ph-whatsapp-logo text-emerald-600"></i> ${asesor.whatsapp || asesor.telefono || 'Sin teléfono'}
                         </p>
                     </td>
-                    <td class="py-3 px-4 text-center">
-                        <span class="font-extrabold text-gray-800 text-xs">${asesor.cierres || 0}</span>
-                        <div class="flex items-center justify-center gap-1 text-amber-500 text-[10px]">
-                            <i class="ph-fill ph-star"></i> <span class="font-bold text-gray-600">${asesor.rating || '5.0'}</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="activateTab('view-exclusivas-maximus', true); setTimeout(() => seleccionarAsesorParaFiltro('${asesor.nombre}'), 100);" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 font-extrabold text-xs hover:bg-emerald-100 transition-colors" title="Ver sus inmuebles en Captaciones">
-                            <i class="ph-bold ph-buildings"></i> ${asesor.captacionesActivas || 0}
+                                        <td class="py-3 px-4 text-center">
+                        <button onclick="activateTab('view-exclusivas-maximus', true); setTimeout(() => seleccionarAsesorParaFiltro('${asesor.nombre}'), 100);" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 font-extrabold text-xs hover:bg-emerald-100 transition-colors shadow-sm" title="Ver sus inmuebles en Captaciones">
+                            <i class="ph-bold ph-buildings text-emerald-600 text-sm"></i> <span>${asesor.captacionesActivas || 0}</span>
                         </button>
                     </td>
                     <td class="py-3 px-4 text-center">
@@ -10776,6 +10779,22 @@
             const input = document.getElementById('buscador-admin-asesores');
             const q = input ? input.value.toLowerCase().trim() : '';
             const asesores = await obtenerAsesoresMaximusActuales();
+            const allProps = Object.values(INMUEBLES_DETALLE_DATA);
+
+            // Re-calcular captaciones reales
+            asesores.forEach(asesor => {
+                const nombreNorm = (asesor.nombre || '').toLowerCase().trim();
+                const asesorIdStr = String(asesor.id || '').trim();
+                asesor.captacionesActivas = allProps.filter(inm => {
+                    if (!inm) return false;
+                    const inmAsesorNombre = (inm.asesor && inm.asesor.nombre) ? inm.asesor.nombre.toLowerCase().trim() : (inm.asesor_nombre ? inm.asesor_nombre.toLowerCase().trim() : '');
+                    const inmAsesorId = inm.asesor_id ? String(inm.asesor_id).trim() : (inm.asesor && inm.asesor.id ? String(inm.asesor.id).trim() : '');
+                    const inmAgenteId = inm.agente_id ? String(inm.agente_id).trim() : '';
+                    return (nombreNorm && inmAsesorNombre && (inmAsesorNombre === nombreNorm || inmAsesorNombre.includes(nombreNorm) || nombreNorm.includes(inmAsesorNombre))) ||
+                           (asesorIdStr && (inmAsesorId === asesorIdStr || inmAgenteId === asesorIdStr));
+                }).length;
+            });
+
             if (!q) {
                 renderTablaAdminAsesores(asesores);
                 return;
@@ -10976,15 +10995,25 @@
         async function eliminarAsesorMaximus(id) {
             if (!confirm('¿Estás seguro de eliminar este asesor? Las captaciones vinculadas se conservarán.')) return;
 
+            const targetIdStr = String(id || '').trim();
+
+            // 1. Filtrar en memoria local inmediatamente para respuesta instantánea en la UI
+            if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
+                ASESORES_MAXIMUS_DATA = ASESORES_MAXIMUS_DATA.filter(a => String(a.id || '').trim() !== targetIdStr);
+            }
+
+            // 2. Ejecutar borrado seguro en el servicio (local + remoto si aplica)
             if (typeof AsesorMaximusService !== 'undefined') {
-                await AsesorMaximusService.delete(id);
-            } else {
-                ASESORES_MAXIMUS_DATA = ASESORES_MAXIMUS_DATA.filter(a => a.id !== id);
+                try {
+                    await AsesorMaximusService.delete(id);
+                } catch (e) {
+                    console.warn('Aviso al eliminar asesor:', e);
+                }
             }
 
             mostrarToastNotificacion('🗑️ Asesor eliminado');
             await inicializarGestionAsesoresAdmin();
-            renderAsesoresMaximus();
+            if (typeof renderAsesoresMaximus === 'function') renderAsesoresMaximus();
             popularSelectAsesores();
         }
 

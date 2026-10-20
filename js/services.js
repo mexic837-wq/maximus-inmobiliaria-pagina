@@ -20,8 +20,30 @@
 // SERVICIO DE INMUEBLES
 // ============================================
 const InmuebleService = {
+    _storageKey: 'maximus_inmuebles_data',
+
+    _getLocal() {
+        const stored = localStorage.getItem(this._storageKey);
+        if (stored) {
+            try { return JSON.parse(stored); } catch(e) {}
+        }
+        if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
+            return [...MOCK_DATA.inmuebles];
+        }
+        return [];
+    },
+
+    _saveLocal(list) {
+        try {
+            localStorage.setItem(this._storageKey, JSON.stringify(list));
+        } catch(e) {}
+        if (typeof MOCK_DATA !== 'undefined') {
+            MOCK_DATA.inmuebles = list;
+        }
+    },
 
     async getAll(filtros = {}) {
+        let sbData = [];
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
@@ -39,19 +61,21 @@ const InmuebleService = {
                     query = query.order('created_at', { ascending: false });
                     const res = await query;
                     if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                        return res;
-                    }
-                    if (res && res.error) {
-                        console.warn('⚠️ MAXIMUS InmuebleService: Supabase devolvió error o no está autorizado. Usando respaldo de datos locales:', res.error);
+                        sbData = res.data;
                     }
                 }
             } catch (err) {
-                console.warn('⚠️ MAXIMUS InmuebleService: Excepción al conectar con Supabase. Usando respaldo de datos locales:', err);
+                console.warn('MAXIMUS InmuebleService: Aviso conexión Supabase, usando almacenamiento local');
             }
         }
 
-        // ---- RESPALDO LOCAL / MOCK DATA ----
-        let data = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) ? [...MOCK_DATA.inmuebles] : [];
+        // ---- RESPALDO LOCAL / PERSISTENCIA HÍBRIDA ----
+        const localList = this._getLocal();
+        const map = new Map();
+        localList.forEach(item => { if (item && item.id) map.set(String(item.id), item); });
+        sbData.forEach(item => { if (item && item.id) map.set(String(item.id), { ...(map.get(String(item.id)) || {}), ...item }); });
+
+        let data = Array.from(map.values());
         if (filtros.operacion && filtros.operacion !== 'todos') data = data.filter(i => i.operacion === filtros.operacion);
         if (filtros.estatus) data = data.filter(i => i.estatus === filtros.estatus);
         if (filtros.tipo) data = data.filter(i => i.tipo === filtros.tipo);
@@ -82,26 +106,39 @@ const InmuebleService = {
                 console.warn('InmuebleService.getById: Excepción Supabase, usando respaldo local:', err);
             }
         }
-        const item = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) 
-            ? MOCK_DATA.inmuebles.find(i => i.id === id || i.id === 'inm-' + id || (id && id.endsWith(i.id)))
-            : null;
+        const localList = this._getLocal();
+        const item = localList.find(i => String(i.id) === String(id) || String(i.id) === 'inm-' + id || (id && String(id).endsWith(String(i.id))));
         return { data: item || null, error: item ? null : 'No encontrado' };
     },
 
     async create(inmuebleData) {
-        let res;
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const nuevo = { id: 'inm-' + Date.now(), ...inmuebleData, created_at: new Date().toISOString() };
-            MOCK_DATA.inmuebles.unshift(nuevo);
-            console.log('🟡 MOCK: Inmueble creado', nuevo);
-            res = { data: nuevo, error: null };
-        } else {
+        const nuevo = { id: 'inm-' + Date.now(), ...inmuebleData, created_at: new Date().toISOString() };
+        
+        // Guardar localmente de inmediato
+        const list = this._getLocal();
+        list.unshift(nuevo);
+        this._saveLocal(list);
+
+        let res = { data: nuevo, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = getSupabase();
-                res = await sb.from(APP_CONFIG.TABLES.INMUEBLES).insert(inmuebleData).select().single();
+                const payloadSb = { ...inmuebleData };
+                if (String(payloadSb.id || '').startsWith('inm-')) {
+                    delete payloadSb.id;
+                }
+                const sbRes = await sb.from(APP_CONFIG.TABLES.INMUEBLES).insert(payloadSb).select().single();
+                if (sbRes && sbRes.data) {
+                    res = sbRes;
+                    const idx = list.findIndex(i => i.id === nuevo.id);
+                    if (idx !== -1) {
+                        list[idx] = { ...list[idx], ...sbRes.data };
+                        this._saveLocal(list);
+                    }
+                }
             } catch (err) {
-                const nuevo = { id: 'inm-' + Date.now(), ...inmuebleData, created_at: new Date().toISOString() };
-                res = { data: nuevo, error: null };
+                console.warn('InmuebleService.create: Guardado localmente tras aviso de Supabase');
             }
         }
 
@@ -112,25 +149,40 @@ const InmuebleService = {
     },
 
     async update(id, updates) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const idx = MOCK_DATA.inmuebles.findIndex(i => i.id === id);
-            if (idx !== -1) {
-                MOCK_DATA.inmuebles[idx] = { ...MOCK_DATA.inmuebles[idx], ...updates };
-                return { data: MOCK_DATA.inmuebles[idx], error: null };
-            }
-            return { data: null, error: 'No encontrado' };
+        const list = this._getLocal();
+        const idx = list.findIndex(i => String(i.id) === String(id));
+        if (idx !== -1) {
+            list[idx] = { ...list[idx], ...updates };
+            this._saveLocal(list);
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.INMUEBLES).update(updates).eq('id', id).select().single();
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id));
+                if (isUUID) {
+                    const sb = getSupabase();
+                    return await sb.from(APP_CONFIG.TABLES.INMUEBLES).update(updates).eq('id', id).select().single();
+                }
+            } catch (err) {}
+        }
+        return { data: idx !== -1 ? list[idx] : null, error: null };
     },
 
     async delete(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            MOCK_DATA.inmuebles = MOCK_DATA.inmuebles.filter(i => i.id !== id);
-            return { error: null };
+        let list = this._getLocal();
+        list = list.filter(i => String(i.id) !== String(id));
+        this._saveLocal(list);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id));
+                if (isUUID) {
+                    const sb = getSupabase();
+                    await sb.from(APP_CONFIG.TABLES.INMUEBLES).delete().eq('id', id);
+                }
+            } catch(e) {}
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.INMUEBLES).delete().eq('id', id);
+        return { error: null };
     },
 };
 
@@ -2081,29 +2133,73 @@ const AsesorMaximusService = {
     },
 
     async update(id, updates) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const list = this._getLocal();
-            const idx = list.findIndex(a => a.id === id);
-            if (idx === -1) return { data: null, error: 'Asesor no encontrado' };
+        const targetIdStr = String(id || '').trim();
+
+        // 1. Siempre actualizar localmente primero para reactividad instantánea
+        let list = this._getLocal();
+        const idx = list.findIndex(a => String(a.id || '').trim() === targetIdStr);
+        if (idx !== -1) {
             list[idx] = { ...list[idx], ...updates, updated_at: new Date().toISOString() };
             this._saveLocal(list);
-            return { data: list[idx], error: null };
+        }
+        if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
+            const mIdx = ASESORES_MAXIMUS_DATA.findIndex(a => String(a.id || '').trim() === targetIdStr);
+            if (mIdx !== -1) {
+                ASESORES_MAXIMUS_DATA[mIdx] = { ...ASESORES_MAXIMUS_DATA[mIdx], ...updates };
+            }
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).update(updates).eq('id', id).select().single();
+        // 2. Si no es mock data y es un UUID válido de Supabase, actualizar en la base de datos
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetIdStr);
+                if (isUUID) {
+                    const sb = getSupabase();
+                    const sanitized = { ...updates };
+                    delete sanitized._skipN8nBienvenida;
+                    delete sanitized.captacionesActivas;
+                    delete sanitized.split_comision;
+                    delete sanitized.tipo_cuenta;
+                    const sbRes = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).update(sanitized).eq('id', targetIdStr).select().single();
+                    if (sbRes && sbRes.data) return sbRes;
+                }
+            } catch (err) {
+                console.warn('AsesorMaximusService.update: Aviso de Supabase, guardado localmente');
+            }
+        }
+
+        return { data: idx !== -1 ? list[idx] : null, error: null };
     },
 
     async delete(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let list = this._getLocal();
-            list = list.filter(a => a.id !== id);
-            this._saveLocal(list);
-            return { error: null };
+        const targetIdStr = String(id || '').trim();
+
+        // 1. Siempre eliminar de localStorage y memoria primero
+        let list = this._getLocal();
+        list = list.filter(a => String(a.id || '').trim() !== targetIdStr);
+        this._saveLocal(list);
+
+        if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
+            ASESORES_MAXIMUS_DATA = ASESORES_MAXIMUS_DATA.filter(a => String(a.id || '').trim() !== targetIdStr);
         }
 
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).delete().eq('id', id);
+        // 2. Si no es mock data y es un UUID válido de Supabase, eliminar en base de datos de forma segura
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetIdStr);
+                if (isUUID) {
+                    const sb = getSupabase();
+                    const { error } = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).delete().eq('id', targetIdStr);
+                    if (error) {
+                        console.warn('AsesorMaximusService.delete: Supabase devolvió aviso:', error.message);
+                    }
+                }
+            } catch (err) {
+                console.warn('AsesorMaximusService.delete: Supabase no disponible o error 401, eliminado localmente');
+            }
+        }
+
+        return { error: null };
     }
 };
 
