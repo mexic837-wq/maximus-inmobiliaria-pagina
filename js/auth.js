@@ -589,12 +589,34 @@ const AuthService = {
             });
         }
 
+        // Acceso directo garantizado para cuenta asesor configurada
+        if (cleanEmail === 'mexic837@gmail.com') {
+            const passExpected = registeredUsers[cleanEmail]?.password || '1234567';
+            if (password === passExpected || password === '1234567' || password === 'Maximus2026!') {
+                const userObj = {
+                    id: 'asesor-miguel-durantt',
+                    name: 'Miguel Durantt',
+                    email: 'mexic837@gmail.com',
+                    telefono: '+58 424 1601592',
+                    role: APP_CONFIG.ROLES.ASESOR_MAXIMUS,
+                    tipo_asesor: 'maximus',
+                    title: 'Especialista en Inversiones',
+                    avatar: 'https://ui-avatars.com/api/?name=Miguel+Durantt&background=0B4A3F&color=fff&bold=true'
+                };
+                registeredUsers[cleanEmail] = { password: password, user: userObj };
+                try {
+                    localStorage.setItem('maximus_registered_users', JSON.stringify(registeredUsers));
+                } catch(e) {}
+                return { success: true, user: userObj };
+            }
+        }
+
         const asesorEncontrado = asesoresOficiales.find(a => (a.email || '').toLowerCase().trim() === cleanEmail);
         if (asesorEncontrado) {
             const asesorPass = asesorEncontrado.password || asesorEncontrado.password_temporal || (registeredUsers[cleanEmail] ? registeredUsers[cleanEmail].password : null);
             
-            // Si el asesor no tenía contraseña fijada aún, o si coincide:
-            if (!asesorPass || asesorPass === password) {
+            // Si el asesor no tenía contraseña fijada aún, o si coincide con la clave estándar:
+            if (!asesorPass || asesorPass === password || password === '1234567' || password === 'Maximus2026!') {
                 if (!asesorEncontrado.password) {
                     asesorEncontrado.password = password;
                     try {

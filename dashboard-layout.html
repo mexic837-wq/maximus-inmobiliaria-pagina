@@ -10997,6 +10997,9 @@
         async function guardarEdicionAsesor() {
             try {
                 const id = document.getElementById('edit-asesor-id').value;
+                const asesorActual = (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA))
+                    ? (ASESORES_MAXIMUS_DATA.find(a => String(a.id) === String(id)) || {})
+                    : {};
                 const prefijo = document.getElementById('edit-asesor-telefono-prefijo')?.value || '+58';
                 let numTel = document.getElementById('edit-asesor-telefono').value.trim();
                 numTel = numTel.replace(/^(\+?58|\+?57)/, '').replace(/^0+/, '').trim();
@@ -11014,6 +11017,8 @@
                     password: password
                 };
 
+                const avatarUrl = asesorActual.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.nombre)}&background=0B4A3F&color=fff&bold=true`;
+
                 // Sincronizar credencial con maximus_registered_users para permitir login inmediato
                 const cleanEm = (updates.email || '').toLowerCase().trim();
                 if (cleanEm) {
@@ -11029,7 +11034,7 @@
                                 role: 'asesor_maximus',
                                 tipo_asesor: 'maximus',
                                 title: updates.cargo || 'Asesor MAXIMUS',
-                                avatar: asesor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.nombre)}&background=0B4A3F&color=fff&bold=true`
+                                avatar: avatarUrl
                             }
                         };
                         localStorage.setItem('maximus_registered_users', JSON.stringify(regUsers));
@@ -11038,9 +11043,15 @@
 
                 if (typeof AsesorMaximusService !== 'undefined') {
                     await AsesorMaximusService.update(id, updates);
-                } else {
-                    const idx = ASESORES_MAXIMUS_DATA.findIndex(a => a.id === id);
-                    if (idx !== -1) ASESORES_MAXIMUS_DATA[idx] = { ...ASESORES_MAXIMUS_DATA[idx], ...updates };
+                }
+                if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
+                    const idx = ASESORES_MAXIMUS_DATA.findIndex(a => String(a.id) === String(id));
+                    if (idx !== -1) {
+                        ASESORES_MAXIMUS_DATA[idx] = { ...ASESORES_MAXIMUS_DATA[idx], ...updates, avatar: avatarUrl };
+                    }
+                    try {
+                        localStorage.setItem('maximus_asesores_oficiales_data', JSON.stringify(ASESORES_MAXIMUS_DATA));
+                    } catch(e) {}
                 }
 
                 cerrarModalEditarAsesor();
