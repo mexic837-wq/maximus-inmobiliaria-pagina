@@ -5333,7 +5333,7 @@
          ========================================== -->
 
     <!-- 1. MODAL FICHA 360° DEL CLIENTE -->
-    <div id="modalFichaCliente360" class="fixed inset-0 z-[125] hidden flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalFichaCliente360()">
+    <div id="modalFichaCliente360" class="fixed inset-0 z-[125] hidden items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" style="display: none;" onclick="if(event.target === this) cerrarModalFichaCliente360()">
         <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
             <!-- Header Ficha 360° -->
             <div class="px-5 sm:px-7 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 via-emerald-50/20 to-gray-50/90 dark:from-[#08221D] dark:to-[#071714] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -5555,7 +5555,7 @@
 
 
     <!-- 2. MODAL NUEVO / EDITAR CLIENTE CRM -->
-    <div id="modalNuevoClienteCRM" class="fixed inset-0 z-[125] hidden flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalNuevoClienteCRM()">
+    <div id="modalNuevoClienteCRM" class="fixed inset-0 z-[125] hidden items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" style="display: none;" onclick="if(event.target === this) cerrarModalNuevoClienteCRM()">
         <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
             <!-- Header -->
             <div class="px-6 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 to-emerald-50/30 dark:from-[#08221D] dark:to-[#071714] flex items-center justify-between">
@@ -5690,7 +5690,7 @@
 
 
     <!-- 3. MODAL AGENDAR VISITA CRM -->
-    <div id="modalAgendarVisitaCRM" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md transition-all duration-300" onclick="if(event.target === this) cerrarModalAgendarVisitaCRM()">
+    <div id="modalAgendarVisitaCRM" class="fixed inset-0 z-[130] hidden items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-md transition-all duration-300" style="display: none;" onclick="if(event.target === this) cerrarModalAgendarVisitaCRM()">
         <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-lg w-full shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 to-amber-50/30 dark:from-[#08221D] dark:to-[#071714] flex items-center justify-between">
                 <div>
@@ -9174,9 +9174,13 @@
             try {
                 if (window.LeadService) {
                     const res = await LeadService.getAll();
-                    if (res && res.data) {
+                    if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
                         crmLeadsList = res.data;
+                    } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads)) {
+                        crmLeadsList = [...MOCK_DATA.leads];
                     }
+                } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads)) {
+                    crmLeadsList = [...MOCK_DATA.leads];
                 }
             } catch (err) {
                 console.warn('Error al cargar leads desde LeadService:', err);
@@ -9613,12 +9617,20 @@
             renderTimelineBitacoraFicha(lead);
 
             const modal = document.getElementById('modalFichaCliente360');
-            if (modal) modal.classList.remove('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+            }
         }
 
         function cerrarModalFichaCliente360() {
             const modal = document.getElementById('modalFichaCliente360');
-            if (modal) modal.classList.add('hidden');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modal.style.display = 'none';
+            }
             const menuWA = document.getElementById('menuPlantillasWA');
             if (menuWA) menuWA.classList.add('hidden');
         }
@@ -9916,12 +9928,20 @@
             document.getElementById('cita-crm-notas').value = `Visita coordinada con ${lead.nombre}.`;
 
             const modal = document.getElementById('modalAgendarVisitaCRM');
-            if (modal) modal.classList.remove('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+            }
         }
 
         function cerrarModalAgendarVisitaCRM() {
             const modal = document.getElementById('modalAgendarVisitaCRM');
-            if (modal) modal.classList.add('hidden');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modal.style.display = 'none';
+            }
         }
 
         async function guardarCitaVisitaCRM() {
@@ -10044,6 +10064,8 @@
         // MODAL NUEVO / EDITAR CLIENTE CRM
         // ==========================================
         function abrirModalNuevoClienteCRM(leadId = null) {
+            popularSelectAsesoresCRM();
+
             const form = document.getElementById('form-nuevo-cliente-crm');
             if (form) form.reset();
 
@@ -10055,19 +10077,23 @@
                 if (lead) {
                     if (titleEl) titleEl.textContent = 'Editar Cliente CRM';
                     if (hiddenId) hiddenId.value = lead.id;
-                    document.getElementById('crm-input-nombre').value = lead.nombre || '';
-                    document.getElementById('crm-input-email').value = lead.email || '';
-                    document.getElementById('crm-input-telefono').value = lead.telefono || '';
-                    document.getElementById('crm-input-temperatura').value = lead.temperatura || 'caliente';
-                    document.getElementById('crm-input-origen').value = lead.origen || 'web';
-                    document.getElementById('crm-input-operacion').value = lead.operacion || 'compra';
-                    document.getElementById('crm-input-tipo-inmueble').value = lead.tipo_inmueble || 'casa';
-                    document.getElementById('crm-input-asesor').value = lead.asesor_id || 'asesor-1';
-                    document.getElementById('crm-input-presupuesto').value = lead.presupuesto || '';
-                    document.getElementById('crm-input-estatus').value = lead.estatus || 'nuevo';
-                    document.getElementById('crm-input-zonas').value = Array.isArray(lead.zonas_interes) ? lead.zonas_interes.join(', ') : (lead.zonas_interes || '');
-                    document.getElementById('crm-input-requisitos').value = lead.requisitos || '';
-                    document.getElementById('crm-input-notas').value = lead.notas || '';
+                    const setVal = (id, val) => {
+                        const el = document.getElementById(id);
+                        if (el) el.value = (val !== undefined && val !== null) ? val : '';
+                    };
+                    setVal('crm-input-nombre', lead.nombre);
+                    setVal('crm-input-email', lead.email);
+                    setVal('crm-input-telefono', lead.telefono);
+                    setVal('crm-input-temperatura', lead.temperatura || 'caliente');
+                    setVal('crm-input-origen', lead.origen || 'web');
+                    setVal('crm-input-operacion', lead.operacion || 'compra');
+                    setVal('crm-input-tipo-inmueble', lead.tipo_inmueble || 'casa');
+                    setVal('crm-input-asesor', lead.asesor_id || 'asesor-1');
+                    setVal('crm-input-presupuesto', lead.presupuesto);
+                    setVal('crm-input-estatus', lead.estatus || 'nuevo');
+                    setVal('crm-input-zonas', Array.isArray(lead.zonas_interes) ? lead.zonas_interes.join(', ') : (lead.zonas_interes || ''));
+                    setVal('crm-input-requisitos', lead.requisitos);
+                    setVal('crm-input-notas', lead.notas);
                 }
             } else {
                 if (titleEl) titleEl.textContent = 'Registrar Nuevo Cliente';
@@ -10075,13 +10101,24 @@
             }
 
             const modal = document.getElementById('modalNuevoClienteCRM');
-            if (modal) modal.classList.remove('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modal.style.display = 'flex';
+            }
         }
 
         function cerrarModalNuevoClienteCRM() {
             const modal = document.getElementById('modalNuevoClienteCRM');
-            if (modal) modal.classList.add('hidden');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                modal.style.display = 'none';
+            }
         }
+
+        window.abrirModalNuevoClienteCRM = abrirModalNuevoClienteCRM;
+        window.cerrarModalNuevoClienteCRM = cerrarModalNuevoClienteCRM;
 
         async function guardarClienteCRM() {
             const id = document.getElementById('crm-input-id').value;

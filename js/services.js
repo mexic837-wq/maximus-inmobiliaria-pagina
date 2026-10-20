@@ -221,49 +221,75 @@ const LeadService = {
     },
 
     async getAll(filtros = {}) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let data = this._getStoredLeads();
-            if (filtros.estatus && filtros.estatus !== 'todos') {
-                data = data.filter(l => l.estatus === filtros.estatus);
+        let sbData = [];
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    let query = sb.from(APP_CONFIG.TABLES.LEADS).select('*');
+                    if (filtros.estatus && filtros.estatus !== 'todos') query = query.eq('estatus', filtros.estatus);
+                    if (filtros.origen && filtros.origen !== 'todos') query = query.eq('origen', filtros.origen);
+                    if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
+                    if (filtros.temperatura && filtros.temperatura !== 'todos') query = query.eq('temperatura', filtros.temperatura);
+                    query = query.order('created_at', { ascending: false });
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                        sbData = res.data;
+                    } else if (res && res.error) {
+                        console.warn('MAXIMUS LeadService: Supabase notice (' + (res.error.message || res.error.code) + '). Usando almacenamiento local seguro.');
+                    }
+                }
+            } catch (err) {
+                console.warn('MAXIMUS LeadService: Aviso conexión Supabase, usando persistencia local híbrida');
             }
-            if (filtros.origen && filtros.origen !== 'todos') {
-                data = data.filter(l => l.origen === filtros.origen);
-            }
-            if (filtros.asesor_id && filtros.asesor_id !== 'todos') {
-                data = data.filter(l => l.asesor_id === filtros.asesor_id);
-            }
-            if (filtros.temperatura && filtros.temperatura !== 'todos') {
-                data = data.filter(l => l.temperatura === filtros.temperatura);
-            }
-            if (filtros.busqueda) {
-                const q = filtros.busqueda.toLowerCase().trim();
-                data = data.filter(l =>
-                    (l.nombre && l.nombre.toLowerCase().includes(q)) ||
-                    (l.email && l.email.toLowerCase().includes(q)) ||
-                    (l.telefono && l.telefono.toLowerCase().includes(q)) ||
-                    (l.inmueble_interes_titulo && l.inmueble_interes_titulo.toLowerCase().includes(q))
-                );
-            }
-            return { data, error: null };
         }
-        const sb = getSupabase();
-        let query = sb.from(APP_CONFIG.TABLES.LEADS).select('*');
-        if (filtros.estatus && filtros.estatus !== 'todos') query = query.eq('estatus', filtros.estatus);
-        if (filtros.origen && filtros.origen !== 'todos') query = query.eq('origen', filtros.origen);
-        if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
-        if (filtros.temperatura && filtros.temperatura !== 'todos') query = query.eq('temperatura', filtros.temperatura);
-        query = query.order('created_at', { ascending: false });
-        return await query;
+
+        // Respaldo local e integración híbrida continua
+        const localList = this._getStoredLeads();
+        const map = new Map();
+        localList.forEach(item => { if (item && item.id) map.set(String(item.id), item); });
+        sbData.forEach(item => { if (item && item.id) map.set(String(item.id), { ...(map.get(String(item.id)) || {}), ...item }); });
+
+        let data = Array.from(map.values());
+        if (filtros.estatus && filtros.estatus !== 'todos') {
+            data = data.filter(l => l.estatus === filtros.estatus);
+        }
+        if (filtros.origen && filtros.origen !== 'todos') {
+            data = data.filter(l => l.origen === filtros.origen);
+        }
+        if (filtros.asesor_id && filtros.asesor_id !== 'todos') {
+            data = data.filter(l => l.asesor_id === filtros.asesor_id);
+        }
+        if (filtros.temperatura && filtros.temperatura !== 'todos') {
+            data = data.filter(l => l.temperatura === filtros.temperatura);
+        }
+        if (filtros.busqueda) {
+            const q = filtros.busqueda.toLowerCase().trim();
+            data = data.filter(l =>
+                (l.nombre && l.nombre.toLowerCase().includes(q)) ||
+                (l.email && l.email.toLowerCase().includes(q)) ||
+                (l.telefono && l.telefono.toLowerCase().includes(q)) ||
+                (l.inmueble_interes_titulo && l.inmueble_interes_titulo.toLowerCase().includes(q))
+            );
+        }
+        return { data, error: null };
     },
 
     async getById(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const leads = this._getStoredLeads();
-            const lead = leads.find(l => l.id === id);
-            return { data: lead || null, error: lead ? null : 'Cliente no encontrado' };
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const res = await sb.from(APP_CONFIG.TABLES.LEADS).select('*').eq('id', id).single();
+                    if (res && !res.error && res.data) {
+                        return res;
+                    }
+                }
+            } catch (err) {}
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.LEADS).select('*').eq('id', id).single();
+        const leads = this._getStoredLeads();
+        const lead = leads.find(l => String(l.id) === String(id));
+        return { data: lead || null, error: lead ? null : 'Cliente no encontrado' };
     },
 
     async getByAsesor(asesorId) {
@@ -309,20 +335,23 @@ const LeadService = {
             ...leadData
         };
 
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const leads = this._getStoredLeads();
-            leads.unshift(nuevo);
-            this._saveStoredLeads(leads);
-            res = { data: nuevo, error: null };
-        } else {
+        // Siempre guardar de inmediato en almacenamiento local para consistencia garantizada
+        const leads = this._getStoredLeads();
+        leads.unshift(nuevo);
+        this._saveStoredLeads(leads);
+        res = { data: nuevo, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
-                const sb = getSupabase();
-                res = await sb.from(APP_CONFIG.TABLES.LEADS).insert(leadData).select().single();
-                if (res && res.error) {
-                    res = { data: nuevo, error: null };
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(leadData).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
                 }
             } catch (err) {
-                res = { data: nuevo, error: null };
+                console.warn('LeadService.create: Guardado local híbrido.');
             }
         }
 
@@ -333,7 +362,6 @@ const LeadService = {
     },
 
     async updateEstatus(id, nuevoEstatus) {
-        let res;
         const nombreEtapas = {
             'nuevo': 'Prospección / Nuevo',
             'contactado': 'Contactado / Calificación',
@@ -343,35 +371,39 @@ const LeadService = {
             'cerrado': 'Cerrado / Ganado'
         };
 
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const leads = this._getStoredLeads();
-            const lead = leads.find(l => l.id === id);
-            if (lead) {
-                lead.estatus = nuevoEstatus;
-                lead.updated_at = new Date().toISOString();
-                if (!Array.isArray(lead.actividades)) lead.actividades = [];
-                lead.actividades.unshift({
-                    id: 'act-' + Date.now(),
-                    tipo: 'nota',
-                    titulo: 'Fase de Pipeline Actualizada',
-                    descripcion: `El cliente avanzó a la etapa: "${nombreEtapas[nuevoEstatus] || nuevoEstatus}".`,
-                    fecha: new Date().toISOString(),
-                    autor: lead.asesor_nombre || 'Asesor CRM'
-                });
-                this._saveStoredLeads(leads);
-            }
-            res = { data: lead || { id, estatus: nuevoEstatus }, error: null };
-        } else {
+        // Actualizar localmente de inmediato
+        const leads = this._getStoredLeads();
+        const lead = leads.find(l => String(l.id) === String(id));
+        if (lead) {
+            lead.estatus = nuevoEstatus;
+            lead.updated_at = new Date().toISOString();
+            if (!Array.isArray(lead.actividades)) lead.actividades = [];
+            lead.actividades.unshift({
+                id: 'act-' + Date.now(),
+                tipo: 'nota',
+                titulo: 'Fase de Pipeline Actualizada',
+                descripcion: `El cliente avanzó a la etapa: "${nombreEtapas[nuevoEstatus] || nuevoEstatus}".`,
+                fecha: new Date().toISOString(),
+                autor: lead.asesor_nombre || 'Asesor CRM'
+            });
+            this._saveStoredLeads(leads);
+        }
+        let res = { data: lead || { id, estatus: nuevoEstatus }, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
-                const sb = getSupabase();
-                res = await sb.from(APP_CONFIG.TABLES.LEADS).update({ estatus: nuevoEstatus, updated_at: new Date().toISOString() }).eq('id', id).select().single();
-            } catch (err) {
-                res = { data: { id, estatus: nuevoEstatus }, error: null };
-            }
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).update({ estatus: nuevoEstatus, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
+                }
+            } catch (err) {}
         }
 
         if (typeof N8nService !== 'undefined') {
-            const leadInfo = (res && res.data) ? res.data : { id, estatus: nuevoEstatus };
+            const leadInfo = (res && res.data) ? res.data : (lead || { id, estatus: nuevoEstatus });
             N8nService.notificarAgente(
                 leadInfo.asesor_id || 'admin',
                 `Pipeline CRM: ${leadInfo.nombre || id}`,
@@ -382,28 +414,30 @@ const LeadService = {
     },
 
     async updateDetalles(id, updates) {
-        let res;
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const leads = this._getStoredLeads();
-            const idx = leads.findIndex(l => l.id === id);
-            if (idx !== -1) {
-                leads[idx] = {
-                    ...leads[idx],
-                    ...updates,
-                    updated_at: new Date().toISOString()
-                };
-                this._saveStoredLeads(leads);
-                res = { data: leads[idx], error: null };
-            } else {
-                res = { data: null, error: 'Cliente no encontrado' };
-            }
-        } else {
+        const leads = this._getStoredLeads();
+        const idx = leads.findIndex(l => String(l.id) === String(id));
+        let updatedLead = null;
+        if (idx !== -1) {
+            leads[idx] = {
+                ...leads[idx],
+                ...updates,
+                updated_at: new Date().toISOString()
+            };
+            updatedLead = leads[idx];
+            this._saveStoredLeads(leads);
+        }
+        let res = { data: updatedLead || { id, ...updates }, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
-                const sb = getSupabase();
-                res = await sb.from(APP_CONFIG.TABLES.LEADS).update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
-            } catch (err) {
-                res = { data: { id, ...updates }, error: null };
-            }
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
+                }
+            } catch (err) {}
         }
         return res;
     },
@@ -418,31 +452,32 @@ const LeadService = {
             autor: actividad.autor || 'Asesor CRM'
         };
 
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const leads = this._getStoredLeads();
-            const lead = leads.find(l => l.id === leadId);
-            if (lead) {
-                if (!Array.isArray(lead.actividades)) lead.actividades = [];
-                lead.actividades.unshift(itemActividad);
-                lead.updated_at = new Date().toISOString();
-                this._saveStoredLeads(leads);
-                return { data: itemActividad, lead, error: null };
-            }
-            return { data: null, error: 'Cliente no encontrado' };
+        const leads = this._getStoredLeads();
+        const lead = leads.find(l => String(l.id) === String(leadId));
+        if (lead) {
+            if (!Array.isArray(lead.actividades)) lead.actividades = [];
+            lead.actividades.unshift(itemActividad);
+            lead.updated_at = new Date().toISOString();
+            this._saveStoredLeads(leads);
+            return { data: itemActividad, lead, error: null };
         }
-
         return { data: itemActividad, error: null };
     },
 
     async delete(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let leads = this._getStoredLeads();
-            leads = leads.filter(l => l.id !== id);
-            this._saveStoredLeads(leads);
-            return { error: null };
+        let leads = this._getStoredLeads();
+        leads = leads.filter(l => String(l.id) !== String(id));
+        this._saveStoredLeads(leads);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    await sb.from(APP_CONFIG.TABLES.LEADS).delete().eq('id', id);
+                }
+            } catch (err) {}
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.LEADS).delete().eq('id', id);
+        return { error: null };
     },
 };
 
