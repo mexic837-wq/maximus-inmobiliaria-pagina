@@ -3565,13 +3565,14 @@
                                 </div>
                             </div>
 
-                            <!-- BLOQUE DINÁMICO 2: PDF (Archivo o Enlace) -->
+                            <!-- BLOQUE DINÁMICO 2: PDF (Archivo) -->
                             <div id="bloque-mat-pdf" class="hidden space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-2">
                                         <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Subir Archivo PDF</label>
-                                        <div class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-4 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714]">
-                                            <input type="file" id="admin-mat-file-pdf" accept=".pdf,application/pdf" onchange="manejarSubidaArchivoPDF(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                        <div class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-4 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714] cursor-pointer">
+                                            <input type="file" id="admin-mat-file-pdf" accept=".pdf,application/pdf" onchange="manejarSubidaArchivoPDF(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                            <input type="hidden" id="admin-mat-url-pdf">
                                             <div class="space-y-1">
                                                 <i class="ph-fill ph-file-pdf text-3xl text-rose-500 mx-auto"></i>
                                                 <p id="label-pdf-nombre" class="text-xs font-bold text-maximus-dark dark:text-white">Haz clic o arrastra un PDF aquí</p>
@@ -3579,26 +3580,22 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="space-y-3">
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">O Enlace Directo / Google Drive</label>
-                                            <input type="url" id="admin-mat-url-pdf" placeholder="https://docs.google.com/... o enlace PDF" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Lectura Estimada / Páginas</label>
-                                            <input type="text" id="admin-mat-duracion-pdf" placeholder="Ej: Lectura 6 min o 12 páginas" value="Lectura 5 min" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
-                                        </div>
+                                    <div class="flex flex-col justify-center">
+                                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Lectura Estimada / Páginas</label>
+                                        <input type="text" id="admin-mat-duracion-pdf" placeholder="Ej: Lectura 6 min o 12 páginas" value="Lectura 5 min" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        <p class="text-[10px] text-gray-400 mt-1.5">Tiempo estimado de consulta para el asesor.</p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- BLOQUE DINÁMICO 3: IMAGEN / INFOGRAFÍA -->
                             <div id="bloque-mat-imagen" class="hidden space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-2">
                                         <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Subir Imagen / Infografía</label>
-                                        <div class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-4 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714]">
-                                            <input type="file" id="admin-mat-file-img" accept="image/*" onchange="manejarSubidaArchivoImagen(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                        <div class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-4 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714] cursor-pointer">
+                                            <input type="file" id="admin-mat-file-img" accept="image/*" onchange="manejarSubidaArchivoImagen(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                            <input type="hidden" id="admin-mat-url-img">
                                             <div class="space-y-1">
                                                 <i class="ph-fill ph-image text-3xl text-blue-500 mx-auto"></i>
                                                 <p id="label-img-nombre" class="text-xs font-bold text-maximus-dark dark:text-white">Haz clic o arrastra una imagen</p>
@@ -3606,15 +3603,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="space-y-3">
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">O URL de Imagen Web</label>
-                                            <input type="url" id="admin-mat-url-img" oninput="actualizarPreviewImagenCustom(this.value)" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Formato / Detalle</label>
-                                            <input type="text" id="admin-mat-duracion-img" placeholder="Ej: Infografía HD o Flujograma" value="Infografía HD" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
-                                        </div>
+                                    <div class="flex flex-col justify-center">
+                                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Formato / Detalle</label>
+                                        <input type="text" id="admin-mat-duracion-img" placeholder="Ej: Infografía HD o Flujograma" value="Infografía HD" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        <p class="text-[10px] text-gray-400 mt-1.5">Resolución o formato del material publicitario.</p>
                                     </div>
                                 </div>
                             </div>
@@ -3623,15 +3615,37 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="md:col-span-2">
                                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Imagen de Portada / Miniatura</label>
-                                    <div class="flex gap-2">
-                                        <input type="url" id="admin-mat-portada-url" placeholder="https://images.unsplash.com/..." class="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-xs font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
-                                        <label class="px-3 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-emerald-950 dark:hover:bg-emerald-900 rounded-xl text-xs font-bold text-maximus-dark dark:text-emerald-300 cursor-pointer flex items-center gap-1.5 shrink-0 transition-colors">
-                                            <i class="ph-bold ph-upload text-sm"></i> <span>Subir</span>
-                                            <input type="file" accept="image/*" onchange="manejarSubidaPortadaCustom(event)" class="hidden">
-                                        </label>
+                                    <div id="dropzone-mat-portada" class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-3 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714] cursor-pointer flex items-center justify-center min-h-[72px]">
+                                        <input type="file" id="admin-mat-file-portada" accept="image/*" onchange="manejarSubidaPortadaCustom(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                                        <input type="hidden" id="admin-mat-portada-url">
+                                        
+                                        <!-- Estado inicial vacío -->
+                                        <div id="preview-portada-vacia" class="flex items-center justify-center gap-3 py-1">
+                                            <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                                <i class="ph-fill ph-image text-2xl"></i>
+                                            </div>
+                                            <div class="text-left">
+                                                <p id="label-portada-nombre" class="text-xs font-bold text-maximus-dark dark:text-white">Haz clic o arrastra una imagen de portada aquí</p>
+                                                <p class="text-[10px] text-gray-400">JPG, PNG, WebP (Se adapta como portada de la tarjeta)</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Vista previa cuando hay portada seleccionada o miniatura YT -->
+                                        <div id="preview-portada-activa" class="hidden w-full flex items-center justify-between gap-3 px-2">
+                                            <div class="flex items-center gap-3 min-w-0">
+                                                <img id="img-preview-portada-thumb" src="" alt="Portada" class="w-14 h-10 object-cover rounded-lg border border-emerald-500/30 shadow-sm shrink-0">
+                                                <div class="text-left truncate">
+                                                    <p id="label-portada-cargada" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 truncate">Portada lista</p>
+                                                    <p class="text-[10px] text-gray-400">Haz clic o arrastra para cambiarla</p>
+                                                </div>
+                                            </div>
+                                            <button type="button" onclick="quitarPortadaCustom(event)" class="z-20 p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors" title="Quitar portada">
+                                                <i class="ph-bold ph-trash text-base"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
+                                <div class="flex flex-col justify-center">
                                     <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Etiqueta Badge</label>
                                     <div class="flex gap-2">
                                         <input type="text" id="admin-mat-badge-texto" placeholder="PASO 1" value="OFICIAL" class="flex-1 px-3 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent">
@@ -14118,13 +14132,26 @@
             const file = event.target.files && event.target.files[0];
             if (!file) return;
 
+            const previewVacia = document.getElementById('preview-portada-vacia');
+            const previewActiva = document.getElementById('preview-portada-activa');
+            const imgThumb = document.getElementById('img-preview-portada-thumb');
+            const labelCargada = document.getElementById('label-portada-cargada');
+            const labelNombre = document.getElementById('label-portada-nombre');
+
+            if (labelNombre) labelNombre.textContent = 'Subiendo portada...';
+
             if (window.StorageService && typeof window.StorageService.uploadMaterialFile === 'function') {
+                mostrarToastNotificacion('⏳ Subiendo portada a Supabase...');
                 const res = await StorageService.uploadMaterialFile(file, 'material-portadas');
                 if (res && res.url) {
                     portadaCustomDataUrl = res.url;
                     const inp = document.getElementById('admin-mat-portada-url');
                     if (inp) inp.value = res.url;
-                    mostrarToastNotificacion('✅ Portada personalizada cargada');
+                    if (imgThumb) imgThumb.src = res.url;
+                    if (labelCargada) labelCargada.textContent = file.name || 'Portada personalizada';
+                    if (previewVacia) previewVacia.classList.add('hidden');
+                    if (previewActiva) previewActiva.classList.remove('hidden');
+                    mostrarToastNotificacion('✅ Portada cargada exitosamente');
                 }
             } else {
                 const reader = new FileReader();
@@ -14132,12 +14159,39 @@
                     portadaCustomDataUrl = e.target.result;
                     const inp = document.getElementById('admin-mat-portada-url');
                     if (inp) inp.value = e.target.result;
+                    if (imgThumb) imgThumb.src = e.target.result;
+                    if (labelCargada) labelCargada.textContent = file.name || 'Portada seleccionada';
+                    if (previewVacia) previewVacia.classList.add('hidden');
+                    if (previewActiva) previewActiva.classList.remove('hidden');
+                    mostrarToastNotificacion('✅ Portada lista para publicar');
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-                function extraerYouTubeId(url) {
+        function quitarPortadaCustom(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            portadaCustomDataUrl = '';
+            const inp = document.getElementById('admin-mat-portada-url');
+            if (inp) inp.value = '';
+            const fileInp = document.getElementById('admin-mat-file-portada');
+            if (fileInp) fileInp.value = '';
+
+            const previewVacia = document.getElementById('preview-portada-vacia');
+            const previewActiva = document.getElementById('preview-portada-activa');
+            const imgThumb = document.getElementById('img-preview-portada-thumb');
+            const labelNombre = document.getElementById('label-portada-nombre');
+
+            if (imgThumb) imgThumb.src = '';
+            if (labelNombre) labelNombre.textContent = 'Haz clic o arrastra una imagen de portada aquí';
+            if (previewVacia) previewVacia.classList.remove('hidden');
+            if (previewActiva) previewActiva.classList.add('hidden');
+        }
+
+        function extraerYouTubeId(url) {
             if (!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -14154,16 +14208,32 @@
             if (ytMatch && ytMatch[1]) {
                 const ytId = ytMatch[1];
                 const ytThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-                if (!portadaInp.value || portadaInp.value.includes('youtube.com') || portadaInp.value.includes('unsplash')) {
+                if (!portadaCustomDataUrl) {
                     portadaInp.value = ytThumb;
+                    const previewVacia = document.getElementById('preview-portada-vacia');
+                    const previewActiva = document.getElementById('preview-portada-activa');
+                    const imgThumb = document.getElementById('img-preview-portada-thumb');
+                    const labelCargada = document.getElementById('label-portada-cargada');
+                    if (imgThumb) imgThumb.src = ytThumb;
+                    if (labelCargada) labelCargada.textContent = 'Miniatura YouTube detectada';
+                    if (previewVacia) previewVacia.classList.add('hidden');
+                    if (previewActiva) previewActiva.classList.remove('hidden');
                 }
             }
         }
 
         function actualizarPreviewImagenCustom(url) {
             const portadaInp = document.getElementById('admin-mat-portada-url');
-            if (portadaInp && !portadaInp.value && url) {
+            if (portadaInp && !portadaInp.value && url && !portadaCustomDataUrl) {
                 portadaInp.value = url;
+                const previewVacia = document.getElementById('preview-portada-vacia');
+                const previewActiva = document.getElementById('preview-portada-activa');
+                const imgThumb = document.getElementById('img-preview-portada-thumb');
+                const labelCargada = document.getElementById('label-portada-cargada');
+                if (imgThumb) imgThumb.src = url;
+                if (labelCargada) labelCargada.textContent = 'Imagen del recurso';
+                if (previewVacia) previewVacia.classList.add('hidden');
+                if (previewActiva) previewActiva.classList.remove('hidden');
             }
         }
 
@@ -14287,6 +14357,18 @@
             document.getElementById('admin-mat-categoria').value = item.categoria || 'primeros-pasos';
             document.getElementById('admin-mat-desc').value = item.desc || item.descripcion || '';
             document.getElementById('admin-mat-portada-url').value = item.imagen || '';
+            if (item.imagen) {
+                const previewVacia = document.getElementById('preview-portada-vacia');
+                const previewActiva = document.getElementById('preview-portada-activa');
+                const imgThumb = document.getElementById('img-preview-portada-thumb');
+                const labelCargada = document.getElementById('label-portada-cargada');
+                if (imgThumb) imgThumb.src = item.imagen;
+                if (labelCargada) labelCargada.textContent = 'Portada cargada';
+                if (previewVacia) previewVacia.classList.add('hidden');
+                if (previewActiva) previewActiva.classList.remove('hidden');
+            } else {
+                quitarPortadaCustom();
+            }
             document.getElementById('admin-mat-badge-texto').value = item.badge || '';
             document.getElementById('admin-mat-badge-color').value = item.badgeColor || item.badge_color || 'bg-emerald-600';
             document.getElementById('admin-mat-puntos').value = (item.resumenPuntos || item.resumen_puntos || []).join('\n');
@@ -14343,6 +14425,7 @@
             pdfTemporalDataUrl = '';
             imagenTemporalDataUrl = '';
             portadaCustomDataUrl = '';
+            quitarPortadaCustom();
 
             const labelPdf = document.getElementById('label-pdf-nombre');
             if (labelPdf) {
