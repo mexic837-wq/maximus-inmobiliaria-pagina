@@ -4482,7 +4482,7 @@
                     </button>
                     <button type="button" onclick="cambiarTabPerfil('n8n')" id="tab-btn-perfil-n8n" class="tab-perfil-btn flex-1 min-w-[140px] py-3 px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer">
                         <i class="ph-bold ph-bell-simple-ringing text-base text-teal-600"></i>
-                        <span>Alertas WhatsApp</span>
+                        <span>Alertas por Correo</span>
                     </button>
                 </div>
 
@@ -4719,23 +4719,17 @@
                         <!-- Métodos de entrega -->
                         <div class="space-y-3">
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">Canal de Recepción</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <label class="flex items-start gap-3.5 p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/30 cursor-pointer transition-all">
-                                    <input type="radio" name="perfil_2fa_method" value="whatsapp" checked class="mt-1 text-emerald-600 focus:ring-emerald-500">
+                            <div class="max-w-xl">
+                                <label class="flex items-start gap-3.5 p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/30 cursor-pointer transition-all shadow-xs">
+                                    <input type="radio" name="perfil_2fa_method" value="email" checked class="mt-1 text-emerald-600 focus:ring-emerald-500">
                                     <div>
-                                        <span class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
-                                            <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-base"></i> WhatsApp OTP (Recomendado)
-                                        </span>
-                                        <p class="text-xs text-gray-500 mt-1">Envío instantáneo por webhook de n8n a tu WhatsApp configurado.</p>
-                                    </div>
-                                </label>
-                                <label class="flex items-start gap-3.5 p-4 rounded-2xl border-2 border-gray-200 dark:border-emerald-900/40 hover:bg-gray-50 cursor-pointer transition-all">
-                                    <input type="radio" name="perfil_2fa_method" value="email" class="mt-1 text-emerald-600 focus:ring-emerald-500">
-                                    <div>
-                                        <span class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
-                                            <i class="ph-bold ph-envelope text-gray-500 text-base"></i> Correo Electrónico
-                                        </span>
-                                        <p class="text-xs text-gray-500 mt-1">Envío del código temporal de 6 dígitos a tu bandeja de correo.</p>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                                <i class="ph-bold ph-envelope text-emerald-600 text-base"></i> Correo Electrónico (Gmail)
+                                            </span>
+                                            <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Activo</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Envío seguro del código de verificación temporal de 6 dígitos a tu bandeja de correo registrada.</p>
                                     </div>
                                 </label>
                             </div>
@@ -4749,7 +4743,7 @@
                                 </span>
                                 <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">Listo para Webhook</span>
                             </div>
-                            <p class="text-xs sm:text-sm text-gray-500">Solicita un código OTP de prueba para validar que tu WhatsApp recibe las alertas:</p>
+                            <p class="text-xs sm:text-sm text-gray-500">Solicita un código OTP de prueba para validar que tu correo electrónico (Gmail) recibe las alertas:</p>
                             
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <button type="button" onclick="probarEnvio2FA()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
@@ -4770,8 +4764,8 @@
                     <!-- TAB 4: ALERTAS & CONECTIVIDAD N8N -->
                     <div id="tab-content-perfil-n8n" class="hidden space-y-8">
                         <div>
-                            <h3 class="font-black text-lg text-gray-900 dark:text-white">Alertas Automatizadas por WhatsApp</h3>
-                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Configura qué eventos importantes te notificarán directamente a tu móvil a través de n8n.</p>
+                            <h3 class="font-black text-lg text-gray-900 dark:text-white">Alertas Automatizadas por Correo</h3>
+                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Configura qué eventos importantes te notificarán directamente a tu bandeja de correo a través de n8n.</p>
                         </div>
 
                         <div class="space-y-4">
@@ -11938,7 +11932,7 @@
             const toggle2FA = document.getElementById('perfil-toggle-2fa');
             if (toggle2FA) toggle2FA.checked = !!p.two_factor_enabled;
 
-            const radioMethod = document.querySelector(`input[name="perfil_2fa_method"][value="${p.two_factor_method || 'whatsapp'}"]`);
+            const radioMethod = document.querySelector(`input[name="perfil_2fa_method"][value="${p.two_factor_method || 'email'}"]`);
             if (radioMethod) radioMethod.checked = true;
 
             // Notificaciones n8n
@@ -12258,19 +12252,18 @@
         }
 
         async function probarEnvio2FA() {
-            const tel = document.getElementById('perfil-input-telefono')?.value.trim() || '+58 414-7223344';
-            const methodEl = document.querySelector('input[name="perfil_2fa_method"]:checked');
-            const method = methodEl ? methodEl.value : 'whatsapp';
+            const email = document.getElementById('perfil-input-email')?.value.trim() || 'asesor@maximus.com';
+            const method = 'email';
 
             if (window.PerfilService) {
-                const res = await PerfilService.enviarCodigo2FA(tel, method);
+                const res = await PerfilService.enviarCodigo2FA(email, method);
                 const feedback = document.getElementById('perfil-2fa-feedback');
                 if (feedback) {
                     feedback.classList.remove('hidden');
                     feedback.className = 'text-xs font-bold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mt-2 block';
-                    feedback.innerHTML = `📲 <strong>Código enviado vía ${method.toUpperCase()} por n8n:</strong> Tu código de prueba es <span class="font-mono text-sm font-black text-emerald-900 bg-white px-2 py-0.5 rounded border border-emerald-300">${res.code}</span> (Válido por 5 minutos).`;
+                    feedback.innerHTML = `✉️ <strong>Código enviado vía Correo Electrónico (Gmail) por n8n:</strong> Tu código de prueba es <span class="font-mono text-sm font-black text-emerald-900 bg-white px-2 py-0.5 rounded border border-emerald-300">${res.code}</span> (Válido por 5 minutos).`;
                 }
-                mostrarToastNotificacion(`📲 Código OTP enviado a tu ${method === 'whatsapp' ? 'WhatsApp' : 'correo'}`);
+                mostrarToastNotificacion(`✉️ Código OTP enviado a tu correo (${email})`);
                 const inputCod = document.getElementById('perfil-2fa-input-codigo');
                 if (inputCod) {
                     inputCod.value = res.code;
