@@ -2041,13 +2041,22 @@
                 <div class="space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h3 class="text-2xl font-extrabold text-maximus-dark">Asesores Oficiales MAXIMUS</h3>
+                            <h3 class="text-2xl font-extrabold text-maximus-dark dark:text-white">Asesores Oficiales MAXIMUS</h3>
                             <p class="text-gray-500 text-sm font-medium">Haz clic en cualquier asesor para filtrar sus inmuebles captados abajo o contactarlo por WhatsApp.</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span id="badge-asesores-activos-count" class="text-xs font-bold text-gray-500 bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm">
+                            <span id="badge-asesores-activos-count" class="text-xs font-bold text-gray-500 bg-white dark:bg-[#071714] px-4 py-2 rounded-full border border-gray-100 dark:border-emerald-900/40 shadow-xs">
                                 Cargando asesores...
                             </span>
+                            <!-- Controles de Flechas en Encabezado -->
+                            <div class="flex items-center gap-1 bg-white dark:bg-[#071714] p-1 rounded-full border border-gray-200/80 dark:border-emerald-900/40 shadow-xs">
+                                <button type="button" onclick="deslizarAsesoresCarousel(-1)" id="btn-header-asesores-prev" class="w-7 h-7 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950 text-gray-600 dark:text-gray-300 hover:text-emerald-700 flex items-center justify-center text-xs transition-colors cursor-pointer disabled:opacity-30 disabled:pointer-events-none" title="Anterior asesor">
+                                    <i class="ph-bold ph-caret-left"></i>
+                                </button>
+                                <button type="button" onclick="deslizarAsesoresCarousel(1)" id="btn-header-asesores-next" class="w-7 h-7 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950 text-gray-600 dark:text-gray-300 hover:text-emerald-700 flex items-center justify-center text-xs transition-colors cursor-pointer disabled:opacity-30 disabled:pointer-events-none" title="Siguiente asesor">
+                                    <i class="ph-bold ph-caret-right"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -2070,9 +2079,32 @@
                         </button>
                     </div>
 
-                    <!-- Grid de Asesores Dinámica y Reactiva -->
-                    <div id="grid-asesores-maximus" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Generado vía JS -->
+                    <!-- Carrusel de Asesores (Exactamente 4 visibles en Desktop, Deslizable con flechas) -->
+                    <div class="relative group/carousel">
+                        <!-- Flecha Flotante Izquierda -->
+                        <button type="button" 
+                                id="btn-asesores-prev" 
+                                onclick="deslizarAsesoresCarousel(-1)" 
+                                class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white dark:bg-[#071714] text-maximus-dark dark:text-white shadow-xl border border-gray-200/90 dark:border-emerald-900/60 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-700 flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 hover:scale-105 active:scale-95 disabled:opacity-20 disabled:pointer-events-none cursor-pointer" 
+                                title="Deslizar a la izquierda">
+                            <i class="ph-bold ph-caret-left text-lg"></i>
+                        </button>
+
+                        <!-- Contenedor Deslizable (Carrusel de 4 por fila fija) -->
+                        <div id="grid-asesores-maximus" 
+                             class="flex gap-4 overflow-x-auto scroll-smooth scrollbar-none snap-x snap-mandatory py-2 px-1" 
+                             onscroll="actualizarEstadoFlechasAsesores()">
+                            <!-- Generado vía JS -->
+                        </div>
+
+                        <!-- Flecha Flotante Derecha -->
+                        <button type="button" 
+                                id="btn-asesores-next" 
+                                onclick="deslizarAsesoresCarousel(1)" 
+                                class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white dark:bg-[#071714] text-maximus-dark dark:text-white shadow-xl border border-gray-200/90 dark:border-emerald-900/60 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950 hover:text-emerald-700 flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 hover:scale-105 active:scale-95 disabled:opacity-20 disabled:pointer-events-none cursor-pointer" 
+                                title="Deslizar a la derecha">
+                            <i class="ph-bold ph-caret-right text-lg"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -10722,6 +10754,63 @@
         }
 
         // Renderizar Asesores Oficiales en la Vista de Captaciones
+        
+        // ========================================================
+        // CONTROL DE NAVEGACIÓN Y CARRUSEL DE ASESORES (4 POR VISTA)
+        // ========================================================
+        function deslizarAsesoresCarousel(direccion) {
+            const container = document.getElementById('grid-asesores-maximus');
+            if (!container) return;
+
+            const primerItem = container.querySelector('.tarjeta-asesor-item');
+            const scrollAmount = primerItem ? (primerItem.offsetWidth + 16) : 280;
+
+            container.scrollBy({
+                left: direccion * scrollAmount,
+                behavior: 'smooth'
+            });
+
+            setTimeout(actualizarEstadoFlechasAsesores, 320);
+        }
+
+        function actualizarEstadoFlechasAsesores() {
+            const container = document.getElementById('grid-asesores-maximus');
+            if (!container) return;
+
+            const atStart = container.scrollLeft <= 5;
+            const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+            const hasOverflow = container.scrollWidth > container.clientWidth + 10;
+
+            const btnPrevSide = document.getElementById('btn-asesores-prev');
+            const btnNextSide = document.getElementById('btn-asesores-next');
+            const btnPrevHeader = document.getElementById('btn-header-asesores-prev');
+            const btnNextHeader = document.getElementById('btn-header-asesores-next');
+
+            [btnPrevSide, btnPrevHeader].forEach(b => {
+                if (b) {
+                    b.disabled = atStart;
+                    b.style.opacity = atStart ? '0.25' : '1';
+                }
+            });
+
+            [btnNextSide, btnNextHeader].forEach(b => {
+                if (b) {
+                    b.disabled = atEnd;
+                    b.style.opacity = atEnd ? '0.25' : '1';
+                }
+            });
+
+            if (btnPrevSide && btnNextSide) {
+                if (!hasOverflow) {
+                    btnPrevSide.classList.add('hidden');
+                    btnNextSide.classList.add('hidden');
+                } else {
+                    btnPrevSide.classList.remove('hidden');
+                    btnNextSide.classList.remove('hidden');
+                }
+            }
+        }
+
         async function renderAsesoresMaximus(filtroEspecialidad = null) {
             const container = document.getElementById('grid-asesores-maximus');
             if (!container) return;
@@ -10783,7 +10872,7 @@
                     : 'bg-white shadow-premium border-maximus-silver/20 hover:border-emerald-300';
 
                 const cardHTML = `
-                    <div class="tarjeta-asesor-item ${ringClase} rounded-[22px] p-4 border transition-all duration-300 group hover:-translate-y-1 relative cursor-pointer" onclick="seleccionarAsesorParaFiltro('${asesor.nombre}', this)">
+                    <div class="tarjeta-asesor-item w-[85%] sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)] shrink-0 snap-start ${ringClase} rounded-[22px] p-4 border transition-all duration-300 group hover:-translate-y-1 relative cursor-pointer" onclick="seleccionarAsesorParaFiltro('${asesor.nombre}', this)">
                         
                         <div class="flex items-center gap-3 mb-3">
                             <div class="relative shrink-0">
