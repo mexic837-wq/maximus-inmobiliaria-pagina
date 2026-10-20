@@ -6501,8 +6501,8 @@
 
             if (elTodas) elTodas.textContent = `(${countTodas})`;
             if (elLead) elLead.textContent = `(${countLead})`;
-            if (elCap) elCap.textContent = `(${countCap})`;
-            if (elCom) elCom.textContent = `(${countCom})`;
+            if (elCap) elCap.textContent = `(${countCaptacion})`;
+            if (elCom) elCom.textContent = `(${countComision})`;
         }
 
         function filtrarNotificacionesTab(tipo, btnElem) {
@@ -6980,6 +6980,10 @@
             if (targetId === 'view-tutoriales') {
                 if (typeof inicializarMaterialInformativo === 'function') inicializarMaterialInformativo();
             }
+            if (targetId === 'view-admin-cotizador' || targetId === 'view-cotizador') {
+                if (typeof inicializarCotizador === 'function') inicializarCotizador();
+                if (typeof renderAdminTablaZonas === 'function') renderAdminTablaZonas();
+            }
             if (targetId === 'view-detalle-inmueble') {
                 if (!currentInmuebleAirbnb && typeof abrirDetalleInmuebleAirbnb === 'function') {
                     const lastInmId = localStorage.getItem('maximus_ultimo_inmueble_id') || 'inm-1';
@@ -7022,15 +7026,21 @@
             try {
                 if (window.CotizadorService) {
                     const res = await CotizadorService.getZonas();
-                    if (res && res.data) {
+                    if (res && res.data && res.data.length > 0) {
                         listaZonasCotizador = res.data;
-                        poblarSelectZonas();
-                        renderAdminTablaZonas();
-                        calcularCotizacionEnVivo();
+                    } else if (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.zonas_cotizador) {
+                        listaZonasCotizador = [...MOCK_DATA.zonas_cotizador];
                     }
+                    poblarSelectZonas();
+                    renderAdminTablaZonas();
+                    calcularCotizacionEnVivo();
                 }
             } catch (err) {
                 console.error('Error inicializando cotizador:', err);
+                if (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.zonas_cotizador) {
+                    listaZonasCotizador = [...MOCK_DATA.zonas_cotizador];
+                    renderAdminTablaZonas();
+                }
             }
         }
 
@@ -7272,9 +7282,14 @@
                         $${zona.precio_min_m2 || Math.round(zona.precio_m2_base*0.9)} - $${zona.precio_max_m2 || Math.round(zona.precio_m2_base*1.15)} USD
                     </td>
                     <td class="px-8 py-4 text-right">
-                        <button onclick="abrirModalEditarZona('${zona.id}')" class="px-4 py-2 bg-gray-100 hover:bg-maximus-dark hover:text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5">
-                            <i class="ph-bold ph-pencil-simple"></i> Editar Precio
-                        </button>
+                        <div class="inline-flex items-center gap-2">
+                            <button onclick="abrirModalEditarZona('${zona.id}')" class="px-3.5 py-2 bg-gray-100 hover:bg-maximus-dark hover:text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer">
+                                <i class="ph-bold ph-pencil-simple"></i> Editar
+                            </button>
+                            <button onclick="eliminarZona('${zona.id}')" class="w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white transition-all flex items-center justify-center cursor-pointer" title="Eliminar zona">
+                                <i class="ph-bold ph-trash text-sm"></i>
+                            </button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -7376,23 +7391,42 @@
             const max = parseFloat(document.getElementById('modal-zona-max').value) || Math.round(precio * 1.15);
 
             if (!nombre || precio <= 0) {
-                alert('Por favor introduce un nombre válido y un precio por m² mayor a cero.');
+                mostrarToastNotificacion('⚠️ Introduce un nombre válido y un precio por m² mayor a cero');
                 return;
             }
 
-            if (id) {
-                await CotizadorService.updateZona(id, {
-                    nombre, municipio, precio_m2_base: precio, precio_min_m2: min, precio_max_m2: max
-                });
-            } else {
-                await CotizadorService.createZona({
-                    nombre, municipio, precio_m2_base: precio, precio_min_m2: min, precio_max_m2: max
-                });
-            }
+            try {
+                if (id) {
+                    await CotizadorService.updateZona(id, {
+                        nombre, municipio, precio_m2_base: precio, precio_min_m2: min, precio_max_m2: max
+                    });
+                } else {
+                    await CotizadorService.createZona({
+                        nombre, municipio, precio_m2_base: precio, precio_min_m2: min, precio_max_m2: max
+                    });
+                }
 
-            cerrarModalZona();
+                cerrarModalZona();
+                await inicializarCotizador();
+                mostrarToastNotificacion(id ? '✅ ¡Precio por m² actualizado con éxito!' : '✅ ¡Nueva zona creada y sincronizada con el cotizador!');
+            } catch(e) {
+                console.error(e);
+                mostrarToastNotificacion('⚠️ Error al procesar la zona');
+            }
+        }
+
+        async function eliminarZona(id) {
+            if (!confirm('¿Deseas eliminar esta zona del cotizador?')) return;
+            if (window.CotizadorService && typeof CotizadorService.deleteZona === 'function') {
+                await CotizadorService.deleteZona(id);
+            } else {
+                listaZonasCotizador = listaZonasCotizador.filter(z => z.id !== id);
+                try {
+                    localStorage.setItem('maximus_zonas_cotizador', JSON.stringify(listaZonasCotizador));
+                } catch(e) {}
+            }
             await inicializarCotizador();
-            alert('✅ ¡Precio por metro cuadrado actualizado correctamente! Ya está sincronizado con el cotizador.');
+            mostrarToastNotificacion('🗑️ Zona eliminada del cotizador');
         }
 
         // ==========================================

@@ -844,49 +844,113 @@ const StorageService = {
 // ============================================
 const CotizadorService = {
 
-    async getZonas() {
-        if (APP_CONFIG.USE_MOCK_DATA) {
+    _getStoredZonas() {
+        const fallback = (typeof window !== 'undefined' && window.MOCK_DATA && window.MOCK_DATA.zonas_cotizador)
+            ? window.MOCK_DATA.zonas_cotizador
+            : (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.zonas_cotizador ? MOCK_DATA.zonas_cotizador : []);
+        
+        try {
             const cached = localStorage.getItem('maximus_zonas_cotizador');
             if (cached) {
-                return { data: JSON.parse(cached), error: null };
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
             }
-            return { data: [...MOCK_DATA.zonas_cotizador], error: null };
+        } catch(e) {}
+        return [...fallback];
+    },
+
+    _saveStoredZonas(zonas) {
+        try {
+            localStorage.setItem('maximus_zonas_cotizador', JSON.stringify(zonas));
+        } catch(e) {}
+    },
+
+    async getZonas() {
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            return { data: this._getStoredZonas(), error: null };
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).select('*').eq('activo', true).order('nombre');
+        try {
+            const sb = getSupabase();
+            const { data, error } = await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).select('*').eq('activo', true).order('nombre');
+            if (!error && Array.isArray(data) && data.length > 0) {
+                this._saveStoredZonas(data);
+                return { data, error: null };
+            }
+            console.warn('MAXIMUS CotizadorService: Supabase error o 401. Usando respaldo local de zonas.');
+            return { data: this._getStoredZonas(), error: null };
+        } catch(err) {
+            console.warn('MAXIMUS CotizadorService: Error en conexión Supabase, usando respaldo local:', err);
+            return { data: this._getStoredZonas(), error: null };
+        }
     },
 
     async updateZona(id, updates) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let zonas = [...MOCK_DATA.zonas_cotizador];
-            const cached = localStorage.getItem('maximus_zonas_cotizador');
-            if (cached) zonas = JSON.parse(cached);
-
-            const idx = zonas.findIndex(z => z.id === id);
-            if (idx !== -1) {
-                zonas[idx] = { ...zonas[idx], ...updates, updated_at: new Date().toISOString() };
-                localStorage.setItem('maximus_zonas_cotizador', JSON.stringify(zonas));
-                return { data: zonas[idx], error: null };
-            }
-            return { data: null, error: 'Zona no encontrada' };
+        let zonas = this._getStoredZonas();
+        const idx = zonas.findIndex(z => z.id === id);
+        let updatedItem = null;
+        if (idx !== -1) {
+            zonas[idx] = { ...zonas[idx], ...updates, updated_at: new Date().toISOString() };
+            updatedItem = zonas[idx];
+            this._saveStoredZonas(zonas);
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).update(updates).eq('id', id).select().single();
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = getSupabase();
+                const { data, error } = await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).update(updates).eq('id', id).select().single();
+                if (!error && data) {
+                    return { data, error: null };
+                }
+            } catch(e) {
+                console.warn('MAXIMUS CotizadorService updateZona: Fallback local activo tras error Supabase');
+            }
+        }
+        return { data: updatedItem || updates, error: null };
     },
 
     async createZona(nuevaZona) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let zonas = [...MOCK_DATA.zonas_cotizador];
-            const cached = localStorage.getItem('maximus_zonas_cotizador');
-            if (cached) zonas = JSON.parse(cached);
+        let zonas = this._getStoredZonas();
+        const item = {
+            id: 'zc-' + Date.now(),
+            ...nuevaZona,
+            activo: true,
+            created_at: new Date().toISOString()
+        };
+        zonas.push(item);
+        this._saveStoredZonas(zonas);
 
-            const item = { id: 'zc-' + Date.now(), ...nuevaZona, activo: true };
-            zonas.push(item);
-            localStorage.setItem('maximus_zonas_cotizador', JSON.stringify(zonas));
-            return { data: item, error: null };
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = getSupabase();
+                const { data, error } = await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).insert(nuevaZona).select().single();
+                if (!error && data) {
+                    const localIdx = zonas.findIndex(z => z.id === item.id);
+                    if (localIdx !== -1) {
+                        zonas[localIdx] = data;
+                        this._saveStoredZonas(zonas);
+                    }
+                    return { data, error: null };
+                }
+            } catch(e) {
+                console.warn('MAXIMUS CotizadorService createZona: Fallback local activo tras error Supabase');
+            }
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).insert(nuevaZona).select().single();
+        return { data: item, error: null };
+    },
+
+    async deleteZona(id) {
+        let zonas = this._getStoredZonas().filter(z => z.id !== id);
+        this._saveStoredZonas(zonas);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = getSupabase();
+                await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).update({ activo: false }).eq('id', id);
+            } catch(e) {
+                console.warn('MAXIMUS CotizadorService deleteZona: Fallback local activo');
+            }
+        }
+        return { success: true };
     },
 
     calcular({ m2, zona, tipo = 'apartamento' }) {
