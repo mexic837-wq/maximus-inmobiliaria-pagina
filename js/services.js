@@ -1990,7 +1990,19 @@ const AsesorMaximusService = {
             query = query.order('orden', { ascending: true });
             const res = await query;
             if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                return res;
+                // Fusión inteligente: preservar asesores agregados localmente
+                const map = new Map();
+                res.data.forEach(a => map.set(a.id || (a.nombre || '').toLowerCase().trim(), a));
+                const localList = this._getLocal();
+                localList.forEach(a => {
+                    const key = a.id || (a.nombre || '').toLowerCase().trim();
+                    if (!map.has(key)) {
+                        map.set(key, a);
+                    }
+                });
+                const combinados = Array.from(map.values());
+                this._saveLocal(combinados);
+                return { data: combinados, error: null };
             }
         } catch (err) {}
 
@@ -2012,10 +2024,10 @@ const AsesorMaximusService = {
         const list = this._getLocal();
         const nuevo = {
             id: asesorData.id || ('asesor-' + Date.now()),
-            activo: true,
-            rating: 5.0,
-            cierres: 0,
-            badge_texto: 'Asesor Certificado',
+            activo: asesorData.activo !== undefined ? asesorData.activo : true,
+            rating: parseFloat(asesorData.rating) || 5.0,
+            cierres: parseInt(asesorData.cierres) || 0,
+            badge_texto: asesorData.badge_texto || (asesorData.tipo_cuenta === 'externo' ? 'Aliado Externo' : 'Asesor Certificado'),
             orden: list.length + 1,
             created_at: new Date().toISOString(),
             ...asesorData,
@@ -2028,11 +2040,34 @@ const AsesorMaximusService = {
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = getSupabase();
-                const sbRes = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).insert([asesorData]).select().single();
+                // Sanitizar payload para la tabla de Supabase (evitar campos que causan error de tipo o columna desconocida)
+                const payloadDB = {
+                    nombre: asesorData.nombre,
+                    cargo: asesorData.cargo,
+                    especialidad: asesorData.especialidad,
+                    email: asesorData.email || null,
+                    telefono: asesorData.telefono || null,
+                    whatsapp: asesorData.whatsapp || (asesorData.telefono ? asesorData.telefono.replace(/\D/g, '') : null),
+                    avatar: asesorData.avatar || null,
+                    rating: parseFloat(asesorData.rating) || 5.0,
+                    cierres: parseInt(asesorData.cierres) || 0,
+                    badge_texto: asesorData.badge_texto || (asesorData.tipo_cuenta === 'externo' ? 'Aliado Externo' : 'Asesor Certificado'),
+                    bio: asesorData.bio || null,
+                    activo: asesorData.activo !== undefined ? asesorData.activo : true,
+                    orden: nuevo.orden
+                };
+                const sbRes = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).insert([payloadDB]).select().single();
                 if (sbRes && !sbRes.error && sbRes.data) {
                     res = sbRes;
+                    const idx = list.findIndex(a => a.id === nuevo.id);
+                    if (idx !== -1) {
+                        list[idx] = { ...list[idx], ...sbRes.data };
+                        this._saveLocal(list);
+                    }
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn('AsesorMaximusService.create: Fallback local activo tras aviso de Supabase');
+            }
         }
 
         if (typeof N8nService !== 'undefined' && !asesorData._skipN8nBienvenida) {

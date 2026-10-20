@@ -3126,7 +3126,13 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Teléfono WhatsApp *</label>
-                                    <input type="text" id="asesor-telefono" placeholder="Ej: 584129876543" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
+                                    <div class="flex items-center gap-2">
+                                        <select id="asesor-telefono-prefijo" class="w-36 px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent transition-all cursor-pointer">
+                                            <option value="+58" selected>🇻🇪 +58 (VE)</option>
+                                            <option value="+57">🇨🇴 +57 (CO)</option>
+                                        </select>
+                                        <input type="tel" id="asesor-telefono" placeholder="Ej: 412 9876543" class="flex-1 min-w-0 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent transition-all">
+                                    </div>
                                 </div>
                             </div>
 
@@ -3146,19 +3152,9 @@
                                 </div>
                             </div>
 
-                            <div class="pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rating Inicial</label>
-                                    <input type="text" id="asesor-rating" value="5.0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Número de Cierres</label>
-                                    <input type="number" id="asesor-cierres" value="0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto de Perfil (Opcional)</label>
-                                    <input type="file" id="asesor-avatar-file" accept="image/*" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer outline-none focus:border-maximus-accent">
-                                </div>
+                            <div class="pt-4 border-t border-gray-100">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto de Perfil (Opcional)</label>
+                                <input type="file" id="asesor-avatar-file" accept="image/*" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer outline-none focus:border-maximus-accent">
                             </div>
                             
                             <div class="pt-4 flex justify-end gap-3">
@@ -3202,19 +3198,17 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Teléfono WhatsApp</label>
-                                <input type="text" id="edit-asesor-telefono" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
+                                <div class="flex items-center gap-2">
+                                    <select id="edit-asesor-telefono-prefijo" class="w-28 px-2.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent transition-all cursor-pointer">
+                                        <option value="+58" selected>🇻🇪 +58</option>
+                                        <option value="+57">🇨🇴 +57</option>
+                                    </select>
+                                    <input type="tel" id="edit-asesor-telefono" placeholder="Ej: 412 9876543" class="flex-1 min-w-0 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent transition-all">
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Email</label>
                                 <input type="email" id="edit-asesor-email" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Rating</label>
-                                <input type="text" id="edit-asesor-rating" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Cierres Totales</label>
-                                <input type="number" id="edit-asesor-cierres" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Trayectoria / Bio</label>
@@ -8481,6 +8475,12 @@
             }, 3000);
         }
 
+        // Alias global para compatibilidad con llamadas legacy
+        function mostrarToast(mensaje, tipo = 'info') {
+            mostrarToastNotificacion(mensaje);
+        }
+        window.mostrarToast = mostrarToast;
+
         // Teclado: Escape cierra modales o regresa a catálogo, Flechas navegan lightbox
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -10791,79 +10791,93 @@
 
         // Guardar Asesor desde Formulario Admin
         async function guardarAsesorMaximus() {
-            const nombre = document.getElementById('asesor-nombre').value.trim();
-            const cargo = document.getElementById('asesor-cargo').value.trim();
-            const especialidad = document.getElementById('asesor-especialidad').value.trim();
-            const telefono = document.getElementById('asesor-telefono').value.trim();
-            const bio = document.getElementById('asesor-bio')?.value.trim() || '';
-            const correo = document.getElementById('asesor-correo').value.trim();
-            const password = document.getElementById('asesor-password')?.value.trim() || 'Maximus2026!';
-            const tipoCuenta = document.querySelector('input[name="nuevo_tipo_cuenta"]:checked')?.value || 'maximus';
-            const splitComision = tipoCuenta === 'maximus' ? '70%' : '50%';
-            const rating = document.getElementById('asesor-rating').value.trim() || '5.0';
-            const cierres = parseInt(document.getElementById('asesor-cierres').value) || 0;
-            const fileInput = document.getElementById('asesor-avatar-file');
-            const file = fileInput?.files[0];
+            try {
+                const nombre = document.getElementById('asesor-nombre').value.trim();
+                const cargo = document.getElementById('asesor-cargo').value.trim();
+                const especialidad = document.getElementById('asesor-especialidad').value.trim();
+                
+                // Prefijo telefónico (Venezuela +58 o Colombia +57)
+                const prefijo = document.getElementById('asesor-telefono-prefijo')?.value || '+58';
+                let numTel = document.getElementById('asesor-telefono').value.trim();
+                // Limpiar prefijo si fue escrito manualmente
+                numTel = numTel.replace(/^(\+?58|\+?57)/, '').replace(/^0+/, '').trim();
+                const telefono = numTel ? `${prefijo} ${numTel}` : '';
+                
+                const bio = document.getElementById('asesor-bio')?.value.trim() || '';
+                const correo = document.getElementById('asesor-correo').value.trim();
+                const password = document.getElementById('asesor-password')?.value.trim() || 'Maximus2026!';
+                const tipoCuenta = document.querySelector('input[name="nuevo_tipo_cuenta"]:checked')?.value || 'maximus';
+                const splitComision = tipoCuenta === 'maximus' ? '70%' : '50%';
+                const rating = 5.0; // Valor estándar inicial
+                const cierres = 0;   // Inicia en cero cierres
+                const fileInput = document.getElementById('asesor-avatar-file');
+                const file = fileInput?.files[0];
 
-            if (!nombre || !cargo || !especialidad || !telefono) {
-                mostrarToast('Por favor completa los campos requeridos (Nombre, Cargo, Especialidad, Teléfono).', 'error');
-                return;
-            }
+                if (!nombre || !cargo || !especialidad || !numTel) {
+                    mostrarToastNotificacion('⚠️ Por favor completa los campos requeridos (Nombre, Cargo, Especialidad y Teléfono).');
+                    return;
+                }
 
-            let avatar = '';
-            if (file) {
-                avatar = URL.createObjectURL(file);
-            } else {
-                const nombreFormateado = nombre.replace(/\s+/g, '+');
-                avatar = `https://ui-avatars.com/api/?name=${nombreFormateado}&background=0B4A3F&color=fff&bold=true`;
-            }
+                let avatar = '';
+                if (file) {
+                    avatar = URL.createObjectURL(file);
+                } else {
+                    const nombreFormateado = nombre.replace(/\s+/g, '+');
+                    avatar = `https://ui-avatars.com/api/?name=${nombreFormateado}&background=0B4A3F&color=fff&bold=true`;
+                }
 
-            const nuevoAsesor = {
-                nombre,
-                cargo,
-                especialidad,
-                telefono,
-                whatsapp: telefono.replace(/\D/g, ''),
-                email: correo,
-                bio,
-                rating: parseFloat(rating) || 5.0,
-                cierres,
-                avatar,
-                activo: true,
-                badge_texto: tipoCuenta === 'maximus' ? 'Asesor Certificado' : 'Aliado Externo',
-                tipo_cuenta: tipoCuenta,
-                split_comision: splitComision,
-                captacionesActivas: 0,
-                _skipN8nBienvenida: true
-            };
-
-            if (typeof AsesorMaximusService !== 'undefined') {
-                await AsesorMaximusService.create(nuevoAsesor);
-            } else {
-                nuevoAsesor.id = 'asesor-' + Date.now();
-                ASESORES_MAXIMUS_DATA.push(nuevoAsesor);
-            }
-
-            // Disparar webhook n8n de bienvenida de asesor con credenciales
-            if (typeof N8nService !== 'undefined' && N8nService.enviarBienvenidaAsesor) {
-                N8nService.enviarBienvenidaAsesor({
+                const nuevoAsesor = {
                     nombre,
-                    email: correo || 'contacto@maximusinmobiliaria.com',
-                    telefono,
                     cargo,
                     especialidad,
-                    tipo_cuenta: tipoCuenta === 'maximus' ? 'Asesor Oficial MAXIMUS' : 'Asesor Aliado Externo',
+                    telefono,
+                    whatsapp: telefono.replace(/\D/g, ''),
+                    email: correo,
+                    bio,
+                    rating,
+                    cierres,
+                    avatar,
+                    activo: true,
+                    badge_texto: tipoCuenta === 'maximus' ? 'Asesor Certificado' : 'Aliado Externo',
+                    tipo_cuenta: tipoCuenta,
                     split_comision: splitComision,
-                    password_temporal: password
-                });
-            }
+                    captacionesActivas: 0,
+                    _skipN8nBienvenida: true
+                };
 
-            mostrarToast(`✅ Asesor ${nombre} registrado con éxito y correo de bienvenida enviado.`);
-            document.getElementById('form-crear-asesor').reset();
-            cambiarTabAdminAsesores('lista');
-            await inicializarGestionAsesoresAdmin();
-            renderAsesoresMaximus();
-            popularSelectAsesores();
+                if (typeof AsesorMaximusService !== 'undefined') {
+                    await AsesorMaximusService.create(nuevoAsesor);
+                } else {
+                    nuevoAsesor.id = 'asesor-' + Date.now();
+                    ASESORES_MAXIMUS_DATA.push(nuevoAsesor);
+                }
+
+                // Disparar webhook n8n de bienvenida de asesor con credenciales de forma asíncrona segura
+                if (typeof N8nService !== 'undefined' && N8nService.enviarBienvenidaAsesor) {
+                    try {
+                        N8nService.enviarBienvenidaAsesor({
+                            nombre,
+                            email: correo || 'contacto@maximusinmobiliaria.com',
+                            telefono,
+                            cargo,
+                            especialidad,
+                            tipo_cuenta: tipoCuenta === 'maximus' ? 'Asesor Oficial MAXIMUS' : 'Asesor Aliado Externo',
+                            split_comision: splitComision,
+                            password_temporal: password
+                        }).catch(() => {});
+                    } catch(e) {}
+                }
+
+                mostrarToastNotificacion(`✅ Asesor ${nombre} registrado con éxito y sincronizado.`);
+                document.getElementById('form-crear-asesor').reset();
+                cambiarTabAdminAsesores('lista');
+                await inicializarGestionAsesoresAdmin();
+                if (typeof renderAsesoresMaximus === 'function') renderAsesoresMaximus();
+                if (typeof popularSelectAsesores === 'function') popularSelectAsesores();
+            } catch (err) {
+                console.error('Error al guardar asesor:', err);
+                mostrarToastNotificacion('⚠️ Ocurrió un error al guardar el asesor.');
+            }
         }
 
         // Editar Asesor
@@ -10876,10 +10890,23 @@
             document.getElementById('edit-asesor-nombre').value = asesor.nombre || '';
             document.getElementById('edit-asesor-cargo').value = asesor.cargo || '';
             document.getElementById('edit-asesor-especialidad').value = asesor.especialidad || '';
-            document.getElementById('edit-asesor-telefono').value = asesor.telefono || '';
+            
+            // Separar prefijo y número
+            const telRaw = (asesor.telefono || '').trim();
+            let prefijo = '+58';
+            let numTel = telRaw;
+            if (telRaw.startsWith('+57') || telRaw.startsWith('57')) {
+                prefijo = '+57';
+                numTel = telRaw.replace(/^\+?57\s*/, '');
+            } else if (telRaw.startsWith('+58') || telRaw.startsWith('58')) {
+                prefijo = '+58';
+                numTel = telRaw.replace(/^\+?58\s*/, '');
+            }
+            const prefijoSelect = document.getElementById('edit-asesor-telefono-prefijo');
+            if (prefijoSelect) prefijoSelect.value = prefijo;
+            document.getElementById('edit-asesor-telefono').value = numTel;
+
             document.getElementById('edit-asesor-email').value = asesor.email || '';
-            document.getElementById('edit-asesor-rating').value = asesor.rating || '5.0';
-            document.getElementById('edit-asesor-cierres').value = asesor.cierres || 0;
             document.getElementById('edit-asesor-bio').value = asesor.bio || '';
 
             const modal = document.getElementById('modal-admin-editar-asesor');
@@ -10898,31 +10925,39 @@
         }
 
         async function guardarEdicionAsesor() {
-            const id = document.getElementById('edit-asesor-id').value;
-            const updates = {
-                nombre: document.getElementById('edit-asesor-nombre').value.trim(),
-                cargo: document.getElementById('edit-asesor-cargo').value.trim(),
-                especialidad: document.getElementById('edit-asesor-especialidad').value.trim(),
-                telefono: document.getElementById('edit-asesor-telefono').value.trim(),
-                whatsapp: document.getElementById('edit-asesor-telefono').value.trim().replace(/\D/g, ''),
-                email: document.getElementById('edit-asesor-email').value.trim(),
-                rating: parseFloat(document.getElementById('edit-asesor-rating').value) || 5.0,
-                cierres: parseInt(document.getElementById('edit-asesor-cierres').value) || 0,
-                bio: document.getElementById('edit-asesor-bio').value.trim()
-            };
+            try {
+                const id = document.getElementById('edit-asesor-id').value;
+                const prefijo = document.getElementById('edit-asesor-telefono-prefijo')?.value || '+58';
+                let numTel = document.getElementById('edit-asesor-telefono').value.trim();
+                numTel = numTel.replace(/^(\+?58|\+?57)/, '').replace(/^0+/, '').trim();
+                const telefono = numTel ? `${prefijo} ${numTel}` : '';
 
-            if (typeof AsesorMaximusService !== 'undefined') {
-                await AsesorMaximusService.update(id, updates);
-            } else {
-                const idx = ASESORES_MAXIMUS_DATA.findIndex(a => a.id === id);
-                if (idx !== -1) ASESORES_MAXIMUS_DATA[idx] = { ...ASESORES_MAXIMUS_DATA[idx], ...updates };
+                const updates = {
+                    nombre: document.getElementById('edit-asesor-nombre').value.trim(),
+                    cargo: document.getElementById('edit-asesor-cargo').value.trim(),
+                    especialidad: document.getElementById('edit-asesor-especialidad').value.trim(),
+                    telefono: telefono,
+                    whatsapp: telefono.replace(/\D/g, ''),
+                    email: document.getElementById('edit-asesor-email').value.trim(),
+                    bio: document.getElementById('edit-asesor-bio').value.trim()
+                };
+
+                if (typeof AsesorMaximusService !== 'undefined') {
+                    await AsesorMaximusService.update(id, updates);
+                } else {
+                    const idx = ASESORES_MAXIMUS_DATA.findIndex(a => a.id === id);
+                    if (idx !== -1) ASESORES_MAXIMUS_DATA[idx] = { ...ASESORES_MAXIMUS_DATA[idx], ...updates };
+                }
+
+                cerrarModalEditarAsesor();
+                mostrarToastNotificacion('✅ Perfil del asesor actualizado con éxito');
+                await inicializarGestionAsesoresAdmin();
+                if (typeof renderAsesoresMaximus === 'function') renderAsesoresMaximus();
+                if (typeof popularSelectAsesores === 'function') popularSelectAsesores();
+            } catch(e) {
+                console.error('Error al editar asesor:', e);
+                mostrarToastNotificacion('⚠️ Error al actualizar el asesor');
             }
-
-            cerrarModalEditarAsesor();
-            mostrarToast('✅ Perfil del asesor actualizado');
-            await inicializarGestionAsesoresAdmin();
-            renderAsesoresMaximus();
-            popularSelectAsesores();
         }
 
         async function toggleEstadoAsesor(id, estadoActual) {
@@ -10933,7 +10968,7 @@
                 const a = ASESORES_MAXIMUS_DATA.find(x => x.id === id);
                 if (a) a.activo = nuevoEstado;
             }
-            mostrarToast(`Asesor ${nuevoEstado ? 'activado' : 'pausado'}`);
+            mostrarToastNotificacion(`Asesor ${nuevoEstado ? 'activado' : 'pausado'}`);
             await inicializarGestionAsesoresAdmin();
             renderAsesoresMaximus();
         }
@@ -10947,7 +10982,7 @@
                 ASESORES_MAXIMUS_DATA = ASESORES_MAXIMUS_DATA.filter(a => a.id !== id);
             }
 
-            mostrarToast('🗑️ Asesor eliminado');
+            mostrarToastNotificacion('🗑️ Asesor eliminado');
             await inicializarGestionAsesoresAdmin();
             renderAsesoresMaximus();
             popularSelectAsesores();
@@ -11171,7 +11206,7 @@
                 });
             }
 
-            mostrarToast('✅ Inmueble guardado en la base de datos y notificación de captación enviada');
+            mostrarToastNotificacion('✅ Inmueble guardado en la base de datos y notificación de captación enviada');
             
             // Limpiar formulario y refrescar vistas con la base de datos
             document.getElementById('form-cargar-inmueble').reset();
@@ -11955,7 +11990,7 @@
             const selectAsesor = document.getElementById('cierre-asesor-id');
             const opt = selectAsesor.options[selectAsesor.selectedIndex];
             if (!opt || !selectAsesor.value) {
-                mostrarToast('Seleccione un asesor responsable', 'error');
+                mostrarToastNotificacion('Seleccione un asesor responsable', 'error');
                 return;
             }
 
@@ -11983,7 +12018,7 @@
             const notas = document.getElementById('cierre-notas').value.trim();
 
             if (!inmueble_titulo || !ubicacion || precio_final <= 0 || !fecha_cierre) {
-                mostrarToast('Por favor, complete todos los campos obligatorios.', 'error');
+                mostrarToastNotificacion('Por favor, complete todos los campos obligatorios.', 'error');
                 return;
             }
 
@@ -12009,14 +12044,14 @@
             if (window.CierreVentaService) {
                 const res = await window.CierreVentaService.create(cierreData);
                 if (res && res.error) {
-                    mostrarToast('Error al guardar el cierre: ' + res.error, 'error');
+                    mostrarToastNotificacion('Error al guardar el cierre: ' + res.error, 'error');
                     return;
                 }
             }
 
             cerrarModalNuevoCierre();
             document.getElementById('form-nuevo-cierre').reset();
-            mostrarToast(`Cierre registrado y comisión calculada para ${asesorNombre}`);
+            mostrarToastNotificacion(`Cierre registrado y comisión calculada para ${asesorNombre}`);
             await filtrarHistoricoCierres();
         }
 
@@ -12026,7 +12061,7 @@
             }
             if (window.CierreVentaService) {
                 await window.CierreVentaService.delete(id);
-                mostrarToast('Registro de cierre eliminado correctamente.');
+                mostrarToastNotificacion('Registro de cierre eliminado correctamente.');
                 await filtrarHistoricoCierres();
             }
         }
