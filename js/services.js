@@ -2400,11 +2400,12 @@ const MaterialInformativoService = {
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                if (Array.isArray(parsed)) {
+                    // Filtrar cualquier elemento mock antiguo predeterminado para no mostrar material no subido
+                    const reales = parsed.filter(item => item && item.id && !['mat-1','mat-2','mat-3','mat-4','mat-5','mat-6'].includes(item.id));
+                    return reales;
+                }
             } catch(e) {}
-        }
-        if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.material_informativo)) {
-            return [...MOCK_DATA.material_informativo];
         }
         return [];
     },

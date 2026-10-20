@@ -7132,6 +7132,17 @@
         const navLinks = document.querySelectorAll('.nav-link');
         const views = document.querySelectorAll('.view-section');
 
+        // Estado global de Material Informativo y Administración
+        var listaMaterialInformativo = [];
+        var categoriaMaterialActual = 'todos';
+        var materialActualSeleccionado = null;
+        var sincronizandoMaterial = false;
+        var tipoMaterialAdminActual = 'video';
+        var filtroTipoAdminMat = 'todos';
+        var pdfTemporalDataUrl = '';
+        var imagenTemporalDataUrl = '';
+        var portadaCustomDataUrl = '';
+
         function activateTab(targetId, animate = true) {
             // Verificar restricciones para usuarios normales
             let currentUserRole = 'asesor_maximus';
@@ -13984,133 +13995,21 @@
         // ========================================================
         // MATERIAL INFORMATIVO & CAPACITACIÓN MAXIMUS
         // ========================================================
-        const MATERIAL_INFORMATIVO_DATA = [
-            {
-                id: 'mat-1',
-                titulo: 'Cargar tu primer inmueble sin errores',
-                desc: 'Aprende los conceptos básicos para subir propiedades con fotos HD, geolocalización precisa y optimización de título para el catálogo MAXIMUS.',
-                categoria: 'primeros-pasos',
-                categoriaNombre: 'Primeros pasos',
-                tipo: 'video',
-                tipoLabel: 'Video Tutorial',
-                duracion: '05:24 min',
-                badge: 'PASO 1',
-                badgeColor: 'bg-emerald-600',
-                imagen: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-                resumenPuntos: [
-                    'Verificación previa de linderos y ficha catastral.',
-                    'Carga secuencial de fotografías (sala, cocina, habitaciones, exteriores).',
-                    'Configuración de precio, comisión y asignación al captador oficial.'
-                ]
-            },
-            {
-                id: 'mat-2',
-                titulo: 'Lectura avanzada del panel de métricas',
-                desc: 'Una guía completa para interpretar los gráficos de actividad, transacciones de ventas vs alquileres y liquidación de comisiones brutas.',
-                categoria: 'metricas',
-                categoriaNombre: 'Métricas & Finanzas',
-                tipo: 'video',
-                tipoLabel: 'Video Tutorial',
-                duracion: '12:10 min',
-                badge: 'FINANZAS',
-                badgeColor: 'bg-blue-600',
-                imagen: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80',
-                resumenPuntos: [
-                    'Cálculo automático de comisión bruta y retención corporativa.',
-                    'Seguimiento a transacciones en trámite vs liquidadas.',
-                    'Análisis de conversión por zona y tipología de propiedad.'
-                ]
-            },
-            {
-                id: 'mat-3',
-                titulo: 'Guía de Captación Directa & Exclusividades',
-                desc: 'Protocolo formal para presentar la propuesta de valor MAXIMUS a propietarios, blindar acuerdos de exclusividad y fijar comisiones acordadas.',
-                categoria: 'inmuebles',
-                categoriaNombre: 'Inmuebles & Captaciones',
-                tipo: 'guia',
-                tipoLabel: 'Guía Práctica',
-                duracion: 'Lectura 7 min',
-                badge: 'CAPTACIÓN',
-                badgeColor: 'bg-teal-600',
-                imagen: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
-                resumenPuntos: [
-                    'Argumentario de venta frente a ventas directas sin inmobiliaria.',
-                    'Revisión legal de tradición de propiedad de 20 a 30 años.',
-                    'Firma del contrato de mandato exclusivo de intermediación.'
-                ]
-            },
-            {
-                id: 'mat-4',
-                titulo: 'Manual de Cierre y Liquidación 70/30',
-                desc: 'Procedimiento operativo estándar para registrar una venta en notaría, documentar cheques/transferencias y emitir recibos contables oficiales.',
-                categoria: 'ventas',
-                categoriaNombre: 'Ventas & Negociación',
-                tipo: 'video',
-                tipoLabel: 'Video Masterclass',
-                duracion: '08:45 min',
-                badge: 'CIERRES',
-                badgeColor: 'bg-purple-600',
-                imagen: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&q=80',
-                resumenPuntos: [
-                    'Documentación obligatoria del comprador y vendedor.',
-                    'Split de comisión oficial (70% asesor oficial / 50% externo).',
-                    'Emisión del comprobante de liquidación y archivo digital.'
-                ]
-            },
-            {
-                id: 'mat-5',
-                titulo: 'Formato Legal: Opción a Compraventa & Arrendamiento',
-                desc: 'Modelos contractuales oficiales redactados por el departamento jurídico de MAXIMUS, listos para descargar y personalizar.',
-                categoria: 'legal',
-                categoriaNombre: 'Legal & Contratos',
-                tipo: 'documento',
-                tipoLabel: 'Plantilla Oficial',
-                duracion: 'Documento DOCX',
-                badge: 'LEGAL',
-                badgeColor: 'bg-amber-600',
-                imagen: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=800&q=80',
-                resumenPuntos: [
-                    'Cláusulas penales por desistimiento y arras.',
-                    'Condiciones de pago en divisas y transferencias internacionales.',
-                    'Tiempos de prórroga para finiquito de créditos y solvencias.'
-                ]
-            },
-            {
-                id: 'mat-6',
-                titulo: 'Presentación de Dossiers VIP y Matching de Clientes',
-                desc: 'Cómo utilizar el módulo de Colecciones VIP para enviar portafolios interactivos con tu marca personal y seguimiento automatizado n8n.',
-                categoria: 'primeros-pasos',
-                categoriaNombre: 'Primeros pasos',
-                tipo: 'video',
-                tipoLabel: 'Video Tutorial',
-                duracion: '06:15 min',
-                badge: 'CRM VIP',
-                badgeColor: 'bg-emerald-700',
-                imagen: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80',
-                resumenPuntos: [
-                    'Creación de colección temática para clientes inversionistas.',
-                    'Envío por WhatsApp con mensaje predeterminado.',
-                    'Disparo de webhooks n8n para confirmación de entrega por correo.'
-                ]
+        const MATERIAL_INFORMATIVO_DATA = [];
+        // Purga automática de materiales mock antiguos en caché
+        try {
+            const cachedMat = localStorage.getItem('maximus_material_informativo');
+            if (cachedMat) {
+                const parsed = JSON.parse(cachedMat);
+                if (Array.isArray(parsed)) {
+                    const limpios = parsed.filter(m => m && m.id && !['mat-1','mat-2','mat-3','mat-4','mat-5','mat-6'].includes(m.id));
+                    localStorage.setItem('maximus_material_informativo', JSON.stringify(limpios));
+                }
             }
-        ];
-
-        let listaMaterialInformativo = [...MATERIAL_INFORMATIVO_DATA];
-        let categoriaMaterialActual = 'todos';
-        let materialActualSeleccionado = null;
-        let sincronizandoMaterial = false;
-
-        async 
-        // ========================================================
-        // 13.B. GESTIÓN ADMINISTRATIVA DE MATERIAL FORMATIVO (CRUD)
-        // ========================================================
-        let tipoMaterialAdminActual = 'video';
-        let pdfTemporalDataUrl = '';
-        let imagenTemporalDataUrl = '';
-        let portadaCustomDataUrl = '';
-        let filtroTipoAdminMat = 'todos';
+        } catch(e) {}
 
         function cambiarTipoMaterialAdmin(tipo) {
+            window.tipoMaterialAdminActual = tipo;
             tipoMaterialAdminActual = tipo;
 
             const btnVideo = document.getElementById('btn-tipo-video');
@@ -14469,7 +14368,8 @@
         }
 
         function filtrarAdminListaMateriales(tipo, btn) {
-            filtroTipoAdminMat = tipo;
+            window.filtroTipoAdminMat = tipo || 'todos';
+            filtroTipoAdminMat = window.filtroTipoAdminMat;
             document.querySelectorAll('.btn-filtro-admin-mat').forEach(b => {
                 b.className = 'btn-filtro-admin-mat px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-all cursor-pointer';
             });
@@ -14483,9 +14383,10 @@
             const container = document.getElementById('grid-admin-materiales-lista');
             if (!container) return;
 
+            const filtro = window.filtroTipoAdminMat || filtroTipoAdminMat || 'todos';
             let items = Array.isArray(listaMaterialInformativo) ? listaMaterialInformativo : [];
-            if (filtroTipoAdminMat !== 'todos') {
-                items = items.filter(m => m.tipo === filtroTipoAdminMat);
+            if (filtro !== 'todos') {
+                items = items.filter(m => m.tipo === filtro);
             }
 
             // Actualizar contadores del panel lateral
@@ -14584,30 +14485,29 @@
             try {
                 if (window.MaterialInformativoService) {
                     const res = await MaterialInformativoService.getAll();
-                    if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+                    if (res && Array.isArray(res.data)) {
                         listaMaterialInformativo = res.data;
-                        actualizarConteoCategoriasMaterial();
-                        filtrarMaterialInformativo();
-                        if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                        if (mostrarFeedback) {
-                            mostrarToastNotificacion(`⚡ ${res.data.length} materiales sincronizados con Supabase`);
-                        }
                     } else {
-                        if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                        if (mostrarFeedback) {
-                            mostrarToastNotificacion('ℹ️ Material cargado desde catálogo oficial');
-                        }
+                        listaMaterialInformativo = [];
                     }
                 }
             } catch (err) {
                 console.warn('sincronizarMaterialInformativoSupabase error:', err);
-                if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                if (mostrarFeedback) {
-                    mostrarToastNotificacion('ℹ️ Catálogo activo en modo local de alta disponibilidad');
-                }
             } finally {
                 sincronizandoMaterial = false;
                 if (iconoSync) iconoSync.classList.remove('animate-spin');
+                if (dotSync) dotSync.className = 'w-2 h-2 rounded-full bg-emerald-500';
+            }
+
+            // Sincronizar simultáneamente ambas vistas (Material Informativo + Subir Material)
+            actualizarConteoCategoriasMaterial();
+            filtrarMaterialInformativo();
+            if (typeof renderAdminListaMateriales === 'function') {
+                renderAdminListaMateriales();
+            }
+
+            if (mostrarFeedback) {
+                mostrarToastNotificacion(`⚡ ${listaMaterialInformativo.length} materiales sincronizados con Supabase`);
             }
         }
 
@@ -14615,6 +14515,10 @@
             const countTodos = document.getElementById('cat-count-todos');
             if (countTodos) {
                 countTodos.textContent = `(${listaMaterialInformativo.length})`;
+            }
+            const badgeHero = document.getElementById('badge-total-materiales-count');
+            if (badgeHero) {
+                badgeHero.textContent = `${listaMaterialInformativo.length} materiales disponibles`;
             }
         }
 
@@ -14633,7 +14537,7 @@
                 }
             }
 
-            let filtrados = Array.isArray(listaMaterialInformativo) ? listaMaterialInformativo : MATERIAL_INFORMATIVO_DATA;
+            let filtrados = Array.isArray(listaMaterialInformativo) ? [...listaMaterialInformativo] : [];
 
             // Filtro por categoría
             if (categoriaMaterialActual && categoriaMaterialActual !== 'todos') {
@@ -14770,7 +14674,7 @@
         }
 
         function abrirModalMaterialInformativo(id) {
-            const item = (listaMaterialInformativo || []).find(m => m.id === id) || MATERIAL_INFORMATIVO_DATA.find(m => m.id === id);
+            const item = (listaMaterialInformativo || []).find(m => String(m.id) === String(id));
             if (!item) return;
 
             materialActualSeleccionado = item;

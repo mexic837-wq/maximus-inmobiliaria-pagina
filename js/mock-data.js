@@ -1264,29 +1264,7 @@ const MOCK_DATA = {
     ],
 
     // ========== MATERIAL INFORMATIVO & CAPACITACIÓN ==========
-    material_informativo: [
-        {
-            id: 'mat-1',
-            orden: 1,
-            titulo: 'Cargar tu primer inmueble sin errores',
-            desc: 'Aprende los conceptos básicos para subir propiedades con fotos HD, geolocalización precisa y optimización de título para el catálogo MAXIMUS.',
-            categoria: 'primeros-pasos',
-            categoria_nombre: 'Primeros pasos',
-            categoriaNombre: 'Primeros pasos',
-            tipo: 'video',
-            tipo_label: 'Video Tutorial',
-            tipoLabel: 'Video Tutorial',
-            duracion: '05:24 min',
-            badge: 'PASO 1',
-            badge_color: 'bg-emerald-600',
-            badgeColor: 'bg-emerald-600',
-            imagen: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
-            url_recurso: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            resumen_puntos: [
-                'Verificación previa de linderos y ficha catastral.',
-                'Carga secuencial de fotografías (sala, cocina, habitaciones, exteriores).',
-                'Configuración de precio, comisión y asignación al captador oficial.'
-            ],
+    material_informativo: [],
             resumenPuntos: [
                 'Verificación previa de linderos y ficha catastral.',
                 'Carga secuencial de fotografías (sala, cocina, habitaciones, exteriores).',
