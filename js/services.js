@@ -197,18 +197,28 @@ const LeadService = {
             const raw = localStorage.getItem('maximus_crm_leads');
             if (raw) {
                 const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    if (typeof MOCK_DATA !== 'undefined') MOCK_DATA.leads = parsed;
+                if (Array.isArray(parsed)) {
+                    // Si no estamos en mock mode, limpiar cualquier dato ficticio de prueba (lead-001, etc.)
+                    if (!APP_CONFIG.USE_MOCK_DATA) {
+                        const esMock = parsed.some(l => l && (l.id === 'lead-001' || l.id === 'lead-002'));
+                        if (esMock) {
+                            localStorage.removeItem('maximus_crm_leads');
+                            return [];
+                        }
+                    }
                     return parsed;
                 }
             }
         } catch (_) {}
 
-        const defaultLeads = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads))
-            ? [...MOCK_DATA.leads]
-            : [];
-        this._saveStoredLeads(defaultLeads);
-        return defaultLeads;
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const defaultLeads = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.leads))
+                ? [...MOCK_DATA.leads]
+                : [];
+            this._saveStoredLeads(defaultLeads);
+            return defaultLeads;
+        }
+        return [];
     },
 
     _saveStoredLeads(leads) {
@@ -221,7 +231,7 @@ const LeadService = {
     },
 
     async getAll(filtros = {}) {
-        let sbData = [];
+        let sbData = null;
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
@@ -233,24 +243,19 @@ const LeadService = {
                     if (filtros.temperatura && filtros.temperatura !== 'todos') query = query.eq('temperatura', filtros.temperatura);
                     query = query.order('created_at', { ascending: false });
                     const res = await query;
-                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                    if (res && !res.error && Array.isArray(res.data)) {
                         sbData = res.data;
+                        this._saveStoredLeads(sbData);
                     } else if (res && res.error) {
-                        console.warn('MAXIMUS LeadService: Supabase notice (' + (res.error.message || res.error.code) + '). Usando almacenamiento local seguro.');
+                        console.warn('MAXIMUS LeadService: Supabase notice (' + (res.error.message || res.error.code) + ').');
                     }
                 }
             } catch (err) {
-                console.warn('MAXIMUS LeadService: Aviso conexión Supabase, usando persistencia local híbrida');
+                console.warn('MAXIMUS LeadService: Aviso conexión Supabase:', err);
             }
         }
 
-        // Respaldo local e integración híbrida continua
-        const localList = this._getStoredLeads();
-        const map = new Map();
-        localList.forEach(item => { if (item && item.id) map.set(String(item.id), item); });
-        sbData.forEach(item => { if (item && item.id) map.set(String(item.id), { ...(map.get(String(item.id)) || {}), ...item }); });
-
-        let data = Array.from(map.values());
+        let data = (sbData !== null) ? sbData : this._getStoredLeads();
         if (filtros.estatus && filtros.estatus !== 'todos') {
             data = data.filter(l => l.estatus === filtros.estatus);
         }
@@ -345,13 +350,23 @@ const LeadService = {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
                 if (sb) {
-                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(leadData).select().single();
+                    const payloadSb = { ...nuevo };
+                    if (String(payloadSb.id || '').startsWith('lead-')) {
+                        delete payloadSb.id; // Permite que Supabase genere su UUID nativo
+                    }
+                    delete payloadSb.actividades;
+                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb).select().single();
                     if (sbRes && !sbRes.error && sbRes.data) {
                         res = sbRes;
+                        const idx = leads.findIndex(l => l.id === nuevo.id);
+                        if (idx !== -1) {
+                            leads[idx] = sbRes.data;
+                            this._saveStoredLeads(leads);
+                        }
                     }
                 }
             } catch (err) {
-                console.warn('LeadService.create: Guardado local híbrido.');
+                console.warn('LeadService.create: Guardado local híbrido.', err);
             }
         }
 
