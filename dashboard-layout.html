@@ -12008,9 +12008,21 @@
         function toggle2FAEstado(checked) {
             actualizarBadgeSeguridad2FA(checked);
             const userEmail = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+            const userName = document.getElementById('perfil-input-nombre')?.value.trim() || currentUserProfile?.name || 'Asesor MAXIMUS';
             localStorage.setItem('maximus_2fa_enabled_' + userEmail, checked ? 'true' : 'false');
             if (currentUserProfile) currentUserProfile.two_factor_enabled = checked;
             mostrarToastNotificacion(checked ? '🛡️ Verificación en Dos Pasos activada' : '⚠️ Verificación en Dos Pasos desactivada');
+
+            if (window.N8nService) {
+                N8nService.trigger('AUTH_2FA_CAMBIO_ESTADO', {
+                    email: userEmail,
+                    nombre: userName,
+                    estado: checked ? 'activado' : 'desactivado',
+                    ip: 'Sesión Segura Navegador Web',
+                    dispositivo: typeof navigator !== 'undefined' ? navigator.userAgent : 'Navegador Web',
+                    timestamp: new Date().toLocaleString('es-VE')
+                });
+            }
         }
 
         function cambiarFotoPerfilPrompt() {

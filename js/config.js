@@ -48,6 +48,7 @@ const APP_CONFIG = {
         AUTH_CAMBIO_PASSWORD:    '/webhook/auth-cambio-password',
         AUTH_RECUPERAR_PASSWORD: '/webhook/auth-recuperar-password',
         AUTH_VERIFICACION_2FA:   '/webhook/auth-verificacion-2fa',
+        AUTH_2FA_CAMBIO_ESTADO:  '/webhook/auth-2fa-cambio-estado',
         PERFIL_ACTUALIZADO:      '/webhook/perfil-actualizado',
     },
 
