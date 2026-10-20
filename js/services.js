@@ -1415,7 +1415,16 @@ const PerfilService = {
 
     _getCachedUser() {
         try {
-            return JSON.parse(localStorage.getItem('maximus_user')) || null;
+            const raw = localStorage.getItem('maximus_user') || sessionStorage.getItem('maximus_user');
+            const user = raw ? JSON.parse(raw) : null;
+            if (user && (!user.avatar || user.avatar.includes('ui-avatars.com'))) {
+                const savedAvatar = localStorage.getItem('maximus_avatar_' + (user.email || '').toLowerCase())
+                                 || sessionStorage.getItem('maximus_avatar_' + (user.email || '').toLowerCase())
+                                 || localStorage.getItem('maximus_user_avatar')
+                                 || sessionStorage.getItem('maximus_user_avatar');
+                if (savedAvatar) user.avatar = savedAvatar;
+            }
+            return user;
         } catch(e) {
             return null;
         }
@@ -1423,7 +1432,18 @@ const PerfilService = {
 
     _saveCachedUser(user) {
         try {
-            localStorage.setItem('maximus_user', JSON.stringify(user));
+            const str = JSON.stringify(user);
+            localStorage.setItem('maximus_user', str);
+            sessionStorage.setItem('maximus_user', str);
+            if (user && user.avatar) {
+                localStorage.setItem('maximus_user_avatar', user.avatar);
+                sessionStorage.setItem('maximus_user_avatar', user.avatar);
+                if (user.email) {
+                    const emailKey = 'maximus_avatar_' + user.email.toLowerCase().trim();
+                    localStorage.setItem(emailKey, user.avatar);
+                    sessionStorage.setItem(emailKey, user.avatar);
+                }
+            }
         } catch(e) {}
     },
 
