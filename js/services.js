@@ -911,6 +911,53 @@ const StorageService = {
      * @param {string} folder - Carpeta destino (ej: 'inmuebles/inm-001')
      * @returns {Promise<{url: string|null, error: string|null}>}
      */
+    /**
+     * Sube cualquier archivo (PDF o Imagen) a Supabase Storage con respaldo base64.
+     */
+    async uploadMaterialFile(file, folder = 'material-informativo') {
+        if (!file) return { url: null, error: 'No se seleccionó archivo' };
+
+        // Si es mock o falla Supabase, convertir a Base64 dataURL como respaldo 100% funcional
+        const toBase64 = (f) => new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(f);
+        });
+
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const b64 = await toBase64(file);
+            return { url: b64, error: null };
+        }
+
+        try {
+            const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (sb && sb.storage) {
+                const ext = file.name.split('.').pop();
+                const cleanName = file.name.replace(/[^a-zA-Z0-9]/g, '_');
+                const fileName = `${folder}/${Date.now()}_${cleanName}.${ext}`;
+                const bucket = APP_CONFIG.STORAGE_BUCKET || 'inmuebles-fotos';
+                
+                const { data, error } = await sb.storage
+                    .from(bucket)
+                    .upload(fileName, file, { upsert: true });
+
+                if (!error) {
+                    const { data: urlData } = sb.storage.from(bucket).getPublicUrl(fileName);
+                    if (urlData && urlData.publicUrl) {
+                        return { url: urlData.publicUrl, error: null };
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('StorageService.uploadMaterialFile: Aviso Supabase Storage, usando dataURL local:', err);
+        }
+
+        // Fallback a Base64 Data URL
+        const dataUrl = await toBase64(file);
+        return { url: dataUrl, error: null };
+    },
+
     async uploadImage(file, folder = 'general') {
         if (APP_CONFIG.USE_MOCK_DATA) {
             // Generar una URL temporal local para previsualización
@@ -2346,26 +2393,50 @@ const NotificacionService = {
 // SERVICIO DE MATERIAL INFORMATIVO & ACADEMIA
 // ============================================
 const MaterialInformativoService = {
+    _storageKey: 'maximus_material_informativo',
+
+    _getLocal() {
+        const stored = localStorage.getItem(this._storageKey);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            } catch(e) {}
+        }
+        if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.material_informativo)) {
+            return [...MOCK_DATA.material_informativo];
+        }
+        return [];
+    },
+
+    _saveLocal(list) {
+        try {
+            localStorage.setItem(this._storageKey, JSON.stringify(list));
+        } catch(e) {}
+        if (typeof MOCK_DATA !== 'undefined') {
+            MOCK_DATA.material_informativo = list;
+        }
+    },
 
     _normalizarItem(row) {
         if (!row) return null;
         return {
-            id: row.id,
-            orden: row.orden || 1,
+            id: String(row.id || ('mat-' + Date.now())),
+            orden: Number(row.orden) || 1,
             titulo: row.titulo || 'Sin título',
             desc: row.desc || row.descripcion || '',
             descripcion: row.descripcion || row.desc || '',
             categoria: row.categoria || 'primeros-pasos',
-            categoria_nombre: row.categoria_nombre || row.categoriaNombre || 'General',
-            categoriaNombre: row.categoria_nombre || row.categoriaNombre || 'General',
-            tipo: row.tipo || 'video',
-            tipo_label: row.tipo_label || row.tipoLabel || 'Tutorial',
-            tipoLabel: row.tipo_label || row.tipoLabel || 'Tutorial',
-            duracion: row.duracion || '05:00 min',
-            badge: row.badge || 'VIP',
+            categoria_nombre: row.categoria_nombre || row.categoriaNombre || 'Primeros pasos',
+            categoriaNombre: row.categoria_nombre || row.categoriaNombre || 'Primeros pasos',
+            tipo: row.tipo || 'video', // 'video', 'pdf', 'imagen', 'guia'
+            tipo_label: row.tipo_label || row.tipoLabel || (row.tipo === 'pdf' ? 'Documento PDF' : (row.tipo === 'imagen' ? 'Infografía' : 'Video Tutorial')),
+            tipoLabel: row.tipo_label || row.tipoLabel || (row.tipo === 'pdf' ? 'Documento PDF' : (row.tipo === 'imagen' ? 'Infografía' : 'Video Tutorial')),
+            duracion: row.duracion || (row.tipo === 'pdf' ? 'Lectura 5 min' : '05:00 min'),
+            badge: row.badge || (row.tipo === 'pdf' ? 'PDF OFICIAL' : (row.tipo === 'imagen' ? 'INFOGRAFÍA' : 'VIDEO')),
             badge_color: row.badge_color || row.badgeColor || 'bg-emerald-600',
             badgeColor: row.badge_color || row.badgeColor || 'bg-emerald-600',
-            imagen: row.imagen || row.imagen_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
+            imagen: row.imagen || row.imagen_url || (row.tipo === 'pdf' ? 'https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80' : 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80'),
             url_recurso: row.url_recurso || row.url || '#',
             resumen_puntos: Array.isArray(row.resumen_puntos) ? row.resumen_puntos : (Array.isArray(row.resumenPuntos) ? row.resumenPuntos : []),
             resumenPuntos: Array.isArray(row.resumen_puntos) ? row.resumen_puntos : (Array.isArray(row.resumenPuntos) ? row.resumenPuntos : []),
@@ -2375,6 +2446,7 @@ const MaterialInformativoService = {
     },
 
     async getAll(filtros = {}) {
+        let sbData = [];
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
@@ -2394,47 +2466,53 @@ const MaterialInformativoService = {
 
                     const res = await query;
                     if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                        const normalizados = res.data.map(r => this._normalizarItem(r));
-                        return { data: normalizados, error: null, source: 'supabase' };
-                    }
-                    if (res && res.error) {
-                        console.warn('⚠️ MAXIMUS MaterialInformativoService: Supabase devolvió aviso. Usando respaldo local:', res.error.message || res.error);
+                        sbData = res.data;
                     }
                 }
             } catch (err) {
-                console.warn('⚠️ MAXIMUS MaterialInformativoService: Excepción al conectar con Supabase. Usando respaldo local:', err);
+                console.warn('⚠️ MAXIMUS MaterialInformativoService: Aviso Supabase:', err);
             }
         }
 
-        // Respaldo local desde MOCK_DATA
-        let data = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.material_informativo))
-            ? MOCK_DATA.material_informativo.map(r => this._normalizarItem(r))
-            : [];
+        // Respaldo híbrido consolidado con localStorage
+        const localList = this._getLocal().map(r => this._normalizarItem(r));
+        const map = new Map();
+        localList.forEach(item => { if (item && item.id) map.set(String(item.id), item); });
+        sbData.forEach(item => {
+            const norm = this._normalizarItem(item);
+            if (norm && norm.id) map.set(String(norm.id), norm);
+        });
+
+        let data = Array.from(map.values());
+        this._saveLocal(data);
 
         if (filtros.categoria && filtros.categoria !== 'todos') {
             data = data.filter(m => m.categoria === filtros.categoria);
         }
+        if (filtros.tipo && filtros.tipo !== 'todos') {
+            data = data.filter(m => m.tipo === filtros.tipo);
+        }
         if (filtros.busqueda) {
             const q = filtros.busqueda.toLowerCase();
             data = data.filter(m => 
-                m.titulo.toLowerCase().includes(q) ||
-                m.desc.toLowerCase().includes(q) ||
-                m.categoriaNombre.toLowerCase().includes(q)
+                (m.titulo || '').toLowerCase().includes(q) ||
+                (m.desc || '').toLowerCase().includes(q) ||
+                (m.categoriaNombre || '').toLowerCase().includes(q)
             );
         }
 
-        return { data, error: null, source: 'mock' };
+        return { data, error: null, source: sbData.length > 0 ? 'supabase' : 'local' };
     },
 
     async getById(id) {
         const { data } = await this.getAll();
-        const found = data.find(m => m.id === id);
+        const found = data.find(m => String(m.id) === String(id));
         return { data: found || null, error: found ? null : 'No encontrado' };
     },
 
     async create(nuevoItem) {
         const itemNormalizado = this._normalizarItem({
-            id: nuevoItem.id || 'mat-' + Date.now(),
+            id: nuevoItem.id || ('mat-' + Date.now()),
             ...nuevoItem,
             created_at: new Date().toISOString()
         });
@@ -2444,7 +2522,7 @@ const MaterialInformativoService = {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
                 if (sb) {
                     const tableName = APP_CONFIG.TABLES.MATERIAL_INFORMATIVO || 'material_informativo';
-                    const res = await sb.from(tableName).insert([{
+                    await sb.from(tableName).insert([{
                         id: itemNormalizado.id,
                         orden: itemNormalizado.orden,
                         titulo: itemNormalizado.titulo,
@@ -2460,20 +2538,81 @@ const MaterialInformativoService = {
                         url_recurso: itemNormalizado.url_recurso,
                         resumen_puntos: itemNormalizado.resumenPuntos,
                         activo: true
-                    }]).select().single();
-                    if (res && !res.error) {
-                        return { data: this._normalizarItem(res.data), error: null };
-                    }
+                    }]);
                 }
             } catch (e) {
-                console.warn('MaterialInformativoService.create: Error en Supabase:', e);
+                console.warn('MaterialInformativoService.create: Aviso Supabase:', e);
             }
         }
 
-        if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.material_informativo)) {
-            MOCK_DATA.material_informativo.push(itemNormalizado);
-        }
+        const localList = this._getLocal();
+        localList.push(itemNormalizado);
+        this._saveLocal(localList);
+
         return { data: itemNormalizado, error: null };
+    },
+
+    async update(id, updates) {
+        const idStr = String(id);
+        const localList = this._getLocal();
+        const idx = localList.findIndex(m => String(m.id) === idStr);
+        let updatedItem = null;
+
+        if (idx !== -1) {
+            localList[idx] = this._normalizarItem({ ...localList[idx], ...updates, id: idStr });
+            updatedItem = localList[idx];
+            this._saveLocal(localList);
+        }
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tableName = APP_CONFIG.TABLES.MATERIAL_INFORMATIVO || 'material_informativo';
+                    const dbPayload = {
+                        titulo: updates.titulo,
+                        descripcion: updates.descripcion || updates.desc,
+                        categoria: updates.categoria,
+                        categoria_nombre: updates.categoria_nombre || updates.categoriaNombre,
+                        tipo: updates.tipo,
+                        tipo_label: updates.tipo_label || updates.tipoLabel,
+                        duracion: updates.duracion,
+                        badge: updates.badge,
+                        badge_color: updates.badge_color || updates.badgeColor,
+                        imagen: updates.imagen,
+                        url_recurso: updates.url_recurso,
+                        resumen_puntos: updates.resumen_puntos || updates.resumenPuntos,
+                        updated_at: new Date().toISOString()
+                    };
+                    Object.keys(dbPayload).forEach(k => dbPayload[k] === undefined && delete dbPayload[k]);
+                    await sb.from(tableName).update(dbPayload).eq('id', idStr);
+                }
+            } catch (e) {
+                console.warn('MaterialInformativoService.update: Aviso Supabase:', e);
+            }
+        }
+
+        return { data: updatedItem, error: null };
+    },
+
+    async delete(id) {
+        const idStr = String(id);
+        const localList = this._getLocal().filter(m => String(m.id) !== idStr);
+        this._saveLocal(localList);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tableName = APP_CONFIG.TABLES.MATERIAL_INFORMATIVO || 'material_informativo';
+                    await sb.from(tableName).delete().eq('id', idStr);
+                }
+            } catch (e) {
+                console.warn('MaterialInformativoService.delete: Aviso Supabase:', e);
+            }
+        }
+
+        return { success: true, error: null };
     }
 };
 

@@ -1105,10 +1105,10 @@
                     <span class="sidebar-tooltip">Equipo en Web</span>
                 </a>
 
-                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Tutoriales">
-                    <i class="ph-fill ph-video-camera text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Subir Tutoriales</span>
-                    <span class="sidebar-tooltip">Subir Tutoriales</span>
+                <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Material">
+                    <i class="ph-fill ph-file-arrow-up text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Subir Material</span>
+                    <span class="sidebar-tooltip">Subir Material</span>
                 </a>
 
                 <!-- Recursos -->
@@ -3446,90 +3446,283 @@
 
             <!-- H. VISTA: ADMIN SUBIR TUTORIALES -->
             <section id="view-admin-tutoriales" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
-                <div class="pt-4">
-                    <h2 class="text-4xl font-extrabold text-maximus-dark tracking-tight">Gestión de Academia MAXIMUS</h2>
-                    <p class="text-gray-500 mt-1 text-base font-medium">Sube y organiza los video tutoriales que verán los agentes en su plataforma.</p>
+                <!-- Encabezado Principal y Breadcrumb -->
+                <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-semibold text-gray-400 mb-1">
+                            <span>Panel Central</span>
+                            <i class="ph-bold ph-caret-right text-[10px]"></i>
+                            <span class="text-emerald-600 dark:text-emerald-400 font-bold">Subir Material</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Gestión de Material Informativo & Academia</h2>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm sm:text-base font-medium">Sube, organiza, edita y administra los videos, documentos PDF, imágenes y guías formativas para el equipo.</p>
+                    </div>
+                    <div class="flex items-center gap-3 self-start sm:self-auto">
+                        <button onclick="sincronizarMaterialInformativoSupabase(true); renderAdminListaMateriales();" class="px-4 py-2.5 rounded-xl bg-white dark:bg-[#071F1A] border border-gray-200 dark:border-emerald-900/50 hover:border-emerald-500 text-xs font-bold text-maximus-dark dark:text-white flex items-center gap-2 shadow-xs transition-all cursor-pointer">
+                            <i class="ph-bold ph-arrows-clockwise text-emerald-600"></i> Sincronizar Supabase
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Formulario de Subida -->
-                    <div class="lg:col-span-2 bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20">
-                        <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2 mb-6">
-                            <i class="ph-fill ph-upload-simple text-maximus-accent"></i> Nuevo Video Tutorial
-                        </h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <!-- Formulario de Subida y Edición (Columna 1 y 2) -->
+                    <div class="lg:col-span-2 bg-white dark:bg-[#071F1A] rounded-[24px] shadow-premium p-6 sm:p-8 border border-maximus-silver/20 dark:border-emerald-900/40">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 id="form-material-title" class="font-extrabold text-lg sm:text-xl text-maximus-dark dark:text-white flex items-center gap-2">
+                                <i class="ph-fill ph-upload-simple text-maximus-accent"></i> <span>Nuevo Material Informativo</span>
+                            </h3>
+                            <span id="badge-modo-edicion" class="hidden px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">Modo Edición</span>
+                        </div>
                         
-                        <form id="form-subir-tutorial" class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <form id="form-subir-material-admin" class="space-y-5" onsubmit="event.preventDefault(); guardarMaterialAdmin();">
+                            <input type="hidden" id="admin-mat-edit-id" value="">
+
+                            <!-- Selector Visual de Tipo de Material (Pills) -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">Tipo de Recurso</label>
+                                <div class="grid grid-cols-3 gap-2.5 sm:gap-3" id="selector-tipo-material">
+                                    <button type="button" onclick="cambiarTipoMaterialAdmin('video')" id="btn-tipo-video" class="btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50/80 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer shadow-xs">
+                                        <i class="ph-fill ph-video-camera text-lg"></i>
+                                        <span>Video Tutorial</span>
+                                    </button>
+                                    <button type="button" onclick="cambiarTipoMaterialAdmin('pdf')" id="btn-tipo-pdf" class="btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-gray-200 dark:border-emerald-900/40 bg-gray-50/50 dark:bg-[#061814] text-gray-600 dark:text-gray-300 hover:border-emerald-400 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer">
+                                        <i class="ph-fill ph-file-pdf text-lg text-rose-500"></i>
+                                        <span>Documento PDF</span>
+                                    </button>
+                                    <button type="button" onclick="cambiarTipoMaterialAdmin('imagen')" id="btn-tipo-imagen" class="btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-gray-200 dark:border-emerald-900/40 bg-gray-50/50 dark:bg-[#061814] text-gray-600 dark:text-gray-300 hover:border-emerald-400 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer">
+                                        <i class="ph-fill ph-image text-lg text-blue-500"></i>
+                                        <span>Imagen / Ficha</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Título y Categoría -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Título del Video</label>
-                                    <input type="text" id="tutorial-titulo" placeholder="Ej: Cargar tu primer inmueble" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Título del Material *</label>
+                                    <input type="text" id="admin-mat-titulo" required placeholder="Ej: Manual de Captaciones y Exclusividades 2026" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Categoría</label>
-                                    <select id="tutorial-categoria" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent appearance-none">
-                                        <option value="Primeros pasos">Primeros pasos</option>
-                                        <option value="Inmuebles">Inmuebles</option>
-                                        <option value="Métricas">Métricas</option>
-                                        <option value="Ventas">Ventas</option>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Categoría *</label>
+                                    <select id="admin-mat-categoria" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent cursor-pointer">
+                                        <option value="primeros-pasos">Primeros pasos</option>
+                                        <option value="inmuebles">Inmuebles & Captaciones</option>
+                                        <option value="metricas">Métricas & Finanzas</option>
+                                        <option value="ventas">Ventas & Negociación</option>
+                                        <option value="legal">Legal & Contratos</option>
                                     </select>
                                 </div>
                             </div>
                             
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL de YouTube</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <i class="ph-fill ph-youtube-logo text-red-500 text-lg"></i>
+                            <!-- BLOQUE DINÁMICO 1: VIDEO (YouTube) -->
+                            <div id="bloque-mat-video" class="space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">URL de YouTube *</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                                <i class="ph-fill ph-youtube-logo text-red-500 text-lg"></i>
+                                            </div>
+                                            <input type="url" id="admin-mat-url-video" oninput="autoDetectarMiniaturaYT()" placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
                                     </div>
-                                    <input type="url" id="tutorial-url" placeholder="https://www.youtube.com/watch?v=..." class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Duración Video</label>
+                                        <input type="text" id="admin-mat-duracion-video" placeholder="Ej: 08:30 min" value="05:00 min" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    </div>
                                 </div>
-                                <p class="text-[11px] text-gray-400 mt-1.5 ml-1">Pega el enlace completo del video de YouTube.</p>
                             </div>
 
+                            <!-- BLOQUE DINÁMICO 2: PDF (Archivo o Enlace) -->
+                            <div id="bloque-mat-pdf" class="hidden space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Subir Archivo PDF</label>
+                                        <div class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-4 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714]">
+                                            <input type="file" id="admin-mat-file-pdf" accept=".pdf,application/pdf" onchange="manejarSubidaArchivoPDF(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                            <div class="space-y-1">
+                                                <i class="ph-fill ph-file-pdf text-3xl text-rose-500 mx-auto"></i>
+                                                <p id="label-pdf-nombre" class="text-xs font-bold text-maximus-dark dark:text-white">Haz clic o arrastra un PDF aquí</p>
+                                                <p class="text-[10px] text-gray-400">Archivos PDF hasta 50MB</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">O Enlace Directo / Google Drive</label>
+                                            <input type="url" id="admin-mat-url-pdf" placeholder="https://docs.google.com/... o enlace PDF" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Lectura Estimada / Páginas</label>
+                                            <input type="text" id="admin-mat-duracion-pdf" placeholder="Ej: Lectura 6 min o 12 páginas" value="Lectura 5 min" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BLOQUE DINÁMICO 3: IMAGEN / INFOGRAFÍA -->
+                            <div id="bloque-mat-imagen" class="hidden space-y-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Subir Imagen / Infografía</label>
+                                        <div class="relative border-2 border-dashed border-gray-200 dark:border-emerald-900/60 rounded-xl p-4 text-center hover:border-emerald-500 transition-colors bg-gray-50/60 dark:bg-[#071714]">
+                                            <input type="file" id="admin-mat-file-img" accept="image/*" onchange="manejarSubidaArchivoImagen(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                            <div class="space-y-1">
+                                                <i class="ph-fill ph-image text-3xl text-blue-500 mx-auto"></i>
+                                                <p id="label-img-nombre" class="text-xs font-bold text-maximus-dark dark:text-white">Haz clic o arrastra una imagen</p>
+                                                <p class="text-[10px] text-gray-400">PNG, JPG, WebP hasta 20MB</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">O URL de Imagen Web</label>
+                                            <input type="url" id="admin-mat-url-img" oninput="actualizarPreviewImagenCustom(this.value)" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Formato / Detalle</label>
+                                            <input type="text" id="admin-mat-duracion-img" placeholder="Ej: Infografía HD o Flujograma" value="Infografía HD" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Portada y Badge Personalizado -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Imagen de Portada / Miniatura</label>
+                                    <div class="flex gap-2">
+                                        <input type="url" id="admin-mat-portada-url" placeholder="https://images.unsplash.com/..." class="flex-1 px-4 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-xs font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        <label class="px-3 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-emerald-950 dark:hover:bg-emerald-900 rounded-xl text-xs font-bold text-maximus-dark dark:text-emerald-300 cursor-pointer flex items-center gap-1.5 shrink-0 transition-colors">
+                                            <i class="ph-bold ph-upload text-sm"></i> <span>Subir</span>
+                                            <input type="file" accept="image/*" onchange="manejarSubidaPortadaCustom(event)" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Etiqueta Badge</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="admin-mat-badge-texto" placeholder="PASO 1" value="OFICIAL" class="flex-1 px-3 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent">
+                                        <select id="admin-mat-badge-color" class="w-24 px-2 py-2.5 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent cursor-pointer">
+                                            <option value="bg-emerald-600">Verde</option>
+                                            <option value="bg-blue-600">Azul</option>
+                                            <option value="bg-teal-600">Teal</option>
+                                            <option value="bg-purple-600">Morado</option>
+                                            <option value="bg-amber-600">Ámbar</option>
+                                            <option value="bg-rose-600">Rojo</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Descripción -->
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Breve Descripción (Opcional)</label>
-                                <textarea id="tutorial-desc" rows="3" placeholder="Aprende los conceptos básicos para..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400 resize-none"></textarea>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Breve Descripción *</label>
+                                <textarea id="admin-mat-desc" rows="3" required placeholder="Explica de forma clara y concisa qué aprenderá o qué contiene este material..." class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-sm font-semibold text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400 resize-none"></textarea>
+                            </div>
+
+                            <!-- Puntos Clave (Un punto por línea) -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Puntos Clave / Objetivos (1 por línea)</label>
+                                <textarea id="admin-mat-puntos" rows="3" placeholder="Punto 1: Verificación de documentos catastrales&#10;Punto 2: Revisión de linderos y tradición&#10;Punto 3: Procedimiento de firma y cierre" class="w-full px-4 py-3 bg-gray-50 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 rounded-xl text-xs font-mono text-maximus-dark dark:text-white outline-none focus:border-maximus-accent placeholder-gray-400 resize-none"></textarea>
+                                <p class="text-[11px] text-gray-400 mt-1">Escribe cada punto clave en una línea separada. Se mostrarán como viñetas en la ficha del asesor.</p>
                             </div>
                             
-                            <div class="pt-2">
-                                <button type="button" class="w-full md:w-auto px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                    <i class="ph-bold ph-cloud-arrow-up text-lg"></i> Publicar Tutorial
+                            <!-- Botones de Acción -->
+                            <div class="pt-2 flex flex-wrap items-center gap-3">
+                                <button type="submit" id="btn-submit-material-admin" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white text-sm font-extrabold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="ph-bold ph-cloud-arrow-up text-lg"></i> <span id="btn-submit-material-text">Publicar Material</span>
+                                </button>
+                                <button type="button" id="btn-cancel-edit-material" onclick="cancelarEdicionMaterialAdmin()" class="hidden px-5 py-3.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-700 dark:text-gray-300 text-sm font-bold transition-all cursor-pointer">
+                                    Cancelar Edición
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Panel Lateral Informativo / Vista Previa -->
-                    <div class="bg-gradient-to-br from-maximus-dark to-[#0a4a3f] rounded-[24px] shadow-premium p-8 text-white relative overflow-hidden">
-                        <!-- Elementos decorativos -->
-                        <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-5 blur-2xl"></div>
-                        <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-maximus-accent opacity-20 blur-xl"></div>
-                        
-                        <div class="relative z-10">
-                            <h3 class="font-extrabold text-xl mb-4 flex items-center gap-2">
-                                <i class="ph-fill ph-info text-maximus-accent"></i> Arquitectura Lista
-                            </h3>
-                            <p class="text-sm text-gray-200 font-medium mb-6 leading-relaxed">
-                                El sistema extraerá automáticamente la <strong>miniatura HD</strong> y la <strong>duración</strong> del video directamente desde YouTube. Solo necesitas proveer el enlace.
-                            </p>
+                    <!-- Panel Lateral Informativo / Estado de Academia (Columna 3) -->
+                    <div class="space-y-6">
+                        <!-- Tarjeta de Estado Supabase -->
+                        <div class="bg-gradient-to-br from-maximus-dark to-[#0a4a3f] rounded-[24px] shadow-premium p-6 sm:p-7 text-white relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-5 blur-2xl"></div>
+                            <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-maximus-accent opacity-20 blur-xl"></div>
                             
-                            <div class="bg-black/20 rounded-xl p-5 border border-white/10 backdrop-blur-sm">
-                                <h4 class="text-xs font-bold text-maximus-accent uppercase tracking-wider mb-3">Recomendaciones</h4>
-                                <ul class="space-y-3">
-                                    <li class="flex items-start gap-2 text-sm text-gray-200">
-                                        <i class="ph-fill ph-check-circle text-emerald-400 mt-0.5"></i>
-                                        <span>Sube los videos en calidad 1080p o superior a YouTube.</span>
-                                    </li>
-                                    <li class="flex items-start gap-2 text-sm text-gray-200">
-                                        <i class="ph-fill ph-check-circle text-emerald-400 mt-0.5"></i>
-                                        <span>Asegúrate de que la visibilidad del video sea "Oculto" o "Público".</span>
-                                    </li>
-                                    <li class="flex items-start gap-2 text-sm text-gray-200">
-                                        <i class="ph-fill ph-check-circle text-emerald-400 mt-0.5"></i>
-                                        <span>Mantén los títulos cortos y descriptivos.</span>
-                                    </li>
-                                </ul>
+                            <div class="relative z-10 space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-widest text-emerald-300 bg-white/10 px-2.5 py-1 rounded-full">Base de Datos</span>
+                                    <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                        <span>En línea</span>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <strong id="admin-count-total-material" class="text-3xl sm:text-4xl font-black text-white leading-none">--</strong>
+                                    <p class="text-xs text-gray-300 mt-1 font-semibold">Materiales disponibles para la red de asesores</p>
+                                </div>
+
+                                <div class="pt-2 border-t border-white/10 space-y-2 text-xs text-gray-200">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-300">🎥 Videos Tutoriales:</span>
+                                        <strong id="admin-count-videos" class="text-emerald-300">--</strong>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-300">📄 Documentos PDF:</span>
+                                        <strong id="admin-count-pdfs" class="text-emerald-300">--</strong>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-300">🖼️ Imágenes / Infografías:</span>
+                                        <strong id="admin-count-imagenes" class="text-emerald-300">--</strong>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <!-- Tarjeta de Recomendaciones de Formatos -->
+                        <div class="bg-white dark:bg-[#071F1A] rounded-[24px] shadow-premium p-6 border border-maximus-silver/20 dark:border-emerald-900/40 space-y-4">
+                            <h4 class="text-xs font-black uppercase tracking-wider text-maximus-dark dark:text-white flex items-center gap-2">
+                                <i class="ph-bold ph-lightbulb text-amber-500 text-base"></i> Guía de Publicación
+                            </h4>
+                            <ul class="space-y-3 text-xs text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-check-circle text-emerald-500 text-sm mt-0.5 shrink-0"></i>
+                                    <span><strong>Videos:</strong> YouTube público u oculto. La miniatura se detecta automáticamente.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-check-circle text-emerald-500 text-sm mt-0.5 shrink-0"></i>
+                                    <span><strong>PDFs:</strong> Carga directa de contratos, formatos o manuales. Los asesores pueden abrirlos y descargarlos al instante.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-check-circle text-emerald-500 text-sm mt-0.5 shrink-0"></i>
+                                    <span><strong>Imágenes:</strong> Infografías de comisiones, flujogramas de cierre y material publicitario.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Listado y Administración de Materiales Publicados -->
+                <div class="bg-white dark:bg-[#071F1A] rounded-[24px] shadow-premium p-6 sm:p-8 border border-maximus-silver/20 dark:border-emerald-900/40 space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                        <div>
+                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white">Materiales Publicados en Plataforma</h3>
+                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">Gestiona, visualiza, edita o elimina los recursos formativos que ven los asesores.</p>
+                        </div>
+                        <!-- Filtro rápido por tipo -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="filtrarAdminListaMateriales('todos', this)" class="btn-filtro-admin-mat active px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white transition-all cursor-pointer">Todos</button>
+                            <button onclick="filtrarAdminListaMateriales('video', this)" class="btn-filtro-admin-mat px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-all cursor-pointer">Videos</button>
+                            <button onclick="filtrarAdminListaMateriales('pdf', this)" class="btn-filtro-admin-mat px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-all cursor-pointer">PDFs</button>
+                            <button onclick="filtrarAdminListaMateriales('imagen', this)" class="btn-filtro-admin-mat px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-all cursor-pointer">Imágenes</button>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor de la Lista / Grid de Administración -->
+                    <div id="grid-admin-materiales-lista" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                        <!-- Inyectado dinámicamente -->
+                        <div class="col-span-full py-12 text-center text-gray-400">
+                            <i class="ph ph-circle-notch animate-spin text-3xl mb-2 text-emerald-600"></i>
+                            <p class="text-xs font-bold">Cargando catálogo de materiales desde Supabase...</p>
                         </div>
                     </div>
                 </div>
@@ -5043,13 +5236,16 @@
                 <ul id="modal-mat-puntos" class="space-y-2 text-xs text-gray-600 dark:text-gray-300 font-medium"></ul>
             </div>
 
-            <!-- Botones de Acción -->
+            <!-- Botones de Acción Adaptados -->
             <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
-                <button type="button" onclick="cerrarModalMaterialInformativo()" class="flex-1 py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-colors cursor-pointer">
+                <button type="button" onclick="cerrarModalMaterialInformativo()" class="py-3 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 text-gray-700 dark:text-gray-300 font-bold text-xs transition-colors cursor-pointer">
                     Cerrar
                 </button>
-                <button type="button" onclick="marcarMaterialCompletado()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
-                    <i class="ph-bold ph-check"></i> <span>Marcar como Revisado</span>
+                <a id="modal-mat-btn-externo" href="#" target="_blank" class="flex-1 py-3 px-4 rounded-xl bg-maximus-dark hover:bg-emerald-900 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                    <i id="modal-mat-btn-icon" class="ph-bold ph-arrow-square-out text-sm"></i> <span id="modal-mat-btn-texto">Abrir Recurso</span>
+                </a>
+                <button type="button" onclick="marcarMaterialCompletado()" class="py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
+                    <i class="ph-bold ph-check"></i> <span>Completado</span>
                 </button>
             </div>
         </div>
@@ -7076,6 +7272,10 @@
             }
             if (targetId === 'view-tutoriales') {
                 if (typeof inicializarMaterialInformativo === 'function') inicializarMaterialInformativo();
+            }
+            if (targetId === 'view-admin-tutoriales') {
+                if (typeof renderAdminListaMateriales === 'function') renderAdminListaMateriales();
+                if (typeof sincronizarMaterialInformativoSupabase === 'function') sincronizarMaterialInformativoSupabase(false).then(() => renderAdminListaMateriales());
             }
             if (targetId === 'view-admin-cotizador' || targetId === 'view-cotizador') {
                 if (typeof inicializarCotizador === 'function') inicializarCotizador();
@@ -13811,6 +14011,473 @@
         let materialActualSeleccionado = null;
         let sincronizandoMaterial = false;
 
+        async 
+        // ========================================================
+        // 13.B. GESTIÓN ADMINISTRATIVA DE MATERIAL FORMATIVO (CRUD)
+        // ========================================================
+        let tipoMaterialAdminActual = 'video';
+        let pdfTemporalDataUrl = '';
+        let imagenTemporalDataUrl = '';
+        let portadaCustomDataUrl = '';
+        let filtroTipoAdminMat = 'todos';
+
+        function cambiarTipoMaterialAdmin(tipo) {
+            tipoMaterialAdminActual = tipo;
+
+            const btnVideo = document.getElementById('btn-tipo-video');
+            const btnPdf = document.getElementById('btn-tipo-pdf');
+            const btnImg = document.getElementById('btn-tipo-imagen');
+
+            const bloqueVideo = document.getElementById('bloque-mat-video');
+            const bloquePdf = document.getElementById('bloque-mat-pdf');
+            const bloqueImg = document.getElementById('bloque-mat-imagen');
+
+            const badgeInput = document.getElementById('admin-mat-badge-texto');
+            const colorSelect = document.getElementById('admin-mat-badge-color');
+
+            [btnVideo, btnPdf, btnImg].forEach(b => {
+                if (b) {
+                    b.className = 'btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-gray-200 dark:border-emerald-900/40 bg-gray-50/50 dark:bg-[#061814] text-gray-600 dark:text-gray-300 hover:border-emerald-400 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer';
+                }
+            });
+
+            if (bloqueVideo) bloqueVideo.classList.add('hidden');
+            if (bloquePdf) bloquePdf.classList.add('hidden');
+            if (bloqueImg) bloqueImg.classList.add('hidden');
+
+            if (tipo === 'video') {
+                if (btnVideo) btnVideo.className = 'btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50/80 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer shadow-xs';
+                if (bloqueVideo) bloqueVideo.classList.remove('hidden');
+                if (badgeInput && (!badgeInput.value || badgeInput.value === 'PDF OFICIAL' || badgeInput.value === 'INFOGRAFÍA')) badgeInput.value = 'VIDEO TUTORIAL';
+                if (colorSelect) colorSelect.value = 'bg-emerald-600';
+            } else if (tipo === 'pdf') {
+                if (btnPdf) btnPdf.className = 'btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-rose-500 bg-rose-50/80 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer shadow-xs';
+                if (bloquePdf) bloquePdf.classList.remove('hidden');
+                if (badgeInput && (!badgeInput.value || badgeInput.value === 'VIDEO TUTORIAL' || badgeInput.value === 'INFOGRAFÍA')) badgeInput.value = 'PDF OFICIAL';
+                if (colorSelect) colorSelect.value = 'bg-rose-600';
+            } else if (tipo === 'imagen') {
+                if (btnImg) btnImg.className = 'btn-tipo-mat py-3 px-3 rounded-2xl border-2 border-blue-500 bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-extrabold text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-center gap-2 transition-all cursor-pointer shadow-xs';
+                if (bloqueImg) bloqueImg.classList.remove('hidden');
+                if (badgeInput && (!badgeInput.value || badgeInput.value === 'VIDEO TUTORIAL' || badgeInput.value === 'PDF OFICIAL')) badgeInput.value = 'INFOGRAFÍA';
+                if (colorSelect) colorSelect.value = 'bg-blue-600';
+            }
+        }
+
+        async function manejarSubidaArchivoPDF(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const labelNombre = document.getElementById('label-pdf-nombre');
+            if (labelNombre) {
+                labelNombre.textContent = `📄 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                labelNombre.classList.add('text-emerald-600');
+            }
+
+            if (window.StorageService && typeof window.StorageService.uploadMaterialFile === 'function') {
+                mostrarToastNotificacion('⏳ Procesando archivo PDF...');
+                const res = await StorageService.uploadMaterialFile(file, 'material-pdf');
+                if (res && res.url) {
+                    pdfTemporalDataUrl = res.url;
+                    const urlInput = document.getElementById('admin-mat-url-pdf');
+                    if (urlInput) urlInput.value = res.url;
+                    mostrarToastNotificacion('✅ Archivo PDF cargado con éxito');
+                }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    pdfTemporalDataUrl = e.target.result;
+                    const urlInput = document.getElementById('admin-mat-url-pdf');
+                    if (urlInput) urlInput.value = e.target.result;
+                    mostrarToastNotificacion('✅ Archivo PDF listo para publicar');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function manejarSubidaArchivoImagen(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const labelNombre = document.getElementById('label-img-nombre');
+            if (labelNombre) {
+                labelNombre.textContent = `🖼️ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                labelNombre.classList.add('text-blue-600');
+            }
+
+            if (window.StorageService && typeof window.StorageService.uploadMaterialFile === 'function') {
+                mostrarToastNotificacion('⏳ Subiendo imagen...');
+                const res = await StorageService.uploadMaterialFile(file, 'material-imagenes');
+                if (res && res.url) {
+                    imagenTemporalDataUrl = res.url;
+                    const urlInput = document.getElementById('admin-mat-url-img');
+                    if (urlInput) urlInput.value = res.url;
+                    actualizarPreviewImagenCustom(res.url);
+                    mostrarToastNotificacion('✅ Imagen subida y enlazada');
+                }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagenTemporalDataUrl = e.target.result;
+                    const urlInput = document.getElementById('admin-mat-url-img');
+                    if (urlInput) urlInput.value = e.target.result;
+                    actualizarPreviewImagenCustom(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function manejarSubidaPortadaCustom(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            if (window.StorageService && typeof window.StorageService.uploadMaterialFile === 'function') {
+                const res = await StorageService.uploadMaterialFile(file, 'material-portadas');
+                if (res && res.url) {
+                    portadaCustomDataUrl = res.url;
+                    const inp = document.getElementById('admin-mat-portada-url');
+                    if (inp) inp.value = res.url;
+                    mostrarToastNotificacion('✅ Portada personalizada cargada');
+                }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    portadaCustomDataUrl = e.target.result;
+                    const inp = document.getElementById('admin-mat-portada-url');
+                    if (inp) inp.value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+                function extraerYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? [null, match[2]] : null;
+        }
+
+        function autoDetectarMiniaturaYT() {
+            const urlInp = document.getElementById('admin-mat-url-video');
+            const portadaInp = document.getElementById('admin-mat-portada-url');
+            if (!urlInp || !portadaInp) return;
+
+            const url = urlInp.value.trim();
+            const ytMatch = extraerYouTubeId(url);
+            if (ytMatch && ytMatch[1]) {
+                const ytId = ytMatch[1];
+                const ytThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+                if (!portadaInp.value || portadaInp.value.includes('youtube.com') || portadaInp.value.includes('unsplash')) {
+                    portadaInp.value = ytThumb;
+                }
+            }
+        }
+
+        function actualizarPreviewImagenCustom(url) {
+            const portadaInp = document.getElementById('admin-mat-portada-url');
+            if (portadaInp && !portadaInp.value && url) {
+                portadaInp.value = url;
+            }
+        }
+
+        async function guardarMaterialAdmin() {
+            const editId = document.getElementById('admin-mat-edit-id')?.value.trim();
+            const titulo = document.getElementById('admin-mat-titulo')?.value.trim();
+            const categoria = document.getElementById('admin-mat-categoria')?.value || 'primeros-pasos';
+            const desc = document.getElementById('admin-mat-desc')?.value.trim();
+
+            if (!titulo || !desc) {
+                mostrarToastNotificacion('⚠️ Por favor completa el título y la descripción');
+                return;
+            }
+
+            const catMap = {
+                'primeros-pasos': 'Primeros pasos',
+                'inmuebles': 'Inmuebles & Captaciones',
+                'metricas': 'Métricas & Finanzas',
+                'ventas': 'Ventas & Negociación',
+                'legal': 'Legal & Contratos'
+            };
+            const categoriaNombre = catMap[categoria] || 'General';
+
+            let urlRecurso = '#';
+            let duracion = '05:00 min';
+            let tipoLabel = 'Video Tutorial';
+            let imagenPortada = document.getElementById('admin-mat-portada-url')?.value.trim();
+
+            if (tipoMaterialAdminActual === 'video') {
+                urlRecurso = document.getElementById('admin-mat-url-video')?.value.trim() || 'https://www.youtube.com';
+                duracion = document.getElementById('admin-mat-duracion-video')?.value.trim() || '05:00 min';
+                tipoLabel = 'Video Tutorial';
+                if (!imagenPortada) {
+                    const ytMatch = extraerYouTubeId(urlRecurso);
+                    imagenPortada = ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80';
+                }
+            } else if (tipoMaterialAdminActual === 'pdf') {
+                urlRecurso = pdfTemporalDataUrl || document.getElementById('admin-mat-url-pdf')?.value.trim() || '#';
+                duracion = document.getElementById('admin-mat-duracion-pdf')?.value.trim() || 'Lectura 5 min';
+                tipoLabel = 'Documento PDF';
+                if (!imagenPortada) {
+                    imagenPortada = 'https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80';
+                }
+            } else if (tipoMaterialAdminActual === 'imagen') {
+                urlRecurso = imagenTemporalDataUrl || document.getElementById('admin-mat-url-img')?.value.trim() || imagenPortada || '#';
+                duracion = document.getElementById('admin-mat-duracion-img')?.value.trim() || 'Infografía HD';
+                tipoLabel = 'Infografía / Ficha';
+                if (!imagenPortada) {
+                    imagenPortada = urlRecurso !== '#' ? urlRecurso : 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80';
+                }
+            }
+
+            const badgeTexto = document.getElementById('admin-mat-badge-texto')?.value.trim() || (tipoMaterialAdminActual === 'pdf' ? 'PDF' : 'OFICIAL');
+            const badgeColor = document.getElementById('admin-mat-badge-color')?.value || 'bg-emerald-600';
+
+            const puntosRaw = document.getElementById('admin-mat-puntos')?.value.trim() || '';
+            const resumenPuntos = puntosRaw 
+                ? puntosRaw.split('\n').map(p => p.trim()).filter(Boolean)
+                : ['Material revisado por el departamento legal y formativo de MAXIMUS.', 'Disponible para consulta permanente de asesores.'];
+
+            const payload = {
+                titulo,
+                descripcion: desc,
+                desc,
+                categoria,
+                categoria_nombre: categoriaNombre,
+                categoriaNombre,
+                tipo: tipoMaterialAdminActual,
+                tipo_label: tipoLabel,
+                tipoLabel,
+                duracion,
+                badge: badgeTexto.toUpperCase(),
+                badge_color: badgeColor,
+                badgeColor,
+                imagen: imagenPortada,
+                url_recurso: urlRecurso,
+                url: urlRecurso,
+                resumen_puntos: resumenPuntos,
+                resumenPuntos,
+                activo: true
+            };
+
+            const btnSubmit = document.getElementById('btn-submit-material-admin');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="ph ph-circle-notch animate-spin text-lg"></i> Guardando...';
+            }
+
+            try {
+                if (editId) {
+                    // Actualizar material existente
+                    await MaterialInformativoService.update(editId, payload);
+                    mostrarToastNotificacion('✅ Material formativo actualizado con éxito en Supabase');
+                } else {
+                    // Crear nuevo material
+                    await MaterialInformativoService.create(payload);
+                    mostrarToastNotificacion('🚀 Nuevo material publicado y sincronizado con Supabase');
+                }
+
+                // Sincronizar catálogo global y vistas
+                await sincronizarMaterialInformativoSupabase(false);
+                renderAdminListaMateriales();
+                cancelarEdicionMaterialAdmin();
+            } catch (err) {
+                console.error('Error al guardar material:', err);
+                mostrarToastNotificacion('⚠️ Error al conectar con Supabase. Guardado en respaldo local.');
+            } finally {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="ph-bold ph-cloud-arrow-up text-lg"></i> <span>' + (editId ? 'Guardar Cambios' : 'Publicar Material') + '</span>';
+                }
+            }
+        }
+
+        function editarMaterialAdmin(id) {
+            const item = (listaMaterialInformativo || []).find(m => String(m.id) === String(id));
+            if (!item) return;
+
+            document.getElementById('admin-mat-edit-id').value = item.id;
+            document.getElementById('admin-mat-titulo').value = item.titulo || '';
+            document.getElementById('admin-mat-categoria').value = item.categoria || 'primeros-pasos';
+            document.getElementById('admin-mat-desc').value = item.desc || item.descripcion || '';
+            document.getElementById('admin-mat-portada-url').value = item.imagen || '';
+            document.getElementById('admin-mat-badge-texto').value = item.badge || '';
+            document.getElementById('admin-mat-badge-color').value = item.badgeColor || item.badge_color || 'bg-emerald-600';
+            document.getElementById('admin-mat-puntos').value = (item.resumenPuntos || item.resumen_puntos || []).join('\n');
+
+            cambiarTipoMaterialAdmin(item.tipo || 'video');
+
+            if (item.tipo === 'video') {
+                document.getElementById('admin-mat-url-video').value = item.url_recurso || '';
+                document.getElementById('admin-mat-duracion-video').value = item.duracion || '05:00 min';
+            } else if (item.tipo === 'pdf') {
+                document.getElementById('admin-mat-url-pdf').value = item.url_recurso || '';
+                document.getElementById('admin-mat-duracion-pdf').value = item.duracion || 'Lectura 5 min';
+            } else if (item.tipo === 'imagen') {
+                document.getElementById('admin-mat-url-img').value = item.url_recurso || item.imagen || '';
+                document.getElementById('admin-mat-duracion-img').value = item.duracion || 'Infografía HD';
+            }
+
+            // Cambiar UI al modo edición
+            const titleEl = document.getElementById('form-material-title');
+            if (titleEl) titleEl.innerHTML = '<i class="ph-bold ph-pencil-simple text-amber-500"></i> <span>Editar Material Informativo</span>';
+            const badgeEdicion = document.getElementById('badge-modo-edicion');
+            if (badgeEdicion) badgeEdicion.classList.remove('hidden');
+            const btnCancel = document.getElementById('btn-cancel-edit-material');
+            if (btnCancel) btnCancel.classList.remove('hidden');
+            const btnSubmitText = document.getElementById('btn-submit-material-text');
+            if (btnSubmitText) btnSubmitText.textContent = 'Guardar Cambios';
+
+            // Scroll suave hacia el formulario
+            document.getElementById('form-subir-material-admin')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        async function eliminarMaterialAdmin(id) {
+            const item = (listaMaterialInformativo || []).find(m => String(m.id) === String(id));
+            const titulo = item ? item.titulo : 'este material';
+
+            if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente "${titulo}" de Supabase y del panel de agentes?`)) {
+                return;
+            }
+
+            try {
+                await MaterialInformativoService.delete(id);
+                mostrarToastNotificacion('🗑️ Material eliminado exitosamente');
+                await sincronizarMaterialInformativoSupabase(false);
+                renderAdminListaMateriales();
+            } catch (e) {
+                console.error('Error al eliminar material:', e);
+                mostrarToastNotificacion('⚠️ Error al eliminar material de Supabase');
+            }
+        }
+
+        function cancelarEdicionMaterialAdmin() {
+            document.getElementById('admin-mat-edit-id').value = '';
+            document.getElementById('form-subir-material-admin')?.reset();
+            pdfTemporalDataUrl = '';
+            imagenTemporalDataUrl = '';
+            portadaCustomDataUrl = '';
+
+            const labelPdf = document.getElementById('label-pdf-nombre');
+            if (labelPdf) {
+                labelPdf.textContent = 'Haz clic o arrastra un PDF aquí';
+                labelPdf.classList.remove('text-emerald-600');
+            }
+            const labelImg = document.getElementById('label-img-nombre');
+            if (labelImg) {
+                labelImg.textContent = 'Haz clic o arrastra una imagen';
+                labelImg.classList.remove('text-blue-600');
+            }
+
+            cambiarTipoMaterialAdmin('video');
+
+            const titleEl = document.getElementById('form-material-title');
+            if (titleEl) titleEl.innerHTML = '<i class="ph-fill ph-upload-simple text-maximus-accent"></i> <span>Nuevo Material Informativo</span>';
+            const badgeEdicion = document.getElementById('badge-modo-edicion');
+            if (badgeEdicion) badgeEdicion.classList.add('hidden');
+            const btnCancel = document.getElementById('btn-cancel-edit-material');
+            if (btnCancel) btnCancel.classList.add('hidden');
+            const btnSubmitText = document.getElementById('btn-submit-material-text');
+            if (btnSubmitText) btnSubmitText.textContent = 'Publicar Material';
+        }
+
+        function filtrarAdminListaMateriales(tipo, btn) {
+            filtroTipoAdminMat = tipo;
+            document.querySelectorAll('.btn-filtro-admin-mat').forEach(b => {
+                b.className = 'btn-filtro-admin-mat px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-100 dark:bg-emerald-950/60 text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-all cursor-pointer';
+            });
+            if (btn) {
+                btn.className = 'btn-filtro-admin-mat active px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white transition-all cursor-pointer shadow-xs';
+            }
+            renderAdminListaMateriales();
+        }
+
+        function renderAdminListaMateriales() {
+            const container = document.getElementById('grid-admin-materiales-lista');
+            if (!container) return;
+
+            let items = Array.isArray(listaMaterialInformativo) ? listaMaterialInformativo : [];
+            if (filtroTipoAdminMat !== 'todos') {
+                items = items.filter(m => m.tipo === filtroTipoAdminMat);
+            }
+
+            // Actualizar contadores del panel lateral
+            const allItems = Array.isArray(listaMaterialInformativo) ? listaMaterialInformativo : [];
+            const countTotal = document.getElementById('admin-count-total-material');
+            const countVideos = document.getElementById('admin-count-videos');
+            const countPdfs = document.getElementById('admin-count-pdfs');
+            const countImgs = document.getElementById('admin-count-imagenes');
+
+            if (countTotal) countTotal.textContent = allItems.length;
+            if (countVideos) countVideos.textContent = allItems.filter(m => m.tipo === 'video').length;
+            if (countPdfs) countPdfs.textContent = allItems.filter(m => m.tipo === 'pdf').length;
+            if (countImgs) countImgs.textContent = allItems.filter(m => m.tipo === 'imagen').length;
+
+            if (items.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-400 bg-gray-50 dark:bg-[#061814] rounded-2xl border border-dashed border-gray-200 dark:border-emerald-900/40 p-6">
+                        <i class="ph ph-folder-open text-4xl mb-2 text-gray-400"></i>
+                        <h4 class="text-sm font-bold text-maximus-dark dark:text-white">No hay materiales en esta categoría</h4>
+                        <p class="text-xs text-gray-500 mt-1">Usa el formulario superior para publicar tu primer video, documento PDF o infografía.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-50/70 dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/80 dark:border-emerald-900/40 p-4 flex flex-col justify-between hover:shadow-md transition-all';
+
+                let iconTipo = 'ph-video-camera text-emerald-600';
+                let bgTipo = 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300';
+                if (item.tipo === 'pdf') {
+                    iconTipo = 'ph-file-pdf text-rose-500';
+                    bgTipo = 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300';
+                } else if (item.tipo === 'imagen') {
+                    iconTipo = 'ph-image text-blue-500';
+                    bgTipo = 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300';
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black mb-3 border border-gray-100 dark:border-emerald-900/30">
+                            <img src="${item.imagen}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 left-2 ${item.badgeColor || 'bg-emerald-600'} text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm">
+                                ${item.badge || 'VIP'}
+                            </span>
+                            <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                ${item.duracion || '05:00 min'}
+                            </span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${bgTipo} flex items-center gap-1">
+                                    <i class="ph-fill ${iconTipo}"></i> ${item.tipoLabel || item.tipo}
+                                </span>
+                                <span class="text-[10px] font-bold text-gray-400">${item.categoriaNombre}</span>
+                            </div>
+                            <h4 class="text-sm font-black text-maximus-dark dark:text-white line-clamp-2 leading-snug">${item.titulo}</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">${item.desc || item.descripcion || ''}</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-3 border-t border-gray-200/60 dark:border-emerald-900/40 flex items-center justify-between gap-2">
+                        <button onclick="abrirModalMaterialInformativo('${item.id}')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-[#071F1A] border border-gray-200 dark:border-emerald-900/60 hover:border-emerald-500 text-xs font-bold text-maximus-dark dark:text-white flex items-center gap-1.5 transition-colors cursor-pointer" title="Ver como asesor">
+                            <i class="ph-bold ph-eye text-emerald-600"></i> <span>Ver</span>
+                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="editarMaterialAdmin('${item.id}')" class="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/80 text-amber-700 dark:text-amber-300 transition-colors cursor-pointer" title="Editar Material">
+                                <i class="ph-bold ph-pencil-simple text-sm"></i>
+                            </button>
+                            <button onclick="eliminarMaterialAdmin('${item.id}')" class="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/60 dark:hover:bg-rose-900/80 text-rose-600 dark:text-rose-400 transition-colors cursor-pointer" title="Eliminar de Supabase">
+                                <i class="ph-bold ph-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
         async function inicializarMaterialInformativo() {
             filtrarMaterialInformativo();
             await sincronizarMaterialInformativoSupabase(false);
@@ -14045,6 +14712,25 @@
                     li.innerHTML = `<i class="ph-bold ph-check text-emerald-600 shrink-0 mt-0.5"></i> <span>${p}</span>`;
                     puntosList.appendChild(li);
                 });
+            }
+
+            // Configurar botón externo según tipo de recurso (Video, PDF o Imagen)
+            const btnExt = document.getElementById('modal-mat-btn-externo');
+            const btnExtTexto = document.getElementById('modal-mat-btn-texto');
+            const btnExtIcon = document.getElementById('modal-mat-btn-icon');
+            if (btnExt && btnExtTexto) {
+                const url = item.url_recurso || item.url || item.imagen;
+                btnExt.href = url && url !== '#' ? url : item.imagen;
+                if (item.tipo === 'pdf') {
+                    btnExtTexto.textContent = 'Abrir / Descargar PDF';
+                    if (btnExtIcon) btnExtIcon.className = 'ph-fill ph-file-pdf text-base text-rose-400';
+                } else if (item.tipo === 'imagen') {
+                    btnExtTexto.textContent = 'Ver Imagen Completa';
+                    if (btnExtIcon) btnExtIcon.className = 'ph-fill ph-image text-base text-blue-400';
+                } else {
+                    btnExtTexto.textContent = 'Ver Video en YouTube';
+                    if (btnExtIcon) btnExtIcon.className = 'ph-fill ph-youtube-logo text-base text-red-400';
+                }
             }
 
             if (modal && card) {

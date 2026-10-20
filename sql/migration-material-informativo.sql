@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public.material_informativo (
     descripcion TEXT,
     categoria TEXT DEFAULT 'primeros-pasos',
     categoria_nombre TEXT DEFAULT 'Primeros pasos',
-    tipo TEXT DEFAULT 'video',
+    tipo TEXT DEFAULT 'video', -- 'video', 'pdf', 'imagen', 'guia', 'documento'
     tipo_label TEXT DEFAULT 'Video Tutorial',
     duracion TEXT DEFAULT '05:00 min',
     badge TEXT DEFAULT 'PASO 1',
@@ -29,33 +29,18 @@ CREATE TABLE IF NOT EXISTS public.material_informativo (
 -- 2. HABILITAR ROW LEVEL SECURITY (RLS)
 ALTER TABLE public.material_informativo ENABLE ROW LEVEL SECURITY;
 
--- 3. POLÍTICAS DE ACCESO
-DO $$
-BEGIN
-    -- Permitir lectura a todos (público / asesores / autenticados)
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_policies 
-        WHERE tablename = 'material_informativo' AND policyname = 'material_informativo_select_all'
-    ) THEN
-        CREATE POLICY material_informativo_select_all 
-        ON public.material_informativo 
-        FOR SELECT 
-        USING (true);
-    END IF;
+-- 3. POLÍTICAS DE ACCESO TOTAL PÚBLICO (Lectura, Inserción, Actualización y Eliminación)
+DROP POLICY IF EXISTS "material_informativo_select_all" ON public.material_informativo;
+DROP POLICY IF EXISTS "material_informativo_write_auth" ON public.material_informativo;
+DROP POLICY IF EXISTS "material_informativo_write_all" ON public.material_informativo;
+DROP POLICY IF EXISTS "material_informativo_public_all" ON public.material_informativo;
 
-    -- Permitir escritura / inserción / actualización a usuarios autenticados
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_policies 
-        WHERE tablename = 'material_informativo' AND policyname = 'material_informativo_write_auth'
-    ) THEN
-        CREATE POLICY material_informativo_write_auth 
-        ON public.material_informativo 
-        FOR ALL 
-        TO authenticated 
-        USING (true) 
-        WITH CHECK (true);
-    END IF;
-END $$;
+CREATE POLICY "material_informativo_public_all" 
+ON public.material_informativo 
+FOR ALL 
+TO public 
+USING (true) 
+WITH CHECK (true);
 
 -- 4. INSERTAR DATOS INICIALES (SEMILLA 6 MATERIALES OFICIALES)
 INSERT INTO public.material_informativo (
@@ -137,9 +122,9 @@ INSERT INTO public.material_informativo (
     'Modelos contractuales oficiales redactados por el departamento jurídico de MAXIMUS, listos para descargar y personalizar.', 
     'legal', 
     'Legal & Contratos', 
-    'documento', 
-    'Plantilla Oficial', 
-    'Documento DOCX', 
+    'pdf', 
+    'Documento PDF', 
+    'Documento PDF', 
     'LEGAL', 
     'bg-amber-600', 
     'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=800&q=80', 
@@ -179,3 +164,5 @@ ON CONFLICT (id) DO UPDATE SET
     resumen_puntos = EXCLUDED.resumen_puntos,
     activo = EXCLUDED.activo,
     updated_at = now();
+
+NOTIFY pgrst, 'reload schema';
