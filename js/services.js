@@ -862,25 +862,45 @@ const CotizadorService = {
     _saveStoredZonas(zonas) {
         try {
             localStorage.setItem('maximus_zonas_cotizador', JSON.stringify(zonas));
+            if (typeof window !== 'undefined' && window.MOCK_DATA) {
+                window.MOCK_DATA.zonas_cotizador = [...zonas];
+            } else if (typeof MOCK_DATA !== 'undefined') {
+                MOCK_DATA.zonas_cotizador = [...zonas];
+            }
         } catch(e) {}
     },
 
     async getZonas() {
+        const localZonas = this._getStoredZonas();
         if (APP_CONFIG.USE_MOCK_DATA) {
-            return { data: this._getStoredZonas(), error: null };
+            return { data: localZonas, error: null };
         }
         try {
             const sb = getSupabase();
             const { data, error } = await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).select('*').eq('activo', true).order('nombre');
             if (!error && Array.isArray(data) && data.length > 0) {
-                this._saveStoredZonas(data);
-                return { data, error: null };
+                const mapa = new Map();
+                data.forEach(z => {
+                    const key = (z.nombre || '').toLowerCase().trim();
+                    mapa.set(key, z);
+                });
+                localZonas.forEach(z => {
+                    const key = (z.nombre || '').toLowerCase().trim();
+                    if (mapa.has(key)) {
+                        mapa.set(key, { ...mapa.get(key), ...z });
+                    } else {
+                        mapa.set(key, z);
+                    }
+                });
+                const combinadas = Array.from(mapa.values());
+                this._saveStoredZonas(combinadas);
+                return { data: combinadas, error: null };
             }
             console.warn('MAXIMUS CotizadorService: Supabase error o 401. Usando respaldo local de zonas.');
-            return { data: this._getStoredZonas(), error: null };
+            return { data: localZonas, error: null };
         } catch(err) {
             console.warn('MAXIMUS CotizadorService: Error en conexión Supabase, usando respaldo local:', err);
-            return { data: this._getStoredZonas(), error: null };
+            return { data: localZonas, error: null };
         }
     },
 
@@ -916,7 +936,12 @@ const CotizadorService = {
             activo: true,
             created_at: new Date().toISOString()
         };
-        zonas.push(item);
+        const existingIdx = zonas.findIndex(z => (z.nombre || '').toLowerCase().trim() === (nuevaZona.nombre || '').toLowerCase().trim());
+        if (existingIdx !== -1) {
+            zonas[existingIdx] = { ...zonas[existingIdx], ...nuevaZona, activo: true };
+        } else {
+            zonas.push(item);
+        }
         this._saveStoredZonas(zonas);
 
         if (!APP_CONFIG.USE_MOCK_DATA) {
@@ -924,7 +949,7 @@ const CotizadorService = {
                 const sb = getSupabase();
                 const { data, error } = await sb.from(APP_CONFIG.TABLES.ZONAS_COTIZADOR).insert(nuevaZona).select().single();
                 if (!error && data) {
-                    const localIdx = zonas.findIndex(z => z.id === item.id);
+                    const localIdx = zonas.findIndex(z => z.id === item.id || (z.nombre || '').toLowerCase().trim() === (nuevaZona.nombre || '').toLowerCase().trim());
                     if (localIdx !== -1) {
                         zonas[localIdx] = data;
                         this._saveStoredZonas(zonas);

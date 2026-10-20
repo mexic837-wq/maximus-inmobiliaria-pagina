@@ -726,6 +726,7 @@ const MOCK_DATA = {
         { id: 'zc-010', nombre: 'Palmira', municipio: 'Guásimos', precio_m2_base: 420, precio_min_m2: 360, precio_max_m2: 500, factor_casa: 1.05, factor_apartamento: 1.00, factor_terreno: 0.55, factor_local: 1.20 },
         { id: 'zc-011', nombre: 'Rubio', municipio: 'Junín', precio_m2_base: 400, precio_min_m2: 340, precio_max_m2: 480, factor_casa: 1.00, factor_apartamento: 1.00, factor_terreno: 0.45, factor_local: 1.20 },
         { id: 'zc-012', nombre: 'La Grita', municipio: 'Jáuregui', precio_m2_base: 380, precio_min_m2: 320, precio_max_m2: 460, factor_casa: 1.00, factor_apartamento: 1.00, factor_terreno: 0.45, factor_local: 1.20 },
+        { id: 'zc-013', nombre: 'Miguel prueba', municipio: 'San Cristóbal', precio_m2_base: 300, precio_min_m2: 450, precio_max_m2: 600, factor_casa: 1.05, factor_apartamento: 1.00, factor_terreno: 0.60, factor_local: 1.30 },
     ],
 
     // ===== ASESORES (MAXIMUS Y EXTERNOS) =====

@@ -966,7 +966,7 @@
     <!-- ==========================================
          1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
          ========================================== -->
-    <aside id="sidebar" class="w-[280px] bg-white dark:bg-[#0A1F1B] border-r border-maximus-silver/30 dark:border-[#14352D] flex flex-col h-full flex-shrink-0 z-50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative transition-all duration-300 ease-in-out overflow-hidden">
+    <aside id="sidebar" class="w-[280px] bg-white dark:bg-[#0A1F1B] border-r border-maximus-silver/30 dark:border-[#14352D] flex flex-col h-full flex-shrink-0 z-50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative transition-all duration-300 ease-in-out">
         
         <!-- Botón Toggle Colapsar / Expandir (Flecha Flotante con Animación Smooth) -->
         <button id="sidebarToggleBtn" onclick="toggleSidebar()" 
@@ -7231,7 +7231,7 @@
 
             // Actualizar etiqueta del valor base
             const valorTag = document.getElementById('cot-valor-base-tag');
-            if (valorTag) valorTag.textContent = `$$${zona.precio_m2_base} / m²`;
+            if (valorTag) valorTag.textContent = `${zona.precio_m2_base} / m²`;
 
             // Calcular con servicio
             const resultado = CotizadorService.calcular({
@@ -7303,7 +7303,7 @@
                     <td class="px-8 py-4 text-sm text-gray-500 font-semibold">${zona.municipio}</td>
                     <td class="px-8 py-4">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-maximus-dark font-black text-sm">
-                            $$${zona.precio_m2_base} <span class="text-[10px] text-gray-400 font-normal">USD/m²</span>
+                            ${zona.precio_m2_base} <span class="text-[10px] text-gray-400 font-normal">USD/m²</span>
                         </span>
                     </td>
                     <td class="px-8 py-4 text-xs font-bold text-gray-400">
