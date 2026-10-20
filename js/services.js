@@ -1573,28 +1573,29 @@ const PerfilService = {
     },
 
     /**
-     * Enviar código de verificación 2FA (OTP 6 dígitos) vía WhatsApp o Correo mediante n8n.
+     * Enviar código de verificación 2FA (OTP 6 dígitos) vía Correo Electrónico.
      */
-    async enviarCodigo2FA(phone, method = 'whatsapp') {
+    async enviarCodigo2FA(identifier, method = 'email') {
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         sessionStorage.setItem('maximus_2fa_temp_code', otpCode);
-        sessionStorage.setItem('maximus_2fa_temp_expiry', (Date.now() + 5 * 60 * 1000).toString());
+        sessionStorage.setItem('maximus_2fa_temp_expiry', (Date.now() + 10 * 60 * 1000).toString());
 
         const user = this._getCachedUser();
+        const emailDestino = (method === 'email' ? identifier : user?.email) || user?.email;
 
-        // Disparar Webhook n8n para enviar el mensaje real por WhatsApp o Email
+        // Disparar Webhook para enviar el mensaje real por Correo
         if (window.N8nService) {
             await N8nService.trigger('AUTH_VERIFICACION_2FA', {
                 codigo: otpCode,
                 metodo: method,
-                telefono: phone || user?.telefono,
-                email: user?.email,
+                email: emailDestino,
+                telefono: user?.telefono,
                 nombre: user?.name,
-                validez_minutos: 5
+                validez_minutos: 10
             });
         }
 
-        return { success: true, code: otpCode };
+        return { success: true, email: emailDestino };
     },
 
     /**
@@ -1608,10 +1609,10 @@ const PerfilService = {
             return { success: false, error: 'No hay un código de verificación activo. Solicita uno nuevo.' };
         }
         if (Date.now() > expiry) {
-            return { success: false, error: 'El código ha expirado (validez: 5 minutos). Solicita otro código.' };
+            return { success: false, error: 'El código ha expirado (validez: 10 minutos). Solicita otro código.' };
         }
         if (codigoIngresado.trim() !== storedCode) {
-            return { success: false, error: 'Código incorrecto. Verifica los 6 dígitos recibidos.' };
+            return { success: false, error: 'Código incorrecto. Verifica los 6 dígitos recibidos en tu correo.' };
         }
 
         sessionStorage.removeItem('maximus_2fa_temp_code');

@@ -4735,25 +4735,24 @@
                             </div>
                         </div>
 
-                        <!-- Sandbox de Prueba Interactiva de 2FA vía n8n -->
+                        <!-- Verificación y Envío de Código de Seguridad por Correo -->
                         <div class="p-5 rounded-2xl bg-gray-50/80 dark:bg-emerald-950/20 border border-gray-200/80 dark:border-emerald-900/40 space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-wider text-gray-600 flex items-center gap-1.5">
-                                    <i class="ph-bold ph-terminal-window text-teal-600"></i> Probar Flujo 2FA
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
+                                    <i class="ph-bold ph-shield-check text-emerald-600"></i> Probar Código de Seguridad
                                 </span>
-                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">Listo para Webhook</span>
                             </div>
-                            <p class="text-xs sm:text-sm text-gray-500">Solicita un código OTP de prueba para validar que tu correo electrónico (Gmail) recibe las alertas:</p>
+                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Solicita un código de prueba para validar la recepción segura en tu correo electrónico (Gmail):</p>
                             
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                                 <button type="button" onclick="probarEnvio2FA()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
-                                    <i class="ph-bold ph-paper-plane-tilt"></i>
-                                    <span>Solicitar Código vía n8n</span>
+                                    <i class="ph-bold ph-envelope-simple"></i>
+                                    <span>Solicitar Código por Correo</span>
                                 </button>
                                 <div class="relative flex-1">
-                                    <input type="text" id="perfil-2fa-input-codigo" maxlength="6" placeholder="Ingresa 6 dígitos..." class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 text-center font-mono font-black tracking-widest text-sm text-gray-900 dark:text-white outline-none focus:border-emerald-500">
+                                    <input type="text" id="perfil-2fa-input-codigo" maxlength="6" placeholder="Ingresa los 6 dígitos recibidos..." class="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 text-center font-mono font-black tracking-widest text-sm text-gray-900 dark:text-white outline-none focus:border-emerald-500">
                                 </div>
-                                <button type="button" onclick="validarCodigoPrueba2FA()" class="px-5 py-2.5 rounded-xl bg-gray-900 text-white font-bold text-xs hover:bg-black transition-colors cursor-pointer shrink-0">
+                                <button type="button" onclick="validarCodigoPrueba2FA()" class="px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-bold text-xs transition-colors cursor-pointer shrink-0">
                                     <span>Validar Código</span>
                                 </button>
                             </div>
@@ -4765,7 +4764,7 @@
                     <div id="tab-content-perfil-n8n" class="hidden space-y-8">
                         <div>
                             <h3 class="font-black text-lg text-gray-900 dark:text-white">Alertas Automatizadas por Correo</h3>
-                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Configura qué eventos importantes te notificarán directamente a tu bandeja de correo a través de n8n.</p>
+                            <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Configura qué eventos importantes te notificarán directamente a tu bandeja de correo en tiempo real.</p>
                         </div>
 
                         <div class="space-y-4">
@@ -12252,22 +12251,48 @@
         }
 
         async function probarEnvio2FA() {
-            const email = document.getElementById('perfil-input-email')?.value.trim() || 'asesor@maximus.com';
+            const email = document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor@maximus.com';
             const method = 'email';
 
-            if (window.PerfilService) {
-                const res = await PerfilService.enviarCodigo2FA(email, method);
-                const feedback = document.getElementById('perfil-2fa-feedback');
-                if (feedback) {
-                    feedback.classList.remove('hidden');
-                    feedback.className = 'text-xs font-bold text-emerald-700 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mt-2 block';
-                    feedback.innerHTML = `✉️ <strong>Código enviado vía Correo Electrónico (Gmail) por n8n:</strong> Tu código de prueba es <span class="font-mono text-sm font-black text-emerald-900 bg-white px-2 py-0.5 rounded border border-emerald-300">${res.code}</span> (Válido por 5 minutos).`;
+            const btn = event?.currentTarget || document.querySelector('button[onclick="probarEnvio2FA()"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-75', 'cursor-not-allowed');
+            }
+
+            try {
+                if (window.PerfilService) {
+                    const res = await PerfilService.enviarCodigo2FA(email, method);
+                    const feedback = document.getElementById('perfil-2fa-feedback');
+                    const inputCod = document.getElementById('perfil-2fa-input-codigo');
+
+                    // Limpiar el campo para que el usuario escriba manualmente lo que recibió en su correo
+                    if (inputCod) {
+                        inputCod.value = '';
+                        inputCod.placeholder = 'Ingresa los 6 dígitos recibidos...';
+                        inputCod.focus();
+                    }
+
+                    if (feedback) {
+                        feedback.classList.remove('hidden');
+                        feedback.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800 mt-2 flex items-center gap-2.5 block';
+                        feedback.innerHTML = `
+                            <i class="ph-bold ph-envelope-simple text-base text-emerald-600 shrink-0"></i>
+                            <div>
+                                <span>Código de seguridad enviado a <strong>${email}</strong>.</span>
+                                <span class="block text-[11px] font-normal text-emerald-700 dark:text-emerald-300 mt-0.5">Revisa tu bandeja de entrada o carpeta de spam. El código expira en 10 minutos.</span>
+                            </div>
+                        `;
+                    }
+                    mostrarToastNotificacion(`✉️ Código de verificación enviado a ${email}`);
                 }
-                mostrarToastNotificacion(`✉️ Código OTP enviado a tu correo (${email})`);
-                const inputCod = document.getElementById('perfil-2fa-input-codigo');
-                if (inputCod) {
-                    inputCod.value = res.code;
-                    inputCod.focus();
+            } catch(e) {
+                console.error(e);
+                mostrarToastNotificacion('⚠️ Error al solicitar código de verificación');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
                 }
             }
         }
@@ -12285,13 +12310,13 @@
                 if (feedback) {
                     feedback.classList.remove('hidden');
                     if (res.success) {
-                        feedback.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 mt-2 block';
-                        feedback.innerHTML = '✅ <strong>¡Verificación 2FA Exitosa!</strong> El token de autenticación n8n es válido.';
-                        mostrarToastNotificacion('✅ Código 2FA verificado correctamente');
+                        feedback.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800 mt-2 flex items-center gap-2 block';
+                        feedback.innerHTML = '<i class="ph-bold ph-check-circle text-base text-emerald-600 shrink-0"></i> <span><strong>¡Verificación Exitosa!</strong> El código ingresado es correcto y está vigente.</span>';
+                        mostrarToastNotificacion('✅ Código verificado correctamente');
                     } else {
-                        feedback.className = 'text-xs font-bold text-red-700 bg-red-50 p-2.5 rounded-xl border border-red-200 mt-2 block';
-                        feedback.innerHTML = `❌ ${res.error}`;
-                        mostrarToastNotificacion('❌ Código 2FA inválido');
+                        feedback.className = 'text-xs font-bold text-red-700 bg-red-50 dark:bg-red-950/40 p-3 rounded-xl border border-red-200 dark:border-red-800 mt-2 flex items-center gap-2 block';
+                        feedback.innerHTML = `<i class="ph-bold ph-warning-circle text-base text-red-600 shrink-0"></i> <span>${res.error}</span>`;
+                        mostrarToastNotificacion('❌ Código incorrecto o expirado');
                     }
                 }
             }
