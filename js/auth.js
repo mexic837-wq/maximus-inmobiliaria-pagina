@@ -59,16 +59,19 @@ const AuthService = {
             }
         }
 
-        // 3. Fallback a cuentas mock configuradas o registradas localmente
-        if (!result || !result.success) {
-            const fallbackRes = this._mockLogin(cleanEmail, password);
-            if (fallbackRes.success) {
-                this._saveSession(fallbackRes.user, cleanEmail, rememberDevice);
-                return fallbackRes;
-            }
+        // 3. Fallback a cuentas mock configuradas o registradas localmente / asesores
+        const fallbackRes = this._mockLogin(cleanEmail, password);
+        if (fallbackRes.success) {
+            this._saveSession(fallbackRes.user, cleanEmail, rememberDevice);
+            return fallbackRes;
         }
 
-        return result || { success: false, error: 'Credenciales inválidas. Verifique su correo y contraseña.' };
+        let finalError = (result && result.error) ? result.error : (fallbackRes.error || 'Credenciales inválidas. Verifique su correo y contraseña.');
+        if (finalError.includes('Unexpected token') || finalError.includes('not valid JSON') || finalError.includes('Unauthorized')) {
+            finalError = 'Credenciales inválidas. Verifique su correo y contraseña.';
+        }
+
+        return { success: false, error: finalError };
     },
 
     /**
@@ -572,6 +575,61 @@ const AuthService = {
             registeredUsers = JSON.parse(localStorage.getItem('maximus_registered_users')) || {};
         } catch(e) {}
 
+        // 3. Verificar en asesores de MAXIMUS (AsesorMaximusService / localStorage)
+        let asesoresOficiales = [];
+        try {
+            asesoresOficiales = JSON.parse(localStorage.getItem('maximus_asesores_oficiales_data')) || [];
+        } catch(e) {}
+
+        if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
+            ASESORES_MAXIMUS_DATA.forEach(a => {
+                if (a && a.email && !asesoresOficiales.some(o => (o.email || '').toLowerCase() === (a.email || '').toLowerCase())) {
+                    asesoresOficiales.push(a);
+                }
+            });
+        }
+
+        const asesorEncontrado = asesoresOficiales.find(a => (a.email || '').toLowerCase().trim() === cleanEmail);
+        if (asesorEncontrado) {
+            const asesorPass = asesorEncontrado.password || asesorEncontrado.password_temporal || (registeredUsers[cleanEmail] ? registeredUsers[cleanEmail].password : null);
+            
+            // Si el asesor no tenía contraseña fijada aún, o si coincide:
+            if (!asesorPass || asesorPass === password) {
+                if (!asesorEncontrado.password) {
+                    asesorEncontrado.password = password;
+                    try {
+                        localStorage.setItem('maximus_asesores_oficiales_data', JSON.stringify(asesoresOficiales));
+                    } catch(e) {}
+                }
+                const role = (asesorEncontrado.tipo_cuenta === 'externo' || (asesorEncontrado.cargo && asesorEncontrado.cargo.toLowerCase().includes('externo')))
+                    ? APP_CONFIG.ROLES.ASESOR_EXTERNO
+                    : APP_CONFIG.ROLES.ASESOR_MAXIMUS;
+
+                const userObj = {
+                    id: asesorEncontrado.id || ('asesor-' + Date.now()),
+                    name: asesorEncontrado.nombre,
+                    email: cleanEmail,
+                    telefono: asesorEncontrado.telefono || '',
+                    role: role,
+                    tipo_asesor: asesorEncontrado.tipo_cuenta || 'maximus',
+                    title: asesorEncontrado.cargo || 'Asesor Inmobiliario MAXIMUS',
+                    avatar: asesorEncontrado.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(asesorEncontrado.nombre)}&background=0B4A3F&color=fff&bold=true`
+                };
+
+                registeredUsers[cleanEmail] = {
+                    password: password,
+                    user: userObj
+                };
+                try {
+                    localStorage.setItem('maximus_registered_users', JSON.stringify(registeredUsers));
+                } catch(e) {}
+
+                return { success: true, user: userObj };
+            } else {
+                return { success: false, error: 'Contraseña incorrecta para la cuenta del asesor.' };
+            }
+        }
+
         const entry = mockUsers[cleanEmail] || registeredUsers[cleanEmail];
 
         if (!entry) {
@@ -633,14 +691,26 @@ const AuthService = {
                 return { success: false, error: 'Servicio de Supabase no disponible temporalmente.' };
             }
 
-            // 1. Autenticar con Supabase Auth
-            const { data, error } = await sb.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+            // 1. Autenticar con Supabase Auth (con captura segura de errores no JSON)
+            let authResponse = null;
+            try {
+                authResponse = await sb.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+            } catch (errAuth) {
+                console.warn('Aviso Supabase Auth signInWithPassword:', errAuth);
+                return { success: false, error: 'Credenciales inválidas en el servidor.' };
+            }
+
+            const { data, error } = authResponse || {};
 
             if (error) {
-                return { success: false, error: error.message };
+                let errText = error.message || 'Credenciales inválidas.';
+                if (errText.includes('Unexpected token') || errText.includes('not valid JSON') || errText.includes('Unauthorized')) {
+                    errText = 'Credenciales inválidas.';
+                }
+                return { success: false, error: errText };
             }
 
             // 2. Obtener perfil y rol del usuario desde la tabla 'usuarios'

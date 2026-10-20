@@ -3210,6 +3210,19 @@
                                 <input type="email" id="edit-asesor-email" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
                             </div>
                             <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+                                    <span>Contraseña de Acceso</span>
+                                    <span class="text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md font-extrabold lowercase">visible para admin</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="edit-asesor-password" placeholder="Contraseña de acceso" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent pr-11 font-mono tracking-wider text-maximus-dark">
+                                    <button type="button" onclick="togglePasswordVisibility('edit-asesor-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-maximus-dark transition-colors p-1" title="Ocultar / Mostrar Contraseña">
+                                        <i class="ph-bold ph-eye text-base"></i>
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-gray-400 mt-1">Como Administrador puedes ver y modificar la contraseña con la que este asesor ingresa al portal.</p>
+                            </div>
+                            <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Trayectoria / Bio</label>
                                 <textarea id="edit-asesor-bio" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-medium outline-none focus:border-maximus-accent"></textarea>
                             </div>
@@ -10852,6 +10865,7 @@
                     telefono,
                     whatsapp: telefono.replace(/\D/g, ''),
                     email: correo,
+                    password: password,
                     bio,
                     rating,
                     cierres,
@@ -10863,6 +10877,28 @@
                     captacionesActivas: 0,
                     _skipN8nBienvenida: true
                 };
+
+                // Registrar en maximus_registered_users para que el asesor pueda iniciar sesión de inmediato
+                const cleanCorreo = (correo || '').toLowerCase().trim();
+                if (cleanCorreo) {
+                    try {
+                        let regUsers = JSON.parse(localStorage.getItem('maximus_registered_users')) || {};
+                        regUsers[cleanCorreo] = {
+                            password: password,
+                            user: {
+                                id: 'asesor-' + Date.now(),
+                                name: nombre,
+                                email: cleanCorreo,
+                                telefono: telefono,
+                                role: tipoCuenta === 'maximus' ? 'asesor_maximus' : 'asesor_externo',
+                                tipo_asesor: tipoCuenta,
+                                title: cargo || 'Asesor MAXIMUS',
+                                avatar: avatar
+                            }
+                        };
+                        localStorage.setItem('maximus_registered_users', JSON.stringify(regUsers));
+                    } catch(e) {}
+                }
 
                 if (typeof AsesorMaximusService !== 'undefined') {
                     await AsesorMaximusService.create(nuevoAsesor);
@@ -10928,6 +10964,21 @@
             document.getElementById('edit-asesor-email').value = asesor.email || '';
             document.getElementById('edit-asesor-bio').value = asesor.bio || '';
 
+            // Cargar contraseña para visualización del admin
+            const passInput = document.getElementById('edit-asesor-password');
+            if (passInput) {
+                let pass = asesor.password || asesor.password_temporal || '';
+                if (!pass && asesor.email) {
+                    try {
+                        const regUsers = JSON.parse(localStorage.getItem('maximus_registered_users')) || {};
+                        const em = asesor.email.toLowerCase().trim();
+                        if (regUsers[em] && regUsers[em].password) pass = regUsers[em].password;
+                    } catch(e) {}
+                }
+                passInput.value = pass || '1234567';
+                passInput.type = 'text'; // Visible para el admin
+            }
+
             const modal = document.getElementById('modal-admin-editar-asesor');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -10951,6 +11002,7 @@
                 numTel = numTel.replace(/^(\+?58|\+?57)/, '').replace(/^0+/, '').trim();
                 const telefono = numTel ? `${prefijo} ${numTel}` : '';
 
+                const password = document.getElementById('edit-asesor-password')?.value.trim() || '1234567';
                 const updates = {
                     nombre: document.getElementById('edit-asesor-nombre').value.trim(),
                     cargo: document.getElementById('edit-asesor-cargo').value.trim(),
@@ -10958,8 +11010,31 @@
                     telefono: telefono,
                     whatsapp: telefono.replace(/\D/g, ''),
                     email: document.getElementById('edit-asesor-email').value.trim(),
-                    bio: document.getElementById('edit-asesor-bio').value.trim()
+                    bio: document.getElementById('edit-asesor-bio').value.trim(),
+                    password: password
                 };
+
+                // Sincronizar credencial con maximus_registered_users para permitir login inmediato
+                const cleanEm = (updates.email || '').toLowerCase().trim();
+                if (cleanEm) {
+                    try {
+                        let regUsers = JSON.parse(localStorage.getItem('maximus_registered_users')) || {};
+                        regUsers[cleanEm] = {
+                            password: password,
+                            user: {
+                                id: id,
+                                name: updates.nombre,
+                                email: cleanEm,
+                                telefono: telefono,
+                                role: 'asesor_maximus',
+                                tipo_asesor: 'maximus',
+                                title: updates.cargo || 'Asesor MAXIMUS',
+                                avatar: asesor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.nombre)}&background=0B4A3F&color=fff&bold=true`
+                            }
+                        };
+                        localStorage.setItem('maximus_registered_users', JSON.stringify(regUsers));
+                    } catch(e) {}
+                }
 
                 if (typeof AsesorMaximusService !== 'undefined') {
                     await AsesorMaximusService.update(id, updates);
@@ -11016,6 +11091,18 @@
             if (typeof renderAsesoresMaximus === 'function') renderAsesoresMaximus();
             popularSelectAsesores();
         }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            const icon = btn ? btn.querySelector('i') : null;
+            if (icon) {
+                icon.className = isPassword ? 'ph-bold ph-eye text-base' : 'ph-bold ph-eye-slash text-base';
+            }
+        }
+        window.togglePasswordVisibility = togglePasswordVisibility;
 
         function toggleTipoAsesor() {
             const isMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]').checked;

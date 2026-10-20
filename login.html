@@ -837,7 +837,11 @@
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalText;
-                    showAlert(res.error || 'Credenciales incorrectas.');
+                    let errClean = res.error || 'Credenciales incorrectas.';
+                    if (errClean.includes('is not valid JSON') || errClean.includes('Unexpected token') || errClean.includes('Unauthorized')) {
+                        errClean = 'Credenciales incorrectas o usuario no registrado.';
+                    }
+                    showAlert(errClean);
                     return;
                 }
             }
