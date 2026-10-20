@@ -4217,7 +4217,7 @@
 
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Filtro Asesor (para Admin y Dirección) -->
-                        <div class="flex items-center gap-1.5">
+                        <div id="crm-filtro-asesor-wrapper" class="flex items-center gap-1.5">
                             <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">Asesor:</span>
                             <select id="crm-filtro-asesor" onchange="filtrarCRMEnVivo()" class="px-3 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200/80 dark:border-emerald-900/50 text-xs font-semibold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
                                 <option value="todos">Todos los Asesores</option>
@@ -9201,7 +9201,48 @@
             }
         }
 
+        function getUsuarioActualCRM() {
+            let currentUser = null;
+            if (window.AuthService && typeof window.AuthService.getCurrentUser === 'function') {
+                currentUser = window.AuthService.getCurrentUser();
+            }
+            if (!currentUser) {
+                try {
+                    currentUser = JSON.parse(localStorage.getItem('maximus_user')) || JSON.parse(sessionStorage.getItem('maximus_user'));
+                } catch (_) {}
+            }
+            return currentUser;
+        }
+
+        function esUsuarioAdminCRM() {
+            const user = getUsuarioActualCRM();
+            if (!user) return false;
+            const r = (user.role || user.rol || '').toLowerCase().trim();
+            return r === 'admin' || r === 'director' || r === 'administrador';
+        }
+
+        function leadPerteneceAUsuarioCRM(l, user) {
+            if (!user || !l) return false;
+            const uId = String(user.id || '').toLowerCase().trim();
+            const uEmail = String(user.email || '').toLowerCase().trim();
+            const uName = String(user.name || '').toLowerCase().trim();
+
+            const lAsesorId = String(l.asesor_id || '').toLowerCase().trim();
+            const lAgenteId = String(l.agente_id || '').toLowerCase().trim();
+            const lAsesorEmail = String(l.asesor_email || '').toLowerCase().trim();
+            const lAsesorNombre = String(l.asesor_nombre || '').toLowerCase().trim();
+
+            if (uId && (lAsesorId === uId || lAgenteId === uId)) return true;
+            if (uEmail && lAsesorEmail && lAsesorEmail === uEmail) return true;
+            if (uName && lAsesorNombre && (lAsesorNombre === uName || lAsesorNombre.includes(uName) || uName.includes(lAsesorNombre))) return true;
+
+            return false;
+        }
+
         function popularSelectAsesoresCRM() {
+            const user = getUsuarioActualCRM();
+            const esAdmin = esUsuarioAdminCRM();
+
             const selectFiltro = document.getElementById('crm-filtro-asesor');
             const selectModal = document.getElementById('crm-input-asesor');
             const asesores = (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA))
@@ -9213,10 +9254,25 @@
                     { id: 'asesor-4', nombre: 'Andrea Colmenares' }
                 ];
 
+            // Si es asesor, ocultar el filtro por asesor en la barra superior
+            const filtroWrapper = document.getElementById('crm-filtro-asesor-wrapper');
+            if (filtroWrapper) {
+                filtroWrapper.style.display = esAdmin ? 'flex' : 'none';
+            }
+
+            // Ocultar o mostrar selector de asesor en el modal
+            const modalAsesorContainer = selectModal?.parentElement;
+            if (modalAsesorContainer && !esAdmin) {
+                modalAsesorContainer.style.display = 'none';
+            } else if (modalAsesorContainer) {
+                modalAsesorContainer.style.display = 'block';
+            }
+
             if (selectFiltro) {
                 const currentVal = selectFiltro.value || 'todos';
                 selectFiltro.innerHTML = '<option value="todos">Todos los Asesores</option>';
                 asesores.forEach(a => {
+                    if (!a) return;
                     const opt = document.createElement('option');
                     opt.value = a.id;
                     opt.textContent = a.nombre;
@@ -9228,9 +9284,14 @@
             if (selectModal) {
                 selectModal.innerHTML = '';
                 asesores.forEach(a => {
+                    if (!a) return;
                     const opt = document.createElement('option');
                     opt.value = a.id;
                     opt.textContent = a.nombre;
+                    if (user && !esAdmin) {
+                        const coincide = (a.id === user.id) || (user.email && a.email && a.email.toLowerCase() === user.email.toLowerCase()) || (user.name && a.nombre && a.nombre.toLowerCase().includes(user.name.toLowerCase()));
+                        if (coincide) opt.selected = true;
+                    }
                     selectModal.appendChild(opt);
                 });
             }
@@ -9297,13 +9358,24 @@
         }
 
         function filtrarCRMEnVivo() {
+            const user = getUsuarioActualCRM();
+            const esAdmin = esUsuarioAdminCRM();
+
             const txtBusqueda = (document.getElementById('crm-filtro-busqueda')?.value || '').toLowerCase().trim();
             const fAsesor = document.getElementById('crm-filtro-asesor')?.value || 'todos';
             const fTemp = document.getElementById('crm-filtro-temperatura')?.value || 'todos';
             const fOperacion = document.getElementById('crm-filtro-operacion')?.value || 'todos';
 
             const leadsFiltrados = crmLeadsList.filter(l => {
-                if (fAsesor !== 'todos' && l.asesor_id !== fAsesor) return false;
+                // Control de Acceso por Rol:
+                // Si NO es admin, SOLO ve los clientes asignados a su cuenta
+                if (!esAdmin && user) {
+                    if (!leadPerteneceAUsuarioCRM(l, user)) return false;
+                } else if (esAdmin && fAsesor !== 'todos') {
+                    // Si es admin y filtró por un asesor específico
+                    if (l.asesor_id !== fAsesor && l.agente_id !== fAsesor) return false;
+                }
+
                 if (fTemp !== 'todos' && l.temperatura !== fTemp) return false;
                 if (fOperacion !== 'todos' && l.operacion !== fOperacion) return false;
                 if (txtBusqueda) {
@@ -10156,8 +10228,18 @@
             const requisitos = document.getElementById('crm-input-requisitos').value.trim();
             const notas = document.getElementById('crm-input-notas').value.trim();
 
+            const user = getUsuarioActualCRM();
+            const esAdmin = esUsuarioAdminCRM();
+
             const asesorSelect = document.getElementById('crm-input-asesor');
-            const asesor_nombre = asesorSelect.options[asesorSelect.selectedIndex]?.textContent || 'Asesor MAXIMUS';
+            let asesor_nombre = asesorSelect.options[asesorSelect.selectedIndex]?.textContent || 'Asesor MAXIMUS';
+
+            // Si es un asesor normal, auto-asignar siempre a su cuenta
+            if (!esAdmin && user) {
+                if (user.id) asesor_id = user.id;
+                if (user.name) asesor_nombre = user.name;
+            }
+
             const zonas_interes = zonasStr ? zonasStr.split(',').map(s => s.trim()).filter(Boolean) : ['San Cristóbal'];
 
             const payload = {
@@ -10170,6 +10252,7 @@
                 tipo_inmueble,
                 asesor_id,
                 asesor_nombre,
+                asesor_email: (!esAdmin && user && user.email) ? user.email : '',
                 presupuesto,
                 estatus,
                 zonas_interes,
