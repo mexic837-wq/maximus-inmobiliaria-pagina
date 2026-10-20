@@ -4699,21 +4699,38 @@
                             <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">Añade una capa extra de protección solicitando un código de un solo uso al iniciar sesión.</p>
                         </div>
 
-                        <!-- Switch Principal Espacioso -->
-                        <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200/80 dark:border-emerald-800 flex items-center justify-between gap-4">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-2xl shadow-sm shrink-0">
-                                    <i class="ph-fill ph-shield-check"></i>
+                        <!-- Control Principal de Estado 2FA con Botón Explícito y Switch -->
+                        <div id="perfil-2fa-status-card" class="p-5 sm:p-6 rounded-2xl border transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-5 bg-gradient-to-r from-amber-50/60 via-slate-50 to-gray-50 dark:from-amber-950/20 dark:via-slate-900/40 dark:to-gray-900/40 border-amber-200/80 dark:border-amber-900/40 shadow-xs">
+                            <div class="flex items-start sm:items-center gap-4">
+                                <div id="perfil-2fa-status-icon-box" class="w-13 h-13 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center text-2xl shadow-sm shrink-0 border border-amber-200 dark:border-amber-800">
+                                    <i id="perfil-2fa-status-icon" class="ph-fill ph-shield-warning"></i>
                                 </div>
-                                <div>
-                                    <h4 class="font-black text-sm sm:text-base text-gray-900 dark:text-white">Estado de la Verificación 2FA</h4>
-                                    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5">Exigir código OTP de 6 dígitos al iniciar sesión desde un nuevo equipo.</p>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2.5 flex-wrap">
+                                        <h4 class="font-black text-base sm:text-lg text-gray-900 dark:text-white">Estado de la Verificación 2FA</h4>
+                                        <span id="perfil-2fa-pill-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-200 border border-amber-300 dark:border-amber-800 flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-amber-500"></span> Desactivado
+                                        </span>
+                                    </div>
+                                    <p id="perfil-2fa-status-desc" class="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                        Tu cuenta actualmente sólo solicita correo y contraseña. Activa el 2FA para exigir un código OTP de 6 dígitos en cada inicio de sesión.
+                                    </p>
                                 </div>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                                <input type="checkbox" id="perfil-toggle-2fa" onchange="solicitarCambioEstado2FA(this.checked)" class="sr-only peer">
-                                <div class="w-12 h-6.5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
-                            </label>
+                            
+                            <!-- Botón Principal Explícito de Activar/Desactivar y Switch -->
+                            <div class="flex items-center gap-3 shrink-0 self-start md:self-center">
+                                <button type="button" id="btn-perfil-action-2fa" onclick="clickBtnCambiar2FA()" 
+                                        class="px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-md bg-emerald-700 hover:bg-emerald-800 text-white shadow-emerald-700/25">
+                                    <i id="btn-perfil-action-2fa-icon" class="ph-bold ph-shield-check text-base"></i>
+                                    <span id="btn-perfil-action-2fa-txt">Activar 2FA Ahora</span>
+                                </button>
+
+                                <label class="relative inline-flex items-center cursor-pointer p-1" title="Alternar estado 2FA con confirmación de código">
+                                    <input type="checkbox" id="perfil-toggle-2fa" onchange="solicitarCambioEstado2FA(this.checked)" class="sr-only peer">
+                                    <div class="w-13 h-7 bg-gray-300 dark:bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[6px] after:left-[6px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600 shadow-inner"></div>
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Métodos de entrega -->
@@ -11888,7 +11905,9 @@
                 cardLicBadge.textContent = p.licencia_inmobiliaria || 'CIV-9842';
             }
 
-            actualizarBadgeSeguridad2FA(p.two_factor_enabled);
+            const is2FA = !!(p.two_factor_enabled || localStorage.getItem('maximus_2fa_enabled_' + (p.email || 'asesor.maximus@maximus.com').toLowerCase()) === 'true');
+            if (currentUserProfile) currentUserProfile.two_factor_enabled = is2FA;
+            actualizarBadgeSeguridad2FA(is2FA);
 
             // Inputs de Identidad
             const inputNombre = document.getElementById('perfil-input-nombre');
@@ -11983,26 +12002,74 @@
                     if (content) content.classList.add('hidden');
                 }
             });
+
+            if (tabName === '2fa') {
+                const userEmail = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+                const is2FA = !!((currentUserProfile && currentUserProfile.two_factor_enabled) || localStorage.getItem('maximus_2fa_enabled_' + userEmail) === 'true');
+                actualizarBadgeSeguridad2FA(is2FA);
+            }
         }
 
         function actualizarBadgeSeguridad2FA(activo) {
+            // 1. Badge en la tarjeta izquierda del perfil
             const badge = document.getElementById('perfil-card-security-badge');
             const txt = document.getElementById('perfil-card-security-text');
-            if (!badge || !txt) return;
-
-            if (activo) {
-                badge.className = 'px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5';
-                const dot = badge.querySelector('div');
-                if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
-                txt.className = 'text-[11px] font-bold text-emerald-800 dark:text-emerald-200';
-                txt.textContent = '2FA Activo';
-            } else {
-                badge.className = 'px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 flex items-center gap-1.5';
-                const dot = badge.querySelector('div');
-                if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-500';
-                txt.className = 'text-[11px] font-bold text-amber-800 dark:text-amber-200';
-                txt.textContent = '2FA Inactivo';
+            if (badge && txt) {
+                if (activo) {
+                    badge.className = 'px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5';
+                    const dot = badge.querySelector('div');
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+                    txt.className = 'text-[11px] font-bold text-emerald-800 dark:text-emerald-200';
+                    txt.textContent = '2FA Activo';
+                } else {
+                    badge.className = 'px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 flex items-center gap-1.5';
+                    const dot = badge.querySelector('div');
+                    if (dot) dot.className = 'w-2 h-2 rounded-full bg-amber-500';
+                    txt.className = 'text-[11px] font-bold text-amber-800 dark:text-amber-200';
+                    txt.textContent = '2FA Inactivo';
+                }
             }
+
+            // 2. Control principal en la pestaña de Seguridad
+            const card = document.getElementById('perfil-2fa-status-card');
+            const iconBox = document.getElementById('perfil-2fa-status-icon-box');
+            const icon = document.getElementById('perfil-2fa-status-icon');
+            const pillBadge = document.getElementById('perfil-2fa-pill-badge');
+            const desc = document.getElementById('perfil-2fa-status-desc');
+            const btn = document.getElementById('btn-perfil-action-2fa');
+            const toggle = document.getElementById('perfil-toggle-2fa');
+
+            if (toggle) toggle.checked = !!activo;
+
+            if (card && iconBox && icon && pillBadge && desc && btn) {
+                if (activo) {
+                    card.className = 'p-5 sm:p-6 rounded-2xl border transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-5 bg-gradient-to-r from-emerald-50/80 via-teal-50/40 to-emerald-50/80 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-emerald-950/30 border-emerald-300 dark:border-emerald-800 shadow-sm';
+                    iconBox.className = 'w-13 h-13 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-2xl shadow-sm shrink-0';
+                    icon.className = 'ph-fill ph-shield-check';
+                    pillBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1.5';
+                    pillBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Activado (Protegido)';
+                    desc.textContent = 'Máxima protección activa. Se exigirá un código OTP de 6 dígitos enviado a tu correo en cada inicio de sesión desde un nuevo equipo.';
+                    
+                    btn.className = 'px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer border border-rose-300 dark:border-rose-800 bg-white dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/40 shadow-xs';
+                    btn.innerHTML = '<i class="ph-bold ph-shield-slash text-base text-rose-600 dark:text-rose-400"></i><span>Desactivar 2FA</span>';
+                } else {
+                    card.className = 'p-5 sm:p-6 rounded-2xl border transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-5 bg-gradient-to-r from-amber-50/60 via-slate-50 to-gray-50 dark:from-amber-950/20 dark:via-slate-900/40 dark:to-gray-900/40 border-amber-200/80 dark:border-amber-900/40 shadow-xs';
+                    iconBox.className = 'w-13 h-13 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center text-2xl shadow-sm shrink-0 border border-amber-200 dark:border-amber-800';
+                    icon.className = 'ph-fill ph-shield-warning';
+                    pillBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-200 border border-amber-300 dark:border-amber-800 flex items-center gap-1.5';
+                    pillBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span> Desactivado';
+                    desc.textContent = 'Tu cuenta actualmente sólo solicita correo y contraseña. Activa el 2FA para exigir un código OTP de 6 dígitos en cada inicio de sesión.';
+                    
+                    btn.className = 'px-5 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-md bg-emerald-700 hover:bg-emerald-800 text-white shadow-emerald-700/25';
+                    btn.innerHTML = '<i class="ph-bold ph-shield-check text-base"></i><span>Activar 2FA Ahora</span>';
+                }
+            }
+        }
+
+        function clickBtnCambiar2FA() {
+            const toggle = document.getElementById('perfil-toggle-2fa');
+            const estadoActual = toggle ? toggle.checked : false;
+            solicitarCambioEstado2FA(!estadoActual);
         }
 
         
