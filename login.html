@@ -482,6 +482,8 @@
             authAlert.classList.add('hidden');
         }
 
+        let timerCooldownForgot = null;
+
         async function handleForgotPassword(e) {
             if (e) e.preventDefault();
             let email = emailInput ? emailInput.value.trim() : '';
@@ -500,12 +502,31 @@
             const bannerText = document.getElementById('forgotPasswordText');
 
             if (window.AuthService && typeof window.AuthService.resetPassword === 'function') {
+                const remaining = window.AuthService.getResetPasswordCooldownRemaining ? window.AuthService.getResetPasswordCooldownRemaining(email) : 0;
+                if (remaining > 0) {
+                    const msg = `⏳ Por favor espera ${remaining}s antes de volver a solicitar la recuperación de tu clave.`;
+                    if (banner && bannerText) {
+                        bannerText.textContent = msg;
+                        banner.className = 'mb-4 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5 transition-all';
+                        banner.classList.remove('hidden');
+                    } else {
+                        showAlert(msg, 'warning');
+                    }
+                    return;
+                }
+
                 const res = await window.AuthService.resetPassword(email);
-                if (banner && bannerText) {
-                    bannerText.textContent = res.message || `Hemos enviado las instrucciones de recuperación a ${email}. Revisa tu bandeja de entrada.`;
-                    banner.classList.remove('hidden');
+                if (res.success) {
+                    const msg = res.message || `Hemos enviado las instrucciones de recuperación a ${email}. Revisa tu bandeja de entrada.`;
+                    if (banner && bannerText) {
+                        bannerText.textContent = msg;
+                        banner.className = 'mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all';
+                        banner.classList.remove('hidden');
+                    } else {
+                        showAlert(msg, 'success');
+                    }
                 } else {
-                    showAlert(res.message || `Instrucciones de recuperación enviadas a ${email}.`, 'success');
+                    showAlert(res.error || 'Error al solicitar recuperación', 'warning');
                 }
             } else if (window.N8nService) {
                 await window.N8nService.solicitarRecuperacionPassword({
@@ -515,6 +536,7 @@
                 });
                 if (banner && bannerText) {
                     bannerText.textContent = `Hemos enviado las instrucciones de recuperación de clave a ${email}.`;
+                    banner.className = 'mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all';
                     banner.classList.remove('hidden');
                 } else {
                     showAlert(`Hemos enviado las instrucciones de recuperación de clave a ${email}.`, 'success');
@@ -619,6 +641,7 @@
                 codeInput.value = '';
                 setTimeout(() => codeInput.focus(), 150);
             }
+            iniciarCooldown2FALogin(60);
         }
 
         function cancelar2FALogin() {
@@ -633,27 +656,71 @@
             }
         }
 
+        let timerCooldownLogin2FA = null;
+
+        function iniciarCooldown2FALogin(segundosIniciales = 60) {
+            const resendBtn = document.getElementById('twoFactorResendBtn');
+            if (!resendBtn) return;
+            if (timerCooldownLogin2FA) clearInterval(timerCooldownLogin2FA);
+
+            let s = segundosIniciales;
+            const updateBtn = (sec) => {
+                if (sec > 0) {
+                    resendBtn.disabled = true;
+                    resendBtn.classList.add('opacity-60', 'cursor-not-allowed');
+                    resendBtn.innerHTML = `<i class="fas fa-clock text-xs text-emerald-600"></i><span>Reenviar en ${sec}s</span>`;
+                } else {
+                    resendBtn.disabled = false;
+                    resendBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+                    resendBtn.innerHTML = '<i class="fas fa-redo text-[11px] text-emerald-600"></i><span>Reenviar Código por Correo</span>';
+                }
+            };
+
+            updateBtn(s);
+            timerCooldownLogin2FA = setInterval(() => {
+                s--;
+                if (s <= 0) {
+                    clearInterval(timerCooldownLogin2FA);
+                    timerCooldownLogin2FA = null;
+                    updateBtn(0);
+                } else {
+                    updateBtn(s);
+                }
+            }, 1000);
+        }
+
         async function reenviarCodigo2FALogin() {
             if (!pendingLoginSession || !pendingLoginSession.email) {
                 showAlert('No hay una sesión pendiente. Inicia sesión nuevamente.');
                 cancelar2FALogin();
                 return;
             }
+            const email = pendingLoginSession.email;
+            const remaining = window.PerfilService ? window.PerfilService.get2FACooldownRemaining(email) : 0;
+            if (remaining > 0) {
+                showAlert(`⏳ Por favor espera ${remaining}s antes de solicitar otro código.`, 'warning');
+                iniciarCooldown2FALogin(remaining);
+                return;
+            }
+
             const resendBtn = document.getElementById('twoFactorResendBtn');
             if (resendBtn) {
                 resendBtn.disabled = true;
                 resendBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-xs"></i> Enviando código...';
             }
             if (window.PerfilService) {
-                await window.PerfilService.enviarCodigo2FA(pendingLoginSession.email, 'email');
-                showAlert('✉️ Nuevo código de verificación enviado a ' + pendingLoginSession.email, 'success');
-            }
-            setTimeout(() => {
-                if (resendBtn) {
-                    resendBtn.disabled = false;
-                    resendBtn.innerHTML = '<i class="fas fa-redo text-[11px] text-emerald-600"></i><span>Reenviar Código por Correo</span>';
+                const res = await window.PerfilService.enviarCodigo2FA(email, 'email', true);
+                if (res.success) {
+                    showAlert('✉️ Nuevo código de verificación enviado a ' + email, 'success');
+                    iniciarCooldown2FALogin(60);
+                } else {
+                    showAlert(res.error || 'Error al enviar código', 'warning');
+                    if (resendBtn) {
+                        resendBtn.disabled = false;
+                        resendBtn.innerHTML = '<i class="fas fa-redo text-[11px] text-emerald-600"></i><span>Reenviar Código por Correo</span>';
+                    }
                 }
-            }, 3000);
+            }
         }
 
         // Listener para formulario 2FA

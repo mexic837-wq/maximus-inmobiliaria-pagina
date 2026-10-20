@@ -12295,9 +12295,14 @@
                 if (window.PerfilService) {
                     await PerfilService.enviarCodigo2FA(email, 'email');
                     mostrarToastNotificacion('✉️ Código de seguridad enviado a ' + email);
+                    iniciarCooldown2FA(email, 60);
                 }
             } else {
                 mostrarToastNotificacion('✉️ Ingresa los 6 dígitos recibidos en tu correo ' + email);
+                const remaining = window.PerfilService ? PerfilService.get2FACooldownRemaining(email) : 0;
+                if (remaining > 0) {
+                    iniciarCooldown2FA(email, remaining);
+                }
             }
         }
 
@@ -12315,28 +12320,79 @@
             pendienteAccion2FA = null;
         }
 
+        let timerCooldown2FA = null;
+
+        function iniciarCooldown2FA(email, segundosIniciales = 60) {
+            const btnModal = document.getElementById('btn-modal-reenviar-2fa');
+            const btnInline = document.getElementById('btn-reenviar-inline-2fa');
+
+            if (timerCooldown2FA) clearInterval(timerCooldown2FA);
+
+            let segundos = segundosIniciales;
+
+            const actualizarBotones = (s) => {
+                [btnModal, btnInline].forEach(b => {
+                    if (!b) return;
+                    if (s > 0) {
+                        b.disabled = true;
+                        b.classList.add('opacity-60', 'cursor-not-allowed');
+                        b.innerHTML = `<i class="ph-bold ph-clock text-emerald-600"></i><span>Reenviar en ${s}s</span>`;
+                    } else {
+                        b.disabled = false;
+                        b.classList.remove('opacity-60', 'cursor-not-allowed');
+                        b.innerHTML = `<i class="ph-bold ph-arrows-clockwise text-emerald-600"></i><span>Reenviar Código</span>`;
+                    }
+                });
+            };
+
+            actualizarBotones(segundos);
+
+            timerCooldown2FA = setInterval(() => {
+                segundos--;
+                if (segundos <= 0) {
+                    clearInterval(timerCooldown2FA);
+                    timerCooldown2FA = null;
+                    actualizarBotones(0);
+                } else {
+                    actualizarBotones(segundos);
+                }
+            }, 1000);
+        }
+
         async function reenviarCodigoModal2FA() {
             const email = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
-            const btn = document.getElementById('btn-modal-reenviar-2fa');
+            
+            const remaining = window.PerfilService ? PerfilService.get2FACooldownRemaining(email) : 0;
+            if (remaining > 0) {
+                mostrarToastNotificacion(`⏳ Espera ${remaining}s antes de reenviar otro código.`);
+                iniciarCooldown2FA(email, remaining);
+                return;
+            }
+
+            const btnModal = document.getElementById('btn-modal-reenviar-2fa');
             const btnInline = document.getElementById('btn-reenviar-inline-2fa');
-            [btn, btnInline].forEach(b => {
+            [btnModal, btnInline].forEach(b => {
                 if (b) {
                     b.disabled = true;
                     b.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin text-emerald-600"></i> Enviando...';
                 }
             });
+
             if (window.PerfilService) {
-                await PerfilService.enviarCodigo2FA(email, 'email');
-                mostrarToastNotificacion('✉️ Nuevo código enviado a ' + email);
+                const res = await PerfilService.enviarCodigo2FA(email, 'email', true);
+                if (res.success) {
+                    mostrarToastNotificacion('✉️ Nuevo código enviado a ' + email);
+                    iniciarCooldown2FA(email, 60);
+                } else {
+                    mostrarToastNotificacion(res.error || 'Error al enviar código');
+                    [btnModal, btnInline].forEach(b => {
+                        if (b) {
+                            b.disabled = false;
+                            b.innerHTML = '<i class="ph-bold ph-arrows-clockwise text-emerald-600"></i><span>Reenviar Código</span>';
+                        }
+                    });
+                }
             }
-            setTimeout(() => {
-                [btn, btnInline].forEach(b => {
-                    if (b) {
-                        b.disabled = false;
-                        b.innerHTML = '<i class="ph-bold ph-arrows-clockwise text-emerald-600"></i><span>Reenviar Código</span>';
-                    }
-                });
-            }, 3000);
         }
 
         async function ejecutarConfirmacion2FAEstado() {

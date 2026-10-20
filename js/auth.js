@@ -401,11 +401,41 @@ const AuthService = {
      * Solicitar recuperación de contraseña vía Supabase Auth y Webhook n8n.
      * @param {string} email
      */
-    async resetPassword(email) {
+    /**
+     * Obtener los segundos restantes del cooldown de recuperación de clave (60s).
+     */
+    getResetPasswordCooldownRemaining(email) {
+        const cleanEmail = (email || '').toLowerCase().trim();
+        const key = 'maximus_reset_cooldown_until_' + cleanEmail;
+        const until = parseInt(sessionStorage.getItem(key) || '0', 10);
+        const remaining = Math.ceil((until - Date.now()) / 1000);
+        return remaining > 0 ? remaining : 0;
+    },
+
+    /**
+     * Solicitar recuperación de contraseña vía Supabase Auth y Webhook n8n.
+     * Incorpora cooldown de 60 segundos para evitar saturación de envíos.
+     * @param {string} email
+     * @param {boolean} force
+     */
+    async resetPassword(email, force = false) {
         const cleanEmail = (email || '').trim().toLowerCase();
         if (!cleanEmail || !cleanEmail.includes('@')) {
             return { success: false, error: 'Por favor ingresa un correo electrónico válido.' };
         }
+
+        const remaining = this.getResetPasswordCooldownRemaining(cleanEmail);
+        if (!force && remaining > 0) {
+            return {
+                success: false,
+                cooldown: true,
+                cooldownRemaining: remaining,
+                error: `Por favor espera ${remaining}s antes de volver a solicitar la recuperación de tu clave.`
+            };
+        }
+
+        // Registrar cooldown estricto de 60 segundos
+        sessionStorage.setItem('maximus_reset_cooldown_until_' + cleanEmail, (Date.now() + 60 * 1000).toString());
 
         const tokenRecuperacion = 'REC-' + Math.floor(100000 + Math.random() * 900000);
         const payload = {

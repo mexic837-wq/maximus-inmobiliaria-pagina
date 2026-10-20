@@ -1574,15 +1574,43 @@ const PerfilService = {
     },
 
     /**
-     * Enviar código de verificación 2FA (OTP 6 dígitos) vía Correo Electrónico.
+     * Obtener los segundos restantes del cooldown de 60 segundos para 2FA.
      */
-    async enviarCodigo2FA(identifier, method = 'email') {
+    get2FACooldownRemaining(email) {
+        const cleanEmail = (email || '').toLowerCase().trim();
+        const key = 'maximus_2fa_cooldown_until_' + cleanEmail;
+        const until = parseInt(sessionStorage.getItem(key) || '0', 10);
+        const remaining = Math.ceil((until - Date.now()) / 1000);
+        return remaining > 0 ? remaining : 0;
+    },
+
+    /**
+     * Enviar código de verificación 2FA (OTP 6 dígitos) vía Correo Electrónico.
+     * Incorpora cooldown de 60 segundos para prevenir saturación de solicitudes.
+     * @param {string} identifier - Correo electrónico de destino.
+     * @param {string} method - Método de entrega ('email').
+     * @param {boolean} force - Si es true, ignora el cooldown (para emisión inicial).
+     */
+    async enviarCodigo2FA(identifier, method = 'email', force = false) {
+        const user = this._getCachedUser();
+        const emailDestino = ((method === 'email' ? identifier : user?.email) || user?.email || '').toLowerCase().trim();
+
+        const cooldownRemaining = this.get2FACooldownRemaining(emailDestino);
+        if (!force && cooldownRemaining > 0) {
+            return {
+                success: false,
+                cooldown: true,
+                cooldownRemaining,
+                error: `Por favor espera ${cooldownRemaining}s antes de solicitar otro código de seguridad.`
+            };
+        }
+
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
         sessionStorage.setItem('maximus_2fa_temp_code', otpCode);
         sessionStorage.setItem('maximus_2fa_temp_expiry', (Date.now() + 10 * 60 * 1000).toString());
 
-        const user = this._getCachedUser();
-        const emailDestino = (method === 'email' ? identifier : user?.email) || user?.email;
+        // Registrar cooldown estricto de 60 segundos
+        sessionStorage.setItem('maximus_2fa_cooldown_until_' + emailDestino, (Date.now() + 60 * 1000).toString());
 
         // Disparar Webhook para enviar el mensaje real por Correo
         if (window.N8nService) {
@@ -1598,7 +1626,7 @@ const PerfilService = {
             });
         }
 
-        return { success: true, email: emailDestino };
+        return { success: true, email: emailDestino, cooldownRemaining: 60 };
     },
 
     /**
