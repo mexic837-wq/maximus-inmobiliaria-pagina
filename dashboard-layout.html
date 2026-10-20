@@ -173,11 +173,11 @@
                 height: 0px !important;
             }
         }
-        .scrollbar-none, .hide-scrollbar, main {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+        .scrollbar-none, .hide-scrollbar, main, #sidebar, #sidebar div, #sidebar nav {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
         }
-        .scrollbar-none::-webkit-scrollbar, .hide-scrollbar::-webkit-scrollbar, main::-webkit-scrollbar {
+        .scrollbar-none::-webkit-scrollbar, .hide-scrollbar::-webkit-scrollbar, main::-webkit-scrollbar, #sidebar::-webkit-scrollbar, #sidebar div::-webkit-scrollbar, #sidebar nav::-webkit-scrollbar {
             display: none !important;
             width: 0px !important;
             height: 0px !important;
@@ -773,7 +773,7 @@
             }
             #sidebar.mobile-open { transform: translateX(0); }
             #sidebarToggleBtn { display: none !important; }
-            #sidebar nav { max-height: calc(100dvh - 120px) !important; padding: 12px 14px !important; }
+            #sidebar nav { flex: 1 1 0% !important; max-height: none !important; min-height: 0 !important; padding: 12px 14px 40px 14px !important; }
             #sidebar .sidebar-header { height: 72px !important; padding-left: 20px !important; }
             #mobileDrawerOverlay {
                 display: block; position: fixed; inset: 0; z-index: 110;
@@ -966,7 +966,7 @@
     <!-- ==========================================
          1. SIDEBAR (MENÚ LATERAL - ESTILO PRO PTECH CLARO)
          ========================================== -->
-    <aside id="sidebar" class="w-[280px] bg-white border-r border-maximus-silver/30 flex flex-col justify-between flex-shrink-0 z-50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative transition-all duration-300 ease-in-out">
+    <aside id="sidebar" class="w-[280px] bg-white dark:bg-[#0A1F1B] border-r border-maximus-silver/30 dark:border-[#14352D] flex flex-col h-full flex-shrink-0 z-50 shadow-[4px_0_24px_rgba(0,0,0,0.02)] relative transition-all duration-300 ease-in-out overflow-hidden">
         
         <!-- Botón Toggle Colapsar / Expandir (Flecha Flotante con Animación Smooth) -->
         <button id="sidebarToggleBtn" onclick="toggleSidebar()" 
@@ -975,9 +975,9 @@
             <i id="sidebarToggleIcon" class="ph-bold ph-caret-left text-xs transition-transform duration-300"></i>
         </button>
 
-        <div>
+        <div class="flex flex-col h-full min-h-0 w-full overflow-hidden">
             <!-- Logo -->
-            <div class="sidebar-header h-[90px] flex items-center px-8 pt-3 border-b border-maximus-silver/20 relative transition-all duration-300">
+            <div class="sidebar-header h-[90px] flex-shrink-0 flex items-center px-8 pt-3 border-b border-maximus-silver/20 dark:border-[#14352D] relative transition-all duration-300">
                 <span class="text-[28px] font-extrabold tracking-tight text-maximus-dark flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-maximus-dark dark:bg-[#06231D] dark:border dark:border-emerald-500/30 flex items-center justify-center text-white shadow-md shadow-maximus-dark/20 relative overflow-hidden group flex-shrink-0 cursor-pointer" onclick="toggleSidebar()" title="MAXIMUS">
                         <svg class="w-6 h-6 transition-transform group-hover:scale-105 duration-200" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1016,7 +1016,7 @@
             </div>
             
             <!-- Menú de Navegación -->
-            <nav class="p-6 space-y-2 overflow-y-auto max-h-[calc(100vh-180px)] transition-all duration-300">
+            <nav class="p-6 space-y-2 overflow-y-auto flex-1 min-h-0 pb-16 scrollbar-none transition-all duration-300">
                 <!-- Principal -->
                 <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4">Plataforma</p>
                 <div class="sidebar-collapsed-divider"></div>
@@ -1136,7 +1136,7 @@
     </aside>
 
     <!-- Contenedor Principal -->
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-hidden bg-maximus-bg dark:bg-[#071714] min-h-0">
         
         <!-- ==========================================
              2. TOP BAR (BARRA SUPERIOR)
@@ -1396,7 +1396,7 @@
         <!-- ==========================================
              3. ÁREA DE CONTENIDO (MAIN)
              ========================================== -->
-        <main class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none px-3.5 sm:px-10 pt-3 sm:pt-6 pb-24 sm:pb-6 relative z-0">
+        <main class="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none px-3.5 sm:px-10 pt-3 sm:pt-6 pb-28 sm:pb-20 relative z-0 bg-maximus-bg dark:bg-[#071714]">
             
             <!-- A. VISTA: RESUMEN (INICIO) -->
             <section id="view-resumen" class="view-section active max-w-[1400px] mx-auto space-y-3.5 sm:space-y-5">
@@ -2734,7 +2734,7 @@
             </section>
 
             <!-- G. VISTA: COTIZADOR EXPRESS (Agente) -->
-            <section id="view-cotizador" class="view-section agente-only max-w-[1400px] w-full min-w-0 mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-6 overflow-x-hidden">
+            <section id="view-cotizador" class="view-section agente-only max-w-[1400px] w-full min-w-0 mx-auto space-y-4 sm:space-y-8 pb-32 sm:pb-24 overflow-x-hidden">
                 <div class="pt-2 sm:pt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
                     <div>
                         <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Cotizador Inmobiliario Express</h2>
@@ -2751,7 +2751,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 items-start w-full min-w-0">
                     
                     <!-- Columna Izquierda: Entradas de cálculo -->
-                    <div class="lg:col-span-7 min-w-0 w-full bg-white rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-premium border border-maximus-silver/20 space-y-4 sm:space-y-6">
+                    <div class="lg:col-span-7 min-w-0 w-full bg-white dark:bg-[#0A1F1B] rounded-2xl sm:rounded-[28px] p-4 sm:p-8 shadow-premium border border-maximus-silver/20 dark:border-[#14352D] space-y-4 sm:space-y-6">
                         <h3 class="font-extrabold text-lg sm:text-xl text-maximus-dark flex items-center gap-2">
                             <i class="ph-fill ph-sliders text-maximus-accent"></i> Parámetros de la Propiedad
                         </h3>
@@ -2787,16 +2787,20 @@
                                     <i id="cotZonaCaret" class="ph ph-caret-down text-gray-400 text-sm transition-transform duration-300 shrink-0"></i>
                                 </button>
                                 
-                                <!-- Panel Desplegable (Compacto y con apertura inteligente) -->
-                                <div id="cotZonaDropdownPanel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top absolute left-0 right-0 top-[105%] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden flex flex-col">
-                                    <div class="p-2 sm:p-2.5 border-b border-gray-100 bg-gray-50/50 shrink-0">
-                                        <div class="flex items-center gap-2 bg-white border border-gray-200/80 rounded-xl px-3 py-1.5 focus-within:border-maximus-accent transition-all">
-                                            <i class="ph ph-magnifying-glass text-gray-400 text-sm"></i>
-                                            <input type="text" id="cotZonaSearch" oninput="filterCotZonas(this.value)" placeholder="Buscar zona..." class="bg-transparent w-full text-xs font-medium outline-none text-maximus-dark">
+                                <!-- Panel Desplegable (Diseño Elevado y con apertura inteligente arriba/abajo) -->
+                                <div id="cotZonaDropdownPanel" class="opacity-0 scale-95 -translate-y-2 pointer-events-none transition-all duration-300 ease-out origin-top absolute left-0 right-0 top-[105%] bg-white/95 dark:bg-[#0A1F1B]/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(11,74,63,0.18)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.6)] border border-gray-200/90 dark:border-[#14352D] z-50 overflow-hidden flex flex-col">
+                                    <div class="p-2.5 sm:p-3 border-b border-gray-100 dark:border-[#14352D] bg-gray-50/60 dark:bg-[#071714]/60 shrink-0">
+                                        <div class="flex items-center gap-2 bg-white dark:bg-[#0A1F1B] border border-gray-200/80 dark:border-[#14352D] rounded-xl px-3 py-2 focus-within:border-maximus-accent transition-all shadow-inner">
+                                            <i class="ph ph-magnifying-glass text-gray-400 text-sm shrink-0"></i>
+                                            <input type="text" id="cotZonaSearch" oninput="filterCotZonas(this.value)" placeholder="Buscar por municipio o sector..." class="bg-transparent w-full text-xs font-medium outline-none text-maximus-dark dark:text-emerald-100 placeholder:text-gray-400">
                                         </div>
                                     </div>
-                                    <div class="max-h-[175px] overflow-y-auto p-1.5 scroll-smooth" id="cotZonaList">
+                                    <div class="max-h-[260px] overflow-y-auto p-1.5 scroll-smooth divide-y divide-gray-50 dark:divide-gray-800/40" id="cotZonaList">
                                         <!-- Elementos generados por JS -->
+                                    </div>
+                                    <div class="px-3.5 py-2 border-t border-gray-100 dark:border-[#14352D] bg-gray-50/80 dark:bg-[#071714]/80 text-[11px] text-gray-400 flex justify-between items-center shrink-0">
+                                        <span class="flex items-center gap-1 font-medium"><i class="ph-bold ph-map-pin text-maximus-accent"></i> Sectores del Táchira</span>
+                                        <span id="cotZonaCountTag" class="text-maximus-accent font-bold text-[10px] bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/20"></span>
                                     </div>
                                 </div>
                             </div>
@@ -7062,18 +7066,32 @@
                     caret.classList.add('text-gray-400');
                 }
             } else {
-                // Comprobar si cabe debajo o si se posiciona hacia arriba para no cortarse
+                // Cálculo inteligente de espacio para abrir hacia arriba o hacia abajo
                 if (wrapper && panel) {
                     const rect = wrapper.getBoundingClientRect();
                     const spaceBelow = window.innerHeight - rect.bottom;
-                    if (spaceBelow < 250) {
+                    const spaceAbove = rect.top;
+                    const listContainer = document.getElementById('cotZonaList');
+                    
+                    // Si el espacio inferior es reducido (< 320px) y hay buen espacio arriba, abrir hacia arriba para no cortar ni tapar
+                    const abrirHaciaArriba = spaceBelow < 320 && spaceAbove > spaceBelow;
+                    
+                    if (abrirHaciaArriba) {
                         panel.style.top = 'auto';
                         panel.style.bottom = 'calc(100% + 8px)';
                         panel.style.transformOrigin = 'bottom';
+                        if (listContainer) {
+                            const maxH = Math.min(260, Math.max(160, spaceAbove - 130));
+                            listContainer.style.maxHeight = maxH + 'px';
+                        }
                     } else {
                         panel.style.bottom = 'auto';
                         panel.style.top = 'calc(100% + 8px)';
                         panel.style.transformOrigin = 'top';
+                        if (listContainer) {
+                            const maxH = Math.min(260, Math.max(160, spaceBelow - 110));
+                            listContainer.style.maxHeight = maxH + 'px';
+                        }
                     }
                 }
 
@@ -7120,10 +7138,12 @@
 
         function poblarSelectZonas(filter = '') {
             const listContainer = document.getElementById('cotZonaList');
+            const countTag = document.getElementById('cotZonaCountTag');
             if (!listContainer) return;
             
             let html = '';
             const filterLower = filter.toLowerCase();
+            let countVisible = 0;
 
             listaZonasCotizador.forEach((zona, idx) => {
                 if (idx === 0 && !cotZonaSeleccionadaId) {
@@ -7133,25 +7153,33 @@
 
                 const textoVisible = `${zona.nombre} (${zona.municipio})`;
                 if (filter && !textoVisible.toLowerCase().includes(filterLower)) return;
+                countVisible++;
 
                 const isActive = zona.id === cotZonaSeleccionadaId;
                 const activeClasses = isActive 
-                    ? 'bg-emerald-50 text-maximus-dark font-bold' 
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-maximus-dark font-medium';
+                    ? 'bg-emerald-50 dark:bg-emerald-900/30 text-maximus-dark dark:text-emerald-300 font-bold' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#123028] hover:text-maximus-dark dark:hover:text-white font-medium';
 
                 html += `
                     <button type="button" onclick="seleccionarCotZona('${zona.id}')" 
-                        class="w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-colors ${activeClasses}">
+                        class="w-full text-left px-3 py-2.5 rounded-xl text-xs flex items-center justify-between transition-colors ${activeClasses}">
                         <span class="truncate pr-2">${textoVisible}</span>
                         <div class="flex items-center gap-1.5 shrink-0">
-                            <span class="text-[11px] font-bold ${isActive ? 'text-maximus-accent' : 'text-gray-400'}">$${zona.precio_m2_base}/m²</span>
+                            <span class="text-[11px] font-bold ${isActive ? 'text-maximus-accent' : 'text-gray-400 dark:text-gray-400'}">$${zona.precio_m2_base}/m²</span>
                             ${isActive ? '<i class="ph-bold ph-check text-maximus-accent text-xs"></i>' : ''}
                         </div>
                     </button>
                 `;
             });
 
+            if (countVisible === 0) {
+                html = `<div class="p-4 text-center text-xs text-gray-400">No se encontraron zonas coincidentes</div>`;
+            }
+
             listContainer.innerHTML = html;
+            if (countTag) {
+                countTag.textContent = `${countVisible} de ${listaZonasCotizador.length}`;
+            }
         }
 
         function setM2Rapido(m2) {
@@ -7203,7 +7231,7 @@
 
             // Actualizar etiqueta del valor base
             const valorTag = document.getElementById('cot-valor-base-tag');
-            if (valorTag) valorTag.textContent = `$${zona.precio_m2_base} / m²`;
+            if (valorTag) valorTag.textContent = `$$${zona.precio_m2_base} / m²`;
 
             // Calcular con servicio
             const resultado = CotizadorService.calcular({
@@ -7275,7 +7303,7 @@
                     <td class="px-8 py-4 text-sm text-gray-500 font-semibold">${zona.municipio}</td>
                     <td class="px-8 py-4">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-maximus-dark font-black text-sm">
-                            $${zona.precio_m2_base} <span class="text-[10px] text-gray-400 font-normal">USD/m²</span>
+                            $$${zona.precio_m2_base} <span class="text-[10px] text-gray-400 font-normal">USD/m²</span>
                         </span>
                     </td>
                     <td class="px-8 py-4 text-xs font-bold text-gray-400">
