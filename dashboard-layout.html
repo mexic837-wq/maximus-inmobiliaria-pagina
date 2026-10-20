@@ -4711,7 +4711,7 @@
                                 </div>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                                <input type="checkbox" id="perfil-toggle-2fa" onchange="toggle2FAEstado(this.checked)" class="sr-only peer">
+                                <input type="checkbox" id="perfil-toggle-2fa" onchange="solicitarCambioEstado2FA(this.checked)" class="sr-only peer">
                                 <div class="w-12 h-6.5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                             </label>
                         </div>
@@ -12005,6 +12005,146 @@
             }
         }
 
+        
+        let pendienteAccion2FA = null;
+
+        async function solicitarCambioEstado2FA(checkedDeseado) {
+            const toggle = document.getElementById('perfil-toggle-2fa');
+            const email = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+
+            // Revertir temporalmente el toggle visual hasta que el usuario ingrese el código OTP
+            if (toggle) toggle.checked = !checkedDeseado;
+
+            pendienteAccion2FA = checkedDeseado ? 'activar' : 'desactivar';
+
+            const modal = document.getElementById('modalConfirmar2FAEstado');
+            const iconBox = document.getElementById('modal-2fa-icon-box');
+            const icon = document.getElementById('modal-2fa-icon');
+            const badge = document.getElementById('modal-2fa-badge');
+            const titulo = document.getElementById('modal-2fa-titulo');
+            const desc = document.getElementById('modal-2fa-descripcion');
+            const btnTxt = document.getElementById('btn-modal-confirmar-2fa-txt');
+            const btn = document.getElementById('btn-modal-confirmar-2fa');
+            const emailDisp = document.getElementById('modal-2fa-email-display');
+            const inputCod = document.getElementById('modal-2fa-input-codigo');
+            const feedback = document.getElementById('modal-2fa-feedback');
+
+            if (feedback) feedback.classList.add('hidden');
+            if (inputCod) {
+                inputCod.value = '';
+                setTimeout(() => inputCod.focus(), 200);
+            }
+            if (emailDisp) emailDisp.textContent = email;
+
+            if (checkedDeseado) {
+                iconBox.className = 'w-14 h-14 mx-auto rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-2xl shadow-sm border border-emerald-200 dark:border-emerald-800';
+                icon.className = 'ph-fill ph-shield-check text-emerald-600';
+                badge.className = 'inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
+                badge.textContent = 'Seguridad Reforzada';
+                titulo.textContent = 'Activar Verificación en Dos Pasos (2FA)';
+                desc.textContent = 'Por tu seguridad, hemos enviado un código OTP de 6 dígitos a tu correo electrónico. Ingrésalo a continuación para habilitar la protección 2FA en tu cuenta:';
+                btnTxt.textContent = 'Confirmar y Activar 2FA';
+                btn.className = 'w-full py-3.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-700/25 transition flex items-center justify-center gap-2 cursor-pointer';
+            } else {
+                iconBox.className = 'w-14 h-14 mx-auto rounded-2xl bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 flex items-center justify-center text-2xl shadow-sm border border-red-200 dark:border-red-800';
+                icon.className = 'ph-fill ph-warning-octagon text-red-600';
+                badge.className = 'inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-red-100 text-red-800 border border-red-200';
+                badge.textContent = 'Alerta de Seguridad';
+                titulo.textContent = 'Desactivar Verificación en Dos Pasos (2FA)';
+                desc.textContent = '⚠️ Desactivar la verificación 2FA reduce la seguridad de tu cuenta. Para confirmar tu identidad como titular, ingresa los 6 dígitos enviados a tu correo:';
+                btnTxt.textContent = 'Confirmar y Desactivar 2FA';
+                btn.className = 'w-full py-3.5 px-6 rounded-xl bg-red-700 hover:bg-red-800 text-white font-bold text-sm tracking-wide shadow-md shadow-red-700/25 transition flex items-center justify-center gap-2 cursor-pointer';
+            }
+
+            if (window.PerfilService) {
+                await PerfilService.enviarCodigo2FA(email, 'email');
+                mostrarToastNotificacion('✉️ Código de seguridad enviado a ' + email);
+            }
+
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function cerrarModal2FAEstado() {
+            const modal = document.getElementById('modalConfirmar2FAEstado');
+            if (modal) modal.classList.add('hidden');
+            pendienteAccion2FA = null;
+        }
+
+        async function reenviarCodigoModal2FA() {
+            const email = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+            const btn = document.getElementById('btn-modal-reenviar-2fa');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin text-emerald-600"></i> Enviando código...';
+            }
+            if (window.PerfilService) {
+                await PerfilService.enviarCodigo2FA(email, 'email');
+                mostrarToastNotificacion('✉️ Nuevo código enviado a ' + email);
+            }
+            setTimeout(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph-bold ph-arrows-clockwise text-emerald-600"></i><span>Reenviar Código por Correo</span>';
+                }
+            }, 3000);
+        }
+
+        async function ejecutarConfirmacion2FAEstado() {
+            const cod = document.getElementById('modal-2fa-input-codigo')?.value.trim();
+            const feedback = document.getElementById('modal-2fa-feedback');
+            const email = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
+            const userName = document.getElementById('perfil-input-nombre')?.value.trim() || currentUserProfile?.name || 'Asesor MAXIMUS';
+
+            if (!cod || cod.length !== 6) {
+                if (feedback) {
+                    feedback.classList.remove('hidden');
+                    feedback.className = 'text-xs font-bold text-red-600 dark:text-red-400 mt-2 block';
+                    feedback.textContent = '⚠️ Ingresa los 6 dígitos del código recibido en tu correo.';
+                }
+                return;
+            }
+
+            if (window.PerfilService) {
+                const res = PerfilService.verificarCodigo2FA(cod);
+                if (!res.success) {
+                    if (feedback) {
+                        feedback.classList.remove('hidden');
+                        feedback.className = 'text-xs font-bold text-red-600 dark:text-red-400 mt-2 block';
+                        feedback.textContent = res.error || 'Código incorrecto o expirado.';
+                    }
+                    return;
+                }
+
+                const toggle = document.getElementById('perfil-toggle-2fa');
+                const esActivacion = pendienteAccion2FA === 'activar';
+
+                if (toggle) toggle.checked = esActivacion;
+                actualizarBadgeSeguridad2FA(esActivacion);
+
+                localStorage.setItem('maximus_2fa_enabled_' + email, esActivacion ? 'true' : 'false');
+                if (currentUserProfile) currentUserProfile.two_factor_enabled = esActivacion;
+
+                if (window.N8nService) {
+                    N8nService.trigger('AUTH_2FA_CAMBIO_ESTADO', {
+                        email: email,
+                        nombre: userName,
+                        estado: esActivacion ? 'activado' : 'desactivado',
+                        ip: 'Sesión Segura Navegador Web',
+                        dispositivo: typeof navigator !== 'undefined' ? navigator.userAgent : 'Navegador Web',
+                        timestamp: new Date().toLocaleString('es-VE')
+                    });
+                }
+
+                cerrarModal2FAEstado();
+
+                if (esActivacion) {
+                    mostrarToastNotificacion('🛡️ ¡Verificación en Dos Pasos activada con éxito!');
+                } else {
+                    mostrarToastNotificacion('⚠️ Verificación en Dos Pasos desactivada. Notificación de seguridad enviada.');
+                }
+            }
+        }
+
         function toggle2FAEstado(checked) {
             actualizarBadgeSeguridad2FA(checked);
             const userEmail = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
@@ -13196,5 +13336,54 @@
             mq.addEventListener('change', () => toggleMobileDrawer(false));
         })();
     </script>
+
+    <!-- MODAL CONFIRMAR ACTIVACIÓN / DESACTIVACIÓN 2FA -->
+    <div id="modalConfirmar2FAEstado" class="hidden fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <button type="button" onclick="cerrarModal2FAEstado()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-xl transition">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+
+            <div class="text-center space-y-2">
+                <div id="modal-2fa-icon-box" class="w-14 h-14 mx-auto rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl shadow-sm border border-emerald-200">
+                    <i id="modal-2fa-icon" class="ph-fill ph-shield-check"></i>
+                </div>
+                <span id="modal-2fa-badge" class="inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Confirmación de Seguridad
+                </span>
+                <h3 id="modal-2fa-titulo" class="font-black text-xl text-gray-900 dark:text-white">
+                    Activar Verificación en Dos Pasos
+                </h3>
+                <p id="modal-2fa-descripcion" class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                    Hemos enviado un código OTP de 6 dígitos a tu correo electrónico registrado. Ingrésalo a continuación para confirmar la acción:
+                </p>
+                <p id="modal-2fa-email-display" class="font-bold text-xs text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 py-1 px-3 rounded-lg inline-block border border-emerald-200 dark:border-emerald-800"></p>
+            </div>
+
+            <div class="space-y-3">
+                <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 text-center">Código de Seguridad (6 Dígitos)</label>
+                <input type="text" id="modal-2fa-input-codigo" maxlength="6" autofocus placeholder="••••••"
+                       class="w-full py-3 px-4 rounded-xl border-2 border-emerald-500 bg-gray-50 dark:bg-[#0A1F1B] text-center font-mono font-black text-2xl tracking-[0.5em] text-gray-900 dark:text-white outline-none focus:ring-4 focus:ring-emerald-500/20">
+                <p class="text-[11px] text-gray-400 text-center flex items-center justify-center gap-1">
+                    <i class="ph-bold ph-clock text-emerald-600"></i> Código válido por 10 minutos
+                </p>
+                <div id="modal-2fa-feedback" class="text-xs font-bold text-center hidden"></div>
+            </div>
+
+            <div class="space-y-2 pt-1">
+                <button type="button" id="btn-modal-confirmar-2fa" onclick="ejecutarConfirmacion2FAEstado()"
+                        class="w-full py-3.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-700/25 transition flex items-center justify-center gap-2 cursor-pointer">
+                    <span id="btn-modal-confirmar-2fa-txt">Confirmar y Activar 2FA</span>
+                    <i class="ph-bold ph-check-circle"></i>
+                </button>
+
+                <button type="button" onclick="reenviarCodigoModal2FA()" id="btn-modal-reenviar-2fa"
+                        class="w-full py-2 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-emerald-950/40 text-gray-700 dark:text-emerald-300 font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i class="ph-bold ph-arrows-clockwise text-emerald-600"></i>
+                    <span>Reenviar Código por Correo</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
