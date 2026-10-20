@@ -12118,7 +12118,7 @@
                 badge.className = 'inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200';
                 badge.textContent = 'Seguridad Reforzada';
                 titulo.textContent = 'Activar Verificación en Dos Pasos (2FA)';
-                desc.textContent = 'Por tu seguridad, hemos enviado un código OTP de 6 dígitos a tu correo electrónico. Ingrésalo a continuación para habilitar la protección 2FA en tu cuenta:';
+                desc.textContent = 'Hemos enviado un código OTP de 6 dígitos a tu correo electrónico. Ingrésalo a continuación para habilitar la protección 2FA en tu cuenta:';
                 btnTxt.textContent = 'Confirmar y Activar 2FA';
                 btn.className = 'w-full py-3.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-700/25 transition flex items-center justify-center gap-2 cursor-pointer';
             } else {
@@ -12132,12 +12132,22 @@
                 btn.className = 'w-full py-3.5 px-6 rounded-xl bg-red-700 hover:bg-red-800 text-white font-bold text-sm tracking-wide shadow-md shadow-red-700/25 transition flex items-center justify-center gap-2 cursor-pointer';
             }
 
-            if (window.PerfilService) {
-                await PerfilService.enviarCodigo2FA(email, 'email');
-                mostrarToastNotificacion('✉️ Código de seguridad enviado a ' + email);
-            }
-
+            // ABRIR EL MODAL INMEDIATAMENTE para que el usuario vea al instante el recuadro para ingresar el código
             if (modal) modal.classList.remove('hidden');
+
+            // Si ya hay un código OTP activo emitido en los últimos 10 minutos (como el que acaba de recibir el usuario), reutilizarlo para que no tenga que esperar otro
+            const storedCode = sessionStorage.getItem('maximus_2fa_temp_code');
+            const expiry = parseInt(sessionStorage.getItem('maximus_2fa_temp_expiry') || '0', 10);
+            const tieneCodigoValido = storedCode && Date.now() < expiry;
+
+            if (!tieneCodigoValido) {
+                if (window.PerfilService) {
+                    await PerfilService.enviarCodigo2FA(email, 'email');
+                    mostrarToastNotificacion('✉️ Código de seguridad enviado a ' + email);
+                }
+            } else {
+                mostrarToastNotificacion('✉️ Ingresa los 6 dígitos recibidos en tu correo ' + email);
+            }
         }
 
         function cerrarModal2FAEstado() {
@@ -13438,7 +13448,9 @@
 
             <div class="space-y-3">
                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-500 text-center">Código de Seguridad (6 Dígitos)</label>
-                <input type="text" id="modal-2fa-input-codigo" maxlength="6" autofocus placeholder="••••••"
+                <input type="text" id="modal-2fa-input-codigo" maxlength="6" autofocus placeholder="••••••" inputmode="numeric" pattern="[0-9]*"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 6) setTimeout(ejecutarConfirmacion2FAEstado, 250);"
+                       onkeyup="if(event.key === 'Enter') ejecutarConfirmacion2FAEstado();"
                        class="w-full py-3 px-4 rounded-xl border-2 border-emerald-500 bg-gray-50 dark:bg-[#0A1F1B] text-center font-mono font-black text-2xl tracking-[0.5em] text-gray-900 dark:text-white outline-none focus:ring-4 focus:ring-emerald-500/20">
                 <p class="text-[11px] text-gray-400 text-center flex items-center justify-center gap-1">
                     <i class="ph-bold ph-clock text-emerald-600"></i> Código válido por 10 minutos
