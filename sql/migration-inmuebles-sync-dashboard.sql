@@ -246,7 +246,7 @@ ON CONFLICT (id) DO UPDATE SET
 -- Asegurar que las 6 captaciones canónicas de MAXIMUS tengan is_maximus = true
 UPDATE public.inmuebles 
 SET is_maximus = true 
-WHERE id IN ('inm-001', 'inm-002', 'inm-003', 'inm-004', 'inm-005', 'inm-006')
+WHERE id::text IN ('inm-001', 'inm-002', 'inm-003', 'inm-004', 'inm-005', 'inm-006')
    OR codigo IN ('MAX-001', 'MAX-002', 'MAX-003', 'MAX-004', 'MAX-005', 'MAX-006');
 
 -- 4. Notificar a PostgREST
