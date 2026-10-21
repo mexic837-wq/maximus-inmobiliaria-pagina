@@ -1230,7 +1230,8 @@ const MOCK_DATA = {
 };
 
 // Detalle enriquecido completo de inmuebles (sincronizado con Dashboard y Ficha VIP)
-const INMUEBLES_DETALLE_DATA = {
+(function() {
+    const rawDetalleData = {
     'inm-1': {
         id: 'inm-1',
         codigo: '#MAX-101',
@@ -1548,21 +1549,29 @@ const INMUEBLES_DETALLE_DATA = {
 };
 
 // Aliases para soportar tanto 'inm-1' como 'inm-001'
-['inm-1', 'inm-2', 'inm-3', 'inm-4', 'inm-5', 'inm-6'].forEach(k => {
-    const num = k.replace('inm-', '');
-    const alias = `inm-00${num}`;
-    if (INMUEBLES_DETALLE_DATA[k]) {
-        INMUEBLES_DETALLE_DATA[alias] = { ...INMUEBLES_DETALLE_DATA[k], id: alias };
+    ['inm-1', 'inm-2', 'inm-3', 'inm-4', 'inm-5', 'inm-6'].forEach(k => {
+        const num = k.replace('inm-', '');
+        const alias = `inm-00${num}`;
+        if (rawDetalleData[k]) {
+            rawDetalleData[alias] = { ...rawDetalleData[k], id: alias };
+        }
+    });
+
+    MOCK_DATA.inmuebles_detalle = rawDetalleData;
+
+    // Exportar a nivel de window y CommonJS
+    if (typeof window !== 'undefined') {
+        window.INMUEBLES_DETALLE_DATA = rawDetalleData;
     }
-});
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports.INMUEBLES_DETALLE_DATA = rawDetalleData;
+    }
+})();
 
-MOCK_DATA.inmuebles_detalle = INMUEBLES_DETALLE_DATA;
-
-// Exportar
+// Exportar MOCK_DATA principal
 if (typeof window !== 'undefined') {
     window.MOCK_DATA = MOCK_DATA;
-    window.INMUEBLES_DETALLE_DATA = INMUEBLES_DETALLE_DATA;
 }
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { MOCK_DATA, INMUEBLES_DETALLE_DATA };
+    module.exports.MOCK_DATA = MOCK_DATA;
 }
