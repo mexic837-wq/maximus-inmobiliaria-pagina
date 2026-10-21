@@ -3116,5 +3116,6 @@ if (typeof window !== 'undefined') {
     window.NotificacionService = NotificacionService;
     window.MaterialInformativoService = MaterialInformativoService;
     window.UsuarioAdminService = UsuarioAdminService;
+    window.ResenasService = ResenasService;
 }
 

@@ -641,68 +641,38 @@
         </div>
     </section>
 
-    <!-- Testimonios -->
-    <section class="py-24 bg-white overflow-hidden relative">
+        <!-- Testimonios / Reseñas de Clientes (Sincronizado con Supabase y Marquee Continuo) -->
+    <section id="testimonios" class="py-24 bg-white overflow-hidden relative">
         <!-- Marca de Agua Difuminada MAXIMUS Testimonios -->
         <div class="absolute -right-24 -top-10 w-[360px] md:w-[480px] h-[360px] md:h-[480px] pointer-events-none select-none opacity-[0.032] rotate-12 z-0">
             <img src="assest/maximus-logo-icon.svg" alt="" class="w-full h-full object-contain" />
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-maximus-dark mb-4">Lo que dicen nuestros clientes</h2>
+            <div class="text-center mb-12">
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-extrabold uppercase tracking-widest border border-emerald-200 mb-3 shadow-2xs">
+                    <i class="fas fa-star text-amber-400"></i> Opiniones Verificadas
+                </span>
+                <h2 class="text-3xl md:text-5xl font-bold text-maximus-dark mb-3">Lo que dicen nuestros clientes</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto text-sm sm:text-base">Experiencias reales de compradores, vendedores e inversionistas que confiaron en la red MAXIMUS.</p>
             </div>
             
-            <div class="testimonios-track no-scrollbar flex flex-wrap md:flex-nowrap gap-6 justify-center">
-                <div class="bg-gray-50 p-5 sm:p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
-                    <i class="fas fa-quote-right absolute top-5 sm:top-6 right-5 sm:right-8 text-2xl sm:text-4xl text-gray-200"></i>
-                    <div class="text-yellow-400 text-sm mb-4">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-gray-600 mb-6 italic">"Excelente servicio. Me ayudaron a vender mi casa en menos de un mes y al precio que esperaba. Todo el proceso fue muy transparente."</p>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 rounded-full bg-gray-300 overflow-hidden mr-4">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cliente" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-maximus-dark">Roberto Suárez</h4>
-                            <p class="text-xs text-gray-500">Vendedor</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Carrusel Marquee de Reseñas 100% Seamless -->
+            <div class="marquee-wrapper relative flex overflow-hidden w-full select-none py-4">
+                <!-- Sombras difuminadas en los extremos para efecto infinito suave -->
+                <div class="pointer-events-none absolute inset-y-0 left-0 w-20 md:w-36 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
+                <div class="pointer-events-none absolute inset-y-0 right-0 w-20 md:w-36 bg-gradient-to-l from-white via-white/80 to-transparent z-10"></div>
                 
-                <div class="bg-gray-50 p-5 sm:p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
-                    <i class="fas fa-quote-right absolute top-5 sm:top-6 right-5 sm:right-8 text-2xl sm:text-4xl text-gray-200"></i>
-                    <div class="text-yellow-400 text-sm mb-4">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-gray-600 mb-6 italic">"Comprar mi primer apartamento con MAXIMUS fue la mejor decisión. La paciencia y profesionalismo del equipo legal me dio mucha seguridad."</p>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 rounded-full bg-gray-300 overflow-hidden mr-4">
-                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cliente" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-maximus-dark">Andrea Gómez</h4>
-                            <p class="text-xs text-gray-500">Compradora</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-gray-50 p-5 sm:p-8 rounded-3xl w-full md:w-1/3 border border-gray-100 relative">
-                    <i class="fas fa-quote-right absolute top-5 sm:top-6 right-5 sm:right-8 text-2xl sm:text-4xl text-gray-200"></i>
-                    <div class="text-yellow-400 text-sm mb-4">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    </div>
-                    <p class="text-gray-600 mb-6 italic">"Llevo años invirtiendo en bienes raíces y el nivel de propiedades exclusivas que maneja MAXIMUS es incomparable en la ciudad."</p>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 rounded-full bg-gray-300 overflow-hidden mr-4">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Cliente" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-maximus-dark">Luis Castillo</h4>
-                            <p class="text-xs text-gray-500">Inversor</p>
-                        </div>
-                    </div>
-                </div>
+                <!-- Grupo 1 (Dinámico Supabase) -->
+                <div id="marquee-resenas-1" class="marquee-group flex gap-6 items-stretch"></div>
+                <!-- Grupo 2 (Duplicado para animación continua sin salto) -->
+                <div id="marquee-resenas-2" class="marquee-group flex gap-6 items-stretch" aria-hidden="true"></div>
+            </div>
+
+            <div class="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="/login" class="inline-flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 px-6 py-3 rounded-xl border border-emerald-300 transition-all shadow-2xs hover:scale-105 active:scale-95">
+                    <i class="fas fa-star text-amber-500"></i>
+                    <span>¿Eres cliente? Sube tu reseña desde tu cuenta</span>
+                </a>
             </div>
         </div>
     </section>

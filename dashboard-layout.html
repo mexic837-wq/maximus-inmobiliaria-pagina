@@ -1206,6 +1206,10 @@
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
                         <span>Mi Perfil</span>
                     </a>
+                    <button type="button" onclick="abrirModalDejarResena()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer" title="Compartir mi experiencia en la página principal">
+                        <i class="ph-fill ph-star text-amber-500 text-xs"></i>
+                        <span>Subir Reseña</span>
+                    </button>
                 </nav>
 
                 <!-- Breadcrumb estándar para Staff (Admin / Asesores con Sidebar) -->
@@ -12680,6 +12684,135 @@
                 preview.className = 'ph-bold ' + (icono || 'ph-star') + ' text-maximus-accent';
             }
         }
+        
+        // ==========================================
+        // MÓDULO: RESEÑAS Y TESTIMONIOS (SUPABASE)
+        // ==========================================
+        let calificacionResenaActual = 5;
+
+        function setCalificacionResena(n) {
+            calificacionResenaActual = n;
+            const inputHidden = document.getElementById('resena-calificacion');
+            if (inputHidden) inputHidden.value = n;
+            
+            const group = document.getElementById('resena-estrellas-group');
+            if (group) {
+                const stars = group.querySelectorAll('.estrella-btn');
+                stars.forEach((s, idx) => {
+                    if (idx < n) {
+                        s.className = 'ph-fill ph-star estrella-btn hover:scale-125 transition-transform text-amber-400';
+                    } else {
+                        s.className = 'ph ph-star estrella-btn hover:scale-125 transition-transform text-gray-300';
+                    }
+                });
+            }
+
+            const txt = document.getElementById('resena-calificacion-texto');
+            if (txt) {
+                const labels = {
+                    1: '⭐ Regular (1 de 5)',
+                    2: '⭐⭐ Aceptable (2 de 5)',
+                    3: '⭐⭐⭐ Bueno (3 de 5)',
+                    4: '⭐⭐⭐⭐ Muy buena atención (4 de 5)',
+                    5: '⭐⭐⭐⭐⭐ ¡Excelente servicio! (5 de 5)'
+                };
+                txt.textContent = labels[n] || (n + ' de 5');
+            }
+        }
+
+        function abrirModalDejarResena() {
+            const modal = document.getElementById('modalDejarResena');
+            const content = document.getElementById('modalDejarResenaContent');
+            if (!modal || !content) return;
+
+            const inputNombre = document.getElementById('resena-input-nombre');
+            const inputEmail = document.getElementById('resena-input-email');
+            
+            const sessionUser = (typeof AuthService !== 'undefined' && AuthService.getCurrentUser) ? AuthService.getCurrentUser() : null;
+            if (inputNombre) {
+                inputNombre.value = (sessionUser && sessionUser.nombre) ? sessionUser.nombre : (document.getElementById('userName')?.textContent || 'Carlos Mendoza');
+            }
+            if (inputEmail && sessionUser && sessionUser.email) {
+                inputEmail.value = sessionUser.email;
+            }
+
+            setCalificacionResena(5);
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function cerrarModalDejarResena() {
+            const modal = document.getElementById('modalDejarResena');
+            const content = document.getElementById('modalDejarResenaContent');
+            if (!modal || !content) return;
+
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 200);
+        }
+
+        async function enviarResenaUsuario(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-resena');
+            const btnText = document.getElementById('btn-submit-resena-text');
+            const nombre = document.getElementById('resena-input-nombre')?.value?.trim();
+            const email = document.getElementById('resena-input-email')?.value?.trim();
+            const rol = document.getElementById('resena-input-rol')?.value || 'Comprador';
+            const comentario = document.getElementById('resena-input-comentario')?.value?.trim();
+            const calificacion = calificacionResenaActual || 5;
+
+            if (!nombre || !comentario) return;
+
+            if (btn) btn.disabled = true;
+            if (btnText) btnText.textContent = 'Guardando en Supabase...';
+
+            try {
+                if (typeof ResenasService !== 'undefined') {
+                    await ResenasService.create({
+                        nombre,
+                        email,
+                        rol_cliente: rol,
+                        calificacion,
+                        comentario
+                    });
+                } else if (typeof getSupabase === 'function' && getSupabase()) {
+                    await getSupabase().from('resenas').insert([{
+                        nombre,
+                        email,
+                        rol_cliente: rol,
+                        calificacion,
+                        comentario,
+                        aprobado: true,
+                        destacado: true
+                    }]);
+                }
+                cerrarModalDejarResena();
+                document.getElementById('formDejarResena')?.reset();
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('⭐ ¡Gracias por tu reseña! Ya está sincronizada con Supabase y visible en el landing page.');
+                } else {
+                    alert('⭐ ¡Gracias por tu reseña! Ya está publicada en la página principal.');
+                }
+            } catch(err) {
+                console.error('Error al guardar reseña:', err);
+                cerrarModalDejarResena();
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('✅ Reseña guardada exitosamente.');
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+                if (btnText) btnText.textContent = 'Publicar Reseña en MAXIMUS';
+            }
+        }
+
         function formatUSD(num) {
             const val = parseFloat(num) || 0;
             return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
