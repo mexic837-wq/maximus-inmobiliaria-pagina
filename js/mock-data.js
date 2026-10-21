@@ -1229,10 +1229,340 @@ const MOCK_DATA = {
     material_informativo: []
 };
 
+// Detalle enriquecido completo de inmuebles (sincronizado con Dashboard y Ficha VIP)
+const INMUEBLES_DETALLE_DATA = {
+    'inm-1': {
+        id: 'inm-1',
+        codigo: '#MAX-101',
+        titulo: 'Quinta moderna con piscina y jardín',
+        subtitulo: 'Exclusiva residencia en urbanismo cerrado con acabados de primera y máxima privacidad',
+        tipo: 'Casa / Quinta',
+        badgeTipo: 'CASA',
+        operacion: 'VENTA',
+        isMaximus: true,
+        precio: '$270.000',
+        moneda: 'USD',
+        precioM2: '$771 USD / m²',
+        comision: '50/50',
+        ubicacion: 'Urbanización Guaparo, San Cristóbal, Táchira',
+        sectorNombre: 'Urbanización Guaparo',
+        sectorDesc: 'Ubicada en una de las zonas residenciales más consolidadas y cotizadas de San Cristóbal, con acceso controlado y cercanía a centros educativos y comerciales.',
+        habitaciones: '4',
+        banos: '3',
+        m2: '350 m²',
+        estacionamientos: '3 Puestos',
+        fotos: [
+            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85',
+            'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1000&q=80',
+            'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1000&q=80',
+            'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1000&q=80'
+        ],
+        asesor: {
+            nombre: 'José Guerrero',
+            cargo: 'Director & Captador Principal MAXIMUS',
+            telefono: '+58 424-7835697',
+            avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
+            rating: '5.0 (28 Cierres)',
+            experiencia: '4 años en la red'
+        },
+        aspectosDestacados: [
+            { icono: 'ph-waves', titulo: 'Piscina Privada Climatizada', desc: 'Área de piscina moderna con iluminación LED nocturna, cascada decorativa y solárium antiresbalante.' },
+            { icono: 'ph-lightning', titulo: 'Autonomía Energética 100%', desc: 'Planta eléctrica automática de alta capacidad que respalda todos los electrodomésticos y aires.' },
+            { icono: 'ph-drop', titulo: 'Tanque Subterráneo de 18.000 L', desc: 'Sistema hidroneumático de presión constante con filtrado de agua para toda la propiedad.' },
+            { icono: 'ph-shield-check', titulo: 'Seguridad Integral 24/7', desc: 'Urbanismo privado con control de acceso automatizado, cerco perimetral y cámaras de vigilancia.' }
+        ],
+        descripcion: `Esta imponente quinta contemporánea representa la cúspide del confort y la distinción en la Urbanización Guaparo, San Cristóbal.\n\nConstruida sobre una sólida estructura y diseñada con concepto abierto, la planta baja integra una amplia sala con techos de doble altura, ventanales panorámicos con vista al jardín y un elegante comedor. La cocina de manufactura italiana cuenta con isla central de gran formato, topes de cuarzo blanco calacatta y electrodomésticos empotrados de alta gama.\n\nEn la planta alta se ubica la zona de descanso conformada por 4 amplias habitaciones, cada una con vestier a medida y baño privado con revestimientos en mármol. La habitación máster dispone de terraza privada con vistas espectaculares hacia la serranía andina.\n\nEl exterior cuenta con caney parrillero techado, área de bar, cuarto de servicio independiente con baño, depósito y estacionamiento techado para 3 vehículos con portón eléctrico seccional.`,
+        amenidades: [
+            { icono: 'ph-snowflake', nombre: 'Aire acondicionado integral en todas las áreas' },
+            { icono: 'ph-cooking-pot', nombre: 'Cocina italiana de diseñador con isla' },
+            { icono: 'ph-wifi-high', nombre: 'Fibra óptica dedicada de alta velocidad' },
+            { icono: 'ph-car', nombre: 'Estacionamiento techado (3 puestos)' },
+            { icono: 'ph-shield-star', nombre: 'Vigilancia privada y garita 24 horas' },
+            { icono: 'ph-armchair', nombre: 'Caney y parrillera techada para reuniones' },
+            { icono: 'ph-television', nombre: 'Sala de estar / Family Room' },
+            { icono: 'ph-tree', nombre: 'Jardines con paisajismo y riego automático' },
+            { icono: 'ph-lock-key', nombre: 'Cerraduras digitales de acceso con huella' },
+            { icono: 'ph-bathtub', nombre: 'Jacuzzi integrado en baño principal' }
+        ]
+    },
+    'inm-2': {
+        id: 'inm-2',
+        codigo: '#MAX-102',
+        titulo: 'Local comercial Nivel Feria',
+        subtitulo: 'Ubicación estratégica de alto flujo peatonal y visibilidad comercial garantizada',
+        tipo: 'Local Comercial',
+        badgeTipo: 'LOCAL',
+        operacion: 'ALQUILER',
+        isMaximus: true,
+        precio: '$1.500',
+        moneda: 'USD/mes',
+        precioM2: '$18.75 USD / m²',
+        comision: '1 Mes',
+        ubicacion: 'C.C. Sambil San Cristóbal, Nivel Feria',
+        sectorNombre: 'C.C. Sambil San Cristóbal',
+        sectorDesc: 'El centro comercial más emblemático del Táchira, con afluencia garantizada todos los días, seguridad bancaria y estacionamiento para más de 1.500 vehículos.',
+        habitaciones: '1 Amb',
+        banos: '1',
+        m2: '80 m²',
+        estacionamientos: 'Libre en CC',
+        fotos: [
+            'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=85',
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1000&q=80',
+            'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=1000&q=80',
+            'https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1000&q=80',
+            'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=1000&q=80'
+        ],
+        asesor: {
+            nombre: 'Carlos Santander',
+            cargo: 'Especialista en Locales & Inversiones MAXIMUS',
+            telefono: '+58 412-9876543',
+            avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true',
+            rating: '4.9 (15 Cierres)',
+            experiencia: '3 años en la red'
+        },
+        aspectosDestacados: [
+            { icono: 'ph-trend-up', titulo: 'Alto Tráfico Peatonal', desc: 'Frente directo a pasillo principal y zona de comidas de mayor concentración de visitantes.' },
+            { icono: 'ph-door', titulo: 'Fachada en Vidrio Templado', desc: 'Santa maría microperforada automatizada y vitrina de cristal para máxima exhibición de marca.' },
+            { icono: 'ph-snowflake', titulo: 'Climatización Central', desc: 'Conexión al sistema de enfriamiento central del centro comercial sin costos energéticos adicionales.' },
+            { icono: 'ph-shield-check', titulo: 'Seguridad 24 Horas', desc: 'Circuito cerrado del mall, brigada de bomberos y vigilancia perimetral los 365 días del año.' }
+        ],
+        descripcion: `Extraordinaria oportunidad de alquiler en el centro comercial más cotizado del occidente del país: C.C. Sambil San Cristóbal.\n\nEste local de 80 m² se encuentra estratégicamente situado en el Nivel Feria, garantizando un flujo masivo de clientes potenciales durante todo el día. Dispone de piso de granito pulido de alto impacto, luminarias LED de bajo consumo, punto de gas comercial, baño interno y área posterior para almacenamiento o preparación.\n\nIdeal para franquicias gastronómicas, tiendas de conveniencia, tecnología, moda o servicios. Cuenta con todas las solvencias y normativas al día para inicio de actividades de inmediato.`,
+        amenidades: [
+            { icono: 'ph-snowflake', nombre: 'Aire acondicionado centralizado' },
+            { icono: 'ph-wifi-high', nombre: 'Acometida para punto de venta y fibra óptica' },
+            { icono: 'ph-shield-star', nombre: 'Seguridad bancaria y cámaras 24/7' },
+            { icono: 'ph-car', nombre: 'Estacionamiento techado para clientes y proveedores' },
+            { icono: 'ph-lightning', nombre: 'Planta eléctrica continua para áreas comunes y locales' },
+            { icono: 'ph-drop', nombre: 'Servicio de agua continuo y sistema contra incendios' }
+        ]
+    },
+    'inm-3': {
+        id: 'inm-3',
+        codigo: '#MAX-103',
+        titulo: 'Apartamento amoblado piso medio',
+        subtitulo: 'Moderno apartamento completamente equipado con acabados de primera y vista panorámica',
+        tipo: 'Apartamento',
+        badgeTipo: 'APTO',
+        operacion: 'VENTA',
+        isMaximus: true,
+        precio: '$120.000',
+        moneda: 'USD',
+        precioM2: '$1.090 USD / m²',
+        comision: '50/50',
+        ubicacion: 'Residencias El Bosque, San Cristóbal, Táchira',
+        sectorNombre: 'Residencias El Bosque',
+        sectorDesc: 'Conjunto residencial de prestigio con áreas sociales, excelente mantenimiento y clima fresco de montaña.',
+        habitaciones: '2',
+        banos: '2',
+        m2: '110 m²',
+        estacionamientos: '2 Techados',
+        fotos: [
+            'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=85',
+            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1000&q=80',
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1000&q=80',
+            'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1000&q=80',
+            'https://images.unsplash.com/photo-1502005229762-ee1b2b8100ff?w=1000&q=80',
+            'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&q=80'
+        ],
+        asesor: {
+            nombre: 'Valeria Méndez',
+            cargo: 'Top Producer Residencial MAXIMUS',
+            telefono: '+58 414-7654321',
+            avatar: 'https://ui-avatars.com/api/?name=Valeria+Mendez&background=0B4A3F&color=fff&bold=true',
+            rating: '4.9 (19 Cierres)',
+            experiencia: '3 años en la red'
+        },
+        aspectosDestacados: [
+            { icono: 'ph-armchair', titulo: '100% Amoblado y Equipado', desc: 'Se entrega exactamente como se aprecia en las fotos, listo para mudarse con mobiliario de alta gama.' },
+            { icono: 'ph-lightning', titulo: 'Planta Eléctrica en el Edificio', desc: 'Respaldo para ascensores, bombas de agua e iluminación interna del apartamento.' },
+            { icono: 'ph-eye', titulo: 'Vista Panorámica al Valle', desc: 'Piso medio con excelente ventilación cruzada y balcón con ventanales antirruido.' },
+            { icono: 'ph-car', titulo: '2 Puestos de Estacionamiento', desc: 'Puestos techados independientes con maletero espacioso al lado del ascensor.' }
+        ],
+        descripcion: `Exclusivo apartamento en Residencias El Bosque, concebido para quienes buscan comodidad, seguridad y buen gusto sin necesidad de remodelaciones.\n\nLa propiedad ofrece un área social decorada con estética minimalista, cocina con tope de granito negro y desayunador, habitación secundaria con clóset y baño externo completo, y habitación principal tipo suite con vestier y baño privado remodelado con piezas sanitarias de lujo.\n\nEl conjunto residencial cuenta con salón de fiestas climatizado, parque infantil, doble portón de seguridad, cámaras perimetrales y administración impecable.`,
+        amenidades: [
+            { icono: 'ph-snowflake', nombre: 'Aires acondicionados split inverter' },
+            { icono: 'ph-cooking-pot', nombre: 'Línea blanca completa de acero inoxidable' },
+            { icono: 'ph-wifi-high', nombre: 'Servicio de internet de fibra óptica activo' },
+            { icono: 'ph-car', nombre: '2 Puestos de estacionamiento techados' },
+            { icono: 'ph-elevator', nombre: '2 Ascensores de última generación' },
+            { icono: 'ph-shield-star', nombre: 'Vigilancia privada 24/7 con control biométrico' },
+            { icono: 'ph-plant', nombre: 'Áreas verdes y parque infantil privado' }
+        ]
+    },
+    'inm-4': {
+        id: 'inm-4',
+        codigo: '#MAX-104',
+        titulo: 'Penthouse Dúplex con Terraza 360°',
+        subtitulo: 'La propiedad más exclusiva de Pueblo Nuevo: terraza privada, jacuzzi y acabados de mármol',
+        tipo: 'Penthouse',
+        badgeTipo: 'PENTHOUSE',
+        operacion: 'VENTA',
+        isMaximus: true,
+        precio: '$340.000',
+        moneda: 'USD',
+        precioM2: '$1.172 USD / m²',
+        comision: '50/50',
+        ubicacion: 'Pueblo Nuevo, San Cristóbal, Táchira',
+        sectorNombre: 'Pueblo Nuevo',
+        sectorDesc: 'El epicentro gastronómico y residencial de élite en San Cristóbal, con acceso a los mejores clubes y avenidas.',
+        habitaciones: '4',
+        banos: '4',
+        m2: '290 m²',
+        estacionamientos: '4 Techados',
+        fotos: [
+            'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=85',
+            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600607687644-c7171b42498f?w=1000&q=80',
+            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1000&q=80',
+            'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1000&q=80'
+        ],
+        asesor: {
+            nombre: 'Carlos Santander',
+            cargo: 'Especialista en Inversiones & Penthouses',
+            telefono: '+58 412-9876543',
+            avatar: 'https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true',
+            rating: '4.9 (15 Cierres)',
+            experiencia: '3 años en la red'
+        },
+        aspectosDestacados: [
+            { icono: 'ph-sun-horizon', titulo: 'Terraza Panorámica 360°', desc: 'Terraza privada en el segundo nivel con jacuzzi climatizado, bar exterior y vistas despejadas a toda la ciudad.' },
+            { icono: 'ph-sparkle', titulo: 'Acabados en Mármol Travertino', desc: 'Pisos de mármol importado en ambas plantas, escaleras voladas de vidrio y diseño de iluminación inteligente.' },
+            { icono: 'ph-lightning', titulo: 'Planta Eléctrica Total 100%', desc: 'Generador a gas con encendido silencioso que abastece todo el Penthouse sin interrupciones.' },
+            { icono: 'ph-car', titulo: '4 Puestos Techados', desc: 'Área privada de estacionamiento cerrada con portón exclusivo para el Penthouse.' }
+        ],
+        descripcion: `Una joya arquitectónica suspendida en el cielo de Pueblo Nuevo. Este penthouse dúplex redefine el concepto de vida de lujo en el Táchira.\n\nEn su primer nivel ofrece un impresionante salón con triple altura, cocina europea de concepto integrado con electrodomésticos empotrados Smeg, área de cava de vinos climatizada y 3 habitaciones en suite.\n\nEn el nivel superior se despliega la máster suite con vestier de 25 m², spa interno y salida directa a la majestuosa terraza privada con deck de madera teca, jacuzzi con hidromasaje y caney lounge.`,
+        amenidades: [
+            { icono: 'ph-bathtub', nombre: 'Jacuzzi exterior climatizado para 6 personas' },
+            { icono: 'ph-snowflake', nombre: 'Sistema de aire acondicionado central inteligente' },
+            { icono: 'ph-wine', nombre: 'Cava de vinos climatizada empotrada' },
+            { icono: 'ph-wifi-high', nombre: 'Red mesh wifi 6 en ambas plantas' },
+            { icono: 'ph-elevator', nombre: 'Ascensor privado con acceso directo por huella' },
+            { icono: 'ph-shield-star', nombre: 'Seguridad armada y circuito cerrado 24/7' }
+        ]
+    },
+    'inm-5': {
+        id: 'inm-5',
+        codigo: '#MAX-105',
+        titulo: 'Townhouse a estrenar en conjunto cerrado',
+        subtitulo: 'Modernidad y seguridad para tu familia en la fresca zona de Paramillo',
+        tipo: 'Townhouse',
+        badgeTipo: 'TOWNHOUSE',
+        operacion: 'VENTA',
+        isMaximus: true,
+        precio: '$95.000',
+        moneda: 'USD',
+        precioM2: '$593 USD / m²',
+        comision: '50/50',
+        ubicacion: 'Paramillo, San Cristóbal, Táchira',
+        sectorNombre: 'Paramillo',
+        sectorDesc: 'Zona de continuo crecimiento residencial, excelente clima de montaña y cercanía a universidades y centros deportivos.',
+        habitaciones: '3',
+        banos: '3',
+        m2: '160 m²',
+        estacionamientos: '2 Puestos',
+        fotos: [
+            'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1200&q=85',
+            'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1000&q=80',
+            'https://images.unsplash.com/photo-1502005229762-ee1b2b8100ff?w=1000&q=80',
+            'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1000&q=80',
+            'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1000&q=80'
+        ],
+        asesor: {
+            nombre: 'José Guerrero',
+            cargo: 'Director & Captador Principal MAXIMUS',
+            telefono: '+58 424-7835697',
+            avatar: 'https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true',
+            rating: '5.0 (28 Cierres)',
+            experiencia: '4 años en la red'
+        },
+        aspectosDestacados: [
+            { icono: 'ph-sparkle', titulo: '100% A Estrenar', desc: 'Construcción nueva con pisos de porcelanato pulido y tuberías termo-fusionadas.' },
+            { icono: 'ph-shield-check', titulo: 'Conjunto Privado de Solo 12 Unidades', desc: 'Privacidad absoluta con portón automático, cerco eléctrico y vigilancia.' },
+            { icono: 'ph-drop', titulo: 'Tanque Subterráneo Propio de 8.000 L', desc: 'Sistema hidroneumático individual con reserva suficiente de agua.' },
+            { icono: 'ph-tree', titulo: 'Patio Trasero Privado', desc: 'Espacio ideal para jardín, mascotas o ampliación de área social parrillera.' }
+        ],
+        descripcion: `Townhouse moderno listo para habitar en uno de los conjuntos más nuevos de Paramillo.\n\nConstrucción de dos plantas con acabados de primera: sala y comedor con iluminación LED embutida, cocina moderna con tope de granito, baño de visitas y patio posterior.\n\nEn la planta alta se encuentran 3 habitaciones y 2 baños completos, incluyendo la habitación principal con baño privado y balcón.`,
+        amenidades: [
+            { icono: 'ph-car', nombre: 'Estacionamiento para 2 vehículos' },
+            { icono: 'ph-shield-star', nombre: 'Portón eléctrico y cerco perimetral' },
+            { icono: 'ph-drop', nombre: 'Tanque subterráneo con bomba de 1 HP' },
+            { icono: 'ph-tree', nombre: 'Áreas verdes internas y caminerías' }
+        ]
+    },
+    'inm-6': {
+        id: 'inm-6',
+        codigo: '#MAX-106',
+        titulo: 'Galpón Corporativo y Oficinas AAA',
+        subtitulo: 'Infraestructura industrial de alto nivel con patio de maniobras y oficinas ejecutivas',
+        tipo: 'Galpón Industrial',
+        badgeTipo: 'INDUSTRIAL',
+        operacion: 'ALQUILER',
+        isMaximus: true,
+        precio: '$3.200',
+        moneda: 'USD/mes',
+        precioM2: '$3.90 USD / m²',
+        comision: '50/50',
+        ubicacion: 'Zona Industrial Barrancas, Municipio Cárdenas, Táchira',
+        sectorNombre: 'Zona Industrial Barrancas',
+        sectorDesc: 'El principal polo logístico e industrial del estado, con acceso directo a la autopista San Cristóbal - La Fría.',
+        habitaciones: 'Oficinas',
+        banos: '4',
+        m2: '820 m²',
+        estacionamientos: '10 Puestos',
+        fotos: [
+            'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&q=85',
+            'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1000&q=80',
+            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1000&q=80',
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1000&q=80',
+            'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1000&q=80'
+        ],
+        asesor: {
+            nombre: 'Andrea Colmenares',
+            cargo: 'Especialista Comercial & Industrial MAXIMUS',
+            telefono: '+58 416-3334455',
+            avatar: 'https://ui-avatars.com/api/?name=Andrea+Colmenares&background=0B4A3F&color=fff&bold=true',
+            rating: '4.8 (14 Cierres)',
+            experiencia: '4 años en la red'
+        },
+        aspectosDestacados: [
+            { icono: 'ph-truck', titulo: 'Acceso para Gandolas y Contenedores', desc: 'Portón de 6 metros de altura libre y patio de maniobras pavimentado para carga pesada.' },
+            { icono: 'ph-lightning', titulo: 'Banco de Transformadores Trifásicos', desc: 'Capacidad eléctrica industrial instalada de 75 kVA con tablero de distribución normado.' },
+            { icono: 'ph-buildings', titulo: '200 m² de Oficinas Corporativas AAA', desc: 'Recepción, sala de juntas climatizada, 4 despachos gerenciales y comedor de empleados.' },
+            { icono: 'ph-shield-check', titulo: 'Seguridad Perimetral Reforzada', desc: 'Muros de concreto armado de 4 metros, concertina y sistema de alarma industrial con CCTV.' }
+        ],
+        descripcion: `Complejo corporativo e industrial de primera línea en la Zona Industrial de Barrancas.\n\nConsta de 620 m² de nave industrial con piso de concreto pulido de alta resistencia (400 kg/cm²), altura al alero de 7.5 metros y cumbrera de 9 metros, óptima ventilación e iluminación natural. Dispone adicionalmente de 200 m² de oficinas ejecutivas en dos niveles con acabados de primera, baños para personal y clientes, y cableado estructurado.\n\nListo para operaciones logísticas, almacenamiento farmacéutico, manufactura ligera o sede corporativa.`,
+        amenidades: [
+            { icono: 'ph-truck', nombre: 'Patio de maniobras y rampa de carga' },
+            { icono: 'ph-lightning', nombre: 'Energía trifásica de 75 kVA' },
+            { icono: 'ph-snowflake', nombre: 'Oficinas climatizadas con ductos' },
+            { icono: 'ph-drop', nombre: 'Tanque industrial de 25.000 Litros con sistema hidroneumático' },
+            { icono: 'ph-fire-extinguisher', nombre: 'Sistema contra incendios certificado por bomberos' },
+            { icono: 'ph-car', nombre: 'Estacionamiento cerrado para 10 vehículos' }
+        ]
+    }
+};
+
+// Aliases para soportar tanto 'inm-1' como 'inm-001'
+['inm-1', 'inm-2', 'inm-3', 'inm-4', 'inm-5', 'inm-6'].forEach(k => {
+    const num = k.replace('inm-', '');
+    const alias = `inm-00${num}`;
+    if (INMUEBLES_DETALLE_DATA[k]) {
+        INMUEBLES_DETALLE_DATA[alias] = { ...INMUEBLES_DETALLE_DATA[k], id: alias };
+    }
+});
+
+MOCK_DATA.inmuebles_detalle = INMUEBLES_DETALLE_DATA;
+
 // Exportar
 if (typeof window !== 'undefined') {
     window.MOCK_DATA = MOCK_DATA;
+    window.INMUEBLES_DETALLE_DATA = INMUEBLES_DETALLE_DATA;
 }
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = MOCK_DATA;
+    module.exports = { MOCK_DATA, INMUEBLES_DETALLE_DATA };
 }
