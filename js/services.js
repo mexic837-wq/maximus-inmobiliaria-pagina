@@ -1914,93 +1914,139 @@ const PerfilService = {
 // ============================================
 const EquipoWebService = {
 
+    _getLocal() {
+        try {
+            const raw = localStorage.getItem('maximus_equipo_web');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch (e) {}
+        return (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.equipo_web)) ? [...MOCK_DATA.equipo_web] : [];
+    },
+
+    _setLocal(data) {
+        try {
+            localStorage.setItem('maximus_equipo_web', JSON.stringify(data));
+        } catch (e) {}
+        if (typeof MOCK_DATA !== 'undefined') {
+            MOCK_DATA.equipo_web = data;
+        }
+    },
+
     /**
-     * Obtener todos los miembros del equipo.
+     * Obtener todos los miembros del equipo (Supabase con fallback inteligente a caché local).
      */
     async getAll(filtros = {}) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            let data = [...(MOCK_DATA.equipo_web || [])];
-            if (filtros.mostrar_en_web !== undefined) {
-                data = data.filter(m => m.mostrar_en_web === filtros.mostrar_en_web);
+        let items = null;
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
+                    let query = sb.from(tabla).select('*');
+                    if (filtros.mostrar_en_web !== undefined) query = query.eq('mostrar_en_web', filtros.mostrar_en_web);
+                    if (filtros.activo !== undefined) query = query.eq('activo', filtros.activo);
+                    query = query.order('orden', { ascending: true });
+
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
+                        items = res.data;
+                        this._setLocal(items);
+                        return { data: items, error: null, source: 'supabase' };
+                    }
+                    if (res && res.error) {
+                        console.warn('⚠️ MAXIMUS EquipoWebService: Supabase aviso. Usando respaldo:', res.error);
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ MAXIMUS EquipoWebService: Excepción al conectar con Supabase:', err);
             }
-            if (filtros.activo !== undefined) {
-                data = data.filter(m => m.activo === filtros.activo);
-            }
-            data.sort((a, b) => (a.orden || 0) - (b.orden || 0));
-            return { data, error: null };
         }
 
-        // SUPABASE REAL
-        try {
-            const sb = getSupabase();
-            const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-            let query = sb.from(tabla).select('*');
-            if (filtros.mostrar_en_web !== undefined) query = query.eq('mostrar_en_web', filtros.mostrar_en_web);
-            if (filtros.activo !== undefined) query = query.eq('activo', filtros.activo);
-            query = query.order('orden', { ascending: true });
-            return await query;
-        } catch (err) {
-            console.error('Error al consultar equipo_web en Supabase:', err);
-            return { data: MOCK_DATA.equipo_web || [], error: err.message };
+        items = this._getLocal();
+        if (filtros.mostrar_en_web !== undefined) {
+            items = items.filter(m => m.mostrar_en_web === filtros.mostrar_en_web);
         }
+        if (filtros.activo !== undefined) {
+            items = items.filter(m => m.activo === filtros.activo);
+        }
+        items.sort((a, b) => (a.orden || 0) - (b.orden || 0));
+        return { data: items, error: null, source: 'cache_local' };
     },
 
     /**
      * Obtener miembro por ID.
      */
     async getById(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const item = (MOCK_DATA.equipo_web || []).find(m => m.id === id);
-            return { data: item || null, error: item ? null : 'Miembro no encontrado' };
+        const local = this._getLocal();
+        const item = local.find(m => String(m.id) === String(id));
+        if (item) return { data: item, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
+                    const res = await sb.from(tabla).select('*').eq('id', id).single();
+                    if (res && !res.error && res.data) return res;
+                }
+            } catch (e) {}
         }
 
-        const sb = getSupabase();
-        const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-        return await sb.from(tabla).select('*').eq('id', id).single();
+        return { data: null, error: 'Miembro no encontrado' };
     },
 
     /**
      * Crear nuevo miembro del equipo.
      */
     async create(miembroData) {
+        const idLocal = 'eq-' + Date.now().toString().slice(-6);
         const nuevo = {
-            id: 'eq-' + Date.now().toString().slice(-6),
+            id: miembroData.id || idLocal,
             nombre: miembroData.nombre || 'Nuevo Asesor',
             cargo: miembroData.cargo || 'Asesor Inmobiliario',
             email: miembroData.email || '',
             telefono: miembroData.telefono || '',
             whatsapp: miembroData.whatsapp || (miembroData.telefono ? miembroData.telefono.replace(/\D/g, '') : ''),
             foto_url: miembroData.foto_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80',
-            orden: parseInt(miembroData.orden || ((typeof MOCK_DATA !== 'undefined' && MOCK_DATA.equipo_web ? MOCK_DATA.equipo_web.length : 0) + 1), 10),
+            orden: parseInt(miembroData.orden || (this._getLocal().length + 1), 10),
             mostrar_en_web: miembroData.mostrar_en_web !== undefined ? miembroData.mostrar_en_web : true,
             activo: true,
             bio: miembroData.bio || '',
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
         };
+
+        // Guardar primero en respaldo local inmediato
+        const local = this._getLocal();
+        local.push(nuevo);
+        this._setLocal(local);
 
         let res = { data: nuevo, error: null };
 
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            if (typeof MOCK_DATA !== 'undefined') {
-                if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
-                MOCK_DATA.equipo_web.push(nuevo);
-            }
-        } else {
+        if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
-                const sb = getSupabase();
-                const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-                const sbRes = await sb.from(tabla).insert(miembroData).select().single();
-                if (sbRes && !sbRes.error && sbRes.data) {
-                    res = sbRes;
-                } else if (typeof MOCK_DATA !== 'undefined') {
-                    if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
-                    MOCK_DATA.equipo_web.push(nuevo);
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
+                    const sbPayload = { ...nuevo };
+                    if (typeof sbPayload.id === 'string' && sbPayload.id.startsWith('eq-')) {
+                        delete sbPayload.id;
+                    }
+                    const sbRes = await sb.from(tabla).insert(sbPayload).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                        const idx = local.findIndex(m => m.id === nuevo.id);
+                        if (idx !== -1) {
+                            local[idx] = sbRes.data;
+                            this._setLocal(local);
+                        }
+                    }
                 }
             } catch (err) {
-                if (typeof MOCK_DATA !== 'undefined') {
-                    if (!MOCK_DATA.equipo_web) MOCK_DATA.equipo_web = [];
-                    MOCK_DATA.equipo_web.push(nuevo);
-                }
+                console.warn('⚠️ MAXIMUS EquipoWebService: Error al insertar en Supabase:', err);
             }
         }
 
@@ -2018,20 +2064,35 @@ const EquipoWebService = {
      * Actualizar miembro existente.
      */
     async update(id, miembroData) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const idx = (MOCK_DATA.equipo_web || []).findIndex(m => m.id === id);
-            if (idx === -1) return { data: null, error: 'Miembro no encontrado' };
-            MOCK_DATA.equipo_web[idx] = { 
-                ...MOCK_DATA.equipo_web[idx], 
-                ...miembroData,
-                updated_at: new Date().toISOString()
-            };
-            return { data: MOCK_DATA.equipo_web[idx], error: null };
+        const local = this._getLocal();
+        const idx = local.findIndex(m => String(m.id) === String(id));
+        let itemActualizado = null;
+        if (idx !== -1) {
+            local[idx] = { ...local[idx], ...miembroData, updated_at: new Date().toISOString() };
+            itemActualizado = local[idx];
+            this._setLocal(local);
         }
 
-        const sb = getSupabase();
-        const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-        return await sb.from(tabla).update(miembroData).eq('id', id).select().single();
+        let res = { data: itemActualizado, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
+                    const sbPayload = { ...miembroData, updated_at: new Date().toISOString() };
+                    delete sbPayload.id;
+                    const sbRes = await sb.from(tabla).update(sbPayload).eq('id', id).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
+                }
+            } catch (err) {
+                console.warn('⚠️ MAXIMUS EquipoWebService: Error al actualizar en Supabase:', err);
+            }
+        }
+
+        return res;
     },
 
     /**
@@ -2045,26 +2106,35 @@ const EquipoWebService = {
      * Eliminar miembro.
      */
     async delete(id) {
-        if (APP_CONFIG.USE_MOCK_DATA) {
-            const idx = (MOCK_DATA.equipo_web || []).findIndex(m => m.id === id);
-            if (idx === -1) return { error: 'No encontrado' };
-            MOCK_DATA.equipo_web.splice(idx, 1);
-            return { error: null };
+        const local = this._getLocal().filter(m => String(m.id) !== String(id));
+        this._setLocal(local);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
+                    await sb.from(tabla).delete().eq('id', id);
+                }
+            } catch (err) {
+                console.warn('⚠️ MAXIMUS EquipoWebService: Error al eliminar en Supabase:', err);
+            }
         }
 
-        const sb = getSupabase();
-        const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-        return await sb.from(tabla).delete().eq('id', id);
+        return { error: null };
     },
 
     /**
      * Obtener textos de cabecera de la sección "Nuestro Equipo".
      */
     getConfig() {
-        const stored = localStorage.getItem('maximus_equipo_web_config');
-        if (stored) {
-            try { return JSON.parse(stored); } catch(e) {}
-        }
+        try {
+            const stored = localStorage.getItem('maximus_equipo_web_config');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && (parsed.titulo || parsed.etiqueta)) return parsed;
+            }
+        } catch(e) {}
         return (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.equipo_web_config) ? MOCK_DATA.equipo_web_config : {
             etiqueta: 'NUESTRO EQUIPO',
             titulo: 'Agentes Expertos a tu Servicio',
@@ -2078,10 +2148,28 @@ const EquipoWebService = {
     saveConfig(configData) {
         const current = this.getConfig();
         const updated = { ...current, ...configData };
-        localStorage.setItem('maximus_equipo_web_config', JSON.stringify(updated));
+        try {
+            localStorage.setItem('maximus_equipo_web_config', JSON.stringify(updated));
+        } catch(e) {}
         if (typeof MOCK_DATA !== 'undefined') {
             MOCK_DATA.equipo_web_config = updated;
         }
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    sb.from('secciones_web').upsert({
+                        clave: 'nuestro_equipo',
+                        etiqueta: updated.etiqueta,
+                        titulo: updated.titulo,
+                        subtitulo: updated.subtitulo,
+                        updated_at: new Date().toISOString()
+                    }).then(() => {}).catch(() => {});
+                }
+            } catch(e) {}
+        }
+
         return { success: true, data: updated };
     }
 };

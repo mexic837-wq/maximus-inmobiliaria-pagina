@@ -14107,7 +14107,7 @@
             if (!modal) return;
 
             if (id) {
-                const item = listaEquipoWebAdmin.find(m => m.id === id);
+                const item = listaEquipoWebAdmin.find(m => String(m.id) === String(id));
                 if (item) {
                     tituloModal.textContent = 'Editar Asesor Web';
                     inputId.value = item.id;
@@ -14204,7 +14204,7 @@
             try {
                 if (window.EquipoWebService) {
                     await EquipoWebService.toggleVisibilidad(id, nuevoEstado);
-                    const item = listaEquipoWebAdmin.find(m => m.id === id);
+                    const item = listaEquipoWebAdmin.find(m => String(m.id) === String(id));
                     if (item) item.mostrar_en_web = nuevoEstado;
                     renderGestionEquipoWeb(listaEquipoWebAdmin);
                     mostrarToastNotificacion(nuevoEstado ? '👁️ Asesor visible públicamente en la Landing' : '🔒 Asesor pausado de la Landing');
@@ -14223,7 +14223,7 @@
             try {
                 if (window.EquipoWebService) {
                     await EquipoWebService.delete(id);
-                    listaEquipoWebAdmin = listaEquipoWebAdmin.filter(m => m.id !== id);
+                    listaEquipoWebAdmin = listaEquipoWebAdmin.filter(m => String(m.id) !== String(id));
                     renderGestionEquipoWeb(listaEquipoWebAdmin);
                     mostrarToastNotificacion(`🗑️ Asesor "${nombre}" eliminado`);
                 }
