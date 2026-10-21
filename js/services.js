@@ -1712,7 +1712,7 @@ const PerfilService = {
             title: cached?.title || 'Asesor Inmobiliario Senior',
             avatar: cached?.avatar || 'https://ui-avatars.com/api/?name=Carlos+Perez&background=0B4A3F&color=fff&bold=true',
             bio: cached?.bio || 'Especialista en propiedades residenciales exclusivas y activos comerciales de alta rentabilidad en San Cristóbal y Táchira.',
-            licencia_inmobiliaria: cached?.licencia_inmobiliaria || 'CIV-9842 / Cámara Inmobiliaria',
+            licencia_inmobiliaria: null,
             two_factor_enabled: cached?.two_factor_enabled !== undefined ? cached.two_factor_enabled : false,
             two_factor_method: cached?.two_factor_method || 'whatsapp',
             two_factor_phone: cached?.two_factor_phone || cached?.telefono || '+58 414-7223344',

@@ -5040,7 +5040,7 @@
             <!-- ==========================================
                  L. VISTA DEDICADA: MI PERFIL & SEGURIDAD DEL ASESOR
                  ========================================== -->
-            <section id="view-perfil" class="view-section max-w-6xl mx-auto space-y-4 sm:space-y-8 pb-24 sm:pb-16">
+            <section id="view-perfil" class="view-section max-w-5xl mx-auto space-y-4 sm:space-y-6 pb-24 sm:pb-16 w-full max-w-full overflow-hidden box-border">
                 <!-- Header Superior con Espacio y Tipografía Pulida -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-emerald-950">
                     <div>
@@ -5061,7 +5061,7 @@
                 </div>
 
                 <!-- Tarjeta Principal del Asesor: Espaciosa, Limpia y Elegante -->
-                <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-gray-100 dark:border-emerald-950/60 shadow-sm relative overflow-hidden">
+                <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-gray-100 dark:border-emerald-950/60 shadow-sm relative overflow-hidden w-full max-w-full box-border min-w-0">
                     <!-- Sutil resplandor de fondo -->
                     <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-r from-emerald-900/10 via-[#0B4A3F]/5 to-teal-900/10 pointer-events-none"></div>
 
@@ -5123,31 +5123,31 @@
                             </p>
                         </div>
                     </div>
-                    </div>
+                    
                 </div>
 
-                <!-- Pestañas Espaciosas con Diseño Limpio -->
-                <div class="bg-gray-100/80 dark:bg-emerald-950/30 p-1.5 rounded-2xl flex items-center gap-2 overflow-x-auto">
-                    <button type="button" onclick="cambiarTabPerfil('info')" id="tab-btn-perfil-info" class="tab-perfil-btn flex-1 min-w-[140px] py-3 px-5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 bg-white dark:bg-[#0A1F1B] text-emerald-800 dark:text-emerald-300 shadow-sm border border-emerald-100 dark:border-emerald-900 cursor-pointer">
-                        <i class="ph-bold ph-user text-base"></i>
+                <!-- Pestañas de Navegación de Perfil -->
+                <div class="bg-gray-100/90 dark:bg-emerald-950/40 p-1 sm:p-1.5 rounded-2xl flex items-center gap-1.5 sm:gap-2 overflow-x-auto w-full max-w-full min-w-0 box-border scrollbar-none">
+                    <button type="button" onclick="cambiarTabPerfil('info')" id="tab-btn-perfil-info" class="tab-perfil-btn flex-1 min-w-[105px] sm:min-w-[140px] py-2.5 sm:py-3 px-3 sm:px-5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-white dark:bg-[#0A1F1B] text-emerald-800 dark:text-emerald-300 shadow-sm border border-emerald-100 dark:border-emerald-900 cursor-pointer whitespace-nowrap shrink-0">
+                        <i class="ph-bold ph-user text-sm sm:text-base"></i>
                         <span>Identidad & Datos</span>
                     </button>
-                    <button type="button" onclick="cambiarTabPerfil('seguridad')" id="tab-btn-perfil-seguridad" class="tab-perfil-btn flex-1 min-w-[140px] py-3 px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer">
-                        <i class="ph-bold ph-key text-base"></i>
+                    <button type="button" onclick="cambiarTabPerfil('seguridad')" id="tab-btn-perfil-seguridad" class="tab-perfil-btn flex-1 min-w-[105px] sm:min-w-[140px] py-2.5 sm:py-3 px-3 sm:px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer whitespace-nowrap shrink-0">
+                        <i class="ph-bold ph-key text-sm sm:text-base"></i>
                         <span>Seguridad & Clave</span>
                     </button>
-                    <button type="button" onclick="cambiarTabPerfil('2fa')" id="tab-btn-perfil-2fa" class="tab-perfil-btn flex-1 min-w-[140px] py-3 px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer">
-                        <i class="ph-bold ph-shield-check text-base text-amber-500"></i>
+                    <button type="button" onclick="cambiarTabPerfil('2fa')" id="tab-btn-perfil-2fa" class="tab-perfil-btn flex-1 min-w-[105px] sm:min-w-[140px] py-2.5 sm:py-3 px-3 sm:px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer whitespace-nowrap shrink-0">
+                        <i class="ph-bold ph-shield-check text-sm sm:text-base text-amber-500"></i>
                         <span>Verificación 2FA</span>
                     </button>
-                    <button type="button" onclick="cambiarTabPerfil('n8n')" id="tab-btn-perfil-n8n" class="tab-perfil-btn flex-1 min-w-[140px] py-3 px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer">
-                        <i class="ph-bold ph-bell-simple-ringing text-base text-teal-600"></i>
+                    <button type="button" onclick="cambiarTabPerfil('n8n')" id="tab-btn-perfil-n8n" class="tab-perfil-btn flex-1 min-w-[105px] sm:min-w-[140px] py-2.5 sm:py-3 px-3 sm:px-5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-950/20 cursor-pointer whitespace-nowrap shrink-0">
+                        <i class="ph-bold ph-bell-simple-ringing text-sm sm:text-base text-teal-600"></i>
                         <span>Alertas por Correo</span>
                     </button>
                 </div>
 
                 <!-- Contenido de las Pestañas -->
-                <div class="bg-white dark:bg-[#0A1F1B] rounded-3xl p-6 sm:p-10 border border-gray-100 dark:border-emerald-950/60 shadow-sm">
+                <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 border border-gray-100 dark:border-emerald-950/60 shadow-sm w-full max-w-full min-w-0 box-border overflow-hidden">
                     
                     <!-- TAB 1: IDENTIDAD & DATOS -->
                     <div id="tab-content-perfil-info" class="space-y-8">
@@ -5157,7 +5157,7 @@
                         </div>
 
                         <!-- Formulario en Cuadrícula Espaciosa -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-x-8 sm:gap-y-6 w-full max-w-full min-w-0 box-border">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Nombre Completo</label>
                                 <div class="relative">
@@ -5168,10 +5168,10 @@
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Correo Electrónico (Acceso)</label>
-                                <div class="relative">
-                                    <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                                    <input type="email" id="perfil-input-email" disabled class="w-full pl-11 pr-24 h-12 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 border border-gray-200/60 text-sm font-medium text-gray-500 cursor-not-allowed outline-none">
-                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800">Verificado</span>
+                                <div class="relative w-full max-w-full min-w-0 box-border">
+                                    <i class="ph-bold ph-envelope absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
+                                    <input type="email" id="perfil-input-email" disabled class="w-full pl-10 sm:pl-11 pr-22 sm:pr-24 h-12 rounded-xl bg-gray-100/80 dark:bg-gray-800/60 border border-gray-200/60 text-xs sm:text-sm font-medium text-gray-500 cursor-not-allowed outline-none box-border truncate">
+                                    <span class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 sm:py-1 rounded-md bg-emerald-100 text-emerald-800 shrink-0 select-none">Verificado</span>
                                 </div>
                             </div>
 
@@ -14813,8 +14813,7 @@
             if (cardTitulo) cardTitulo.textContent = title;
             const cardAvatar = document.getElementById('perfil-card-avatar');
             if (cardAvatar && updates.avatar) cardAvatar.src = updates.avatar;
-            const cardLicBadge = document.getElementById('perfil-card-licencia-badge');
-            if (cardLicBadge) cardLicBadge.textContent = licencia || 'CIV-9842';
+            
             actualizarBadgeSeguridad2FA(two_factor_enabled);
             const userEmailClean = (document.getElementById('perfil-input-email')?.value.trim() || currentUserProfile?.email || 'asesor.maximus@maximus.com').toLowerCase();
             localStorage.setItem('maximus_2fa_enabled_' + userEmailClean, two_factor_enabled ? 'true' : 'false');
