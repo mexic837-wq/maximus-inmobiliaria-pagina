@@ -78,6 +78,14 @@
             display: none !important;
         }
 
+        /* Reglas de visibilidad para elementos exclusivos de clientes / usuarios normales */
+        body:not(.role-cliente) .cliente-only,
+        html:not(.role-cliente) body:not(.role-cliente) .cliente-only,
+        body:not(.role-cliente) .client-only,
+        html:not(.role-cliente) body:not(.role-cliente) .client-only {
+            display: none !important;
+        }
+
         /* 2. Cuentas que NO son Admin (Asesores Oficiales, Asesores Externos, Clientes): NUNCA ver admin-only */
         body:not(.role-admin) .admin-only,
         body.role-asesor_maximus .admin-only,
@@ -1038,6 +1046,13 @@
                     <span class="sidebar-tooltip">Captaciones MAXIMUS</span>
                 </a>
 
+                <!-- Reseñas (Exclusivo Clientes / Usuarios Normales) -->
+                <a href="javascript:void(0)" onclick="abrirModalDejarResena(); if(window.innerWidth < 1024) toggleMobileDrawer(false);" class="nav-link cliente-only text-gray-500 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-[#0D2822] dark:hover:text-emerald-400 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group cursor-pointer" title="Subir Reseña a MAXIMUS">
+                    <i class="ph-fill ph-star text-xl text-amber-500 flex-shrink-0"></i>
+                    <span class="sidebar-label">Subir Reseña</span>
+                    <span class="sidebar-tooltip">Subir Reseña</span>
+                </a>
+
                 <a href="#" data-target="view-resumen" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Panorama & Métricas">
                     <i class="ph-fill ph-squares-four text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Panorama & Métricas</span>
@@ -1141,7 +1156,22 @@
                     <span class="sidebar-label">Mi Perfil</span>
                     <span class="sidebar-tooltip">Mi Perfil & Seguridad</span>
                 </a>
+
+                <!-- Cerrar Sesión en Menú Lateral -->
+                <a href="javascript:void(0)" onclick="logout()" class="nav-link text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group cursor-pointer" title="Cerrar Sesión">
+                    <i class="ph-bold ph-sign-out text-xl text-red-500 flex-shrink-0"></i>
+                    <span class="sidebar-label">Cerrar Sesión</span>
+                    <span class="sidebar-tooltip">Cerrar Sesión</span>
+                </a>
             </nav>
+
+            <!-- Sidebar Footer Pinned (Cerrar Sesión en Móvil y Desktop) -->
+            <div class="p-3.5 border-t border-maximus-silver/20 dark:border-[#14352D] bg-gray-50/70 dark:bg-[#071714]/60 flex-shrink-0">
+                <button type="button" onclick="logout()" class="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200/80 dark:border-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-100/80 dark:hover:bg-red-900/60 font-bold text-xs sm:text-sm shadow-2xs transition-all cursor-pointer group active:scale-95" title="Cerrar Sesión">
+                    <i class="ph-bold ph-sign-out text-lg text-red-500 group-hover:translate-x-0.5 transition-transform flex-shrink-0"></i>
+                    <span class="sidebar-label">Cerrar Sesión</span>
+                </button>
+            </div>
         </div>
 
     </aside>
@@ -1341,10 +1371,10 @@
                     </div>
 
                     <!-- Menú Desplegable -->
-                    <div id="dropdown-profile" class="absolute right-0 mt-3 w-64 bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] border border-gray-100 dark:border-emerald-900/40 opacity-0 pointer-events-none transform translate-y-[-10px] transition-all duration-300 z-50 overflow-hidden isolate">
+                    <div id="dropdown-profile" class="absolute right-0 mt-3 w-64 max-h-[85vh] flex flex-col bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] border border-gray-100 dark:border-emerald-900/40 opacity-0 pointer-events-none transform translate-y-[-10px] transition-all duration-300 z-50 overflow-hidden isolate">
                         
                         <!-- Header del Dropdown -->
-                        <div class="px-5 py-4 border-b border-gray-100 dark:border-emerald-900/30 bg-gray-50 dark:bg-[#0D2822]">
+                        <div class="px-5 py-4 border-b border-gray-100 dark:border-emerald-900/30 bg-gray-50 dark:bg-[#0D2822] flex-shrink-0">
                             <div class="flex items-center justify-between mb-1">
                                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Mi Cuenta</p>
                                 <span id="dropdown-userBadge" class="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Oficial</span>
@@ -1354,9 +1384,14 @@
                         </div>
 
                         <!-- Opciones -->
-                        <div class="p-2 space-y-1 bg-white dark:bg-[#0A1F1B]">
+                        <div class="p-2 space-y-1 bg-white dark:bg-[#0A1F1B] overflow-y-auto flex-1 scrollbar-none">
                             <button onclick="activateTab('view-perfil'); toggleProfileMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3 cursor-pointer">
                                 <i class="ph-fill ph-user-circle text-lg text-emerald-600"></i> Mi Perfil
+                            </button>
+
+                            <!-- Subir Reseña (Usuarios Normales) -->
+                            <button onclick="abrirModalDejarResena(); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-amber-700 dark:text-amber-400 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100/70 transition-colors flex items-center gap-3 cursor-pointer">
+                                <i class="ph-fill ph-star text-lg text-amber-500"></i> Subir Reseña
                             </button>
 
                             <!-- Opción exclusiva para Asesores MAXIMUS y Dirección -->
@@ -5048,7 +5083,11 @@
                         <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Gestiona tu identidad profesional, enlaces comerciales y seguridad de tu cuenta.</p>
                     </div>
                     
-                    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                    <div class="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
+                        <button type="button" onclick="abrirModalDejarResena()" class="cliente-only px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/80 text-amber-800 dark:text-amber-300 font-bold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer" title="Subir reseña sobre mi experiencia">
+                            <i class="ph-fill ph-star text-amber-500 text-sm"></i>
+                            <span>Dejar Reseña</span>
+                        </button>
                         <button type="button" id="btn-copiar-bio" onclick="copiarEnlaceAsesor()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white dark:bg-emerald-950/40 border border-gray-200 dark:border-emerald-800 hover:border-emerald-500 text-gray-700 dark:text-gray-200 font-bold text-xs shadow-xs hover:shadow transition-all flex items-center gap-2 cursor-pointer">
                             <i class="ph-bold ph-link text-emerald-600 text-sm"></i>
                             <span>Copiar Enlace Bio</span>
@@ -5056,6 +5095,10 @@
                         <button type="button" onclick="guardarCambiosPerfil()" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer">
                             <i class="ph-bold ph-floppy-disk text-sm"></i>
                             <span>Guardar Cambios</span>
+                        </button>
+                        <button type="button" onclick="logout()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/80 text-red-600 dark:text-red-400 font-bold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer" title="Cerrar sesión de mi cuenta">
+                            <i class="ph-bold ph-sign-out text-sm"></i>
+                            <span>Cerrar Sesión</span>
                         </button>
                     </div>
                 </div>
@@ -5124,6 +5167,23 @@
                         </div>
                     </div>
                     
+                </div>
+
+                <!-- Banner de Reseñas para Clientes / Usuarios Normales -->
+                <div class="cliente-only p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-50/90 via-emerald-50/40 to-teal-50/60 dark:from-amber-950/30 dark:to-emerald-950/20 border border-amber-200/80 dark:border-amber-800/50 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
+                            <i class="ph-fill ph-star text-2xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white">¿Cuál ha sido tu experiencia con MAXIMUS?</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-0.5">Comparte tu valoración y testimonio para publicarlo en la página principal.</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="abrirModalDejarResena()" class="shrink-0 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                        <i class="ph-fill ph-star text-amber-300"></i>
+                        <span>Escribir Reseña</span>
+                    </button>
                 </div>
 
                 <!-- Pestañas de Navegación de Perfil (Scroll Horizontal Nativo sin Superposición en Móviles) -->
@@ -5527,6 +5587,23 @@
                         </div>
                     </div>
 
+                </div>
+
+                <!-- Zona de Cierre de Sesión Móvil / Rápido -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-red-100 dark:border-red-950/40 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-2xl bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 shadow-xs">
+                            <i class="ph-bold ph-sign-out text-2xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white">Sesión Activa</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">¿Deseas cerrar tu sesión de forma segura en este dispositivo?</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="logout()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                        <i class="ph-bold ph-sign-out text-base"></i>
+                        <span>Cerrar Sesión</span>
+                    </button>
                 </div>
             </section>
         </main>
@@ -6877,6 +6954,7 @@
             const asesorExternoElements = document.querySelectorAll('.asesor-externo-only');
             const agenteElements = document.querySelectorAll('.agente-only');
             const staffElements = document.querySelectorAll('.staff-only');
+            const clienteElements = document.querySelectorAll('.cliente-only, .client-only');
 
             if (userRole === 'admin') {
                 staffElements.forEach(el => el.style.display = '');
@@ -6884,24 +6962,28 @@
                 asesorMaximusElements.forEach(el => el.style.display = '');
                 asesorExternoElements.forEach(el => el.style.display = 'none');
                 agenteElements.forEach(el => el.style.display = 'none');
+                clienteElements.forEach(el => el.style.display = 'none');
             } else if (userRole === 'asesor_maximus') {
                 staffElements.forEach(el => el.style.display = '');
                 asesorMaximusElements.forEach(el => el.style.display = '');
                 agenteElements.forEach(el => el.style.display = '');
                 asesorExternoElements.forEach(el => el.style.display = 'none');
                 adminElements.forEach(el => el.style.display = 'none');
+                clienteElements.forEach(el => el.style.display = 'none');
             } else if (userRole === 'asesor_externo') {
                 staffElements.forEach(el => el.style.display = '');
                 agenteElements.forEach(el => el.style.display = '');
                 asesorExternoElements.forEach(el => el.style.display = '');
                 asesorMaximusElements.forEach(el => el.style.display = 'none');
                 adminElements.forEach(el => el.style.display = 'none');
+                clienteElements.forEach(el => el.style.display = 'none');
             } else {
                 adminElements.forEach(el => el.style.display = 'none');
                 asesorMaximusElements.forEach(el => el.style.display = 'none');
                 asesorExternoElements.forEach(el => el.style.display = 'none');
                 agenteElements.forEach(el => el.style.display = 'none');
                 staffElements.forEach(el => el.style.display = 'none');
+                clienteElements.forEach(el => el.style.display = '');
             }
 
             // Renderizar dropdown de ubicaciones
@@ -16029,6 +16111,7 @@
     <nav id="mobileTabBar" aria-label="Navegación principal">
         <button type="button" data-tab="view-inmuebles"><i class="ph-fill ph-house"></i><span>Inmuebles</span></button>
         <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-buildings"></i><span>Captaciones</span></button>
+        <button type="button" data-action="resena" onclick="abrirModalDejarResena()" class="cliente-only" title="Subir Reseña"><i class="ph-fill ph-star text-amber-500"></i><span>Reseñas</span></button>
         <button type="button" data-tab="view-resumen" class="staff-only"><i class="ph-fill ph-squares-four"></i><span>Panorama</span></button>
         <button type="button" data-tab="view-colecciones" class="staff-only"><i class="ph-fill ph-folder-simple"></i><span>Colecciones</span></button>
         <button type="button" data-tab="view-perfil"><i class="ph-fill ph-user-circle"></i><span>Perfil</span></button>
@@ -16064,6 +16147,11 @@
             }
 
             tabBar.addEventListener('click', e => {
+                const resenaBtn = e.target.closest('button[data-action="resena"]');
+                if (resenaBtn) {
+                    if (typeof abrirModalDejarResena === 'function') abrirModalDejarResena();
+                    return;
+                }
                 const btn = e.target.closest('button[data-tab]');
                 if (!btn) return;
                 if (btn.dataset.tab === '__menu') { toggleMobileDrawer(true); return; }
