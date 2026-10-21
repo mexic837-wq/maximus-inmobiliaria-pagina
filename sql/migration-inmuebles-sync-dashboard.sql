@@ -109,7 +109,7 @@ VALUES
             'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
             'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
         ],
-        false,
+        true,
         false,
         'Carlos Santander',
         '+58 424-1234567',
@@ -190,7 +190,7 @@ VALUES
             'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
             'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80'
         ],
-        false,
+        true,
         false,
         'José Guerrero',
         '+58 424-7835697',
@@ -242,6 +242,12 @@ ON CONFLICT (id) DO UPDATE SET
     asesor_telefono = EXCLUDED.asesor_telefono,
     orden = EXCLUDED.orden,
     updated_at = now();
+
+-- Asegurar que las 6 captaciones canónicas de MAXIMUS tengan is_maximus = true
+UPDATE public.inmuebles 
+SET is_maximus = true 
+WHERE id IN ('inm-001', 'inm-002', 'inm-003', 'inm-004', 'inm-005', 'inm-006')
+   OR codigo IN ('MAX-001', 'MAX-002', 'MAX-003', 'MAX-004', 'MAX-005', 'MAX-006');
 
 -- 4. Notificar a PostgREST
 NOTIFY pgrst, 'reload schema';

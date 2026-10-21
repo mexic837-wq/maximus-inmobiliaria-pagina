@@ -67,7 +67,7 @@ const MOCK_DATA = {
                 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'
             ],
             en_oferta: false,
-            is_maximus: false,
+            is_maximus: true,
             propietario_nombre: 'Inversiones ABC C.A.',
             propietario_telefono: '+58 412-9876543',
             comision_porcentaje: 8,
@@ -157,7 +157,7 @@ const MOCK_DATA = {
                 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80'
             ],
             en_oferta: false,
-            is_maximus: false,
+            is_maximus: true,
             propietario_nombre: 'Lic. Alejandro Vielma',
             propietario_telefono: '+58 412-1112233',
             comision_porcentaje: 5,
@@ -1548,12 +1548,17 @@ const MOCK_DATA = {
     }
 };
 
-// Aliases para soportar tanto 'inm-1' como 'inm-001'
+    // Aliases no-enumerables para soportar tanto 'inm-1' como 'inm-001' sin duplicar elementos en Object.values()
     ['inm-1', 'inm-2', 'inm-3', 'inm-4', 'inm-5', 'inm-6'].forEach(k => {
         const num = k.replace('inm-', '');
         const alias = `inm-00${num}`;
         if (rawDetalleData[k]) {
-            rawDetalleData[alias] = { ...rawDetalleData[k], id: alias };
+            Object.defineProperty(rawDetalleData, alias, {
+                get() { return rawDetalleData[k]; },
+                set(val) { rawDetalleData[k] = val; },
+                enumerable: false,
+                configurable: true
+            });
         }
     });
 

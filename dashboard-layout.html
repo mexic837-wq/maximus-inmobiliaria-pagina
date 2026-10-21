@@ -1633,7 +1633,7 @@
                             <button id="btn-filtro-maximus-toggle" onclick="toggleFiltroSoloMaximus()" class="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-wider transition-all border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-maximus-dark shadow-sm hover:scale-[1.02] cursor-pointer shrink-0">
                                 <i class="ph-fill ph-buildings text-maximus-accent text-sm"></i>
                                 <span>Captaciones MAXIMUS</span>
-                                <span class="bg-maximus-accent text-white text-[9px] px-1.5 py-0.2 rounded-full font-black ml-0.5">4</span>
+                                <span id="badge-count-captaciones-toggle" class="bg-maximus-accent text-white text-[9px] px-1.5 py-0.2 rounded-full font-black ml-0.5">6</span>
                             </button>
                             <div class="relative shrink-0" id="filtrosDropdownWrapper">
                                 <button onclick="toggleFiltrosDropdown()" class="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-[10.5px] sm:text-[11px] font-bold rounded-full transition-colors relative z-10 shrink-0 cursor-pointer">
@@ -1779,14 +1779,17 @@
                         </div>
                     </div>
 
-                    <!-- Tarjeta 2 (General) -->
-                    <div data-inm-id="inm-2" onclick="abrirDetalleInmuebleAirbnb('inm-2')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30 cursor-pointer"
-                         data-maximus="false" data-operacion="alquiler" data-search="local comercial nivel feria cc sambil san cristobal alquiler general carlos santander">
+                    <!-- Tarjeta 2 (MAXIMUS) -->
+                    <div data-inm-id="inm-2" onclick="abrirDetalleInmuebleAirbnb('inm-2')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
+                         data-maximus="true" data-operacion="alquiler" data-search="local comercial nivel feria cc sambil san cristobal alquiler maximus carlos santander">
                         <div class="relative h-[165px] w-full bg-gray-100 flex flex-col items-center justify-center overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                             
-                            <div class="absolute top-2.5 left-2.5 flex gap-1.5">
+                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
+                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
+                                </span>
                                 <span class="bg-blue-500 text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">ALQUILER</span>
                             </div>
                             <div class="absolute bottom-2.5 left-3 text-white">
@@ -1801,7 +1804,7 @@
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Local comercial Nivel Feria">Local comercial Nivel Feria</h4>
                             
                             <!-- Asesor Asignado -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-2">
+                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
                                 <img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
                                 <div class="text-[11px] leading-tight truncate">
                                     <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
@@ -1912,14 +1915,17 @@
                         </div>
                     </div>
 
-                    <!-- Tarjeta 5 (General) -->
-                    <div data-inm-id="inm-5" onclick="abrirDetalleInmuebleAirbnb('inm-5')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-maximus-silver/30 cursor-pointer"
-                         data-maximus="false" data-operacion="venta" data-search="townhouse estrenar conjunto cerrado paramillo san cristobal venta general jose guerrero">
+                    <!-- Tarjeta 5 (MAXIMUS) -->
+                    <div data-inm-id="inm-5" onclick="abrirDetalleInmuebleAirbnb('inm-5')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
+                         data-maximus="true" data-operacion="venta" data-search="townhouse estrenar conjunto cerrado paramillo san cristobal venta maximus jose guerrero">
                         <div class="relative h-[165px] w-full overflow-hidden">
                             <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                             
-                            <div class="absolute top-2.5 left-2.5 flex gap-1.5">
+                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
+                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
+                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
+                                </span>
                                 <span class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">VENTA</span>
                             </div>
                             <div class="absolute bottom-2.5 left-3 text-white">
@@ -1934,7 +1940,7 @@
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Townhouse a estrenar en conjunto cerrado">Townhouse a estrenar en conjunto cerrado</h4>
                             
                             <!-- Asesor Asignado -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-2">
+                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
                                 <img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
                                 <div class="text-[11px] leading-tight truncate">
                                     <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
@@ -7903,6 +7909,11 @@
             if (contador) {
                 contador.textContent = `${visibles} ${visibles === 1 ? 'inmueble disponible' : 'inmuebles disponibles'}`;
             }
+            const badgeCaptacionesToggle = document.getElementById('badge-count-captaciones-toggle');
+            if (badgeCaptacionesToggle) {
+                const totalMaximus = document.querySelectorAll('.tarjeta-inmueble[data-maximus="true"]').length;
+                badgeCaptacionesToggle.textContent = totalMaximus || '6';
+            }
 
             // Animar tarjetas visibles con GSAP
             if (window.gsap && visibles > 0) {
@@ -11248,7 +11259,16 @@
             // Asegurar sincronización en vivo con Supabase
             await sincronizarInmueblesDesdeDB();
 
-            let propiedades = Object.values(INMUEBLES_DETALLE_DATA).filter(inm => inm.isMaximus);
+            // Obtener inmuebles captados por MAXIMUS y deduplicar por código/id canónico
+            const rawPropiedades = Object.values(INMUEBLES_DETALLE_DATA).filter(inm => inm && inm.isMaximus);
+            const mapaUnicos = new Map();
+            rawPropiedades.forEach(inm => {
+                const key = (inm.codigo || inm.id || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (key && !mapaUnicos.has(key)) {
+                    mapaUnicos.set(key, inm);
+                }
+            });
+            let propiedades = Array.from(mapaUnicos.values());
 
             // Actualizar total en hero con datos 100% de la base de datos
             const statCaptaciones = document.getElementById('stat-captaciones-count');
