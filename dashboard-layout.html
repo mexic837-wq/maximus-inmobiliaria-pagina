@@ -1206,10 +1206,10 @@
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
                         <span>Mi Perfil</span>
                     </a>
-                    <button type="button" onclick="abrirModalDejarResena()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer" title="Compartir mi experiencia en la página principal">
-                        <i class="ph-fill ph-star text-amber-500 text-xs"></i>
+                    <a href="javascript:void(0)" onclick="abrirModalDejarResena()" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822] cursor-pointer" title="Subir reseña a la página principal">
+                        <i class="ph ph-star text-base text-amber-500"></i>
                         <span>Subir Reseña</span>
-                    </button>
+                    </a>
                 </nav>
 
                 <!-- Breadcrumb estándar para Staff (Admin / Asesores con Sidebar) -->
@@ -6589,7 +6589,94 @@
     </div>
 
 
-<script>
+
+    <!-- ========================================================
+         MODAL: SUBIR RESEÑA / TESTIMONIO CLIENTE (SINCRONIZADO CON SUPABASE)
+         ======================================================== -->
+    <div id="modalDejarResena" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) cerrarModalDejarResena()">
+        <div class="bg-white dark:bg-[#071714] w-full max-w-lg rounded-3xl shadow-2xl border border-gray-100 dark:border-emerald-900/60 overflow-hidden transform transition-all duration-300 scale-95 opacity-0 my-8" id="modalDejarResenaContent">
+            <!-- Header con Gradiente Esmeralda de Lujo -->
+            <div class="relative bg-gradient-to-r from-[#071714] via-[#0B4A3F] to-[#07241E] p-6 text-white border-b-2 border-emerald-500">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-amber-400 text-xl shadow-inner">
+                            <i class="ph-fill ph-star"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/30">Testimonios MAXIMUS</span>
+                            <h3 class="text-xl font-black text-white mt-0.5">Compartir mi Experiencia</h3>
+                        </div>
+                    </div>
+                    <button type="button" onclick="cerrarModalDejarResena()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer">
+                        <i class="ph-bold ph-x text-sm"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-300 mt-3 leading-relaxed">
+                    Tu opinión será visible en la página principal para ayudar a nuevos compradores e inversionistas a elegir con total confianza.
+                </p>
+            </div>
+
+            <!-- Formulario Interactivo -->
+            <form id="formDejarResena" onsubmit="enviarResenaUsuario(event)" class="p-6 space-y-4">
+                <!-- Calificación de Estrellas -->
+                <div class="text-center py-2 bg-emerald-50/50 dark:bg-[#0A1F1B] rounded-2xl border border-emerald-100 dark:border-emerald-900/40">
+                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Tu Calificación General</label>
+                    <div class="flex items-center justify-center gap-2 text-2xl text-amber-400 cursor-pointer" id="resena-estrellas-group">
+                        <i class="ph-fill ph-star estrella-btn hover:scale-125 transition-transform" data-star="1" onclick="setCalificacionResena(1)"></i>
+                        <i class="ph-fill ph-star estrella-btn hover:scale-125 transition-transform" data-star="2" onclick="setCalificacionResena(2)"></i>
+                        <i class="ph-fill ph-star estrella-btn hover:scale-125 transition-transform" data-star="3" onclick="setCalificacionResena(3)"></i>
+                        <i class="ph-fill ph-star estrella-btn hover:scale-125 transition-transform" data-star="4" onclick="setCalificacionResena(4)"></i>
+                        <i class="ph-fill ph-star estrella-btn hover:scale-125 transition-transform" data-star="5" onclick="setCalificacionResena(5)"></i>
+                    </div>
+                    <input type="hidden" id="resena-calificacion" value="5">
+                    <span id="resena-calificacion-texto" class="block text-xs font-extrabold text-emerald-700 dark:text-emerald-400 mt-1">⭐⭐⭐⭐⭐ ¡Excelente servicio! (5 de 5)</span>
+                </div>
+
+                <!-- Nombre y Rol -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Tu Nombre *</label>
+                        <input type="text" id="resena-input-nombre" required placeholder="Ej: Carlos Mendoza" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">¿Qué tipo de cliente fuiste? *</label>
+                        <select id="resena-input-rol" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="Comprador" selected>🏡 Comprador / Adquirí una propiedad</option>
+                            <option value="Vendedor">💼 Vendedor / Vendí mi inmueble</option>
+                            <option value="Inversionista">📈 Inversionista Inmobiliario</option>
+                            <option value="Inquilino">🏢 Inquilino / Arrendatario</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Correo Opcional -->
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Correo Electrónico (Para verificación interna)</label>
+                    <input type="email" id="resena-input-email" placeholder="tu@correo.com" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-gray-700 dark:text-gray-300 outline-none focus:border-emerald-500">
+                </div>
+
+                <!-- Comentario / Testimonio -->
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Tu Reseña / Opinión *</label>
+                    <textarea id="resena-input-comentario" required rows="4" placeholder="Cuéntanos cómo fue tu experiencia con MAXIMUS, el trato del asesor, el respaldo legal o la rapidez en la operación..." class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-gray-800 dark:text-gray-200 outline-none focus:border-emerald-500 leading-relaxed"></textarea>
+                </div>
+
+                <!-- Acciones -->
+                <div class="pt-2 flex items-center justify-end gap-2.5">
+                    <button type="button" onclick="cerrarModalDejarResena()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900 text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#0A1F1B] transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btn-submit-resena" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-extrabold shadow-md shadow-emerald-950/20 hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                        <i class="ph-bold ph-paper-plane-right"></i>
+                        <span id="btn-submit-resena-text">Publicar Reseña en MAXIMUS</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
+    <script>
         // ==========================================
         // DATOS DE UBICACIONES DEL ESTADO TÁCHIRA
         // ==========================================
@@ -12719,6 +12806,12 @@
                 txt.textContent = labels[n] || (n + ' de 5');
             }
         }
+
+        
+        window.abrirModalDejarResena = abrirModalDejarResena;
+        window.cerrarModalDejarResena = cerrarModalDejarResena;
+        window.setCalificacionResena = setCalificacionResena;
+        window.enviarResenaUsuario = enviarResenaUsuario;
 
         function abrirModalDejarResena() {
             const modal = document.getElementById('modalDejarResena');
