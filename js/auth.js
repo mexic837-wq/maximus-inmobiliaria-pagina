@@ -797,16 +797,41 @@ const AuthService = {
 
             // 2. Fallback defensivo: Intentar registrar en public.usuarios si no hay trigger
             try {
-                await sb.from(APP_CONFIG.TABLES.USUARIOS).upsert({
+                await sb.from(APP_CONFIG.TABLES.USUARIOS || 'usuarios').upsert({
                     auth_id: data.user.id,
                     nombre_completo: nombre.trim(),
-                    email: data.user.email,
+                    email: data.user.email.toLowerCase().trim(),
                     telefono: telefono ? telefono.trim() : null,
+                    telefono_e164: telefono_e164 ? telefono_e164.trim() : (telefono ? telefono.trim() : ''),
+                    prefijo: prefijo || '+58',
                     rol: 'cliente',
                     tipo_asesor: null,
                     titulo: 'Usuario Registrado',
-                    avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre.trim())}&background=0B4A3F&color=fff&bold=true`
+                    avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre.trim())}&background=0B4A3F&color=fff&bold=true`,
+                    origen: 'Portal Web (Crear Cuenta)',
+                    score: 70,
+                    temperatura: 'activo',
+                    asesor_asignado_nombre: 'Sin Asignar',
+                    favoritos: [],
+                    interacciones: [
+                        {
+                            id: 'int-' + Date.now(),
+                            tipo: 'registro',
+                            titulo: 'Registro de Cuenta en Portal Web',
+                            detalle: 'El usuario completó el formulario de registro de comprador.',
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
                 }, { onConflict: 'auth_id' });
+
+                // Registrar en auditoria_actividad
+                await sb.from('auditoria_actividad').insert({
+                    user_id: data.user.id,
+                    email: data.user.email.toLowerCase().trim(),
+                    tipo: 'registro',
+                    titulo: 'Registro de Cuenta en Portal Web',
+                    detalle: 'El usuario completó el formulario de registro desde la página web.'
+                }).catch(() => {});
             } catch(dbErr) {
                 console.warn('Nota: El perfil fue creado por trigger o requiere permisos RLS:', dbErr);
             }

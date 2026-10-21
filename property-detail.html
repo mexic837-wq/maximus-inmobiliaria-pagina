@@ -719,6 +719,35 @@
 
             localStorage.setItem('maximus_favoritos', JSON.stringify(favs));
             actualizarEstadoBotonGuardar();
+
+            // Sincronizar favorito con Supabase en tiempo real si el usuario inició sesión
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                const u = (typeof window.AuthService !== 'undefined' && typeof window.AuthService.getCurrentUser === 'function') 
+                    ? window.AuthService.getCurrentUser() 
+                    : null;
+                if (sb && u && prop && prop.id) {
+                    const userId = u.id || u.auth_id;
+                    const uEmail = (u.email || '').toLowerCase().trim();
+                    const inmuebleId = prop.codigo || prop.id;
+                    if (idx === -1) {
+                        // Añadido
+                        sb.from('favoritos').insert({ user_id: userId, email: uEmail, inmueble_id: inmuebleId }).catch(() => {});
+                        sb.from('auditoria_actividad').insert({
+                            user_id: userId,
+                            email: uEmail,
+                            tipo: 'favorito',
+                            inmueble_id: inmuebleId,
+                            titulo: 'Propiedad Añadida a Favoritos',
+                            detalle: `Guardó en favoritos el inmueble ${prop.titulo || inmuebleId} desde la ficha de detalle.`
+                        }).catch(() => {});
+                    } else {
+                        // Removido
+                        sb.from('favoritos').delete().match({ inmueble_id: inmuebleId }).or(`user_id.eq.${userId},email.eq.${uEmail}`).catch(() => {});
+                    }
+                    sb.from('usuarios').update({ favoritos: favs }).or(`id.eq.${userId},auth_id.eq.${userId},email.eq.${uEmail}`).catch(() => {});
+                }
+            } catch(e) {}
         }
 
         function actualizarEstadoBotonGuardar() {

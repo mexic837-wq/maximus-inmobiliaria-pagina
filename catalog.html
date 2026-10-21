@@ -584,6 +584,19 @@
             try {
                 localStorage.setItem('maximus_favoritos', JSON.stringify(favoritosUsuario));
             } catch(e) {}
+
+            // Sincronizar en tiempo real con Supabase si el usuario ha iniciado sesión
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                const u = (typeof window.AuthService !== 'undefined' && typeof window.AuthService.getCurrentUser === 'function') 
+                    ? window.AuthService.getCurrentUser() 
+                    : null;
+                if (sb && u) {
+                    const userId = u.id || u.auth_id;
+                    const uEmail = (u.email || '').toLowerCase().trim();
+                    sb.from('usuarios').update({ favoritos: favoritosUsuario }).or(`id.eq.${userId},auth_id.eq.${userId},email.eq.${uEmail}`).catch(() => {});
+                }
+            } catch(e) {}
         }
 
         // Cargar inmuebles oficiales desde InmuebleService / Supabase

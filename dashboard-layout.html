@@ -4263,21 +4263,21 @@
                     </div>
 
                     <!-- Estado Vacío -->
-                    <div id="usuarios-admin-empty-state" class="hidden py-16 text-center space-y-3 px-4">
-                        <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-200 text-gray-400 flex items-center justify-center mx-auto text-2xl">
-                            <i class="ph-bold ph-magnifying-glass"></i>
+                    <div id="usuarios-admin-empty-state" class="hidden py-16 text-center space-y-3.5 px-4">
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mx-auto text-2xl shadow-sm">
+                            <i class="ph-bold ph-database"></i>
                         </div>
-                        <h4 class="text-sm font-extrabold text-maximus-dark">No se encontraron usuarios coincidentes</h4>
-                        <p class="text-xs text-gray-400 max-w-sm mx-auto">Prueba limpiando los filtros de búsqueda o seleccionando otro asesor del equipo.</p>
-                        <button onclick="limpiarFiltrosUsuariosAdmin()" class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-maximus-dark text-xs font-bold transition">Restablecer Filtros</button>
-                    </div>
-
-                    <!-- Footer de Tabla con Contador -->
-                    <div class="p-3.5 sm:p-4 bg-gray-50/70 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-semibold">
-                        <span id="label-conteo-usuarios-tabla">Mostrando 0 usuarios</span>
-                        <div class="flex items-center gap-2">
-                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span class="text-[11px] text-gray-400">Sincronización en vivo con Supabase & Portal</span>
+                        <h4 class="text-sm font-extrabold text-maximus-dark">Base de Compradores Sincronizada con Supabase</h4>
+                        <p class="text-xs text-gray-500 max-w-md mx-auto leading-relaxed">Actualmente no hay usuarios compradores registrados en tu base de datos de Supabase. Tan pronto como un nuevo cliente se registre desde el formulario web, aparecerá aquí en tiempo real con su trazabilidad completa, casas favoritas y datos de contacto.</p>
+                        <div class="pt-1 flex items-center justify-center gap-2">
+                            <a href="login.html#register" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white text-xs font-bold transition shadow-sm">
+                                <i class="ph-bold ph-user-plus text-sm"></i>
+                                <span>Crear Usuario de Prueba en la Web</span>
+                            </a>
+                            <button onclick="inicializarAdminUsuarios(true)" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition">
+                                <i class="ph-bold ph-arrows-clockwise text-sm"></i>
+                                <span>Recargar Supabase</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -15683,6 +15683,32 @@
 
             actualizarContadoresFavoritosDashboard();
 
+            // Sincronizar en tiempo real con Supabase (tabla favoritos, auditoria_actividad y columna favoritos en usuarios)
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                const u = (typeof window.AuthService !== 'undefined' && typeof window.AuthService.getCurrentUser === 'function') 
+                    ? window.AuthService.getCurrentUser() 
+                    : null;
+                if (sb && u) {
+                    const userId = u.id || u.auth_id;
+                    const uEmail = (u.email || '').toLowerCase().trim();
+                    if (yaEsFav) {
+                        sb.from('favoritos').delete().match({ inmueble_id: id }).or(`user_id.eq.${userId},email.eq.${uEmail}`).catch(() => {});
+                    } else {
+                        sb.from('favoritos').insert({ user_id: userId, email: uEmail, inmueble_id: id }).catch(() => {});
+                        sb.from('auditoria_actividad').insert({
+                            user_id: userId,
+                            email: uEmail,
+                            tipo: 'favorito',
+                            inmueble_id: id,
+                            titulo: 'Propiedad Añadida a Favoritos',
+                            detalle: `El usuario guardó el inmueble ${id} en su lista de favoritos.`
+                        }).catch(() => {});
+                    }
+                    sb.from('usuarios').update({ favoritos: favs }).or(`id.eq.${userId},auth_id.eq.${userId},email.eq.${uEmail}`).catch(() => {});
+                }
+            } catch(syncFavErr) {}
+
             if (filtroCategoriaActivo === 'favoritos') {
                 filtrarCatalogoInmuebles();
             }
@@ -15769,9 +15795,7 @@
                 if (window.UsuarioAdminService && typeof window.UsuarioAdminService.getAll === 'function') {
                     const res = await window.UsuarioAdminService.getAll();
                     stateAdminUsuarios.usuarios = Array.isArray(res?.data) ? res.data : [];
-                } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.usuarios_registrados)) {
-                    stateAdminUsuarios.usuarios = [...MOCK_DATA.usuarios_registrados];
-                }
+                } else { stateAdminUsuarios.usuarios = []; }
 
                 // Cargar inmuebles y asesores en dropdowns de filtro
                 poblarFiltrosAdminUsuarios();
