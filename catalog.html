@@ -545,18 +545,30 @@
             window.location.reload();
         }
 
-        // Leer parámetros de URL al llegar (ej: /catalogo?type=venta&zona=Pueblo+Nuevo)
+        // Leer parámetros de URL al llegar (ej: /catalogo?operacion=alquiler o ?operacion=venta)
         function leerParametrosURL() {
             const params = new URLSearchParams(window.location.search);
-            const op = params.get('type') || params.get('operacion');
-            if (op && ['venta', 'alquiler', 'todos'].includes(op.toLowerCase())) {
-                operacionActiva = op.toLowerCase();
+            const op = params.get('operacion') || params.get('type') || params.get('filtro') || params.get('op');
+            if (op) {
+                const opNorm = op.toLowerCase().trim();
+                if (['venta', 'comprar', 'compra', 'en-venta'].includes(opNorm)) {
+                    operacionActiva = 'venta';
+                } else if (['alquiler', 'alquilar', 'renta', 'en-alquiler'].includes(opNorm)) {
+                    operacionActiva = 'alquiler';
+                } else if (['todos', 'todas', 'all'].includes(opNorm)) {
+                    operacionActiva = 'todos';
+                }
                 actualizarEstiloTabsOperacion();
             }
-            const q = params.get('q') || params.get('busqueda');
+            const q = params.get('q') || params.get('busqueda') || params.get('buscar');
             if (q) {
                 const inputQ = document.getElementById('filtro-busqueda-texto');
                 if (inputQ) inputQ.value = q;
+            }
+            const tipo = params.get('tipo');
+            if (tipo) {
+                const selectTipo = document.getElementById('filtro-tipo');
+                if (selectTipo) selectTipo.value = tipo.toLowerCase();
             }
         }
 
@@ -636,6 +648,21 @@
         function setOperacionFiltro(op) {
             operacionActiva = op;
             actualizarEstiloTabsOperacion();
+            try {
+                const url = new URL(window.location.href);
+                if (op === 'todos') {
+                    url.searchParams.delete('operacion');
+                    url.searchParams.delete('type');
+                    url.searchParams.delete('filtro');
+                    url.searchParams.delete('op');
+                } else {
+                    url.searchParams.set('operacion', op);
+                    url.searchParams.delete('type');
+                    url.searchParams.delete('filtro');
+                    url.searchParams.delete('op');
+                }
+                window.history.replaceState({}, '', url.toString());
+            } catch(e) {}
             aplicarFiltros();
         }
 
@@ -645,9 +672,9 @@
                 const btn = document.getElementById(`tab-op-${t}`);
                 if (!btn) return;
                 if (t === operacionActiva) {
-                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all bg-maximus-dark text-white shadow-xs';
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all bg-maximus-dark text-white shadow-xs cursor-pointer';
                 } else {
-                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all text-gray-600 hover:text-maximus-dark';
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all text-gray-600 hover:text-maximus-dark hover:bg-gray-200/50 cursor-pointer';
                 }
             });
         }
@@ -670,6 +697,18 @@
         function limpiarTodosFiltros() {
             operacionActiva = 'todos';
             actualizarEstiloTabsOperacion();
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('operacion');
+                url.searchParams.delete('type');
+                url.searchParams.delete('filtro');
+                url.searchParams.delete('op');
+                url.searchParams.delete('q');
+                url.searchParams.delete('busqueda');
+                url.searchParams.delete('tipo');
+                window.history.replaceState({}, '', url.pathname);
+            } catch(e) {}
+
             const inputQ = document.getElementById('filtro-busqueda-texto');
             if (inputQ) inputQ.value = '';
             const fTipo = document.getElementById('filtro-tipo');
@@ -699,9 +738,10 @@
             const fOrden = document.getElementById('filtro-orden')?.value || 'recientes';
 
             let filtrados = todosLosInmuebles.filter(item => {
-                // Operación
+                // Operación (Venta / Alquiler / Todos)
                 if (operacionActiva !== 'todos') {
-                    if ((item.operacion || '').toLowerCase() !== operacionActiva) return false;
+                    const itemOp = ((item.operacion || item.tipo_operacion || '') + '').toLowerCase().trim();
+                    if (itemOp !== operacionActiva) return false;
                 }
 
                 // Tipo
