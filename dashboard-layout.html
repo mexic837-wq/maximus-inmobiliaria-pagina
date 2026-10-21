@@ -12644,11 +12644,11 @@
             const descripcion = document.getElementById('inm-descripcion').value;
             
             // Lógica de Asesor Responsable (Oficial MAXIMUS o Externo Manual)
-            const isMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]')?.checked ?? true;
+            const isAsesorMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]')?.checked ?? true;
             let asesor = {};
             let asesorIdRelacional = null;
 
-            if (isMaximus) {
+            if (isAsesorMaximus) {
                 const asesorId = document.getElementById('inm-asesor-select')?.value;
                 asesorIdRelacional = asesorId || null;
                 const asesorBuscado = ASESORES_MAXIMUS_DATA.find(a => a.id === asesorId) || ASESORES_MAXIMUS_DATA[0];
