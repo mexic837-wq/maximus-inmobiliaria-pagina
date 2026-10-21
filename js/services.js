@@ -25,7 +25,12 @@ const InmuebleService = {
     _getLocal() {
         const stored = localStorage.getItem(this._storageKey);
         if (stored) {
-            try { return JSON.parse(stored); } catch(e) {}
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed) && parsed.length > 0 && parsed.some(p => p.titulo && p.titulo.includes('Penthouse Dúplex'))) {
+                    return parsed;
+                }
+            } catch(e) {}
         }
         if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
             return [...MOCK_DATA.inmuebles];
@@ -107,7 +112,12 @@ const InmuebleService = {
             }
         }
         const localList = this._getLocal();
-        const item = localList.find(i => String(i.id) === String(id) || String(i.id) === 'inm-' + id || (id && String(id).endsWith(String(i.id))));
+        const item = localList.find(i => {
+            if (String(i.id) === String(id) || String(i.id) === 'inm-' + id || (id && String(id).endsWith(String(i.id)))) return true;
+            const num1 = String(i.id).replace(/\D/g, '');
+            const num2 = String(id).replace(/\D/g, '');
+            return Boolean(num1 && num2 && num1 === num2);
+        });
         return { data: item || null, error: item ? null : 'No encontrado' };
     },
 

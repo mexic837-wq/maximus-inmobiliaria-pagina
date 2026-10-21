@@ -753,8 +753,8 @@
             } else if (fOrden === 'metros-desc') {
                 filtrados.sort((a, b) => (b.metros_cuadrados || 0) - (a.metros_cuadrados || 0));
             } else {
-                // 'recientes': orden inverso o según fecha
-                filtrados.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
+                // 'recientes': conservar exactamente el orden oficial del catálogo del dashboard
+                // inm-001, inm-002, inm-003, inm-004, inm-005, inm-006...
             }
 
             renderGrillaCatalogo(filtrados);
@@ -879,9 +879,9 @@
                                     </button>
 
                                     <!-- WhatsApp Directo Asesor -->
-                                    <a href="${enlaceWa}" target="_blank" class="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-xs transition-colors shrink-0" title="Consultar por WhatsApp">
+                                    <button type="button" onclick="manejarClickWhatsAppCatalogo('${item.id}', '${encodeURIComponent(item.titulo)}', '${codigo}', '${encodeURIComponent(precioFmt)}', event)" class="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-xs transition-colors shrink-0 cursor-pointer" title="Consultar por WhatsApp">
                                         <i class="ph-bold ph-whatsapp-logo text-lg"></i>
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
 
@@ -889,6 +889,20 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        
+        function manejarClickWhatsAppCatalogo(id, encodedTitulo, codigo, encodedPrecio, event) {
+            if (event) event.stopPropagation();
+            const isAuth = window.AuthService ? AuthService.isAuthenticated() : Boolean(localStorage.getItem('maximus_user'));
+            if (!isAuth) {
+                abrirModalVip('Consulta con un Asesor MAXIMUS', 'Inicia sesión o crea tu cuenta gratuita para contactar directamente al asesor asignado a esta propiedad por WhatsApp.');
+                return;
+            }
+            const titulo = decodeURIComponent(encodedTitulo || 'Propiedad');
+            const precio = decodeURIComponent(encodedPrecio || '');
+            const mensajeWa = encodeURIComponent(`Hola MAXIMUS, deseo consultar por la propiedad "${titulo}" (${codigo}) por ${precio}. ¿Sigue disponible?`);
+            window.open(`https://wa.me/584240000000?text=${mensajeWa}`, '_blank');
         }
 
         // Manejar Favoritos con Puerta VIP
