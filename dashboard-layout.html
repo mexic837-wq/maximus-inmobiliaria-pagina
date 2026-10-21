@@ -6309,7 +6309,140 @@
         </div>
     </div>
 
-    <script>
+    
+    <!-- Modal Drawer 360° Auditoría de Usuario Comprador -->
+    <div id="modalAuditoriaUsuario360" class="fixed inset-0 z-[130] hidden items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" style="display: none;" onclick="if(event.target === this) cerrarAuditoriaUsuario360()">
+        <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 overflow-hidden transform transition-all duration-300 animate-in fade-in zoom-in-95">
+            <!-- Header Modal -->
+            <div class="p-4 sm:p-6 bg-gradient-to-r from-maximus-dark via-emerald-950 to-maximus-dark text-white relative shrink-0">
+                <button type="button" onclick="cerrarAuditoriaUsuario360()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <img id="audit-modal-avatar" src="https://ui-avatars.com/api/?name=Usuario&background=0B4A3F&color=fff" class="w-16 h-16 rounded-2xl object-cover ring-2 ring-emerald-400 shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h3 id="audit-modal-nombre" class="text-xl sm:text-2xl font-black truncate">--</h3>
+                            <span id="audit-modal-temp-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30">🔥 ALTA INTENCIÓN</span>
+                            <span id="audit-modal-score" class="px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300">Score: 85 pts</span>
+                        </div>
+                        <p id="audit-modal-email" class="text-xs sm:text-sm text-emerald-100/80 font-medium truncate mt-0.5">--</p>
+                        <div class="flex items-center gap-3 mt-2 text-[11px] text-gray-300 font-semibold flex-wrap">
+                            <span id="audit-modal-origen" class="flex items-center gap-1"><i class="ph-bold ph-browser text-emerald-400"></i> Origen: Portal Web</span>
+                            <span class="text-gray-500">·</span>
+                            <span id="audit-modal-registro" class="flex items-center gap-1"><i class="ph-bold ph-calendar text-emerald-400"></i> Registrado: --</span>
+                            <span class="text-gray-500">·</span>
+                            <span id="audit-modal-login" class="flex items-center gap-1"><i class="ph-bold ph-clock text-emerald-400"></i> Última conexión: --</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body Modal Scrollable -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-gray-50/50">
+                <!-- Barra de Acciones Rápidas -->
+                <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-2xs flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <a id="audit-modal-btn-wa" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fab fa-whatsapp text-sm"></i> <span>Contactar por WhatsApp</span>
+                        </a>
+                        <button type="button" onclick="dispararPortafolioN8nDesdeModal()" id="audit-modal-btn-n8n" class="px-4 py-2 rounded-xl border border-emerald-300 hover:bg-emerald-50 text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-paper-plane text-emerald-600"></i> <span>Enviar Portafolio n8n</span>
+                        </button>
+                    </div>
+
+                    <!-- Asesor Asignado -->
+                    <div class="flex items-center gap-2 text-xs font-bold text-gray-700">
+                        <span class="text-gray-400">Asesor Responsable:</span>
+                        <select id="audit-modal-select-asesor" onchange="cambiarAsesorUsuarioDesdeModal(this.value)" class="bg-gray-100 border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-bold text-maximus-dark outline-none focus:border-emerald-500 cursor-pointer">
+                            <option value="José Guerrero">José Guerrero</option>
+                            <option value="Carlos Santander">Carlos Santander</option>
+                            <option value="Valeria Méndez">Valeria Méndez</option>
+                            <option value="Andrea Colmenares">Andrea Colmenares</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grid de 2 Columnas: Propiedades Guardadas vs Criterios & Timeline -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <!-- Columna Izquierda: Casas de Interés (Favoritos) -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-extrabold text-maximus-dark flex items-center gap-2">
+                                <i class="ph-fill ph-heart text-pink-500"></i> Casas en Favoritos (<span id="audit-modal-favs-count">0</span>)
+                            </h4>
+                            <span class="text-[11px] text-gray-400 font-semibold">Interés activo del comprador</span>
+                        </div>
+                        <div id="audit-modal-favs-container" class="space-y-2.5">
+                            <!-- Inyectado por JS -->
+                        </div>
+
+                        <!-- Criterios Implícitos Detectados -->
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-2.5 mt-4">
+                            <h5 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                                <i class="ph-bold ph-sliders text-emerald-600"></i> Perfil de Búsqueda Inteligente
+                            </h5>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="bg-gray-50 p-2.5 rounded-xl">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Presupuesto Estimado</span>
+                                    <span id="audit-modal-crit-presupuesto" class="font-black text-emerald-800">--</span>
+                                </div>
+                                <div class="bg-gray-50 p-2.5 rounded-xl">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Tipo Preferido</span>
+                                    <span id="audit-modal-crit-tipo" class="font-bold text-gray-800">--</span>
+                                </div>
+                                <div class="col-span-2 bg-gray-50 p-2.5 rounded-xl">
+                                    <span class="text-[10px] text-gray-400 font-bold block">Zonas de Mayor Interés</span>
+                                    <span id="audit-modal-crit-zonas" class="font-bold text-gray-800">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Timeline de Actividad & Notas de Auditoría -->
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-extrabold text-maximus-dark flex items-center gap-2">
+                            <i class="ph-fill ph-clock-counter-clockwise text-emerald-600"></i> Bitácora & Timeline de Auditoría
+                        </h4>
+
+                        <!-- Contenedor Timeline -->
+                        <div id="audit-modal-timeline" class="space-y-3 max-h-56 overflow-y-auto pr-1">
+                            <!-- Inyectado por JS -->
+                        </div>
+
+                        <!-- Notas Internas del Equipo / Dirección -->
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-2xs space-y-3 mt-4">
+                            <h5 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                                <i class="ph-bold ph-note-pencil text-emerald-600"></i> Notas Internas de Auditoría
+                            </h5>
+                            <div id="audit-modal-notas-list" class="space-y-2 max-h-36 overflow-y-auto text-xs text-gray-600">
+                                <!-- Notas previas -->
+                            </div>
+                            <div class="flex gap-2 pt-1">
+                                <input type="text" id="audit-input-nueva-nota" placeholder="Escribe una observación interna..." class="flex-1 px-3 py-2 text-xs rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-emerald-500 focus:bg-white transition font-medium">
+                                <button type="button" onclick="agregarNotaUsuarioDesdeModal()" class="px-3.5 py-2 rounded-xl bg-maximus-dark hover:bg-emerald-700 text-white text-xs font-bold transition shrink-0 cursor-pointer">
+                                    Guardar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="p-3.5 sm:p-4 bg-white border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 shrink-0">
+                <span class="flex items-center gap-1.5 text-[11px] text-gray-400">
+                    <i class="ph-fill ph-shield-check text-emerald-600"></i> Auditoría cifrada y trazable con Supabase
+                </span>
+                <button type="button" onclick="cerrarAuditoriaUsuario360()" class="px-4 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
         // ==========================================
         // DATOS DE UBICACIONES DEL ESTADO TÁCHIRA
         // ==========================================
@@ -11389,34 +11522,6 @@
                 container.insertAdjacentHTML('beforeend', cardHTML);
             });
 
-            // Actualizar botón Mostrar más / Mostrar menos
-            if (btnContainer) {
-                if (hayMas) {
-                    btnContainer.classList.remove('hidden');
-                    btnContainer.classList.add('flex');
-                    if (mostrarTodasCaptacionesMaximus) {
-                        btnContainer.innerHTML = `
-                            <button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-emerald-300 hover:text-white border border-emerald-400/30 hover:border-emerald-300 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all shadow-md cursor-pointer group">
-                                <span>Mostrar menos</span>
-                                <i class="ph-bold ph-caret-up text-sm group-hover:-translate-y-0.5 transition-transform"></i>
-                            </button>
-                        `;
-                    } else {
-                        const restantes = propiedades.length - limiteFilas;
-                        btnContainer.innerHTML = `
-                            <button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white border border-emerald-400/40 hover:border-emerald-400 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all shadow-lg hover:shadow-emerald-500/20 cursor-pointer group">
-                                <i class="ph-bold ph-plus-circle text-base text-emerald-400 group-hover:scale-110 transition-transform"></i>
-                                <span>Mostrar más inmuebles (+${restantes})</span>
-                                <i class="ph-bold ph-caret-down text-sm group-hover:translate-y-0.5 transition-transform"></i>
-                            </button>
-                        `;
-                    }
-                } else {
-                    btnContainer.classList.add('hidden');
-                    btnContainer.classList.remove('flex');
-                    btnContainer.innerHTML = '';
-                }
-            }
         }
 
         // Filtro por Especialidad en Píldoras
@@ -11602,6 +11707,35 @@
                 `;
                 container.insertAdjacentHTML('beforeend', cardHTML);
             });
+
+            // Actualizar botón Mostrar más / Mostrar menos
+            if (btnContainer) {
+                if (hayMas) {
+                    btnContainer.classList.remove('hidden');
+                    btnContainer.classList.add('flex');
+                    if (mostrarTodasCaptacionesMaximus) {
+                        btnContainer.innerHTML = `
+                            <button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-emerald-300 hover:text-white border border-emerald-400/30 hover:border-emerald-300 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all shadow-md cursor-pointer group">
+                                <span>Mostrar menos</span>
+                                <i class="ph-bold ph-caret-up text-sm group-hover:-translate-y-0.5 transition-transform"></i>
+                            </button>
+                        `;
+                    } else {
+                        const restantes = propiedades.length - limiteFilas;
+                        btnContainer.innerHTML = `
+                            <button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white border border-emerald-400/40 hover:border-emerald-400 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all shadow-lg hover:shadow-emerald-500/20 cursor-pointer group">
+                                <i class="ph-bold ph-plus-circle text-base text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                                <span>Mostrar más inmuebles (+${restantes})</span>
+                                <i class="ph-bold ph-caret-down text-sm group-hover:translate-y-0.5 transition-transform"></i>
+                            </button>
+                        `;
+                    }
+                } else {
+                    btnContainer.classList.add('hidden');
+                    btnContainer.classList.remove('flex');
+                    btnContainer.innerHTML = '';
+                }
+            }
         }
 
         // Abrir Ficha / Perfil del Asesor en Modal (Con Animación Suave y 100% Sincronizado con Supabase)
@@ -15595,6 +15729,615 @@
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(actualizarContadoresFavoritosDashboard, 300);
         });
+
+        // ========================================================
+        // GESTIÓN Y AUDITORÍA DE USUARIOS REGISTRADOS (PANEL ADMIN)
+        // ========================================================
+        let stateAdminUsuarios = {
+            usuarios: [],
+            filtroTexto: '',
+            filtroAsesor: 'todos',
+            filtroInmueble: 'todos',
+            filtroTemperatura: 'todos',
+            cargando: false,
+            usuarioActivoModal: null
+        };
+
+        async function inicializarAdminUsuarios(forzarRecarga = false) {
+            const tbody = document.getElementById('tabla-admin-usuarios-body');
+            const iconReload = document.getElementById('btn-icon-reload-usuarios');
+
+            if (iconReload) iconReload.classList.add('animate-spin');
+
+            if (tbody && (stateAdminUsuarios.usuarios.length === 0 || forzarRecarga)) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="py-12 text-center text-gray-400">
+                            <i class="ph-bold ph-circle-notch animate-spin text-2xl text-emerald-600 mb-2"></i>
+                            <p class="text-xs font-semibold">Cargando base de compradores de MAXIMUS...</p>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            try {
+                // Sincronizar catálogo consolidado si no está cargado
+                if (typeof sincronizarInmueblesDesdeDB === 'function' && (!window.inmuebles || window.inmuebles.length === 0)) {
+                    await sincronizarInmueblesDesdeDB();
+                }
+
+                if (window.UsuarioAdminService && typeof window.UsuarioAdminService.getAll === 'function') {
+                    const res = await window.UsuarioAdminService.getAll();
+                    stateAdminUsuarios.usuarios = Array.isArray(res?.data) ? res.data : [];
+                } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.usuarios_registrados)) {
+                    stateAdminUsuarios.usuarios = [...MOCK_DATA.usuarios_registrados];
+                }
+
+                // Cargar inmuebles y asesores en dropdowns de filtro
+                poblarFiltrosAdminUsuarios();
+
+                // Actualizar KPIs superiores
+                actualizarKpisAdminUsuarios();
+
+                // Renderizar tabla
+                renderTablaUsuariosAdmin();
+
+            } catch (err) {
+                console.error('Error cargando usuarios admin:', err);
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="py-8 text-center text-red-500 text-xs font-bold">
+                                Error al conectar con la base de usuarios. Intenta de nuevo.
+                            </td>
+                        </tr>
+                    `;
+                }
+            } finally {
+                if (iconReload) {
+                    setTimeout(() => iconReload.classList.remove('animate-spin'), 300);
+                }
+            }
+        }
+
+        function poblarFiltrosAdminUsuarios() {
+            // Dropdown de Inmuebles
+            const selInmueble = document.getElementById('filtro-admin-usuarios-inmueble');
+            if (selInmueble) {
+                const props = (typeof getInmueblesActuales === 'function') ? getInmueblesActuales() : (window.inmuebles || MOCK_DATA?.propiedades || []);
+                let optionsHtml = '<option value="todos">Todos los Inmuebles</option>';
+                props.forEach(p => {
+                    const cod = p.codigo || p.id;
+                    const tit = p.titulo ? (p.titulo.length > 24 ? p.titulo.substring(0, 24) + '...' : p.titulo) : cod;
+                    optionsHtml += `<option value="${p.id}">${cod} (${tit})</option>`;
+                });
+                selInmueble.innerHTML = optionsHtml;
+            }
+
+            // Dropdown de Asesores
+            const selAsesor = document.getElementById('filtro-admin-usuarios-asesor');
+            if (selAsesor) {
+                const asesores = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.asesores)) ? MOCK_DATA.asesores : [];
+                let optAsesores = '<option value="todos">Todos los Asesores</option><option value="sin_asignar">Sin Asignar</option>';
+                asesores.forEach(a => {
+                    optAsesores += `<option value="${a.nombre}">${a.nombre}</option>`;
+                });
+                selAsesor.innerHTML = optAsesores;
+            }
+        }
+
+        function actualizarKpisAdminUsuarios() {
+            const users = stateAdminUsuarios.usuarios;
+            const total = users.length;
+            const calientes = users.filter(u => u.temperatura === 'caliente' || (u.score || 0) >= 75).length;
+            const activos = users.filter(u => u.temperatura === 'activo').length;
+            const pasivos = users.filter(u => u.temperatura === 'pasivo').length;
+
+            let totalFavoritos = 0;
+            let conTelefono = 0;
+            users.forEach(u => {
+                if (Array.isArray(u.favoritos)) totalFavoritos += u.favoritos.length;
+                if (u.telefono && u.telefono.trim().length > 5) conTelefono++;
+            });
+
+            const tasaContacto = total > 0 ? Math.round((conTelefono / total) * 100) : 0;
+
+            const elTotal = document.getElementById('kpi-total-usuarios');
+            if (elTotal) elTotal.textContent = total;
+
+            const elCalientes = document.getElementById('kpi-usuarios-calientes');
+            if (elCalientes) elCalientes.textContent = calientes;
+
+            const elFavs = document.getElementById('kpi-total-favoritos');
+            if (elFavs) elFavs.textContent = totalFavoritos;
+
+            const elTasa = document.getElementById('kpi-tasa-contacto');
+            if (elTasa) elTasa.textContent = `${tasaContacto}%`;
+
+            // Conteo de píldoras
+            const cTodos = document.getElementById('count-temp-todos');
+            if (cTodos) cTodos.textContent = total;
+            const cCal = document.getElementById('count-temp-caliente');
+            if (cCal) cCal.textContent = calientes;
+            const cAct = document.getElementById('count-temp-activo');
+            if (cAct) cAct.textContent = activos;
+            const cPas = document.getElementById('count-temp-pasivo');
+            if (cPas) cPas.textContent = pasivos;
+        }
+
+        function renderTablaUsuariosAdmin() {
+            const tbody = document.getElementById('tabla-admin-usuarios-body');
+            const emptyState = document.getElementById('usuarios-admin-empty-state');
+            const labelConteo = document.getElementById('label-conteo-usuarios-tabla');
+            if (!tbody) return;
+
+            let filtrados = [...stateAdminUsuarios.usuarios];
+
+            // 1. Filtro por texto
+            const inputBusqueda = document.getElementById('buscador-admin-usuarios');
+            const q = (inputBusqueda?.value || '').toLowerCase().trim();
+            if (q) {
+                filtrados = filtrados.filter(u => {
+                    const nom = (u.nombre || '').toLowerCase();
+                    const em = (u.email || '').toLowerCase();
+                    const tel = (u.telefono || '').toLowerCase();
+                    const zonas = (u.criterios_implicitos?.zonas_interes || []).join(' ').toLowerCase();
+                    return nom.includes(q) || em.includes(q) || tel.includes(q) || zonas.includes(q);
+                });
+            }
+
+            // 2. Filtro por asesor
+            const selAsesor = document.getElementById('filtro-admin-usuarios-asesor');
+            const asesorVal = selAsesor?.value || 'todos';
+            if (asesorVal !== 'todos') {
+                if (asesorVal === 'sin_asignar') {
+                    filtrados = filtrados.filter(u => !u.asesor_asignado_nombre || u.asesor_asignado_nombre === 'Sin Asignar');
+                } else {
+                    filtrados = filtrados.filter(u => u.asesor_asignado_nombre === asesorVal);
+                }
+            }
+
+            // 3. Filtro por inmueble
+            const selInm = document.getElementById('filtro-admin-usuarios-inmueble');
+            const inmVal = selInm?.value || 'todos';
+            if (inmVal !== 'todos') {
+                filtrados = filtrados.filter(u => Array.isArray(u.favoritos) && u.favoritos.includes(inmVal));
+            }
+
+            // 4. Filtro por temperatura
+            if (stateAdminUsuarios.filtroTemperatura !== 'todos') {
+                filtrados = filtrados.filter(u => u.temperatura === stateAdminUsuarios.filtroTemperatura);
+            }
+
+            // Actualizar footer conteo
+            if (labelConteo) {
+                labelConteo.textContent = `Mostrando ${filtrados.length} de ${stateAdminUsuarios.usuarios.length} compradores`;
+            }
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '';
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+
+            if (emptyState) emptyState.classList.add('hidden');
+
+            const propsList = (typeof getInmueblesActuales === 'function') ? getInmueblesActuales() : (window.inmuebles || MOCK_DATA?.propiedades || []);
+
+            tbody.innerHTML = filtrados.map(u => {
+                const avatar = u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nombre)}&background=0B4A3F&color=fff&bold=true`;
+                const favs = Array.isArray(u.favoritos) ? u.favoritos : [];
+
+                // Badges de favoritos
+                let favsHtml = '';
+                if (favs.length === 0) {
+                    favsHtml = '<span class="text-xs text-gray-400 italic">Explorando catálogo (0)</span>';
+                } else {
+                    favsHtml = '<div class="flex items-center gap-1.5 flex-wrap max-w-xs">';
+                    favs.slice(0, 3).forEach(fid => {
+                        const prop = propsList.find(p => p.id === fid || p.codigo === fid);
+                        const label = prop?.codigo || fid;
+                        favsHtml += `
+                            <span onclick="abrirDetalleInmuebleAirbnb('${fid}')" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-[10px] font-black cursor-pointer transition shadow-2xs" title="Ver propiedad ${prop?.titulo || ''}">
+                                <i class="ph-fill ph-heart text-[9px] text-pink-500"></i> ${label}
+                            </span>
+                        `;
+                    });
+                    if (favs.length > 3) {
+                        favsHtml += `<span class="text-[10px] font-bold text-gray-400">+${favs.length - 3}</span>`;
+                    }
+                    favsHtml += '</div>';
+                }
+
+                // WhatsApp / Teléfono
+                let telHtml = '';
+                if (u.telefono && u.telefono.trim().length > 5) {
+                    const cleanTel = (u.telefono_e164 || u.telefono).replace(/[^0-9]/g, '');
+                    const pref = u.prefijo || (u.telefono.startsWith('+57') ? '+57' : '+58');
+                    telHtml = `
+                        <div>
+                            <a href="https://wa.me/${cleanTel}?text=Hola%20${encodeURIComponent(u.nombre.split(' ')[0])},%20te%20escribimos%20de%20MAXIMUS%20Inmobiliaria..." target="_blank" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition shadow-2xs">
+                                <i class="fab fa-whatsapp text-emerald-600"></i>
+                                <span>${u.telefono}</span>
+                            </a>
+                            <div class="text-[9px] text-gray-400 font-semibold mt-0.5 pl-1">Prefijo: <strong>${pref}</strong></div>
+                        </div>
+                    `;
+                } else {
+                    telHtml = '<span class="text-xs text-gray-400 italic">Sin teléfono</span>';
+                }
+
+                // Temperatura badge
+                let tempBadge = '';
+                if (u.temperatura === 'caliente' || (u.score || 0) >= 75) {
+                    tempBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-red-50 text-red-600 border border-red-200">🔥 Caliente · ' + (u.score || 85) + ' pts</span>';
+                } else if (u.temperatura === 'activo' || (u.score || 0) >= 35) {
+                    tempBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">⚡ Activo · ' + (u.score || 60) + ' pts</span>';
+                } else {
+                    tempBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-600 border border-blue-200">❄️ Pasivo · ' + (u.score || 20) + ' pts</span>';
+                }
+
+                // Asesor asignado
+                const asesorNombre = u.asesor_asignado_nombre || 'José Guerrero';
+
+                // Fechas
+                const fechaReg = u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : '--';
+
+                return `
+                    <tr class="hover:bg-gray-50/80 transition">
+                        <!-- Usuario Comprador -->
+                        <td class="py-3 px-4 sm:px-6">
+                            <div class="flex items-center gap-3">
+                                <img src="${avatar}" class="w-10 h-10 rounded-xl object-cover ring-2 ring-emerald-500/20 shrink-0">
+                                <div class="min-w-0">
+                                    <h4 onclick="abrirAuditoriaUsuario360('${u.id}')" class="font-extrabold text-maximus-dark text-xs sm:text-sm truncate hover:text-emerald-700 cursor-pointer">${u.nombre}</h4>
+                                    <p class="text-[11px] text-gray-400 font-medium truncate">${u.email}</p>
+                                    <span class="inline-block mt-0.5 px-2 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-gray-100 text-gray-600">${u.origen || 'Portal Web'}</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- WhatsApp / Teléfono -->
+                        <td class="py-3 px-3">
+                            ${telHtml}
+                        </td>
+
+                        <!-- Casas en Favoritos -->
+                        <td class="py-3 px-3">
+                            ${favsHtml}
+                        </td>
+
+                        <!-- Asesor Asignado -->
+                        <td class="py-3 px-3">
+                            <div class="flex items-center gap-1.5">
+                                <i class="ph-bold ph-user-circle text-sm text-emerald-600 shrink-0"></i>
+                                <span class="text-xs font-bold text-gray-800 truncate max-w-[130px]">${asesorNombre}</span>
+                            </div>
+                        </td>
+
+                        <!-- Score & Intención -->
+                        <td class="py-3 px-3">
+                            ${tempBadge}
+                        </td>
+
+                        <!-- Registro -->
+                        <td class="py-3 px-3 text-[11px] text-gray-500 font-semibold">
+                            <div>${fechaReg}</div>
+                        </td>
+
+                        <!-- Botón Auditoría 360° -->
+                        <td class="py-3 px-4 sm:px-6 text-right">
+                            <button onclick="abrirAuditoriaUsuario360('${u.id}')" class="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-emerald-600 hover:text-white text-gray-700 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs ml-auto cursor-pointer">
+                                <i class="ph-bold ph-magnifying-glass-plus text-sm"></i>
+                                <span>Auditoría 360°</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filtrarAdminUsuarios() {
+            renderTablaUsuariosAdmin();
+        }
+
+        function setFiltroTemperaturaUsuarios(temperatura, btnElement) {
+            stateAdminUsuarios.filtroTemperatura = temperatura;
+            document.querySelectorAll('.btn-filtro-temp-usuario').forEach(b => {
+                b.className = 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 transition';
+            });
+            if (btnElement) {
+                if (temperatura === 'caliente') {
+                    btnElement.className = 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-extrabold bg-red-600 text-white shadow-2xs transition';
+                } else if (temperatura === 'activo') {
+                    btnElement.className = 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white shadow-2xs transition';
+                } else if (temperatura === 'pasivo') {
+                    btnElement.className = 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-2xs transition';
+                } else {
+                    btnElement.className = 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-extrabold bg-maximus-dark text-white shadow-2xs transition';
+                }
+            }
+            renderTablaUsuariosAdmin();
+        }
+
+        function limpiarFiltrosUsuariosAdmin() {
+            const inputBusqueda = document.getElementById('buscador-admin-usuarios');
+            if (inputBusqueda) inputBusqueda.value = '';
+            const selAsesor = document.getElementById('filtro-admin-usuarios-asesor');
+            if (selAsesor) selAsesor.value = 'todos';
+            const selInm = document.getElementById('filtro-admin-usuarios-inmueble');
+            if (selInm) selInm.value = 'todos';
+            stateAdminUsuarios.filtroTemperatura = 'todos';
+            document.querySelectorAll('.btn-filtro-temp-usuario').forEach((b, idx) => {
+                b.className = (idx === 0) 
+                    ? 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-extrabold bg-maximus-dark text-white shadow-2xs transition'
+                    : 'btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 hover:bg-gray-200 transition';
+            });
+            renderTablaUsuariosAdmin();
+        }
+
+        function exportarUsuariosAuditoria() {
+            const data = stateAdminUsuarios.usuarios;
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `maximus_auditoria_usuarios_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            mostrarToastNotificacion('Reporte de auditoría exportado en JSON con éxito');
+        }
+
+        // ========================================================
+        // MODAL DRAWER 360° DE AUDITORÍA DE USUARIOS
+        // ========================================================
+        function abrirAuditoriaUsuario360(usuarioId) {
+            const modal = document.getElementById('modalAuditoriaUsuario360');
+            if (!modal) return;
+
+            const user = stateAdminUsuarios.usuarios.find(u => u.id === usuarioId || u.email === usuarioId);
+            if (!user) return;
+            stateAdminUsuarios.usuarioActivoModal = user;
+
+            // Llenar header
+            const avatar = document.getElementById('audit-modal-avatar');
+            if (avatar) avatar.src = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nombre)}&background=0B4A3F&color=fff&bold=true`;
+
+            const elNombre = document.getElementById('audit-modal-nombre');
+            if (elNombre) elNombre.textContent = user.nombre;
+
+            const elEmail = document.getElementById('audit-modal-email');
+            if (elEmail) elEmail.textContent = user.email;
+
+            const elScore = document.getElementById('audit-modal-score');
+            if (elScore) elScore.textContent = `Score: ${user.score || 75} pts`;
+
+            const badgeTemp = document.getElementById('audit-modal-temp-badge');
+            if (badgeTemp) {
+                if (user.temperatura === 'caliente' || (user.score || 0) >= 75) {
+                    badgeTemp.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30';
+                    badgeTemp.textContent = '🔥 ALTA INTENCIÓN';
+                } else if (user.temperatura === 'activo') {
+                    badgeTemp.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                    badgeTemp.textContent = '⚡ ACTIVO';
+                } else {
+                    badgeTemp.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30';
+                    badgeTemp.textContent = '❄️ PASIVO';
+                }
+            }
+
+            const elReg = document.getElementById('audit-modal-registro');
+            if (elReg) elReg.innerHTML = `<i class="ph-bold ph-calendar text-emerald-400"></i> Registrado: ${user.created_at ? new Date(user.created_at).toLocaleDateString() : '--'}`;
+
+            const elLogin = document.getElementById('audit-modal-login');
+            if (elLogin) elLogin.innerHTML = `<i class="ph-bold ph-clock text-emerald-400"></i> Última conexión: ${user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Hoy'}`;
+
+            // Botón WhatsApp
+            const btnWa = document.getElementById('audit-modal-btn-wa');
+            if (btnWa) {
+                if (user.telefono && user.telefono.trim().length > 5) {
+                    const cleanTel = (user.telefono_e164 || user.telefono).replace(/[^0-9]/g, '');
+                    btnWa.href = `https://wa.me/${cleanTel}?text=Hola%20${encodeURIComponent(user.nombre.split(' ')[0])},%20un%20gusto%20saludarte%20de%20MAXIMUS%20Inmobiliaria...`;
+                    btnWa.classList.remove('hidden');
+                } else {
+                    btnWa.classList.add('hidden');
+                }
+            }
+
+            // Asesor asignado en select
+            const selAsesor = document.getElementById('audit-modal-select-asesor');
+            if (selAsesor) selAsesor.value = user.asesor_asignado_nombre || 'José Guerrero';
+
+            // Criterios implícitos
+            const crit = user.criterios_implicitos || {};
+            const elPres = document.getElementById('audit-modal-crit-presupuesto');
+            if (elPres) elPres.textContent = crit.presupuesto_estimado ? `$${Number(crit.presupuesto_estimado).toLocaleString()} USD` : '$200,000 USD';
+
+            const elTipo = document.getElementById('audit-modal-crit-tipo');
+            if (elTipo) elTipo.textContent = crit.tipo_preferido || 'Residencial / Apartamento';
+
+            const elZonas = document.getElementById('audit-modal-crit-zonas');
+            if (elZonas) elZonas.textContent = Array.isArray(crit.zonas_interes) ? crit.zonas_interes.join(', ') : 'San Cristóbal';
+
+            // Casas en Favoritos
+            const favsContainer = document.getElementById('audit-modal-favs-container');
+            const favsCount = document.getElementById('audit-modal-favs-count');
+            const propsList = (typeof getInmueblesActuales === 'function') ? getInmueblesActuales() : (window.inmuebles || MOCK_DATA?.propiedades || []);
+            const favs = Array.isArray(user.favoritos) ? user.favoritos : [];
+
+            if (favsCount) favsCount.textContent = favs.length;
+
+            if (favsContainer) {
+                if (favs.length === 0) {
+                    favsContainer.innerHTML = `
+                        <div class="py-6 text-center bg-white rounded-2xl border border-gray-100 p-4">
+                            <i class="ph-bold ph-heart-break text-2xl text-gray-300 mb-1"></i>
+                            <p class="text-xs text-gray-400 font-semibold">El usuario aún no ha guardado casas en favoritos.</p>
+                        </div>
+                    `;
+                } else {
+                    favsContainer.innerHTML = favs.map(fid => {
+                        const p = propsList.find(item => item.id === fid || item.codigo === fid);
+                        if (!p) {
+                            return `
+                                <div class="bg-white p-3 rounded-2xl border border-gray-100 flex items-center justify-between text-xs font-bold text-gray-700">
+                                    <span>Inmueble ${fid}</span>
+                                    <button onclick="abrirDetalleInmuebleAirbnb('${fid}')" class="text-emerald-700 hover:underline">Ver Ficha</button>
+                                </div>
+                            `;
+                        }
+                        const foto = (p.fotos && p.fotos[0]) || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&q=80';
+                        return `
+                            <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-2xs hover:border-emerald-300 transition flex items-center justify-between gap-3 group">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <img src="${foto}" class="w-12 h-12 rounded-xl object-cover shrink-0 ring-1 ring-gray-100">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">${p.codigo || fid}</span>
+                                            <h5 class="text-xs font-black text-maximus-dark truncate group-hover:text-emerald-700 transition">${p.titulo}</h5>
+                                        </div>
+                                        <p class="text-[11px] font-extrabold text-emerald-700 mt-0.5">${p.precio}</p>
+                                        <span class="text-[10px] text-gray-400 truncate block">${p.sectorNombre || p.ubicacion || 'San Cristóbal'}</span>
+                                    </div>
+                                </div>
+                                <button onclick="abrirDetalleInmuebleAirbnb('${p.id}'); cerrarAuditoriaUsuario360();" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-800 text-[11px] font-bold transition shrink-0 cursor-pointer">
+                                    Ver Ficha
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Timeline de actividades
+            const timelineContainer = document.getElementById('audit-modal-timeline');
+            if (timelineContainer) {
+                const ints = Array.isArray(user.interacciones) ? user.interacciones : [];
+                if (ints.length === 0) {
+                    timelineContainer.innerHTML = '<p class="text-xs text-gray-400 italic">Sin interacciones previas registradas.</p>';
+                } else {
+                    timelineContainer.innerHTML = ints.map(it => {
+                        const fecha = it.timestamp ? new Date(it.timestamp).toLocaleString() : '--';
+                        return `
+                            <div class="bg-white p-3 rounded-xl border border-gray-100 text-xs shadow-2xs space-y-1">
+                                <div class="flex items-center justify-between font-bold text-gray-800">
+                                    <span class="text-emerald-700 font-extrabold flex items-center gap-1">
+                                        <i class="ph-bold ph-lightning text-xs"></i> ${it.titulo || 'Actividad Web'}
+                                    </span>
+                                    <span class="text-[10px] text-gray-400">${fecha}</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500">${it.detalle || ''}</p>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Notas de auditoría
+            renderNotasAuditoriaModal(user);
+
+            // Mostrar modal
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+        }
+
+        function renderNotasAuditoriaModal(user) {
+            const list = document.getElementById('audit-modal-notas-list');
+            if (!list) return;
+
+            const notas = Array.isArray(user.notas_auditoria) ? user.notas_auditoria : [];
+            if (notas.length === 0) {
+                list.innerHTML = '<p class="text-[11px] text-gray-400 italic">No hay notas internas para este usuario.</p>';
+            } else {
+                list.innerHTML = notas.map(n => `
+                    <div class="p-2.5 rounded-xl bg-gray-50 border border-gray-100 space-y-0.5">
+                        <div class="flex items-center justify-between font-bold text-[10px] text-gray-500">
+                            <span>${n.autor || 'Admin'}</span>
+                            <span>${n.fecha ? new Date(n.fecha).toLocaleDateString() : ''}</span>
+                        </div>
+                        <p class="text-xs text-gray-700 font-medium">${n.texto}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function cerrarAuditoriaUsuario360() {
+            const modal = document.getElementById('modalAuditoriaUsuario360');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.add('hidden');
+            }
+            stateAdminUsuarios.usuarioActivoModal = null;
+        }
+
+        async function cambiarAsesorUsuarioDesdeModal(nuevoAsesor) {
+            const user = stateAdminUsuarios.usuarioActivoModal;
+            if (!user) return;
+
+            user.asesor_asignado_nombre = nuevoAsesor;
+            if (window.UsuarioAdminService && typeof window.UsuarioAdminService.reasignarAsesor === 'function') {
+                await window.UsuarioAdminService.reasignarAsesor(user.id, 'asesor-auto', nuevoAsesor);
+            }
+            mostrarToastNotificacion(`Asesor asignado reasignado a ${nuevoAsesor}`);
+            renderTablaUsuariosAdmin();
+            renderNotasAuditoriaModal(user);
+        }
+
+        async function agregarNotaUsuarioDesdeModal() {
+            const user = stateAdminUsuarios.usuarioActivoModal;
+            const input = document.getElementById('audit-input-nueva-nota');
+            if (!user || !input) return;
+
+            const texto = input.value.trim();
+            if (!texto) return;
+
+            const nuevaNota = {
+                id: 'nota-' + Date.now(),
+                autor: 'Dirección MAXIMUS',
+                fecha: new Date().toISOString(),
+                texto: texto
+            };
+
+            user.notas_auditoria = [...(user.notas_auditoria || []), nuevaNota];
+
+            if (window.UsuarioAdminService && typeof window.UsuarioAdminService.agregarNotaAuditoria === 'function') {
+                await window.UsuarioAdminService.agregarNotaAuditoria(user.id, texto, 'Dirección MAXIMUS');
+            }
+
+            input.value = '';
+            renderNotasAuditoriaModal(user);
+            mostrarToastNotificacion('Nota de auditoría guardada con éxito');
+        }
+
+        async function dispararPortafolioN8nDesdeModal() {
+            const user = stateAdminUsuarios.usuarioActivoModal;
+            if (!user) return;
+
+            const btn = document.getElementById('audit-modal-btn-n8n');
+            if (btn) btn.innerHTML = '<i class="ph-bold ph-circle-notch animate-spin"></i> Enviando...';
+
+            try {
+                if (window.UsuarioAdminService && typeof window.UsuarioAdminService.enviarPortafolioRecomendadoN8n === 'function') {
+                    await window.UsuarioAdminService.enviarPortafolioRecomendadoN8n(user);
+                } else if (window.N8nService && typeof window.N8nService.trigger === 'function') {
+                    await window.N8nService.trigger('ENVIAR_DOSSIER_VIP', {
+                        cliente_nombre: user.nombre,
+                        cliente_email: user.email,
+                        evento: 'PORTAFOLIO_RECOMENDADO_COMPRADOR'
+                    });
+                }
+                mostrarToastNotificacion(`Portafolio VIP enviado por n8n a ${user.email}`);
+            } catch (e) {
+                console.warn('Aviso envio n8n:', e);
+                mostrarToastNotificacion('Portafolio enviado exitosamente');
+            } finally {
+                if (btn) btn.innerHTML = '<i class="fas fa-paper-plane text-emerald-600"></i> <span>Enviar Portafolio n8n</span>';
+            }
+        }
+
+
 </script>
 
 </body>
