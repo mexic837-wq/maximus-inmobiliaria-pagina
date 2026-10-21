@@ -32,8 +32,7 @@ const AuthService = {
         // 1. Si es una de las cuentas demo del portal, permitir acceso directo con perfil simulado
         const demoAccounts = [
             'admin@maximus.com', 
-            'asesor.maximus@maximus.com', 
-            'asesor.externo@maximus.com', 
+            'asesor.maximus@maximus.com',  
             'agente@maximus.com',
             'cliente@maximus.com',
             'usuario@maximus.com'
@@ -83,8 +82,7 @@ const AuthService = {
 
         const demoAccounts = [
             'admin@maximus.com', 
-            'asesor.maximus@maximus.com', 
-            'asesor.externo@maximus.com', 
+            'asesor.maximus@maximus.com',  
             'agente@maximus.com',
             'cliente@maximus.com',
             'usuario@maximus.com'
@@ -364,7 +362,7 @@ const AuthService = {
     },
 
     isAsesorExterno() {
-        return this.hasRole(APP_CONFIG.ROLES.ASESOR_EXTERNO);
+        return false;
     },
 
     isCliente() {
@@ -516,18 +514,6 @@ const AuthService = {
                     avatar: 'https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true',
                 }
             },
-            'asesor.externo@maximus.com': {
-                password: 'externo123',
-                user: {
-                    id: 'asesor-5',
-                    name: 'Pedro Rivas',
-                    email: 'asesor.externo@maximus.com',
-                    role: APP_CONFIG.ROLES.ASESOR_EXTERNO,
-                    tipo_asesor: 'externo',
-                    title: 'Asesor Externo / Colega Aliado',
-                    avatar: 'https://ui-avatars.com/api/?name=Pedro+Rivas&background=1E3A8A&color=fff&bold=true',
-                }
-            },
             // Usuario Normal / Cliente
             'cliente@maximus.com': {
                 password: 'cliente123',
@@ -623,9 +609,7 @@ const AuthService = {
                         localStorage.setItem('maximus_asesores_oficiales_data', JSON.stringify(asesoresOficiales));
                     } catch(e) {}
                 }
-                const role = (asesorEncontrado.tipo_cuenta === 'externo' || (asesorEncontrado.cargo && asesorEncontrado.cargo.toLowerCase().includes('externo')))
-                    ? APP_CONFIG.ROLES.ASESOR_EXTERNO
-                    : APP_CONFIG.ROLES.ASESOR_MAXIMUS;
+                const role = APP_CONFIG.ROLES.ASESOR_MAXIMUS;
 
                 const userObj = {
                     id: asesorEncontrado.id || ('asesor-' + Date.now()),

@@ -60,7 +60,6 @@ const APP_CONFIG = {
     ROLES: {
         ADMIN: 'admin',
         ASESOR_MAXIMUS: 'asesor_maximus',
-        ASESOR_EXTERNO: 'asesor_externo',
         AGENTE: 'agente', // Compatibilidad hacia atrás
         CLIENTE: 'cliente', // Usuario normal / cliente
         USUARIO: 'cliente', // Alias
@@ -92,3 +91,4 @@ const APP_CONFIG = {
 if (typeof window !== 'undefined') {
     window.APP_CONFIG = APP_CONFIG;
 }
+

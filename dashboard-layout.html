@@ -68,13 +68,12 @@
         ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0B4A3F; }
 
-        /* Restricción visual de secciones por rol */
+        /* Restricción visual de secciones por rol (3 Roles Oficiales: Admin, Asesor MAXIMUS, Cliente) */
         /* 1. Clientes / Usuarios Normales: ocultar todo lo interno */
         body.role-cliente .staff-only,
         body.role-cliente .admin-only,
         body.role-cliente .asesor-maximus-only,
-        body.role-cliente .agente-only,
-        body.role-cliente .asesor-externo-only {
+        body.role-cliente .agente-only {
             display: none !important;
         }
 
@@ -86,23 +85,11 @@
             display: none !important;
         }
 
-        /* 2. Cuentas que NO son Admin (Asesores Oficiales, Asesores Externos, Clientes): NUNCA ver admin-only */
+        /* 2. Cuentas que NO son Admin (Asesor MAXIMUS, Cliente): NUNCA ver admin-only */
         body:not(.role-admin) .admin-only,
         body.role-asesor_maximus .admin-only,
-        body.role-asesor_externo .admin-only,
         body.role-agente .admin-only,
         body.role-cliente .admin-only {
-            display: none !important;
-        }
-
-        /* 3. Asesores Externos: no ven exclusivas internas de Asesor Maximus */
-        body.role-asesor_externo .asesor-maximus-only {
-            display: none !important;
-        }
-
-        /* 4. Asesores Oficiales y Admin: no ven cosas exclusivas de Asesor Externo */
-        body.role-asesor_maximus .asesor-externo-only,
-        body.role-admin .asesor-externo-only {
             display: none !important;
         }
 
@@ -1393,10 +1380,7 @@
                                 <i class="ph-fill ph-chart-polar text-lg text-emerald-600"></i> Histórico & Comisiones
                             </button>
                             
-                            <!-- Opción exclusiva para Asesor Externo / Agente Pagos -->
-                            <button onclick="activateTab('view-pagos'); toggleProfileMenu();" class="asesor-externo-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
-                                <i class="ph-fill ph-credit-card text-lg"></i> Pagos / Membresía
-                            </button>
+
 
                             <!-- Mis Propiedades Favoritas -->
                             <button onclick="activarFiltroFavoritosDashboard(); toggleProfileMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors flex items-center justify-between group">
@@ -2645,7 +2629,7 @@
                                         <input type="number" id="cierre-porcentaje-asesor" value="70.0" step="1" min="0" max="100" oninput="calcularComisionesEnVivoModal()" class="w-full pr-8 pl-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                         <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">%</span>
                                     </div>
-                                    <p class="text-[10px] text-gray-400 mt-1">70% Asesor MAXIMUS / 50% Asesor Externo</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">Split oficial: 70% Asesor MAXIMUS / 30% Agencia</p>
                                 </div>
                             </div>
 
@@ -3211,21 +3195,13 @@
                         <form id="form-crear-asesor" class="space-y-6">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo de Perfil / Cuenta *</label>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500 bg-emerald-50/50 cursor-pointer">
-                                        <input type="radio" name="nuevo_tipo_cuenta" value="maximus" checked class="accent-maximus-accent w-4 h-4">
-                                        <div>
-                                            <span class="block text-xs font-extrabold text-emerald-950">Asesor Oficial MAXIMUS</span>
-                                            <span class="block text-[10px] text-emerald-800 font-semibold">Acceso a Histórico y Comisiones (70% split)</span>
-                                        </div>
-                                    </label>
-                                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-gray-200 bg-gray-50 cursor-pointer">
-                                        <input type="radio" name="nuevo_tipo_cuenta" value="externo" class="accent-maximus-accent w-4 h-4">
-                                        <div>
-                                            <span class="block text-xs font-extrabold text-gray-800">Asesor Externo / Aliado</span>
-                                            <span class="block text-[10px] text-gray-500 font-semibold">Acceso a Catálogo y Cotizador (50% split)</span>
-                                        </div>
-                                    </label>
+                                <div class="p-3.5 rounded-xl border border-emerald-500 bg-emerald-50/50 flex items-center gap-3">
+                                    <input type="hidden" name="nuevo_tipo_cuenta" value="maximus">
+                                    <i class="ph-fill ph-shield-check text-emerald-600 text-xl"></i>
+                                    <div>
+                                        <span class="block text-xs font-extrabold text-emerald-950">Asesor Oficial MAXIMUS</span>
+                                        <span class="block text-[10px] text-emerald-800 font-semibold">Acceso total a CRM, Clientes, Histórico y Comisiones (70% split oficial)</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -3985,43 +3961,12 @@
                                 <div>
                                     <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Asesor</h3>
                                     
-                                    <div class="flex items-center gap-4 mb-4">
-                                        <label class="flex items-center gap-2 cursor-pointer">
-                                            <input type="radio" name="tipo_asesor" value="maximus" checked onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4">
-                                            <span class="text-sm font-bold text-maximus-dark">Asesor MAXIMUS</span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer">
-                                            <input type="radio" name="tipo_asesor" value="externo" onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4">
-                                            <span class="text-sm font-bold text-maximus-dark">Asesor Externo (Manual)</span>
-                                        </label>
-                                    </div>
-
-                                    <!-- Select para Asesor MAXIMUS -->
                                     <div id="container-asesor-maximus">
-                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Seleccionar Asesor Oficial</label>
+                                        <input type="hidden" name="tipo_asesor" value="maximus">
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Seleccionar Asesor Oficial MAXIMUS</label>
                                         <select id="inm-asesor-select" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                             <!-- Poblado via JS -->
                                         </select>
-                                    </div>
-
-                                    <!-- Campos manuales para Asesor Externo -->
-                                    <div id="container-asesor-externo" style="display: none;" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Nombre Completo</label>
-                                            <input type="text" id="inm-asesor-nombre" placeholder="Ej: Juan Pérez" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Teléfono / WhatsApp</label>
-                                            <input type="text" id="inm-asesor-telefono" placeholder="Ej: +58 414 1234567" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Cargo / Inmobiliaria</label>
-                                            <input type="text" id="inm-asesor-cargo" placeholder="Ej: Asesor Independiente" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Foto de Perfil (Opcional)</label>
-                                            <input type="file" id="inm-asesor-avatar-file" accept="image/*" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer outline-none focus:border-maximus-accent">
-                                        </div>
                                     </div>
                                 </div>
                                 <div>
@@ -6909,15 +6854,7 @@
                         dropBadge.textContent = 'Usuario Normal';
                         dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-teal-50 text-teal-800';
                     }
-                } else if (userRole === 'asesor_externo') {
-                    if (roleBadge) {
-                        roleBadge.textContent = 'EXTERNO';
-                        roleBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300';
-                    }
-                    if (dropBadge) {
-                        dropBadge.textContent = 'Asesor Externo';
-                        dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-900';
-                    }
+
                 } else {
                     if (roleBadge) {
                         roleBadge.textContent = 'MAXIMUS';
@@ -6931,7 +6868,7 @@
             }
 
             // Añadir clase de rol al body y html para reglas CSS directas
-            document.body.classList.remove('role-admin', 'role-asesor_maximus', 'role-asesor_externo', 'role-cliente', 'role-agente');
+            document.body.classList.remove('role-admin', 'role-asesor_maximus', 'role-cliente', 'role-agente');
             document.body.classList.add('role-' + userRole);
             if (userRole === 'cliente') {
                 document.documentElement.classList.add('role-cliente');
@@ -6945,7 +6882,6 @@
             // Aplicar visibilidad basada en roles
             const adminElements = document.querySelectorAll('.admin-only');
             const asesorMaximusElements = document.querySelectorAll('.asesor-maximus-only');
-            const asesorExternoElements = document.querySelectorAll('.asesor-externo-only');
             const agenteElements = document.querySelectorAll('.agente-only');
             const staffElements = document.querySelectorAll('.staff-only');
             const clienteElements = document.querySelectorAll('.cliente-only, .client-only');
@@ -6954,27 +6890,17 @@
                 staffElements.forEach(el => el.style.display = '');
                 adminElements.forEach(el => el.style.display = '');
                 asesorMaximusElements.forEach(el => el.style.display = '');
-                asesorExternoElements.forEach(el => el.style.display = 'none');
                 agenteElements.forEach(el => el.style.display = 'none');
                 clienteElements.forEach(el => el.style.display = 'none');
             } else if (userRole === 'asesor_maximus') {
                 staffElements.forEach(el => el.style.display = '');
                 asesorMaximusElements.forEach(el => el.style.display = '');
                 agenteElements.forEach(el => el.style.display = '');
-                asesorExternoElements.forEach(el => el.style.display = 'none');
-                adminElements.forEach(el => el.style.display = 'none');
-                clienteElements.forEach(el => el.style.display = 'none');
-            } else if (userRole === 'asesor_externo') {
-                staffElements.forEach(el => el.style.display = '');
-                agenteElements.forEach(el => el.style.display = '');
-                asesorExternoElements.forEach(el => el.style.display = '');
-                asesorMaximusElements.forEach(el => el.style.display = 'none');
                 adminElements.forEach(el => el.style.display = 'none');
                 clienteElements.forEach(el => el.style.display = 'none');
             } else {
                 adminElements.forEach(el => el.style.display = 'none');
                 asesorMaximusElements.forEach(el => el.style.display = 'none');
-                asesorExternoElements.forEach(el => el.style.display = 'none');
                 agenteElements.forEach(el => el.style.display = 'none');
                 staffElements.forEach(el => el.style.display = 'none');
                 clienteElements.forEach(el => el.style.display = '');
@@ -7053,9 +6979,7 @@
                 if (userRole === 'admin' && tabElement.classList.contains('agente-only')) {
                     savedTab = defaultTabPorRol;
                 }
-                if (userRole === 'asesor_externo' && tabElement.classList.contains('asesor-maximus-only')) {
-                    savedTab = defaultTabPorRol;
-                }
+
                 if (userRole !== 'admin' && tabElement.classList.contains('admin-only')) {
                     savedTab = defaultTabPorRol;
                 }
@@ -12402,7 +12326,7 @@
                     cierres,
                     avatar,
                     activo: true,
-                    badge_texto: tipoCuenta === 'maximus' ? 'Asesor Certificado' : 'Aliado Externo',
+                    badge_texto: 'Asesor Certificado',
                     tipo_cuenta: tipoCuenta,
                     split_comision: splitComision,
                     captacionesActivas: 0,
@@ -12421,7 +12345,7 @@
                                 name: nombre,
                                 email: cleanCorreo,
                                 telefono: telefono,
-                                role: tipoCuenta === 'maximus' ? 'asesor_maximus' : 'asesor_externo',
+                                role: 'asesor_maximus',
                                 tipo_asesor: tipoCuenta,
                                 title: cargo || 'Asesor MAXIMUS',
                                 avatar: avatar
@@ -12447,7 +12371,7 @@
                             telefono,
                             cargo,
                             especialidad,
-                            tipo_cuenta: tipoCuenta === 'maximus' ? 'Asesor Oficial MAXIMUS' : 'Asesor Aliado Externo',
+                            tipo_cuenta: 'Asesor Oficial MAXIMUS',
                             split_comision: splitComision,
                             password_temporal: password
                         }).catch(() => {});
@@ -12647,14 +12571,7 @@
         window.togglePasswordVisibility = togglePasswordVisibility;
 
         function toggleTipoAsesor() {
-            const isMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]').checked;
-            const containerMaximus = document.getElementById('container-asesor-maximus');
-            const containerExterno = document.getElementById('container-asesor-externo');
-            
-            if (containerMaximus && containerExterno) {
-                containerMaximus.style.display = isMaximus ? 'block' : 'none';
-                containerExterno.style.display = isMaximus ? 'none' : 'grid';
-            }
+            // Unificado a Asesor Oficial MAXIMUS
         }
 
         function popularSelectAsesores() {
@@ -12693,52 +12610,20 @@
             const isMaximus = document.getElementById('inm-ismaximus').checked;
             const descripcion = document.getElementById('inm-descripcion').value;
             
-            // Lógica de Asesor
-            const tipoAsesor = document.querySelector('input[name="tipo_asesor"]:checked').value;
-            let asesor = {};
-            let asesorIdRelacional = null;
-            
-            if (tipoAsesor === 'maximus') {
-                const asesorId = document.getElementById('inm-asesor-select').value;
-                asesorIdRelacional = asesorId;
-                const asesorBuscado = ASESORES_MAXIMUS_DATA.find(a => a.id === asesorId);
-                if (asesorBuscado) {
-                    asesor = {
-                        id: asesorBuscado.id,
-                        nombre: asesorBuscado.nombre,
-                        cargo: asesorBuscado.cargo,
-                        telefono: asesorBuscado.telefono,
-                        email: asesorBuscado.email || 'contacto@maximusinmobiliaria.com',
-                        avatar: asesorBuscado.avatar,
-                        rating: `${asesorBuscado.rating || '5.0'}`,
-                        experiencia: 'Asesor Oficial MAXIMUS'
-                    };
-                }
-            } else {
-                const nombreExt = document.getElementById('inm-asesor-nombre').value || 'Asesor Externo';
-                const telefonoExt = document.getElementById('inm-asesor-telefono').value || '';
-                const cargoExt = document.getElementById('inm-asesor-cargo').value || 'Asesor Independiente';
-                const fileInputExt = document.getElementById('inm-asesor-avatar-file');
-                const fileExt = fileInputExt ? fileInputExt.files[0] : null;
-                let avatarExt = '';
-                
-                if (fileExt) {
-                    avatarExt = URL.createObjectURL(fileExt);
-                } else {
-                    const nomFormateado = nombreExt.replace(/\s+/g, '+');
-                    avatarExt = `https://ui-avatars.com/api/?name=${nomFormateado}&background=475569&color=fff&bold=true`;
-                }
-                
-                asesor = {
-                    nombre: nombreExt,
-                    cargo: cargoExt,
-                    telefono: telefonoExt,
-                    email: 'contacto@maximusinmobiliaria.com',
-                    avatar: avatarExt,
-                    rating: 'Nuevo',
-                    experiencia: 'Asesor Externo'
-                };
-            }
+            // Lógica de Asesor Oficial MAXIMUS
+            const asesorId = document.getElementById('inm-asesor-select')?.value;
+            let asesorIdRelacional = asesorId || null;
+            const asesorBuscado = ASESORES_MAXIMUS_DATA.find(a => a.id === asesorId) || ASESORES_MAXIMUS_DATA[0];
+            let asesor = {
+                id: asesorBuscado ? asesorBuscado.id : 'asesor-1',
+                nombre: asesorBuscado ? asesorBuscado.nombre : 'Asesor MAXIMUS',
+                cargo: asesorBuscado ? asesorBuscado.cargo : 'Asesor Inmobiliario',
+                telefono: asesorBuscado ? asesorBuscado.telefono : '+58 424-1234567',
+                email: (asesorBuscado && asesorBuscado.email) || 'contacto@maximusinmobiliaria.com',
+                avatar: asesorBuscado ? asesorBuscado.avatar : '',
+                rating: `${(asesorBuscado && asesorBuscado.rating) || '5.0'}`,
+                experiencia: 'Asesor Oficial MAXIMUS'
+            };
 
             // Fotos (URLs separadas por comas)
             const fotosStr = document.getElementById('inm-fotos').value;
@@ -13394,7 +13279,7 @@
                 listaAsesores.forEach(a => {
                     const opt = document.createElement('option');
                     opt.value = a.id;
-                    opt.textContent = `${a.nombre} (${a.tipo === 'externo' ? 'Externo' : 'Oficial MAXIMUS'})`;
+                    opt.textContent = `${a.nombre} (Oficial MAXIMUS)`;
                     selectFiltro.appendChild(opt);
                 });
             }
@@ -13406,9 +13291,9 @@
                 listaAsesores.forEach(a => {
                     const opt = document.createElement('option');
                     opt.value = a.id;
-                    opt.textContent = `${a.nombre} - ${a.cargo} (${a.tipo === 'externo' ? 'Asesor Externo' : 'Asesor MAXIMUS'})`;
+                    opt.textContent = `${a.nombre} - ${a.cargo} (Asesor MAXIMUS)`;
                     opt.dataset.tipo = a.tipo || 'maximus';
-                    opt.dataset.split = a.comision_porcentaje_split || (a.tipo === 'externo' ? 50 : 70);
+                    opt.dataset.split = a.comision_porcentaje_split || 70;
                     selectModal.appendChild(opt);
                 });
             }
@@ -13614,9 +13499,7 @@
                     ? '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">Venta</span>'
                     : '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">Alquiler</span>';
 
-                const asesorTipoBadge = c.asesor_tipo === 'externo'
-                    ? '<span class="text-[9px] font-bold text-blue-800 bg-blue-100 px-1.5 py-0.2 rounded-md">Externo</span>'
-                    : '<span class="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-md">Oficial</span>';
+                const asesorTipoBadge = '<span class="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-md">Oficial</span>';
 
                 const estatusBadge = c.estatus_comision === 'liquidada'
                     ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="ph-bold ph-check text-emerald-600"></i> Liquidada</span>'
@@ -13708,8 +13591,8 @@
                         </div>
                         <div>
                             <h4 class="font-extrabold text-base text-maximus-dark leading-tight">${a.asesor_nombre}</h4>
-                            <span class="inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider ${a.asesor_tipo === 'externo' ? 'text-blue-700 bg-blue-50' : 'text-emerald-800 bg-emerald-50'} px-2 py-0.5 rounded-md">
-                                ${a.asesor_tipo === 'externo' ? 'Asesor Externo' : 'Asesor MAXIMUS'}
+                            <span class="inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                Asesor Oficial MAXIMUS
                             </span>
                         </div>
                     </div>
@@ -13801,7 +13684,7 @@
             const opt = select.options[select.selectedIndex];
             if (!opt) return;
 
-            const split = opt.dataset.split || (opt.dataset.tipo === 'externo' ? 50 : 70);
+            const split = opt.dataset.split || 70;
             const inputSplit = document.getElementById('cierre-porcentaje-asesor');
             if (inputSplit) inputSplit.value = split;
 
@@ -13912,7 +13795,7 @@
             const item = data ? data.find(c => c.id === id) : null;
             if (!item) return;
 
-            alert(`====================================\nMAXIMUS INMOBILIARIA - COMPROBANTE DE CIERRE\n====================================\nInmueble: ${item.inmueble_titulo}\nUbicación: ${item.ubicacion}\nAsesor: ${item.asesor_nombre} (${item.asesor_tipo === 'externo' ? 'Asesor Externo' : 'Asesor Oficial MAXIMUS'})\nFecha de Cierre: ${item.fecha_cierre}\nPrecio de Venta: ${formatUSD(item.precio_final)}\n------------------------------------\nComisión Bruta (${item.comision_bruta_porcentaje}%): ${formatUSD(item.comision_bruta_monto)}\nComisión Neta Asesor (${item.asesor_porcentaje_neto}%): ${formatUSD(item.comision_neta_asesor)}\nRetención Agencia MAXIMUS: ${formatUSD(item.comision_oficina_monto)}\nEstado: ${item.estatus_comision.toUpperCase()}\n------------------------------------\nComprador: ${item.cliente_comprador || 'N/D'}\nPropietario: ${item.cliente_vendedor || 'N/D'}\n====================================`);
+            alert(`====================================\nMAXIMUS INMOBILIARIA - COMPROBANTE DE CIERRE\n====================================\nInmueble: ${item.inmueble_titulo}\nUbicación: ${item.ubicacion}\nAsesor: ${item.asesor_nombre} (Asesor Oficial MAXIMUS)\nFecha de Cierre: ${item.fecha_cierre}\nPrecio de Venta: ${formatUSD(item.precio_final)}\n------------------------------------\nComisión Bruta (${item.comision_bruta_porcentaje}%): ${formatUSD(item.comision_bruta_monto)}\nComisión Neta Asesor (${item.asesor_porcentaje_neto}%): ${formatUSD(item.comision_neta_asesor)}\nRetención Agencia MAXIMUS: ${formatUSD(item.comision_oficina_monto)}\nEstado: ${item.estatus_comision.toUpperCase()}\n------------------------------------\nComprador: ${item.cliente_comprador || 'N/D'}\nPropietario: ${item.cliente_vendedor || 'N/D'}\n====================================`);
         }
         // ==========================================
         // 17. GESTIÓN DE PERFIL & SEGURIDAD DEL ASESOR
@@ -13970,9 +13853,7 @@
                 } else if (userRoleRaw === 'admin' || userRoleRaw === 'director') {
                     cardRolBadge.textContent = 'DIRECTOR / ADMIN';
                     cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
-                } else if (userRoleRaw.includes('externo')) {
-                    cardRolBadge.textContent = 'ASESOR EXTERNO';
-                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+
                 } else {
                     cardRolBadge.textContent = 'ASESOR MAXIMUS';
                     cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800';

@@ -879,7 +879,7 @@ const N8nService = {
             cargo: data.cargo || 'Asesor Inmobiliario',
             especialidad: data.especialidad || 'Propiedades Exclusivas',
             tipo_cuenta: data.tipo_cuenta || 'maximus',
-            split_comision: data.split_comision || (data.tipo_cuenta === 'externo' ? '50%' : '70%'),
+            split_comision: data.split_comision || '70%',
             password_temporal: data.password_temporal || 'maximus123',
             url_portal: (typeof window !== 'undefined' ? window.location.origin : 'https://maximusinmobiliaria.com') + '/login',
             ...data
@@ -1362,7 +1362,7 @@ const CierreVentaService = {
         const precioFinal = parseFloat(cierreInput.precio_final) || 0;
         const comisionBrutaPct = parseFloat(cierreInput.comision_bruta_porcentaje) || 5.0;
         const comisionBrutaMonto = Math.round(precioFinal * (comisionBrutaPct / 100));
-        const asesorNetoPct = parseFloat(cierreInput.asesor_porcentaje_neto) || (cierreInput.asesor_tipo === 'externo' ? 50.0 : 70.0);
+        const asesorNetoPct = parseFloat(cierreInput.asesor_porcentaje_neto) || 70.0;
         const comisionNetaAsesor = Math.round(comisionBrutaMonto * (asesorNetoPct / 100));
         const comisionOficinaMonto = comisionBrutaMonto - comisionNetaAsesor;
 
@@ -2277,7 +2277,7 @@ const AsesorMaximusService = {
             activo: asesorData.activo !== undefined ? asesorData.activo : true,
             rating: parseFloat(asesorData.rating) || 5.0,
             cierres: parseInt(asesorData.cierres) || 0,
-            badge_texto: asesorData.badge_texto || (asesorData.tipo_cuenta === 'externo' ? 'Aliado Externo' : 'Asesor Certificado'),
+            badge_texto: asesorData.badge_texto || 'Asesor Certificado',
             orden: list.length + 1,
             created_at: new Date().toISOString(),
             ...asesorData,
@@ -2301,7 +2301,7 @@ const AsesorMaximusService = {
                     avatar: asesorData.avatar || null,
                     rating: parseFloat(asesorData.rating) || 5.0,
                     cierres: parseInt(asesorData.cierres) || 0,
-                    badge_texto: asesorData.badge_texto || (asesorData.tipo_cuenta === 'externo' ? 'Aliado Externo' : 'Asesor Certificado'),
+                    badge_texto: asesorData.badge_texto || 'Asesor Certificado',
                     bio: asesorData.bio || null,
                     activo: asesorData.activo !== undefined ? asesorData.activo : true,
                     orden: nuevo.orden
