@@ -1099,6 +1099,13 @@
                     <span class="sidebar-tooltip">Gestión de Agentes</span>
                 </a>
 
+                <!-- Gestión & Auditoría de Usuarios Registrados (Exclusivo Admin) -->
+                <a href="#" id="nav-admin-usuarios" data-target="view-admin-usuarios" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Usuarios & Auditoría de Compradores">
+                    <i class="ph-fill ph-users-four text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Usuarios & Auditoría</span>
+                    <span class="sidebar-tooltip">Usuarios Registrados & Auditoría</span>
+                </a>
+
                 <a href="#" id="nav-admin-equipo-web" data-target="view-admin-equipo-web" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Equipo en Web (Landing)">
                     <i class="ph ph-identification-badge text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Equipo en Web</span>
@@ -1366,6 +1373,10 @@
                             <!-- Opciones exclusivas para Administrador -->
                             <button onclick="activateTab('view-admin-config'); toggleProfileMenu();" class="admin-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
                                 <i class="ph-fill ph-users-three text-lg"></i> Gestión de Agentes
+                            </button>
+
+                            <button onclick="activateTab('view-admin-usuarios'); toggleProfileMenu();" class="admin-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
+                                <i class="ph-fill ph-users-four text-lg"></i> Usuarios & Auditoría
                             </button>
 
                             <button onclick="activateTab('view-admin-cargar-inmueble'); toggleProfileMenu();" class="admin-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3">
@@ -4066,6 +4077,212 @@
                 </div>
             </section>
 
+
+            <!-- ==========================================
+                 K. VISTA: GESTIÓN Y AUDITORÍA DE USUARIOS REGISTRADOS (Panel Admin)
+                 ========================================== -->
+            <section id="view-admin-usuarios" class="view-section admin-only max-w-[1400px] mx-auto space-y-6">
+                <!-- Encabezado Principal y Breadcrumb -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <i class="ph-fill ph-shield-check mr-0.5"></i> Dirección & Auditoría
+                            </span>
+                            <span class="text-xs text-gray-400 font-medium">· Base de Compradores & Inversionistas</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">
+                            Auditoría de Usuarios Registrados
+                        </h1>
+                        <p class="text-xs sm:text-sm text-gray-500 max-w-2xl mt-0.5">
+                            Supervisa en tiempo real qué propiedades exploran los compradores, qué inmuebles guardan en favoritos, sus canales de contacto por WhatsApp y asigna asesores responsables.
+                        </p>
+                    </div>
+
+                    <!-- Botones de Acción Global -->
+                    <div class="flex items-center gap-2.5 shrink-0">
+                        <button onclick="exportarUsuariosAuditoria()" class="px-3.5 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 text-maximus-dark text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer" title="Exportar reporte en JSON">
+                            <i class="ph-bold ph-download-simple text-sm text-emerald-600"></i>
+                            <span>Exportar Auditoría</span>
+                        </button>
+                        <button onclick="inicializarAdminUsuarios(true)" class="px-3.5 py-2 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-emerald-600/20 cursor-pointer" title="Recargar usuarios desde Supabase">
+                            <i id="btn-icon-reload-usuarios" class="ph-bold ph-arrow-counter-clockwise text-sm"></i>
+                            <span>Sincronizar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Tarjetas KPIs de Inteligencia Comercial -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+                    <!-- KPI 1: Total Usuarios -->
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-premium flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Total Compradores</span>
+                            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i class="ph-fill ph-users text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2.5">
+                            <h3 id="kpi-total-usuarios" class="text-2xl sm:text-3xl font-black text-maximus-dark">--</h3>
+                            <div class="flex items-center gap-1 mt-1 text-[10px] text-emerald-700 font-bold">
+                                <i class="ph-bold ph-check-circle"></i>
+                                <span>100% Cuentas Verificadas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI 2: Alta Intención (Calientes) -->
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-premium flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-red-500">Alta Intención 🔥</span>
+                            <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+                                <i class="ph-fill ph-flame text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2.5">
+                            <h3 id="kpi-usuarios-calientes" class="text-2xl sm:text-3xl font-black text-maximus-dark">--</h3>
+                            <div class="flex items-center gap-1 mt-1 text-[10px] text-red-600 font-bold">
+                                <span>Score ≥ 75 pts · Compras Inmediatas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI 3: Favoritos Guardados -->
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-premium flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Casas en Favoritos</span>
+                            <div class="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center">
+                                <i class="ph-fill ph-heart text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2.5">
+                            <h3 id="kpi-total-favoritos" class="text-2xl sm:text-3xl font-black text-maximus-dark">--</h3>
+                            <div class="flex items-center gap-1 mt-1 text-[10px] text-pink-600 font-bold">
+                                <i class="ph-bold ph-trend-up"></i>
+                                <span>Interés activo en catálogo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI 4: Tasa de Contacto WhatsApp -->
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-premium flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-gray-400">Interacción WhatsApp</span>
+                            <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
+                                <i class="ph-fill ph-whatsapp-logo text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2.5">
+                            <h3 id="kpi-tasa-contacto" class="text-2xl sm:text-3xl font-black text-maximus-dark">--</h3>
+                            <div class="flex items-center gap-1 mt-1 text-[10px] text-teal-700 font-bold">
+                                <i class="ph-bold ph-lightning"></i>
+                                <span>Clicks directos a asesores</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra de Filtros, Búsqueda y Segmentación -->
+                <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-gray-100 shadow-premium space-y-3">
+                    <div class="flex flex-col md:flex-row items-center gap-3">
+                        <!-- Buscador en vivo -->
+                        <div class="relative flex-1 w-full">
+                            <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
+                            <input type="text" id="buscador-admin-usuarios" oninput="filtrarAdminUsuarios()"
+                                   placeholder="Buscar por nombre, email, teléfono (+58 / +57) o zona..."
+                                   class="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs sm:text-sm font-medium text-maximus-dark placeholder-gray-400 outline-none focus:border-emerald-500 focus:bg-white transition shadow-2xs">
+                        </div>
+
+                        <!-- Filtro por Asesor Asignado -->
+                        <div class="flex items-center gap-2 w-full md:w-auto shrink-0">
+                            <div class="relative w-full md:w-48">
+                                <select id="filtro-admin-usuarios-asesor" onchange="filtrarAdminUsuarios()"
+                                        class="w-full appearance-none pl-3 pr-8 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 outline-none focus:border-emerald-500 cursor-pointer">
+                                    <option value="todos">Todos los Asesores</option>
+                                    <option value="sin_asignar">Sin Asignar (Libres)</option>
+                                    <option value="José Guerrero">José Guerrero</option>
+                                    <option value="Carlos Santander">Carlos Santander</option>
+                                    <option value="Valeria Méndez">Valeria Méndez</option>
+                                    <option value="Andrea Colmenares">Andrea Colmenares</option>
+                                </select>
+                                <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+
+                            <!-- Filtro por Inmueble Específico -->
+                            <div class="relative w-full md:w-52">
+                                <select id="filtro-admin-usuarios-inmueble" onchange="filtrarAdminUsuarios()"
+                                        class="w-full appearance-none pl-3 pr-8 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 outline-none focus:border-emerald-500 cursor-pointer">
+                                    <option value="todos">Todos los Inmuebles</option>
+                                    <option value="inm-1">#MAX-101 (Quinta Guaparo)</option>
+                                    <option value="inm-2">#MAX-102 (Local Sambil)</option>
+                                    <option value="inm-3">#MAX-103 (Apto El Bosque)</option>
+                                    <option value="inm-4">#MAX-104 (Penthouse 360°)</option>
+                                    <option value="inm-5">#MAX-105 (Townhouse Paramillo)</option>
+                                    <option value="inm-6">#MAX-106 (Galpón Barrancas)</option>
+                                </select>
+                                <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pills de Filtro por Scoring / Temperatura -->
+                    <div class="flex items-center gap-1.5 flex-wrap pt-1 border-t border-gray-100">
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 mr-1.5">Intención:</span>
+                        <button onclick="setFiltroTemperaturaUsuarios('todos', this)" class="btn-filtro-temp-usuario active px-3 py-1 rounded-full text-xs font-bold bg-maximus-dark text-white shadow-2xs transition">Todos (<span id="count-temp-todos">0</span>)</button>
+                        <button onclick="setFiltroTemperaturaUsuarios('caliente', this)" class="btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition">🔥 Calientes (<span id="count-temp-caliente">0</span>)</button>
+                        <button onclick="setFiltroTemperaturaUsuarios('activo', this)" class="btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition">⚡ Activos (<span id="count-temp-activo">0</span>)</button>
+                        <button onclick="setFiltroTemperaturaUsuarios('pasivo', this)" class="btn-filtro-temp-usuario px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition">❄️ Pasivos (<span id="count-temp-pasivo">0</span>)</button>
+                    </div>
+                </div>
+
+                <!-- Tabla de Usuarios Registrados -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-premium overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/80 border-b border-gray-100 text-[10px] sm:text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">
+                                    <th class="py-3.5 px-4 sm:px-6">Usuario Comprador</th>
+                                    <th class="py-3.5 px-3">WhatsApp / Teléfono</th>
+                                    <th class="py-3.5 px-3">Casas de Interés (Favoritos)</th>
+                                    <th class="py-3.5 px-3">Asesor Asignado</th>
+                                    <th class="py-3.5 px-3">Score & Intención</th>
+                                    <th class="py-3.5 px-3">Registro / Conexión</th>
+                                    <th class="py-3.5 px-4 sm:px-6 text-right">Auditoría 360°</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-admin-usuarios-body" class="divide-y divide-gray-100 text-xs sm:text-sm font-medium text-gray-700">
+                                <!-- Filas inyectadas dinámicamente con JS -->
+                                <tr>
+                                    <td colspan="7" class="py-12 text-center text-gray-400">
+                                        <i class="ph-bold ph-circle-notch animate-spin text-2xl text-emerald-600 mb-2"></i>
+                                        <p class="text-xs font-semibold">Cargando base de compradores de MAXIMUS...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Estado Vacío -->
+                    <div id="usuarios-admin-empty-state" class="hidden py-16 text-center space-y-3 px-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-200 text-gray-400 flex items-center justify-center mx-auto text-2xl">
+                            <i class="ph-bold ph-magnifying-glass"></i>
+                        </div>
+                        <h4 class="text-sm font-extrabold text-maximus-dark">No se encontraron usuarios coincidentes</h4>
+                        <p class="text-xs text-gray-400 max-w-sm mx-auto">Prueba limpiando los filtros de búsqueda o seleccionando otro asesor del equipo.</p>
+                        <button onclick="limpiarFiltrosUsuariosAdmin()" class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-maximus-dark text-xs font-bold transition">Restablecer Filtros</button>
+                    </div>
+
+                    <!-- Footer de Tabla con Contador -->
+                    <div class="p-3.5 sm:p-4 bg-gray-50/70 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-semibold">
+                        <span id="label-conteo-usuarios-tabla">Mostrando 0 usuarios</span>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-[11px] text-gray-400">Sincronización en vivo con Supabase & Portal</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- ==========================================
                  L. VISTA: COLECCIONES VIP PARA CLIENTES
                  ========================================== -->
@@ -6385,7 +6602,8 @@
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
                 'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales',
-                'view-mis-clientes'
+                'view-mis-clientes',
+                'view-admin-usuarios'
             ];
 
             if (userRole === 'cliente') {
@@ -7220,12 +7438,13 @@
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
                 'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales',
-                'view-mis-clientes'
+                'view-mis-clientes',
+                'view-admin-usuarios'
             ];
 
             const vistasExclusivasAdmin = [
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-admin-tutoriales'
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-tutoriales', 'view-admin-usuarios'
             ];
 
             if (targetId === 'view-metricas') {
@@ -7329,6 +7548,7 @@
                         'view-colecciones': 'Colecciones',
                         'view-historico-asesores': 'Histórico Asesores',
                         'view-mis-clientes': 'Mis Clientes (CRM)',
+                        'view-admin-usuarios': 'Usuarios & Auditoría',
                         'view-resumen': 'Panorama & Métricas',
                         'view-cotizador': 'Cotizador Express',
                         'view-tutoriales': 'Material Informativo'
@@ -7366,6 +7586,9 @@
             }
             if (targetId === 'view-perfil') {
                 if (typeof cargarDatosVistaPerfil === 'function') cargarDatosVistaPerfil();
+            }
+            if (targetId === 'view-admin-usuarios') {
+                if (typeof inicializarAdminUsuarios === 'function') inicializarAdminUsuarios();
             }
             if (targetId === 'view-admin-equipo-web') {
                 if (typeof inicializarGestionEquipoWeb === 'function') inicializarGestionEquipoWeb();

@@ -1226,7 +1226,266 @@ const MOCK_DATA = {
     ],
 
     // ========== MATERIAL INFORMATIVO & CAPACITACIÓN ==========
-    material_informativo: []
+    material_informativo: [],
+
+    // ========== USUARIOS REGISTRADOS & AUDITORÍA DE COMPRADORES (PANEL ADMIN) ==========
+    usuarios_registrados: [
+        {
+            id: 'usr-001',
+            auth_id: 'auth-usr-001',
+            nombre: 'Dr. Fernando Morales',
+            email: 'f.morales@clinicasancristobal.com',
+            telefono: '+58 414 7223344',
+            telefono_e164: '+584147223344',
+            prefijo: '+58',
+            role: 'cliente',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+            created_at: '2026-09-12T14:30:00Z',
+            last_login: '2026-10-21T08:15:00Z',
+            email_verified: true,
+            origen: 'Web - Registro Directo',
+            score: 92,
+            temperatura: 'caliente',
+            asesor_asignado_id: 'asesor-1',
+            asesor_asignado_nombre: 'José Guerrero',
+            criterios_implicitos: {
+                presupuesto_estimado: 300000,
+                rango_min: 270000,
+                rango_max: 340000,
+                tipo_preferido: 'Casa / Penthouse',
+                operacion_preferida: 'Venta',
+                zonas_interes: ['Urb. Guaparo', 'Pueblo Nuevo']
+            },
+            favoritos: ['inm-1', 'inm-4'],
+            interacciones: [
+                {
+                    id: 'int-001',
+                    tipo: 'whatsapp',
+                    titulo: 'Click en Contactar por WhatsApp',
+                    detalle: 'Interesado en coordinar visita para Quinta en Guaparo ($270.000).',
+                    inmueble_id: 'inm-1',
+                    timestamp: '2026-10-18T10:15:00Z'
+                },
+                {
+                    id: 'int-002',
+                    tipo: 'descarga_pdf',
+                    titulo: 'Descarga de Ficha Técnica PDF',
+                    detalle: 'Descargó dossier completo de Penthouse Dúplex 360° ($340.000).',
+                    inmueble_id: 'inm-4',
+                    timestamp: '2026-10-19T16:40:00Z'
+                },
+                {
+                    id: 'int-003',
+                    tipo: 'favorito',
+                    titulo: 'Propiedad Añadida a Favoritos',
+                    detalle: 'Marcó Quinta moderna en Guaparo como favorita en su portal personal.',
+                    inmueble_id: 'inm-1',
+                    timestamp: '2026-10-16T12:00:00Z'
+                }
+            ],
+            notas_auditoria: [
+                {
+                    id: 'nota-usr-01',
+                    autor: 'José Guerrero (Director)',
+                    fecha: '2026-10-19T11:00:00Z',
+                    texto: 'Médico cirujano con capacidad de compra inmediata. Fondos propios disponibles. Prioridad alta para recorrido presencial.'
+                }
+            ]
+        },
+        {
+            id: 'usr-002',
+            auth_id: 'auth-usr-002',
+            nombre: 'Ing. Camilo Andrés Restrepo',
+            email: 'camilo.restrepo@inversionesbogota.co',
+            telefono: '+57 310 4567890',
+            telefono_e164: '+573104567890',
+            prefijo: '+57',
+            role: 'cliente',
+            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+            created_at: '2026-09-28T09:10:00Z',
+            last_login: '2026-10-20T17:45:00Z',
+            email_verified: true,
+            origen: 'Campaña Colombia - Inversión Táchira',
+            score: 85,
+            temperatura: 'caliente',
+            asesor_asignado_id: 'asesor-2',
+            asesor_asignado_nombre: 'Carlos Santander',
+            criterios_implicitos: {
+                presupuesto_estimado: 3200,
+                rango_min: 1500,
+                rango_max: 3500,
+                tipo_preferido: 'Local / Galpón Industrial',
+                operacion_preferida: 'Alquiler Comercial',
+                zonas_interes: ['C.C. Sambil', 'Zona Industrial Barrancas']
+            },
+            favoritos: ['inm-2', 'inm-6'],
+            interacciones: [
+                {
+                    id: 'int-004',
+                    tipo: 'whatsapp',
+                    titulo: 'Consulta Comercial por WhatsApp',
+                    detalle: 'Preguntó por requisitos para arrendamiento a persona jurídica extranjera en Galpón Barrancas.',
+                    inmueble_id: 'inm-6',
+                    timestamp: '2026-10-20T14:22:00Z'
+                },
+                {
+                    id: 'int-005',
+                    tipo: 'favorito',
+                    titulo: 'Propiedad Guardada en Favoritos',
+                    detalle: 'Guardó Local Comercial Nivel Feria C.C. Sambil.',
+                    inmueble_id: 'inm-2',
+                    timestamp: '2026-10-15T09:30:00Z'
+                }
+            ],
+            notas_auditoria: [
+                {
+                    id: 'nota-usr-02',
+                    autor: 'Carlos Santander (Asesor)',
+                    fecha: '2026-10-20T18:00:00Z',
+                    texto: 'Empresario de transporte y distribución en Cúcuta. Busca sede en Barrancas para almacén de mercancía seca.'
+                }
+            ]
+        },
+        {
+            id: 'usr-003',
+            auth_id: 'auth-usr-003',
+            nombre: 'Lic. Mariana Colmenárez',
+            email: 'mariana.colmenarez@gmail.com',
+            telefono: '+58 424 9876543',
+            telefono_e164: '+584249876543',
+            prefijo: '+58',
+            role: 'cliente',
+            avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80',
+            created_at: '2026-10-05T11:20:00Z',
+            last_login: '2026-10-21T07:10:00Z',
+            email_verified: true,
+            origen: 'Web - Portal Compradores',
+            score: 72,
+            temperatura: 'activo',
+            asesor_asignado_id: 'asesor-3',
+            asesor_asignado_nombre: 'Valeria Méndez',
+            criterios_implicitos: {
+                presupuesto_estimado: 120000,
+                rango_min: 100000,
+                rango_max: 130000,
+                tipo_preferido: 'Apartamento Amoblado',
+                operacion_preferida: 'Venta',
+                zonas_interes: ['Residencias El Bosque', 'Av. 19 de Abril']
+            },
+            favoritos: ['inm-3'],
+            interacciones: [
+                {
+                    id: 'int-006',
+                    tipo: 'visita_web',
+                    titulo: 'Visualización Repetida de Ficha',
+                    detalle: 'Consultó 4 veces el Apartamento amoblado piso medio en Residencias El Bosque.',
+                    inmueble_id: 'inm-3',
+                    timestamp: '2026-10-20T21:05:00Z'
+                },
+                {
+                    id: 'int-007',
+                    tipo: 'favorito',
+                    titulo: 'Propiedad Guardada en Favoritos',
+                    detalle: 'Guardó Apartamento amoblado ($120.000).',
+                    inmueble_id: 'inm-3',
+                    timestamp: '2026-10-06T15:12:00Z'
+                }
+            ],
+            notas_auditoria: [
+                {
+                    id: 'nota-usr-03',
+                    autor: 'Valeria Méndez (Asesora)',
+                    fecha: '2026-10-08T10:00:00Z',
+                    texto: 'Cliente busca comprar con financiamiento a 6 meses. La propietaria está abierta a negociar.'
+                }
+            ]
+        },
+        {
+            id: 'usr-004',
+            auth_id: 'auth-usr-004',
+            nombre: 'Alejandro Vielma Sánchez',
+            email: 'alejandro.vielma@outlook.com',
+            telefono: '+58 412 1114455',
+            telefono_e164: '+584121114455',
+            prefijo: '+58',
+            role: 'cliente',
+            avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80',
+            created_at: '2026-10-10T16:00:00Z',
+            last_login: '2026-10-19T18:30:00Z',
+            email_verified: true,
+            origen: 'Web - Ficha Compartida',
+            score: 65,
+            temperatura: 'activo',
+            asesor_asignado_id: 'asesor-1',
+            asesor_asignado_nombre: 'José Guerrero',
+            criterios_implicitos: {
+                presupuesto_estimado: 95000,
+                rango_min: 80000,
+                rango_max: 110000,
+                tipo_preferido: 'Townhouse en Conjunto Cerrado',
+                operacion_preferida: 'Venta',
+                zonas_interes: ['Paramillo', 'Pueblo Nuevo']
+            },
+            favoritos: ['inm-5'],
+            interacciones: [
+                {
+                    id: 'int-008',
+                    tipo: 'descarga_pdf',
+                    titulo: 'Descarga de Dossier VIP',
+                    detalle: 'Descargó dossier del Townhouse a estrenar en Paramillo ($95.000).',
+                    inmueble_id: 'inm-5',
+                    timestamp: '2026-10-17T11:20:00Z'
+                }
+            ],
+            notas_auditoria: []
+        },
+        {
+            id: 'usr-005',
+            auth_id: 'auth-usr-005',
+            nombre: 'Dra. Sofía Valentina Ramírez',
+            email: 'sofia.ramirez.design@gmail.com',
+            telefono: '+57 318 9988776',
+            telefono_e164: '+573189988776',
+            prefijo: '+57',
+            role: 'cliente',
+            avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80',
+            created_at: '2026-09-18T10:00:00Z',
+            last_login: '2026-09-25T14:10:00Z',
+            email_verified: true,
+            origen: 'Instagram Ads',
+            score: 18,
+            temperatura: 'pasivo',
+            asesor_asignado_id: null,
+            asesor_asignado_nombre: 'Sin Asignar',
+            criterios_implicitos: {
+                presupuesto_estimado: 150000,
+                rango_min: 100000,
+                rango_max: 200000,
+                tipo_preferido: 'Apartamento / Casa',
+                operacion_preferida: 'Venta',
+                zonas_interes: ['Pueblo Nuevo']
+            },
+            favoritos: [],
+            interacciones: [
+                {
+                    id: 'int-009',
+                    tipo: 'registro',
+                    titulo: 'Registro en la Plataforma',
+                    detalle: 'Creó su cuenta gratuita desde el portal web.',
+                    inmueble_id: null,
+                    timestamp: '2026-09-18T10:00:00Z'
+                }
+            ],
+            notas_auditoria: [
+                {
+                    id: 'nota-usr-04',
+                    autor: 'Administración MAXIMUS',
+                    fecha: '2026-10-10T12:00:00Z',
+                    texto: 'Usuario sin actividad en los últimos 25 días. Programada secuencia de reenganche por correo.'
+                }
+            ]
+        }
+    ]
 };
 
 // Detalle enriquecido completo de inmuebles (sincronizado con Dashboard y Ficha VIP)

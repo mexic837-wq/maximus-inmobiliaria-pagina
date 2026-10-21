@@ -2715,6 +2715,292 @@ const MaterialInformativoService = {
     }
 };
 
+// ============================================
+// SERVICIO DE GESTIÓN Y AUDITORÍA DE USUARIOS REGISTRADOS (PANEL ADMIN)
+// ============================================
+const UsuarioAdminService = {
+    _storageKey: 'maximus_usuarios_audit_cache',
+
+    _getLocalCache() {
+        try {
+            const raw = localStorage.getItem(this._storageKey);
+            return raw ? JSON.parse(raw) : {};
+        } catch(e) {
+            return {};
+        }
+    },
+
+    _saveLocalCache(cache) {
+        try {
+            localStorage.setItem(this._storageKey, JSON.stringify(cache));
+        } catch(e) {}
+    },
+
+    /**
+     * Obtiene todos los usuarios registrados (compradores/inversores)
+     * consolidando Supabase, usuarios registrados locales y mock data enriquecida.
+     */
+    async getAll() {
+        let usersMap = new Map();
+
+        // 1. Cargar usuarios mock predeterminados
+        if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.usuarios_registrados)) {
+            MOCK_DATA.usuarios_registrados.forEach(u => {
+                usersMap.set(u.email.toLowerCase().trim(), { ...u });
+            });
+        }
+
+        // 2. Cargar usuarios reales registrados en el navegador (desde login.html)
+        try {
+            const regUsers = (typeof localStorage !== 'undefined' && localStorage.getItem('maximus_registered_users')) ? JSON.parse(localStorage.getItem('maximus_registered_users')) || {} : {};
+            const favsGlobal = (typeof localStorage !== 'undefined' && localStorage.getItem('maximus_favoritos')) ? JSON.parse(localStorage.getItem('maximus_favoritos')) || [] : [];
+
+            Object.entries(regUsers).forEach(([email, data]) => {
+                const cleanEmail = email.toLowerCase().trim();
+                const uObj = data.user || {};
+                const rol = uObj.role || 'cliente';
+
+                // Solo listar usuarios de tipo cliente / comprador
+                if (rol === 'cliente' || rol === 'usuario') {
+                    const existing = usersMap.get(cleanEmail) || {};
+                    const nombre = uObj.name || existing.nombre || cleanEmail.split('@')[0];
+                    const telefono = uObj.telefono || existing.telefono || '';
+                    const prefijo = uObj.prefijo || existing.prefijo || (telefono.startsWith('+57') ? '+57' : '+58');
+
+                    // Detectar si el usuario actual tiene favoritos
+                    let userFavs = existing.favoritos || [];
+                    if (favsGlobal.length > 0 && cleanEmail.includes('cliente')) {
+                        userFavs = Array.from(new Set([...userFavs, ...favsGlobal]));
+                    }
+
+                    usersMap.set(cleanEmail, {
+                        id: uObj.id || existing.id || ('usr-' + Math.abs(cleanEmail.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0))),
+                        auth_id: uObj.id || existing.auth_id || null,
+                        nombre: nombre,
+                        email: cleanEmail,
+                        telefono: telefono,
+                        telefono_e164: uObj.telefono_e164 || existing.telefono_e164 || telefono.replace(/\s+/g, ''),
+                        prefijo: prefijo,
+                        role: 'cliente',
+                        avatar: uObj.avatar || existing.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=0B4A3F&color=fff&bold=true`,
+                        created_at: uObj.created_at || existing.created_at || new Date().toISOString(),
+                        last_login: existing.last_login || new Date().toISOString(),
+                        email_verified: true,
+                        origen: existing.origen || 'Portal Web (Crear Cuenta)',
+                        score: existing.score || 75,
+                        temperatura: existing.temperatura || (userFavs.length >= 2 ? 'caliente' : 'activo'),
+                        asesor_asignado_id: existing.asesor_asignado_id || 'asesor-1',
+                        asesor_asignado_nombre: existing.asesor_asignado_nombre || 'José Guerrero',
+                        criterios_implicitos: existing.criterios_implicitos || {
+                            presupuesto_estimado: 250000,
+                            rango_min: 150000,
+                            rango_max: 300000,
+                            tipo_preferido: 'Casa / Apartamento',
+                            operacion_preferida: 'Venta',
+                            zonas_interes: ['San Cristóbal']
+                        },
+                        favoritos: userFavs,
+                        interacciones: existing.interacciones || [
+                            {
+                                id: 'int-reg-' + Date.now(),
+                                tipo: 'registro',
+                                titulo: 'Registro de Cuenta en Portal Web',
+                                detalle: 'El usuario completó el formulario de registro de cliente.',
+                                timestamp: uObj.created_at || new Date().toISOString()
+                            }
+                        ],
+                        notas_auditoria: existing.notas_auditoria || []
+                    });
+                }
+            });
+        } catch(e) {
+            console.warn('Aviso cargando usuarios registrados locales:', e);
+        }
+
+        // 3. Consultar Supabase en tiempo real si está disponible
+        try {
+            if (typeof getSupabase === 'function' && APP_CONFIG && APP_CONFIG.ENABLE_SUPABASE) {
+                const sb = getSupabase();
+                if (sb) {
+                    const { data: supaUsers, error } = await sb
+                        .from(APP_CONFIG.TABLES.USUARIOS || 'usuarios')
+                        .select('*')
+                        .in('rol', ['cliente', 'usuario']);
+
+                    if (!error && Array.isArray(supaUsers) && supaUsers.length > 0) {
+                        supaUsers.forEach(su => {
+                            const cleanEmail = (su.email || '').toLowerCase().trim();
+                            if (!cleanEmail) return;
+
+                            const existing = usersMap.get(cleanEmail) || {};
+                            const nombre = su.nombre_completo || existing.nombre || cleanEmail.split('@')[0];
+                            const tel = su.telefono || existing.telefono || '';
+
+                            usersMap.set(cleanEmail, {
+                                id: su.id || existing.id,
+                                auth_id: su.auth_id || existing.auth_id,
+                                nombre: nombre,
+                                email: cleanEmail,
+                                telefono: tel,
+                                telefono_e164: existing.telefono_e164 || tel.replace(/\s+/g, ''),
+                                prefijo: existing.prefijo || (tel.startsWith('+57') ? '+57' : '+58'),
+                                role: 'cliente',
+                                avatar: su.avatar_url || existing.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=0B4A3F&color=fff&bold=true`,
+                                created_at: su.created_at || existing.created_at,
+                                last_login: existing.last_login || su.updated_at || new Date().toISOString(),
+                                email_verified: true,
+                                origen: existing.origen || 'Supabase Auth',
+                                score: existing.score || 70,
+                                temperatura: existing.temperatura || 'activo',
+                                asesor_asignado_id: existing.asesor_asignado_id || 'asesor-1',
+                                asesor_asignado_nombre: existing.asesor_asignado_nombre || 'José Guerrero',
+                                criterios_implicitos: existing.criterios_implicitos || {
+                                    presupuesto_estimado: 200000,
+                                    tipo_preferido: 'Residencial',
+                                    operacion_preferida: 'Venta',
+                                    zonas_interes: ['San Cristóbal']
+                                },
+                                favoritos: existing.favoritos || [],
+                                interacciones: existing.interacciones || [],
+                                notas_auditoria: existing.notas_auditoria || []
+                            });
+                        });
+                    }
+                }
+            }
+        } catch(supaErr) {
+            console.warn('Aviso al consultar usuarios de Supabase en segundo plano:', supaErr);
+        }
+
+        // 4. Aplicar personalizaciones guardadas en el caché de auditoría (notas, asesor reasignado)
+        const localOverrides = this._getLocalCache();
+        let finalUsers = Array.from(usersMap.values()).map(u => {
+            const override = localOverrides[u.id] || localOverrides[u.email] || {};
+            const merged = { ...u, ...override };
+
+            // Recalcular scoring y temperatura paramétrica
+            const favCount = (merged.favoritos || []).length;
+            const intCount = (merged.interacciones || []).length;
+            let calcScore = 20 + (favCount * 25) + (intCount * 15);
+            if (merged.telefono) calcScore += 10;
+            calcScore = Math.min(calcScore, 99);
+
+            merged.score = override.score || calcScore;
+            if (!override.temperatura) {
+                if (merged.score >= 75) merged.temperatura = 'caliente';
+                else if (merged.score >= 35) merged.temperatura = 'activo';
+                else merged.temperatura = 'pasivo';
+            }
+
+            return merged;
+        });
+
+        // Ordenar por score descendente (los más interesados primero)
+        finalUsers.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+        return { data: finalUsers, error: null };
+    },
+
+    /**
+     * Asignar o reasignar asesor a un usuario comprador
+     */
+    async reasignarAsesor(usuarioId, asesorId, asesorNombre, autorAdmin = 'Dirección MAXIMUS') {
+        const cache = this._getLocalCache();
+        const userOverride = cache[usuarioId] || {};
+
+        userOverride.asesor_asignado_id = asesorId;
+        userOverride.asesor_asignado_nombre = asesorNombre;
+
+        const nuevaNota = {
+            id: 'nota-' + Date.now(),
+            autor: autorAdmin,
+            fecha: new Date().toISOString(),
+            texto: `Asesor reasignado a ${asesorNombre} por la administración.`
+        };
+
+        userOverride.notas_auditoria = [...(userOverride.notas_auditoria || []), nuevaNota];
+        cache[usuarioId] = userOverride;
+        this._saveLocalCache(cache);
+
+        // Notificar por n8n si está activo
+        if (typeof N8nService !== 'undefined' && typeof N8nService.trigger === 'function') {
+            N8nService.trigger('NOTIFICACION_AGENTE', {
+                evento: 'ASESOR_REASIGNADO_CLIENTE',
+                usuario_id: usuarioId,
+                asesor_id: asesorId,
+                asesor_nombre: asesorNombre,
+                fecha: new Date().toISOString(),
+                autor: autorAdmin
+            }).catch(e => console.warn('Aviso webhook n8n reasignar:', e));
+        }
+
+        return { success: true, asesor_asignado_nombre: asesorNombre };
+    },
+
+    /**
+     * Agregar una nota interna de auditoría para un usuario
+     */
+    async agregarNotaAuditoria(usuarioId, texto, autor = 'Administrador') {
+        if (!texto || !texto.trim()) return { success: false, error: 'Nota vacía' };
+
+        const cache = this._getLocalCache();
+        const userOverride = cache[usuarioId] || {};
+
+        const nuevaNota = {
+            id: 'nota-' + Date.now(),
+            autor: autor,
+            fecha: new Date().toISOString(),
+            texto: texto.trim()
+        };
+
+        userOverride.notas_auditoria = [...(userOverride.notas_auditoria || []), nuevaNota];
+        cache[usuarioId] = userOverride;
+        this._saveLocalCache(cache);
+
+        return { success: true, nota: nuevaNota };
+    },
+
+    /**
+     * Disparar portafolio recomendado a través de n8n
+     */
+    async enviarPortafolioRecomendadoN8n(usuario) {
+        if (!usuario || !usuario.email) return { success: false, error: 'Usuario sin correo' };
+
+        if (typeof N8nService !== 'undefined' && typeof N8nService.trigger === 'function') {
+            const res = await N8nService.trigger('ENVIAR_DOSSIER_VIP', {
+                evento: 'PORTAFOLIO_RECOMENDADO_COMPRADOR',
+                cliente_nombre: usuario.nombre,
+                cliente_email: usuario.email,
+                cliente_telefono: usuario.telefono,
+                presupuesto_estimado: usuario.criterios_implicitos?.presupuesto_estimado || 250000,
+                favoritos_ids: usuario.favoritos || [],
+                asesor_nombre: usuario.asesor_asignado_nombre || 'José Guerrero',
+                timestamp: new Date().toISOString()
+            });
+
+            // Registrar interacción en auditoría
+            const cache = this._getLocalCache();
+            const uOver = cache[usuario.id] || {};
+            uOver.interacciones = [
+                ...(uOver.interacciones || []),
+                {
+                    id: 'int-' + Date.now(),
+                    tipo: 'portafolio_n8n',
+                    titulo: 'Portafolio Recomendado Enviado por Correo',
+                    detalle: `Se disparó la automatización de n8n para enviar portafolio a ${usuario.email}.`,
+                    timestamp: new Date().toISOString()
+                }
+            ];
+            cache[usuario.id] = uOver;
+            this._saveLocalCache(cache);
+
+            return res;
+        }
+
+        return { success: true, mock: true };
+    }
+};
+
 // Exportar todos los servicios
 if (typeof window !== 'undefined') {
     window.InmuebleService = InmuebleService;
@@ -2735,5 +3021,6 @@ if (typeof window !== 'undefined') {
     window.AsesorMaximusService = AsesorMaximusService;
     window.NotificacionService = NotificacionService;
     window.MaterialInformativoService = MaterialInformativoService;
+    window.UsuarioAdminService = UsuarioAdminService;
 }
 
