@@ -3095,6 +3095,87 @@ const UsuarioAdminService = {
     }
 };
 
+// ============================================
+// SERVICIO DE RESEÑAS Y TESTIMONIOS (SUPABASE)
+// ============================================
+const ResenasService = {
+    _storageKey: 'maximus_resenas_cache',
+
+    _getLocal() {
+        try {
+            const raw = localStorage.getItem(this._storageKey);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+            return [];
+        }
+    },
+
+    _saveLocal(list) {
+        try {
+            localStorage.setItem(this._storageKey, JSON.stringify(list));
+        } catch (e) {}
+    },
+
+    async getAll(filters = {}) {
+        const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+        if (sb) {
+            try {
+                let query = sb.from('resenas').select('*');
+                if (filters.soloAprobados !== false) {
+                    query = query.eq('aprobado', true);
+                }
+                const res = await query.order('created_at', { ascending: false });
+                if (!res.error && Array.isArray(res.data) && res.data.length > 0) {
+                    this._saveLocal(res.data);
+                    return { data: res.data, error: null };
+                }
+            } catch (err) {
+                console.warn('[ResenasService] Error al consultar Supabase:', err);
+            }
+        }
+        return { data: this._getLocal(), error: null };
+    },
+
+    async create(resenaData) {
+        const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+        const nueva = {
+            id: 'resena-' + Date.now(),
+            nombre: (resenaData.nombre || 'Cliente').trim(),
+            email: (resenaData.email || '').trim(),
+            rol_cliente: resenaData.rol_cliente || 'Comprador',
+            calificacion: parseInt(resenaData.calificacion) || 5,
+            comentario: (resenaData.comentario || '').trim(),
+            avatar_url: resenaData.avatar_url || null,
+            aprobado: resenaData.aprobado !== undefined ? resenaData.aprobado : true,
+            destacado: resenaData.destacado !== undefined ? resenaData.destacado : true,
+            created_at: new Date().toISOString()
+        };
+
+        if (sb) {
+            try {
+                const { id, ...supabasePayload } = nueva;
+                const { data, error } = await sb.from('resenas').insert([supabasePayload]).select();
+                if (!error && data && data.length > 0) {
+                    const local = this._getLocal();
+                    local.unshift(data[0]);
+                    this._saveLocal(local);
+                    return { data: data[0], error: null };
+                }
+                if (error) {
+                    console.warn('[ResenasService] Error insertando en Supabase:', error);
+                }
+            } catch (err) {
+                console.warn('[ResenasService] Excepción insertando en Supabase:', err);
+            }
+        }
+
+        const local = this._getLocal();
+        local.unshift(nueva);
+        this._saveLocal(local);
+        return { data: nueva, error: null };
+    }
+};
+
 // Exportar todos los servicios
 if (typeof window !== 'undefined') {
     window.InmuebleService = InmuebleService;
