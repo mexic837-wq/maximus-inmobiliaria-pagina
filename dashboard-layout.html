@@ -4525,9 +4525,6 @@
                     </div>
 
                     <div class="flex items-center gap-1.5 shrink-0">
-                        <button onclick="abrirModalFichaVIP()" class="flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer" title="Ficha VIP WhatsApp">
-                            <i class="ph-bold ph-share-network text-sm text-emerald-600"></i> <span class="hidden sm:inline">Ficha VIP WhatsApp</span>
-                        </button>
                         <button id="btn-favorito-modal" onclick="toggleFavoritoModal(this)" class="flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-500 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer" title="Guardar">
                             <i class="ph ph-heart text-sm"></i> <span class="hidden sm:inline">Guardar</span>
                         </button>
@@ -4738,14 +4735,9 @@
                                         <span>Contactar Asesor por WhatsApp</span>
                                     </button>
                                     
-                                    <button onclick="abrirModalFichaVIP()" class="w-full py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200/80 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:scale-[1.005] active:scale-[0.99]">
-                                        <i class="ph-bold ph-share-network text-xs text-emerald-700"></i>
-                                        <span>Ficha VIP & Compartir WhatsApp</span>
-                                    </button>
-
-                                    <button onclick="descargarFichaPDF()" class="w-full py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                                        <i class="ph-bold ph-file-pdf text-xs text-red-500"></i>
-                                        <span>Descargar Ficha Técnica PDF</span>
+                                    <button onclick="compartirPropiedadActual()" class="w-full py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200/80 font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs hover:scale-[1.005] active:scale-[0.99]">
+                                        <i class="ph-bold ph-share-network text-sm text-emerald-700"></i>
+                                        <span>Compartir Propiedad</span>
                                     </button>
                                 </div>
 
@@ -9410,6 +9402,49 @@
             const msg = encodeURIComponent(`Hola ${currentInmuebleAirbnb.asesor.nombre}, te contacto desde la plataforma MAXIMUS por la propiedad:\n\n🏡 *${currentInmuebleAirbnb.titulo}*\n📌 Código: ${currentInmuebleAirbnb.codigo}\n💰 Precio: ${currentInmuebleAirbnb.precio} ${currentInmuebleAirbnb.moneda}\n\nMe gustaría recibir más información y coordinar una visita.`);
             const tel = currentInmuebleAirbnb.asesor.telefono.replace(/[^0-9]/g, '');
             window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+        }
+
+        
+        function compartirPropiedadActual() {
+            const prop = currentInmuebleAirbnb;
+            if (!prop) return;
+
+            const titulo = prop.titulo || 'Propiedad en MAXIMUS Inmobiliaria';
+            const codigo = prop.codigo || '';
+            const precio = prop.precio ? `${prop.precio} ${prop.moneda || 'USD'}` : '';
+            const ubicacion = prop.ubicacion || 'San Cristóbal, Táchira';
+            const url = window.location.origin + '/property-detail.html?id=' + encodeURIComponent(prop.id || codigo);
+            const texto = `🏡 *${titulo}* (${codigo})\n💰 Precio: ${precio}\n📍 Ubicación: ${ubicacion}\n\nConoce todos los detalles aquí: ${url}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: titulo,
+                    text: texto,
+                    url: url
+                }).catch(() => {
+                    copiarEnlacePropiedadDirecto(url);
+                });
+            } else {
+                copiarEnlacePropiedadDirecto(url);
+            }
+        }
+
+        function copiarEnlacePropiedadDirecto(url) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    mostrarToastNotificacion('🔗 ¡Enlace de la propiedad copiado al portapapeles!');
+                }).catch(() => {
+                    mostrarToastNotificacion('🔗 Enlace: ' + url);
+                });
+            } else {
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                mostrarToastNotificacion('🔗 ¡Enlace de la propiedad copiado al portapapeles!');
+            }
         }
 
         function descargarFichaPDF() {
