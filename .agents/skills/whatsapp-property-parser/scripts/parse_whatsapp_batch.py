@@ -391,7 +391,7 @@ def parse_txt_file(txt_path: Path) -> List[Dict[str, Any]]:
 
     current_msg = None
     for raw_line in content.splitlines():
-        line = re.sub(r"[\u200e\u200f\u202a-\u202e\ufeff]", "", raw_line).strip()
+        line = re.sub(r"[\u200e\u200f\u202a-\u202e\ufeff\u202f]", " ", raw_line).strip()
         if not line:
             if current_msg:
                 current_msg["text"] += "\n"

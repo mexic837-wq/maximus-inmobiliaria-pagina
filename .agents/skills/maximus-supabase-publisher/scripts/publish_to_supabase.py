@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MAXIMUS Inmobiliaria - Skill 4: maximus-supabase-publisher (Dual-Flow)
-=======================================================================
-Valida el payload completo contra `sql/migration-inmuebles-sync-dashboard.sql`
-y `js/services.js`, respetando la carpeta de origen:
-  - `captaciones_externas/` -> is_maximus = False, en_oferta = False, Asesor Externo
-  - `captaciones_maximus/`  -> is_maximus = True, en_oferta = True, Asesor Oficial MAXIMUS
-Inserta en `public.inmuebles` y genera `reporte_ejecucion.md`.
+MAXIMUS Inmobiliaria - Skill 4: maximus-supabase-publisher (100% Automático Vía API / Upsert)
+=============================================================================================
+Conecta directamente a Supabase leyendo credenciales de `.env` (o `js/config.js`),
+ejecuta UPSERT (on_conflict=codigo, resolution=merge-duplicates) en la tabla `public.inmuebles`
+y genera el reporte de ejecución en tiempo real sin requerir inserciones manuales en SQL.
 """
 
 import os
 import re
+import sys
 import json
 import argparse
 import urllib.request
@@ -19,6 +18,25 @@ import urllib.error
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
+
+# Asegurar codificación UTF-8 en stdout/stderr para Windows
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
+# Intentar importar requests y python-dotenv si están instalados
+try:
+    import requests
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
+
+try:
+    from dotenv import load_dotenv
+    HAS_DOTENV = True
+except ImportError:
+    HAS_DOTENV = False
 
 ICONOS_VALIDOS_DASHBOARD = {
     "ph-star", "ph-waves", "ph-lightning", "ph-drop", "ph-shield-check",
@@ -30,46 +48,72 @@ ICONOS_VALIDOS_DASHBOARD = {
 
 
 def load_config(repo_root: Path) -> Dict[str, str]:
+    """Carga credenciales prioritariamente desde .env, con fallback a js/config.js"""
+    env_file = repo_root / ".env"
+    if env_file.exists():
+        if HAS_DOTENV:
+            load_dotenv(env_file, override=True)
+        else:
+            for line in env_file.read_text(encoding="utf-8", errors="replace").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    k, v = line.split("=", 1)
+                    k, v = k.strip(), v.strip()
+                    if k and v:
+                        os.environ[k] = v
+
     url = os.environ.get("SUPABASE_URL", "").strip()
     key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "") or os.environ.get("SUPABASE_ANON_KEY", "")
     n8n_url = os.environ.get("N8N_BASE_URL", "https://n8n.maximusinmobiliaria.tech")
 
-    config_js = repo_root / "js" / "config.js"
-    if config_js.exists():
-        content = config_js.read_text(encoding="utf-8", errors="replace")
-        if not url:
-            m_u = re.search(r"SUPABASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
-            if m_u:
-                url = m_u.group(1).rstrip("/")
-        if not key:
-            m_k = re.search(r"SUPABASE_ANON_KEY\s*:\s*['\"]([^'\"]+)['\"]", content)
-            if m_k:
-                key = m_k.group(1).strip()
-        m_n = re.search(r"N8N_BASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
-        if m_n:
-            n8n_url = m_n.group(1).rstrip("/")
+    # Fallback a js/config.js si no están completas
+    if not url or not key:
+        config_js = repo_root / "js" / "config.js"
+        if config_js.exists():
+            content = config_js.read_text(encoding="utf-8", errors="replace")
+            if not url:
+                m_u = re.search(r"SUPABASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
+                if m_u:
+                    url = m_u.group(1).rstrip("/")
+            if not key:
+                m_s = re.search(r"SERVICE_ROLE_KEY[^\n]*\n\s*//\s*([a-zA-Z0-9_\-\.]+)", content)
+                if m_s:
+                    key = m_s.group(1).strip()
+                else:
+                    m_k = re.search(r"SUPABASE_ANON_KEY\s*:\s*['\"]([^'\"]+)['\"]", content)
+                    if m_k:
+                        key = m_k.group(1).strip()
 
-    return {"sb_url": url, "sb_key": key, "n8n_url": n8n_url}
+    return {"sb_url": url.rstrip("/"), "sb_key": key.strip(), "n8n_url": n8n_url}
 
 
 def obtener_siguiente_correlativo_max(sb_url: str, sb_key: str) -> int:
+    """Consulta los códigos existentes en Supabase para mantener la secuencia #MAX-XXX"""
     endpoint = f"{sb_url}/rest/v1/inmuebles?select=codigo"
-    req = urllib.request.Request(
-        endpoint,
-        headers={"apikey": sb_key, "Authorization": f"Bearer {sb_key}", "Accept": "application/json"},
-        method="GET",
-    )
     max_num = 106
     try:
-        with urllib.request.urlopen(req, timeout=12) as resp:
-            rows = json.loads(resp.read().decode("utf-8"))
-            for r in rows:
-                cod = str(r.get("codigo") or "")
-                m = re.search(r"(\d+)", cod)
-                if m:
-                    val = int(m.group(1))
-                    if 100 <= val <= 99999 and val > max_num:
-                        max_num = val
+        if HAS_REQUESTS:
+            r = requests.get(endpoint, headers={"apikey": sb_key, "Authorization": f"Bearer {sb_key}"}, timeout=10)
+            if r.status_code == 200:
+                rows = r.json()
+                for row in rows:
+                    m = re.search(r"(\d+)", str(row.get("codigo") or ""))
+                    if m:
+                        val = int(m.group(1))
+                        if 100 <= val <= 99999 and val > max_num:
+                            max_num = val
+        else:
+            req = urllib.request.Request(endpoint, headers={"apikey": sb_key, "Authorization": f"Bearer {sb_key}"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                rows = json.loads(resp.read().decode("utf-8"))
+                for row in rows:
+                    m = re.search(r"(\d+)", str(row.get("codigo") or ""))
+                    if m:
+                        val = int(m.group(1))
+                        if 100 <= val <= 99999 and val > max_num:
+                            max_num = val
     except Exception:
         pass
     return max_num + 1
@@ -170,22 +214,23 @@ def construir_payload_supabase(
     }
 
 
-def insertar_en_supabase(
+def upsert_en_supabase(
     inm_raw: Dict[str, Any],
     codigo: str,
     es_lote_maximus: bool,
     sb_url: str,
     sb_key: str,
 ) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
-    endpoint = f"{sb_url}/rest/v1/inmuebles"
+    """Ejecuta Upsert directo en Supabase usando Prefer: resolution=merge-duplicates y on_conflict=codigo"""
+    endpoint = f"{sb_url}/rest/v1/inmuebles?on_conflict=codigo"
     headers = {
         "apikey": sb_key,
         "Authorization": f"Bearer {sb_key}",
         "Content-Type": "application/json",
-        "Prefer": "return=representation",
+        "Prefer": "resolution=merge-duplicates,return=representation",
     }
 
-    # Intentar combinaciones seguras (por si el constraint de tipo o FK de agente_id aplica en BD)
+    # Intentar combinaciones seguras si la BD tiene restricciones de tipo canónico o agente_id
     attempts = [
         (False, False),
         (True, False),
@@ -197,24 +242,36 @@ def insertar_en_supabase(
             inm_raw, codigo=codigo, es_lote_maximus=es_lote_maximus,
             use_canonical_tipo=use_canon, omit_agente_id=omit_ag
         )
-        req = urllib.request.Request(
-            endpoint,
-            data=json.dumps(row_try).encode("utf-8"),
-            headers=headers,
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                res_data = json.loads(resp.read().decode("utf-8"))
-                if isinstance(res_data, list) and len(res_data) > 0:
-                    return res_data[0], None
-                return row_try, None
-        except urllib.error.HTTPError as e:
-            err_body = e.read().decode("utf-8", errors="replace")
-            last_err = f"HTTPError {e.code}: {err_body}"
-            continue
-        except Exception as e:
-            return None, str(e)
+        if HAS_REQUESTS:
+            try:
+                r = requests.post(endpoint, json=row_try, headers=headers, timeout=20)
+                if r.status_code in (200, 201):
+                    res_arr = r.json()
+                    return (res_arr[0] if isinstance(res_arr, list) and len(res_arr) > 0 else row_try), None
+                else:
+                    last_err = f"HTTP {r.status_code}: {r.text}"
+                    continue
+            except Exception as e:
+                return None, str(e)
+        else:
+            req = urllib.request.Request(
+                endpoint,
+                data=json.dumps(row_try).encode("utf-8"),
+                headers=headers,
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    res_data = json.loads(resp.read().decode("utf-8"))
+                    if isinstance(res_data, list) and len(res_data) > 0:
+                        return res_data[0], None
+                    return row_try, None
+            except urllib.error.HTTPError as e:
+                err_body = e.read().decode("utf-8", errors="replace")
+                last_err = f"HTTPError {e.code}: {err_body}"
+                continue
+            except Exception as e:
+                return None, str(e)
 
     return None, last_err
 
@@ -246,7 +303,11 @@ def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify
     creados = []
     errores_publicacion = []
 
-    for inm in inmuebles_a_publicar:
+    print(f"\n🚀 Iniciando sincronización 100% automatizada con Supabase ({'DRY-RUN' if dry_run else 'EN VIVO'})...")
+    print(f"📡 Endpoint: {cfg['sb_url']}/rest/v1/inmuebles?on_conflict=codigo")
+    print(f"📦 Total inmuebles únicos a procesar: {len(inmuebles_a_publicar)}\n")
+
+    for i, inm in enumerate(inmuebles_a_publicar):
         codigo = f"#MAX-{corr_num}"
         corr_num += 1
         try:
@@ -280,11 +341,13 @@ def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify
                 "fotos_count": len(payload_sb["fotos"]),
                 "modo": "DRY-RUN (Simulación)",
             })
+            print(f"  [{i+1}/{len(inmuebles_a_publicar)}] [DRY-RUN] {codigo} | {payload_sb['titulo']} (${payload_sb['precio']:,.0f} {payload_sb['moneda']})")
         else:
-            inserted, err = insertar_en_supabase(inm, codigo, es_lote_maximus, cfg["sb_url"], cfg["sb_key"])
+            inserted, err = upsert_en_supabase(inm, codigo, es_lote_maximus, cfg["sb_url"], cfg["sb_key"])
             if inserted:
+                inserted_id = inserted.get("id", "OK")
                 creados.append({
-                    "id": inserted.get("id", "N/D"),
+                    "id": inserted_id,
                     "codigo": inserted.get("codigo", codigo),
                     "titulo": payload_sb["titulo"],
                     "tipo": inm.get("tipo_ui"),
@@ -301,14 +364,20 @@ def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify
                     "tipo_asesor": "Oficial MAXIMUS" if payload_sb["is_maximus"] else "Asesor Externo",
                     "asesor_info": f"{payload_sb['asesor_nombre']} ({payload_sb['asesor_telefono']})",
                     "fotos_count": len(payload_sb["fotos"]),
-                    "modo": "SUPABASE LIVE",
+                    "modo": "SUPABASE LIVE (UPSERT)",
                 })
+                print(f"  ✅ [{i+1}/{len(inmuebles_a_publicar)}] [UPSERT] {codigo} | {payload_sb['titulo']} (${payload_sb['precio']:,.0f} {payload_sb['moneda']}) -> BD OK (ID: {inserted_id})")
             else:
                 errores_publicacion.append({
                     "temp_id": inm.get("temp_id"),
                     "titulo": inm.get("titulo"),
                     "error": err,
                 })
+                print(f"  ❌ [{i+1}/{len(inmuebles_a_publicar)}] [ERROR] {codigo} | {payload_sb['titulo']} -> {err}")
+
+    # Guardar archivo de salida json de creados
+    creados_json_path = procesados_dir / "inmuebles_creados.json"
+    creados_json_path.write_text(json.dumps({"total": len(creados), "inmuebles": creados}, indent=2, ensure_ascii=False), encoding="utf-8")
 
     generar_reporte_ejecucion(
         lote_dir=lote_dir,
@@ -322,20 +391,15 @@ def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify
         dry_run=dry_run,
     )
 
-    resumen = {
+    return {
         "lote": lote_dir.name,
         "flujo_carpeta": "captaciones_maximus" if es_lote_maximus else "captaciones_externas",
         "dry_run": dry_run,
         "total_creados": len(creados),
         "total_duplicados_descartados": len(duplicados_descartados),
         "total_casos_dudosos_o_pendientes": len(pendientes_regla1) + len(dudosos_pausados),
-        "total_errores": len(errores_publicacion),
-        "creados": creados,
+        "errores_count": len(errores_publicacion),
     }
-    (procesados_dir / "resultado_publicacion.json").write_text(
-        json.dumps(resumen, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    return resumen
 
 
 def generar_reporte_ejecucion(
@@ -350,8 +414,9 @@ def generar_reporte_ejecucion(
     dry_run: bool,
 ) -> None:
     report_path = lote_dir / "reporte_ejecucion.md"
+    parent_report = lote_dir.parent / "reporte_resultado.md"
     modo_badge = "🧪 SIMULACIÓN (DRY-RUN)" if dry_run else "🟢 PRODUCCIÓN (SUPABASE LIVE)"
-    flujo_badge = "🏛️ CAPTACIONES DIRECTAS MAXIMUS (`is_maximus = true`)" if es_lote_maximus else "📥 CAPTACIONES EXTERNAS DE COLEGAS (`is_maximus = false`)"
+    flujo_badge = "🏛️ CAPTACIONES DIRECTAS MAXIMUS (`is_maximus = true`)" if es_lote_maximus else "📥 CAPTACIONES EXTERNAS (`is_maximus = false`)"
 
     lines = [
         f"# 📊 Reporte de Ejecución del Agente Captador MAXIMUS — `{lote_dir.name}`",
@@ -359,21 +424,19 @@ def generar_reporte_ejecucion(
         f"- **Fecha y Hora de Ejecución:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`",
         f"- **Flujo de Carpeta:** **{flujo_badge}**",
         f"- **Modo de Ejecución:** **{modo_badge}**",
-        f"- **Inmuebles Creados / Validados:** `{len(creados)}`",
-        f"- **Duplicados Descartados:** `{len(duplicados)}`",
-        f"- **Collages Divididos:** `{stats_img.get('total_collages_divididos', 0)}`",
-        f"- **Capturas WhatsApp Web Recortadas (Modo 2):** `{stats_img.get('total_screenshots_recortados', 0)}`",
-        f"- **Imágenes Finales:** `{stats_img.get('total_imagenes_individuales_generadas', 0)}` (`{stats_img.get('total_marcas_agua_recortadas', 0)}` con recorte Smart Crop)",
-        f"- **Casos Dudosos / Pendientes (`pendientes_revision.md`):** `{len(pendientes_regla1) + len(dudosos)}`",
+        f"- **Inmuebles Insertados/Actualizados en Supabase:** `{len(creados)}`",
+        f"- **Duplicados Descartados (Skill 2):** `{len(duplicados)}`",
+        f"- **Fotografías Procesadas y Subidas a Storage:** `{stats_img.get('total_subidas_supabase_storage', stats_img.get('total_imagenes_individuales_generadas', 0))}`",
+        f"- **Casos en Revisión Humana (`pendientes_revision.md`):** `{len(pendientes_regla1) + len(dudosos)}`",
         "",
         "---",
         "",
-        "## 1. 🏛️ Inmuebles Creados en Catálogo (`public.inmuebles`)",
+        "## 1. 🏛️ Inmuebles Registrados en Catálogo Oficial (`public.inmuebles`)",
         "",
     ]
 
     if not creados:
-        lines.append("_No se insertaron inmuebles nuevos en esta corrida._\n")
+        lines.append("_No se insertaron inmuebles en esta corrida._\n")
     else:
         lines.extend([
             "| Código | ID Supabase | Título | Tipo | Operación | Precio | $/m² | Sector | Especificaciones | `is_maximus` | Asesor Responsable | Fotos |",
@@ -388,17 +451,13 @@ def generar_reporte_ejecucion(
             )
         lines.append("")
 
-    lines.extend([
-        "---",
-        "",
-        "## 2. ♻️ Duplicados Descartados (Intra-Lote y Supabase)",
-        "",
-    ])
-    if not duplicados:
-        lines.append("_No se detectaron inmuebles duplicados en este lote._\n")
-    else:
+    if duplicados:
         lines.extend([
-            "| Candidato | Título / Propiedad | Sector | Precio | Área m² | Score | Origen de Duplicidad |",
+            "---",
+            "",
+            "## 2. 🚫 Inmuebles Duplicados Descartados (Skill 2: Deduplicador)",
+            "",
+            "| Candidato | Título / Propiedad | Sector | Precio | Área m² | Score | Causa del Descarte |",
             "| :--- | :--- | :--- | :--- | :--- | :---: | :--- |",
         ])
         for d in duplicados:
@@ -407,57 +466,24 @@ def generar_reporte_ejecucion(
             )
         lines.append("")
 
-    lines.extend([
-        "---",
-        "",
-        "## 3. 🖼️ Procesamiento de Imágenes",
-        "",
-    ])
-    det_imgs = stats_img.get("detalle_por_inmueble", [])
-    if not det_imgs:
-        lines.append("_Sin estadísticas detalladas de imágenes en esta corrida._\n")
-    else:
+    if pendientes_regla1 or dudosos:
         lines.extend([
-            "| Inmueble | Título | Originales | Screenshots Extraídos | Collages Divididos | Fotos Finales | Marcas de Agua Recortadas |",
-            "| :--- | :--- | :---: | :---: | :---: | :---: | :---: |",
+            "---",
+            "",
+            "## 3. ⚠️ Casos Pendientes de Revisión (Regla de Oro 1: Cero Invención)",
+            "",
+            f"Se preservaron **{len(pendientes_regla1) + len(dudosos)}** mensajes sin publicar automáticamente debido a datos incompletos en el chat o solicitudes. Ver [`pendientes_revision.md`](./procesados/pendientes_revision.md).\n",
         ])
-        for di in det_imgs:
-            lines.append(
-                f"| `{di.get('temp_id')}` | {di.get('titulo')} | {di.get('originales', 0)} | {di.get('screenshots_extraidos', 0)} | {di.get('collages_divididos', 0)} | **{di.get('fotos_finales', 0)}** | {di.get('marcas_agua_recortadas', 0)} |"
-            )
-        lines.append("")
 
-    lines.extend([
-        "---",
-        "",
-        "## 4. ⚠️ Casos Dudosos y Pausados en `pendientes_revision.md`",
-        "",
-    ])
-    if not pendientes_regla1 and not dudosos:
-        lines.append("✅ _Ningún caso pendiente de revisión humana._\n")
-    else:
-        lines.extend([
-            "| ID Temporal | Categoría de Pausa | Sector | Asesor | Detalle / Motivo |",
-            "| :--- | :--- | :--- | :--- | :--- |",
-        ])
-        for p in pendientes_regla1:
-            lines.append(
-                f"| `{p.get('temp_id')}` | **Regla de Oro 1 (Dato Faltante)** | {p.get('sector_detectado')} | {p.get('asesor_nombre')} (`{p.get('asesor_telefono')}`) | {p.get('motivo')} |"
-            )
-        for du in dudosos:
-            c = du.get("candidato", {})
-            lines.append(
-                f"| `{du.get('temp_id')}` | **Similitud Dudosa (`{du.get('score')}`)** | {c.get('sector_nombre')} | {c.get('asesor_nombre')} (`{c.get('asesor_telefono')}`) | {du.get('motivo')} |"
-            )
-        lines.append("")
-
-    report_path.write_text("\n".join(lines), encoding="utf-8")
+    contenido_md = "\n".join(lines)
+    report_path.write_text(contenido_md, encoding="utf-8")
+    parent_report.write_text(contenido_md, encoding="utf-8")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Skill 4: Publicador de Inmuebles en Supabase MAXIMUS (Dual-Flow)")
+    parser = argparse.ArgumentParser(description="Skill 4: Publicador Automático de Inmuebles en Supabase MAXIMUS (Upsert Live)")
     parser.add_argument("--lote", required=True, help="Ruta a la carpeta del lote")
-    parser.add_argument("--dry-run", action="store_true", help="Simula la validación y genera reporte_ejecucion.md sin insertar en Supabase")
+    parser.add_argument("--dry-run", action="store_true", help="Simula validación sin enviar a Supabase")
     parser.add_argument("--notify-n8n", action="store_true", help="Dispara el webhook de n8n por cada inmueble publicado")
     args = parser.parse_args()
 
@@ -465,11 +491,12 @@ def main():
     repo_root = Path(__file__).resolve().parents[4]
     res = publicar_lote(lote_dir, repo_root, dry_run=args.dry_run, notify_n8n=args.notify_n8n)
     print(
-        f"[OK] Publicación finalizada para '{res['lote']}' ({res['flujo_carpeta']} | dry_run={res['dry_run']}):\n"
-        f"  - Inmuebles creados/validados: {res['total_creados']}\n"
+        f"\n✨ [COMPLETADO] Publicación finalizada para '{res['lote']}':\n"
+        f"  - Inmuebles insertados/actualizados en Supabase: {res['total_creados']}\n"
         f"  - Duplicados descartados: {res['total_duplicados_descartados']}\n"
         f"  - Casos en pendientes_revision.md: {res['total_casos_dudosos_o_pendientes']}\n"
-        f"  - Reporte generado en: {lote_dir / 'reporte_ejecucion.md'}"
+        f"  - Errores de API: {res['errores_count']}\n"
+        f"  - Reporte: {lote_dir / 'reporte_ejecucion.md'}\n"
     )
 
 

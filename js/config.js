@@ -23,9 +23,9 @@ const APP_CONFIG = {
 
     // ========== SUPABASE (VPS PRODUCCIÓN) ==========
     SUPABASE_URL: 'https://db.maximusinmobiliaria.tech',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzkyMDg0NDk2LCJleHAiOjE5NDk3NjQ0OTZ9.KQWVxf3I0ZgLCCTvB8MfwmDugkozWFFUwgr3lhICcg8',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzkyMDg0NDk2LCJleHAiOjE5NDk3NjQ0OTZ9.KQWVxf3I0ZgLCCTvB8MfwmDugkozWFFUwgr3lhiCcg8',
     // SERVICE_ROLE_KEY para n8n (NO exponer en frontend):
-    // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3OTIwODQ0OTYsImV4cCI6MTk0OTc2NDQ5Nn0.knU9MwRLtyc10C1pjnHih-OxXtarvEqH8t7jMia70ko
+    // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3OTIwODQ0OTYsImV4cCI6MTk0OTc2NDQ5Nn0.knU9MwRLtyc10C1pjnHih-0xXtarvEqH8t7jMia7Oko
 
     // ========== N8N (Webhooks de Automatización) ==========
     ENABLE_N8N_WEBHOOKS: true,

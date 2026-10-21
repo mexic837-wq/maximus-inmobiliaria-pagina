@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 /**
- * MAXIMUS Inmobiliaria - Skill 4: maximus-supabase-publisher (Node.js Dual-Flow Engine)
- * =====================================================================================
- * Inserta en `public.inmuebles` en Supabase respetando el flujo de carpeta:
- *   - `captaciones_externas/` -> is_maximus = false, en_oferta = false, Asesor Externo
- *   - `captaciones_maximus/`  -> is_maximus = true, en_oferta = true, Asesor Oficial MAXIMUS
+ * MAXIMUS Inmobiliaria - Skill 4: maximus-supabase-publisher (Node.js 100% Automático Vía Upsert)
+ * ==============================================================================================
+ * Conecta directamente a Supabase leyendo credenciales de `.env` (o `js/config.js`),
+ * ejecuta UPSERT (on_conflict=codigo, resolution=merge-duplicates) en la tabla `public.inmuebles`.
  */
 
 const fs = require('fs');
@@ -19,13 +18,40 @@ const ICONOS_VALIDOS = new Set([
 ]);
 
 function loadSupabaseConfig(repoRoot) {
-    const configPath = path.join(repoRoot, 'js', 'config.js');
-    const content = fs.readFileSync(configPath, 'utf8');
-    const mUrl = content.match(/SUPABASE_URL\s*:\s*['"]([^'"]+)['"]/);
-    const mKey = content.match(/SUPABASE_ANON_KEY\s*:\s*['"]([^'"]+)['"]/);
+    let url = process.env.SUPABASE_URL;
+    let key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+
+    const envPath = path.join(repoRoot, '.env');
+    if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf8');
+        for (const line of envContent.split(/\r?\n/)) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+            const eqIdx = trimmed.indexOf('=');
+            if (eqIdx !== -1) {
+                const k = trimmed.slice(0, eqIdx).trim();
+                const v = trimmed.slice(eqIdx + 1).trim();
+                if (k === 'SUPABASE_URL' && !url) url = v;
+                if (k === 'SUPABASE_SERVICE_ROLE_KEY' && (!key || key === process.env.SUPABASE_ANON_KEY)) key = v;
+                if (k === 'SUPABASE_ANON_KEY' && !key) key = v;
+            }
+        }
+    }
+
+    if (!url || !key) {
+        const configPath = path.join(repoRoot, 'js', 'config.js');
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, 'utf8');
+            const mUrl = content.match(/SUPABASE_URL\s*:\s*['"]([^'"]+)['"]/);
+            const mKey = content.match(/SUPABASE_ANON_KEY\s*:\s*['"]([^'"]+)['"]/);
+            if (!url && mUrl) url = mUrl[1].replace(/\/$/, '');
+            if (!key && mKey) key = mKey[1].trim();
+        }
+    }
+
     return {
-        url: mUrl ? mUrl[1].replace(/\/$/, '') : '',
-        key: mKey ? mKey[1].trim() : ''
+        url: (url || '').replace(/\/$/, ''),
+        key: key || ''
     };
 }
 
@@ -119,7 +145,8 @@ async function publishBatch(loteDir, repoRoot, dryRun = false) {
     let corr = dryRun ? 107 : await getNextCorrelativo(cfg);
     const creados = [];
 
-    for (const inm of list) {
+    for (let i = 0; i < list.length; i++) {
+        const inm = list[i];
         const codigo = `#MAX-${corr++}`;
         const row = buildPayload(inm, codigo, esLoteMaximus, false, false);
         if (dryRun) {
@@ -146,13 +173,13 @@ async function publishBatch(loteDir, repoRoot, dryRun = false) {
             let inserted = null;
             for (const [useCanon, omitAg] of [[false, false], [true, false], [true, true]]) {
                 const tryRow = buildPayload(inm, codigo, esLoteMaximus, useCanon, omitAg);
-                const res = await fetch(`${cfg.url}/rest/v1/inmuebles`, {
+                const res = await fetch(`${cfg.url}/rest/v1/inmuebles?on_conflict=codigo`, {
                     method: 'POST',
                     headers: {
                         apikey: cfg.key,
                         Authorization: `Bearer ${cfg.key}`,
                         'Content-Type': 'application/json',
-                        Prefer: 'return=representation'
+                        Prefer: 'resolution=merge-duplicates,return=representation'
                     },
                     body: JSON.stringify(tryRow)
                 });
@@ -164,7 +191,7 @@ async function publishBatch(loteDir, repoRoot, dryRun = false) {
             }
             if (inserted) {
                 creados.push({
-                    id: inserted.id || 'N/D',
+                    id: inserted.id || 'OK',
                     codigo: inserted.codigo || codigo,
                     titulo: row.titulo,
                     tipo: inm.tipo_ui,
@@ -182,18 +209,23 @@ async function publishBatch(loteDir, repoRoot, dryRun = false) {
                     asesor_info: `${row.asesor_nombre} (${row.asesor_telefono})`,
                     fotos_count: row.fotos.length
                 });
+                console.log(`  ✅ [${i+1}/${list.length}] [UPSERT] ${codigo} | ${row.titulo} ($${row.precio} ${row.moneda}) -> Supabase BD OK (ID: ${inserted.id || 'OK'})`);
             }
         }
     }
 
+    const creadosJsonPath = path.join(procesadosDir, 'inmuebles_creados.json');
+    fs.writeFileSync(creadosJsonPath, JSON.stringify({ total: creados.length, inmuebles: creados }, null, 2), 'utf8');
+
     const flujoBadge = esLoteMaximus ? '🏛️ CAPTACIONES DIRECTAS MAXIMUS (`is_maximus = true`)' : '📥 CAPTACIONES EXTERNAS (`is_maximus = false`)';
     let md = `# 📊 Reporte de Ejecución del Agente Captador MAXIMUS — \`${path.basename(loteDir)}\`\n\n`;
+    md += `- **Fecha de Procesamiento:** \`${new Date().toISOString()}\`\n`;
     md += `- **Flujo de Carpeta:** **${flujoBadge}**\n`;
-    md += `- **Modo:** ${dryRun ? '🧪 SIMULACIÓN (DRY-RUN)' : '🟢 PRODUCCIÓN (SUPABASE LIVE)'}\n`;
+    md += `- **Modo de Ejecución:** ${dryRun ? '🧪 SIMULACIÓN (DRY-RUN)' : '🟢 PRODUCCIÓN (SUPABASE LIVE UPSERT)'}\n`;
     md += `- **Inmuebles Creados / Validados:** \`${creados.length}\`\n`;
     md += `- **Duplicados Descartados:** \`${duplicados.length}\`\n`;
     md += `- **Casos Dudosos / Regla de Oro 1 (\`pendientes_revision.md\`):** \`${pendientesRegla1.length + dudosos.length}\`\n\n---\n\n`;
-    md += `## 1. 🏛️ Inmuebles Creados en Catálogo (\`public.inmuebles\`)\n\n`;
+    md += `## 1. 🏛️ Inmuebles Registrados en Supabase (\`public.inmuebles\`)\n\n`;
     md += `| Código | ID Supabase | Título | Tipo | Operación | Precio | $/m² | Sector | Especificaciones | \`is_maximus\` | Asesor Responsable | Fotos |\n`;
     md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- | :---: |\n`;
     for (const c of creados) {
@@ -201,6 +233,9 @@ async function publishBatch(loteDir, repoRoot, dryRun = false) {
     }
 
     fs.writeFileSync(path.join(loteDir, 'reporte_ejecucion.md'), md, 'utf8');
+    const parentDir = path.dirname(loteDir);
+    fs.writeFileSync(path.join(parentDir, 'reporte_resultado.md'), md, 'utf8');
+
     return { flujo: esLoteMaximus ? 'captaciones_maximus' : 'captaciones_externas', creados: creados.length, duplicados: duplicados.length, pendientes: pendientesRegla1.length + dudosos.length };
 }
 
@@ -215,6 +250,6 @@ if (require.main === module) {
     const loteDir = path.resolve(args[loteIdx + 1]);
     const repoRoot = path.resolve(__dirname, '..', '..', '..', '..');
     publishBatch(loteDir, repoRoot, dryRun).then(res => {
-        console.log(`[OK] Publicación completada (${res.flujo} | dryRun=${dryRun}): ${res.creados} creados, ${res.duplicados} duplicados, ${res.pendientes} en pendientes_revision.md.`);
+        console.log(`\n✨ [OK] Publicación completada (${res.flujo} | dryRun=${dryRun}): ${res.creados} inmuebles en Supabase.`);
     });
 }

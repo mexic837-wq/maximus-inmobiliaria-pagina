@@ -155,7 +155,7 @@ function parseTxtFile(txtPath) {
     let currentMsg = null;
 
     for (const rawLine of lines) {
-        const line = rawLine.replace(/[\u200e\u200f\u202a-\u202e\ufeff]/g, '').trim();
+        const line = rawLine.replace(/[\u200e\u200f\u202a-\u202e\ufeff\u202f]/g, ' ').trim();
         if (!line) continue;
 
         const m = line.match(patAndroid) || line.match(patIos);

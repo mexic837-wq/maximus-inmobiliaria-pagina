@@ -10,15 +10,45 @@ const fs = require('fs');
 const path = require('path');
 
 function loadSupabaseConfig(repoRoot) {
-    const configPath = path.join(repoRoot, 'js', 'config.js');
-    const content = fs.readFileSync(configPath, 'utf8');
-    const mUrl = content.match(/SUPABASE_URL\s*:\s*['"]([^'"]+)['"]/);
-    const mKey = content.match(/SUPABASE_ANON_KEY\s*:\s*['"]([^'"]+)['"]/);
-    const mBucket = content.match(/STORAGE_BUCKET\s*:\s*['"]([^'"]+)['"]/);
+    let url = process.env.SUPABASE_URL;
+    let key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+    let bucket = process.env.STORAGE_BUCKET || 'inmuebles-fotos';
+
+    const envPath = path.join(repoRoot, '.env');
+    if (fs.existsSync(envPath)) {
+        const envContent = fs.readFileSync(envPath, 'utf8');
+        for (const line of envContent.split(/\r?\n/)) {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) continue;
+            const eqIdx = trimmed.indexOf('=');
+            if (eqIdx !== -1) {
+                const k = trimmed.slice(0, eqIdx).trim();
+                const v = trimmed.slice(eqIdx + 1).trim();
+                if (k === 'SUPABASE_URL' && !url) url = v;
+                if (k === 'SUPABASE_SERVICE_ROLE_KEY' && (!key || key === process.env.SUPABASE_ANON_KEY)) key = v;
+                if (k === 'SUPABASE_ANON_KEY' && !key) key = v;
+                if (k === 'STORAGE_BUCKET') bucket = v;
+            }
+        }
+    }
+
+    if (!url || !key) {
+        const configPath = path.join(repoRoot, 'js', 'config.js');
+        if (fs.existsSync(configPath)) {
+            const content = fs.readFileSync(configPath, 'utf8');
+            const mUrl = content.match(/SUPABASE_URL\s*:\s*['"]([^'"]+)['"]/);
+            const mKey = content.match(/SUPABASE_ANON_KEY\s*:\s*['"]([^'"]+)['"]/);
+            const mBucket = content.match(/STORAGE_BUCKET\s*:\s*['"]([^'"]+)['"]/);
+            if (!url && mUrl) url = mUrl[1].replace(/\/$/, '');
+            if (!key && mKey) key = mKey[1].trim();
+            if (!bucket && mBucket) bucket = mBucket[1].trim();
+        }
+    }
+
     return {
-        url: mUrl ? mUrl[1].replace(/\/$/, '') : '',
-        key: mKey ? mKey[1].trim() : '',
-        bucket: mBucket ? mBucket[1].trim() : 'inmuebles-fotos'
+        url: (url || '').replace(/\/$/, ''),
+        key: key || '',
+        bucket: bucket || 'inmuebles-fotos'
     };
 }
 
@@ -94,7 +124,8 @@ async function processBatchImages(loteDir, repoRoot, skipUpload = false) {
             stats.total_imagenes_individuales_generadas++;
 
             const carpetaFlujo = inmIsMaximus ? 'maximus' : 'externas';
-            const storageRel = `whatsapp/${carpetaFlujo}/${path.basename(loteDir)}/${tempId}/{outFilename}`.replace('{outFilename}', outFilename);
+            const folderClean = path.basename(loteDir).replace(/[^a-zA-Z0-9_\-]/g, '_');
+            const storageRel = `whatsapp/${carpetaFlujo}/${folderClean}/${tempId}/${outFilename}`;
             if (!skipUpload) {
                 const { url, error } = await uploadToStorage(outPath, storageRel, cfg);
                 urlsPublicas.push(url);
