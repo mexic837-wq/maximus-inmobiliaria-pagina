@@ -1663,13 +1663,14 @@
                                         <!-- Tipo de Inmueble -->
                                         <div>
                                             <label class="block text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Tipo de Inmueble</label>
-                                            <select class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2 outline-none focus:border-maximus-accent font-medium">
+                                            <select id="filtro-avanzado-tipo" onchange="filtrarCatalogoInmuebles()" class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2 outline-none focus:border-maximus-accent font-medium cursor-pointer">
                                                 <option value="">Cualquier tipo</option>
+                                                <option value="fincas">Fincas</option>
                                                 <option value="casa">Casa</option>
-                                                <option value="apartamento">Apartamento</option>
-                                                <option value="townhouse">Townhouse</option>
+                                                <option value="departamento">Departamento</option>
                                                 <option value="local">Local Comercial</option>
-                                                <option value="galpon">Galpón</option>
+                                                <option value="galpones">Galpones</option>
+                                                <option value="casa_de_campo">Casa de campo</option>
                                             </select>
                                         </div>
 
@@ -1809,7 +1810,7 @@
                         </div>
                         <div class="p-3.5">
                             <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest">LOCAL</span>
+                                <span class="text-[9px] font-extrabold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest">LOCAL COMERCIAL</span>
                                 <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-blue-500"></i> C.C Sambil</span>
                             </div>
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Local comercial Nivel Feria">Local comercial Nivel Feria</h4>
@@ -1855,7 +1856,7 @@
                         </div>
                         <div class="p-3.5">
                             <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 uppercase tracking-widest">APTO</span>
+                                <span class="text-[9px] font-extrabold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 uppercase tracking-widest">DEPARTAMENTO</span>
                                 <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-blue-500"></i> Res. El Bosque</span>
                             </div>
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Apartamento amoblado piso medio">Apartamento amoblado piso medio</h4>
@@ -1900,7 +1901,7 @@
                         </div>
                         <div class="p-3.5">
                             <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100 uppercase tracking-widest">PENTHOUSE</span>
+                                <span class="text-[9px] font-extrabold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100 uppercase tracking-widest">DEPARTAMENTO</span>
                                 <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-amber-500"></i> Pueblo Nuevo</span>
                             </div>
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Penthouse Dúplex con Terraza 360°">Penthouse Dúplex con Terraza 360°</h4>
@@ -1945,7 +1946,7 @@
                         </div>
                         <div class="p-3.5">
                             <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest">TOWNHOUSE</span>
+                                <span class="text-[9px] font-extrabold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest">CASA DE CAMPO</span>
                                 <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-gray-500"></i> Paramillo</span>
                             </div>
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Townhouse a estrenar en conjunto cerrado">Townhouse a estrenar en conjunto cerrado</h4>
@@ -1990,7 +1991,7 @@
                         </div>
                         <div class="p-3.5">
                             <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100 uppercase tracking-widest">INDUSTRIAL</span>
+                                <span class="text-[9px] font-extrabold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100 uppercase tracking-widest">GALPONES</span>
                                 <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-purple-500"></i> Z.I. Barrancas</span>
                             </div>
                             <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Galpón Corporativo y Oficinas AAA">Galpón Corporativo y Oficinas AAA</h4>
@@ -2886,22 +2887,30 @@
                         <!-- 3. Tipo de Inmueble -->
                         <div>
                             <label class="block text-[11px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 sm:mb-2">Tipo de Inmueble</label>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3" id="cot-tipo-group">
-                                <button type="button" onclick="setTipoInmuebleCot('apartamento')" data-tipo="apartamento" class="cot-tipo-btn p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border-2 border-maximus-accent bg-emerald-50 text-maximus-dark flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all shadow-sm">
-                                    <i class="ph-fill ph-buildings text-lg sm:text-xl text-maximus-accent"></i>
-                                    <span class="truncate max-w-full">Apartamento</span>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3" id="cot-tipo-group">
+                                <button type="button" onclick="setTipoInmuebleCot('casa')" data-tipo="casa" class="cot-tipo-btn p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border-2 border-maximus-accent bg-emerald-50 text-maximus-dark flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all shadow-sm">
+                                    <i class="ph-fill ph-house text-lg sm:text-xl text-maximus-accent"></i>
+                                    <span class="truncate max-w-full">Casa</span>
                                 </button>
-                                <button type="button" onclick="setTipoInmuebleCot('casa')" data-tipo="casa" class="cot-tipo-btn p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
-                                    <i class="ph ph-house text-lg sm:text-xl text-gray-400"></i>
-                                    <span class="truncate max-w-full">Casa / Quinta</span>
+                                <button type="button" onclick="setTipoInmuebleCot('departamento')" data-tipo="departamento" class="cot-tipo-btn p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
+                                    <i class="ph ph-buildings text-lg sm:text-xl text-gray-400"></i>
+                                    <span class="truncate max-w-full">Departamento</span>
                                 </button>
-                                <button type="button" onclick="setTipoInmuebleCot('local')" data-tipo="local" class="cot-tipo-btn p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
+                                <button type="button" onclick="setTipoInmuebleCot('casa_de_campo')" data-tipo="casa_de_campo" class="cot-tipo-btn p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
+                                    <i class="ph ph-tree text-lg sm:text-xl text-gray-400"></i>
+                                    <span class="truncate max-w-full">Casa de campo</span>
+                                </button>
+                                <button type="button" onclick="setTipoInmuebleCot('fincas')" data-tipo="fincas" class="cot-tipo-btn p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
+                                    <i class="ph ph-plant text-lg sm:text-xl text-gray-400"></i>
+                                    <span class="truncate max-w-full">Fincas</span>
+                                </button>
+                                <button type="button" onclick="setTipoInmuebleCot('galpones')" data-tipo="galpones" class="cot-tipo-btn p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
+                                    <i class="ph ph-warehouse text-lg sm:text-xl text-gray-400"></i>
+                                    <span class="truncate max-w-full">Galpones</span>
+                                </button>
+                                <button type="button" onclick="setTipoInmuebleCot('local')" data-tipo="local" class="cot-tipo-btn p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
                                     <i class="ph ph-storefront text-lg sm:text-xl text-gray-400"></i>
                                     <span class="truncate max-w-full">Local Comercial</span>
-                                </button>
-                                <button type="button" onclick="setTipoInmuebleCot('terreno')" data-tipo="terreno" class="cot-tipo-btn p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 flex flex-col items-center gap-1 text-[11px] sm:text-xs font-bold transition-all">
-                                    <i class="ph ph-plant text-lg sm:text-xl text-gray-400"></i>
-                                    <span class="truncate max-w-full">Terreno / Lote</span>
                                 </button>
                             </div>
                         </div>
@@ -3853,10 +3862,12 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Tipo de Inmueble</label>
-                                    <select id="inm-tipo" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                        <option value="Casa / Quinta">Casa / Quinta</option>
-                                        <option value="Apartamento">Apartamento</option>
-                                        <option value="Townhouse">Townhouse</option>
+                                    <select id="inm-tipo" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent cursor-pointer">
+                                        <option value="Casa">Casa</option>
+                                        <option value="Departamento">Departamento</option>
+                                        <option value="Casa de campo">Casa de campo</option>
+                                        <option value="Fincas">Fincas</option>
+                                        <option value="Galpones">Galpones</option>
                                         <option value="Local Comercial">Local Comercial</option>
                                     </select>
                                 </div>
@@ -4213,11 +4224,11 @@
                                 <select id="filtro-admin-usuarios-inmueble" onchange="filtrarAdminUsuarios()"
                                         class="w-full appearance-none pl-3 pr-8 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 outline-none focus:border-emerald-500 cursor-pointer">
                                     <option value="todos">Todos los Inmuebles</option>
-                                    <option value="inm-1">#MAX-101 (Quinta Guaparo)</option>
+                                    <option value="inm-1">#MAX-101 (Casa Guaparo)</option>
                                     <option value="inm-2">#MAX-102 (Local Sambil)</option>
                                     <option value="inm-3">#MAX-103 (Apto El Bosque)</option>
                                     <option value="inm-4">#MAX-104 (Penthouse 360°)</option>
-                                    <option value="inm-5">#MAX-105 (Townhouse Paramillo)</option>
+                                    <option value="inm-5">#MAX-105 (Casa de campo Paramillo)</option>
                                     <option value="inm-6">#MAX-106 (Galpón Barrancas)</option>
                                 </select>
                                 <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
@@ -6128,12 +6139,12 @@
                     <div>
                         <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Tipo de Inmueble</label>
                         <select id="crm-input-tipo-inmueble" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="casa">Casa / Quinta</option>
-                            <option value="apartamento">Apartamento</option>
-                            <option value="townhouse">Townhouse</option>
+                            <option value="casa">Casa</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="casa_de_campo">Casa de campo</option>
+                            <option value="fincas">Fincas</option>
+                            <option value="galpones">Galpones</option>
                             <option value="local">Local Comercial</option>
-                            <option value="terreno">Terreno</option>
-                            <option value="oficina">Oficina</option>
                         </select>
                     </div>
                     <div>
@@ -8418,7 +8429,7 @@
                 codigo: '#MAX-101',
                 titulo: 'Quinta moderna con piscina y jardín',
                 subtitulo: 'Exclusiva residencia en urbanismo cerrado con acabados de primera y máxima privacidad',
-                tipo: 'Casa / Quinta',
+                tipo: 'Casa',
                 badgeTipo: 'CASA',
                 operacion: 'VENTA',
                 isMaximus: true,
@@ -8477,7 +8488,7 @@
                 titulo: 'Local comercial Nivel Feria',
                 subtitulo: 'Ubicación estratégica de alto flujo peatonal y visibilidad comercial garantizada',
                 tipo: 'Local Comercial',
-                badgeTipo: 'LOCAL',
+                badgeTipo: 'LOCAL COMERCIAL',
                 operacion: 'ALQUILER',
                 isMaximus: true,
                 precio: '$1.500',
@@ -8527,8 +8538,8 @@
                 codigo: '#MAX-103',
                 titulo: 'Apartamento amoblado piso medio',
                 subtitulo: 'Moderno apartamento completamente equipado con acabados de primera y vista panorámica',
-                tipo: 'Apartamento',
-                badgeTipo: 'APTO',
+                tipo: 'Departamento',
+                badgeTipo: 'DEPARTAMENTO',
                 operacion: 'VENTA',
                 isMaximus: true,
                 precio: '$120.000',
@@ -8580,8 +8591,8 @@
                 codigo: '#MAX-104',
                 titulo: 'Penthouse Dúplex con Terraza 360°',
                 subtitulo: 'La propiedad más exclusiva de Pueblo Nuevo: terraza privada, jacuzzi y acabados de mármol',
-                tipo: 'Penthouse',
-                badgeTipo: 'PENTHOUSE',
+                tipo: 'Departamento',
+                badgeTipo: 'DEPARTAMENTO',
                 operacion: 'VENTA',
                 isMaximus: true,
                 precio: '$340.000',
@@ -8632,8 +8643,8 @@
                 codigo: '#MAX-105',
                 titulo: 'Townhouse a estrenar en conjunto cerrado',
                 subtitulo: 'Modernidad y seguridad para tu familia en la fresca zona de Paramillo',
-                tipo: 'Townhouse',
-                badgeTipo: 'TOWNHOUSE',
+                tipo: 'Casa de campo',
+                badgeTipo: 'CASA DE CAMPO',
                 operacion: 'VENTA',
                 isMaximus: true,
                 precio: '$95.000',
@@ -8681,8 +8692,8 @@
                 codigo: '#MAX-106',
                 titulo: 'Galpón Corporativo y Oficinas AAA',
                 subtitulo: 'Infraestructura industrial de alto nivel con patio de maniobras y oficinas ejecutivas',
-                tipo: 'Galpón Industrial',
-                badgeTipo: 'INDUSTRIAL',
+                tipo: 'Galpones',
+                badgeTipo: 'GALPONES',
                 operacion: 'ALQUILER',
                 isMaximus: true,
                 precio: '$3.200',
@@ -12414,11 +12425,15 @@
                 }
             }
 
-            // BadgeTipo calculation
+                        // BadgeTipo calculation oficial (Fincas, Casa, Departamento, Local Comercial, Galpones, Casa de campo)
             let badgeTipo = 'CASA';
-            if (tipo.includes('Apartamento')) badgeTipo = 'APARTAMENTO';
-            else if (tipo.includes('Townhouse')) badgeTipo = 'TOWNHOUSE';
-            else if (tipo.includes('Local')) badgeTipo = 'LOCAL';
+            const tipoLower = (tipo || '').toLowerCase();
+            if (tipoLower.includes('finca')) badgeTipo = 'FINCAS';
+            else if (tipoLower.includes('departamento') || tipoLower.includes('apartamento')) badgeTipo = 'DEPARTAMENTO';
+            else if (tipoLower.includes('campo')) badgeTipo = 'CASA DE CAMPO';
+            else if (tipoLower.includes('galpon')) badgeTipo = 'GALPONES';
+            else if (tipoLower.includes('local')) badgeTipo = 'LOCAL COMERCIAL';
+            else badgeTipo = 'CASA';
 
             // Generar código y clave temporal
             const nuevoId = 'inm-' + (Object.keys(INMUEBLES_DETALLE_DATA).length + 1);
@@ -12466,7 +12481,7 @@
                 precio: numPrecio,
                 moneda: moneda || 'USD',
                 operacion: operacion.toLowerCase(),
-                tipo: tipo.toLowerCase().includes('apartamento') ? 'apartamento' : (tipo.toLowerCase().includes('local') ? 'local' : (tipo.toLowerCase().includes('terreno') ? 'terreno' : 'casa')),
+                tipo: tipoLower.includes('finca') ? 'fincas' : (tipoLower.includes('departamento') || tipoLower.includes('apartamento') ? 'departamento' : (tipoLower.includes('campo') ? 'casa_de_campo' : (tipoLower.includes('galpon') ? 'galpones' : (tipoLower.includes('local') ? 'local_comercial' : 'casa')))),
                 estatus: 'disponible',
                 ubicacion,
                 estado: 'Táchira',

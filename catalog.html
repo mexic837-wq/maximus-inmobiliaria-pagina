@@ -214,12 +214,12 @@
                 <!-- Tipo de Inmueble -->
                 <select id="filtro-tipo" onchange="aplicarFiltros()" class="px-3.5 py-2 bg-gray-50 hover:bg-white border border-gray-200 rounded-xl font-bold text-gray-700 outline-none focus:border-maximus-accent cursor-pointer">
                     <option value="todos">Tipo: Todos</option>
+                    <option value="fincas">Fincas</option>
                     <option value="casa">Casas</option>
-                    <option value="apartamento">Apartamentos</option>
-                    <option value="townhouse">Townhouses</option>
+                    <option value="departamento">Departamentos</option>
                     <option value="local">Locales Comerciales</option>
-                    <option value="terreno">Terrenos / Lotes</option>
-                    <option value="oficina">Oficinas</option>
+                    <option value="galpones">Galpones</option>
+                    <option value="casa_de_campo">Casas de campo</option>
                 </select>
 
                 <!-- Ubicación / Zona -->
@@ -757,9 +757,26 @@
                     if (itemOp !== operacionActiva) return false;
                 }
 
-                // Tipo
+                // Tipo oficial MAXIMUS (Fincas, Casa, Departamento, Local Comercial, Galpones, Casa de campo)
                 if (fTipo !== 'todos') {
-                    if ((item.tipo || '').toLowerCase() !== fTipo.toLowerCase()) return false;
+                    const itemTipo = ((item.tipo || '') + '').toLowerCase().trim();
+                    let coincide = false;
+                    if (fTipo === 'casa') {
+                        coincide = itemTipo.includes('casa') && !itemTipo.includes('campo');
+                    } else if (fTipo === 'departamento') {
+                        coincide = itemTipo.includes('departamento') || itemTipo.includes('apartamento') || itemTipo.includes('depto') || itemTipo.includes('penthouse');
+                    } else if (fTipo === 'fincas') {
+                        coincide = itemTipo.includes('finca');
+                    } else if (fTipo === 'galpones') {
+                        coincide = itemTipo.includes('galpon') || itemTipo.includes('galpón') || itemTipo.includes('industrial');
+                    } else if (fTipo === 'local') {
+                        coincide = itemTipo.includes('local') || itemTipo.includes('comercial');
+                    } else if (fTipo === 'casa_de_campo') {
+                        coincide = itemTipo.includes('campo') || itemTipo.includes('casa de campo');
+                    } else {
+                        coincide = itemTipo === fTipo.toLowerCase();
+                    }
+                    if (!coincide) return false;
                 }
 
                 // Zona

@@ -1143,9 +1143,12 @@ const CotizadorService = {
         const precioBase = parseFloat(zona.precio_m2_base) || 0;
         
         let factor = 1.0;
+        // Tipos oficiales MAXIMUS: Fincas, Casa, Departamento, Local Comercial, Galpones, Casa de campo
         if (tipo === 'casa') factor = parseFloat(zona.factor_casa) || 1.05;
-        if (tipo === 'apartamento') factor = parseFloat(zona.factor_apartamento) || 1.00;
-        if (tipo === 'terreno') factor = parseFloat(zona.factor_terreno) || 0.60;
+        if (tipo === 'departamento' || tipo === 'apartamento') factor = parseFloat(zona.factor_apartamento) || 1.00;
+        if (tipo === 'casa_de_campo') factor = (parseFloat(zona.factor_casa) || 1.05) * 1.10;
+        if (tipo === 'fincas') factor = (parseFloat(zona.factor_terreno) || 0.60) * 0.95;
+        if (tipo === 'galpones') factor = (parseFloat(zona.factor_local) || 1.30) * 0.90;
         if (tipo === 'local') factor = parseFloat(zona.factor_local) || 1.30;
 
         const precioM2Ajustado = Math.round(precioBase * factor);
