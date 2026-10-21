@@ -29,7 +29,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="font-sans text-maximus-black antialiased bg-[#0B4A3F] min-h-screen relative flex items-center justify-center p-4 sm:p-6 overflow-x-hidden selection:bg-maximus-accent selection:text-white">
+<body class="font-sans text-maximus-black antialiased bg-[#0B4A3F] min-h-[100dvh] relative flex flex-col justify-center items-center p-3 sm:p-6 overflow-x-hidden selection:bg-maximus-accent selection:text-white">
 
     <!-- Fondo de Arquitectura con Tono Bosque Verde Corporativo #0B4A3F -->
     <div class="fixed inset-0 z-0">
@@ -41,33 +41,36 @@
         <div class="absolute inset-0 bg-gradient-to-t from-[#08362e] via-[#0B4A3F]/85 to-[#0e5c4e]/70 backdrop-blur-[2px]"></div>
     </div>
 
-    <!-- Barra Superior / Acciones Rápidas -->
-    <div class="fixed top-0 left-0 right-0 z-20 flex justify-between items-center px-6 py-5 max-w-7xl mx-auto">
-        <a href="/" class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-semibold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5">
-            <i class="fas fa-arrow-left text-maximus-accent"></i>
-            <span>Volver a la Web</span>
-        </a>
-
-        <!-- Badge Corporativo Inmobiliario -->
-        <div class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-medium backdrop-blur-md shadow-sm">
-            <i class="fas fa-shield-alt text-maximus-accent"></i>
-            <span>Portal Oficial MAXIMUS</span>
-        </div>
-    </div>
-
-    <!-- Tarjeta Principal: Minimalista, Equilibrada y Fiel a la Identidad MAXIMUS -->
-    <div class="relative z-10 w-full max-w-3xl mx-auto my-auto bg-white rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-gray-100">
+    <!-- Contenedor Centrado de Login -->
+    <div class="relative z-10 w-full max-w-3xl mx-auto flex flex-col my-auto py-2 sm:py-4">
         
-        <!-- Columna Izquierda: Minimalista, Limpia y Elegante (5 columnas) -->
-        <div class="md:col-span-5 relative p-8 sm:p-10 flex flex-col justify-between bg-[#0B4A3F] text-white overflow-hidden">
+        <!-- Barra Superior / Acciones Rápidas (Encima de la tarjeta en móvil y desktop sin superposiciones) -->
+        <div class="w-full flex justify-between items-center mb-2.5 sm:mb-4 px-1">
+            <a href="/" class="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-bold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5 active:scale-95">
+                <i class="fas fa-arrow-left text-maximus-accent"></i>
+                <span>Volver a la Web</span>
+            </a>
+
+            <!-- Badge Corporativo Inmobiliario -->
+            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[11px] sm:text-xs font-semibold backdrop-blur-md shadow-sm">
+                <i class="fas fa-shield-alt text-maximus-accent"></i>
+                <span class="hidden xs:inline sm:inline">Portal Oficial</span> <span>MAXIMUS</span>
+            </div>
+        </div>
+
+        <!-- Tarjeta Principal: Minimalista, Equilibrada y Fiel a la Identidad MAXIMUS -->
+        <div class="w-full bg-white rounded-2xl sm:rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-gray-100/80">
+        
+        <!-- Columna Izquierda: Minimalista, Limpia y Elegante (5 columnas en desktop / Compacta en móvil) -->
+        <div class="md:col-span-5 relative p-4 sm:p-6 md:p-10 flex flex-col justify-between bg-[#0B4A3F] text-white overflow-hidden">
             <!-- Destello diagonal cromado/plateado sutil inspirado en la agenda -->
             <div class="absolute -right-16 -top-16 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
             <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-maximus-accent/10 rounded-full blur-2xl pointer-events-none"></div>
 
             <!-- Cabecera Minimalista Tipográfica -->
-            <div class="relative z-10 text-center md:text-left">
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 border border-white/20 text-maximus-accent mb-5 text-xl shadow-inner">
-                    <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <div class="relative z-10 text-center md:text-left flex flex-col items-center md:items-start">
+                <div class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl sm:rounded-2xl bg-white/10 border border-white/20 text-maximus-accent mb-2 sm:mb-3 md:mb-5 text-xl shadow-inner">
+                    <svg class="w-6 h-6 md:w-7 md:h-7" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="login-silver" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
                                 <stop offset="0%" stop-color="#FFFFFF"/>
@@ -96,18 +99,18 @@
                         </g>
                     </svg>
                 </div>
-                <h1 class="text-3xl font-extrabold tracking-tight text-white">
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
                     MAXIMUS<span class="text-maximus-accent">.</span>
                 </h1>
-                <p class="text-[11px] font-semibold uppercase tracking-widest text-emerald-300 mt-1">Inmobiliaria & Bienes Raíces</p>
+                <p class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest text-emerald-300 mt-0.5 sm:mt-1">Inmobiliaria & Bienes Raíces</p>
                 
-                <p class="text-xs text-gray-200 mt-4 leading-relaxed font-light">
+                <p class="text-xs text-gray-200 mt-2 sm:mt-4 leading-relaxed font-light hidden sm:block">
                     Portal privado de gestión comercial y catálogo exclusivo de propiedades.
                 </p>
             </div>
 
             <!-- Ubicación institucional real extraída de la propuesta oficial -->
-            <div class="relative z-10 pt-6 mt-6 border-t border-white/15 text-[11px] text-gray-200 space-y-1 text-center md:text-left">
+            <div class="relative z-10 pt-4 mt-4 md:pt-6 md:mt-6 border-t border-white/15 text-[11px] text-gray-200 space-y-1 text-center md:text-left hidden md:block">
                 <div class="flex items-center justify-center md:justify-start gap-1.5 text-white font-medium">
                     <i class="fas fa-map-marker-alt text-maximus-accent"></i>
                     <span>San Cristóbal, Edo. Táchira</span>
@@ -117,17 +120,17 @@
         </div>
 
         <!-- Columna Derecha: Formulario Limpio, Espacioso y Comercial (7 columnas) -->
-        <div class="md:col-span-7 p-8 sm:p-10 flex flex-col justify-center bg-white">
+        <div class="md:col-span-7 p-4 sm:p-7 md:p-10 flex flex-col justify-center bg-white">
             <div class="w-full">
                 
                 <!-- Selector de Pestañas: Iniciar Sesión vs Crear Cuenta -->
-                <div class="flex items-center p-1 bg-gray-100 rounded-2xl mb-6">
+                <div class="flex items-center p-1 bg-gray-100 rounded-xl sm:rounded-2xl mb-3.5 sm:mb-6">
                     <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')"
-                            class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-dark shadow-sm">
+                            class="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-dark shadow-sm">
                         <i class="fas fa-sign-in-alt mr-1.5 text-maximus-accent"></i> Iniciar Sesión
                     </button>
                     <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')"
-                            class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark">
+                            class="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark">
                         <i class="fas fa-user-plus mr-1.5"></i> Crear Cuenta
                     </button>
                 </div>
@@ -146,13 +149,13 @@
 
                 <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
                 <div id="loginView">
-                    <div class="mb-5">
-                        <h2 class="text-2xl font-bold text-maximus-black">Bienvenido</h2>
-                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa tus credenciales para acceder a la plataforma.</p>
+                    <div class="mb-3.5 sm:mb-5">
+                        <h2 class="text-xl sm:text-2xl font-bold text-maximus-black">Bienvenido</h2>
+                        <p class="text-gray-500 text-xs mt-0.5 sm:mt-1">Ingresa tus credenciales para acceder a la plataforma.</p>
                     </div>
 
                     <!-- Banner de feedback para recuperación de contraseña -->
-                    <div id="forgotPasswordBanner" class="hidden mb-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all">
+                    <div id="forgotPasswordBanner" class="hidden mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all">
                         <i class="fas fa-check-circle text-emerald-600 mt-0.5 text-sm"></i>
                         <div class="flex-1">
                             <span id="forgotPasswordText" class="font-semibold block">Enlace de recuperación enviado a tu correo electrónico.</span>
@@ -160,23 +163,23 @@
                     </div>
 
                     <!-- Formulario Login -->
-                    <form id="loginForm" class="space-y-4">
+                    <form id="loginForm" class="space-y-3 sm:space-y-4">
                         <!-- Campo Correo -->
                         <div>
-                            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Correo Electrónico</label>
+                            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Correo Electrónico</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                                     <i class="fas fa-envelope text-sm"></i>
                                 </div>
                                 <input type="email" id="email" required
-                                       class="block w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       class="block w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
                                        placeholder="tu@correo.com">
                             </div>
                         </div>
 
                         <!-- Campo Contraseña -->
                         <div>
-                            <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center justify-between mb-1">
                                 <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">Contraseña</label>
                                 <button type="button" onclick="handleForgotPassword(event)" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition cursor-pointer">¿Olvidaste tu clave?</button>
                             </div>
@@ -185,7 +188,7 @@
                                     <i class="fas fa-lock text-sm"></i>
                                 </div>
                                 <input type="password" id="password" required
-                                       class="block w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       class="block w-full pl-10 pr-10 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
                                        placeholder="••••••••••••">
                                 <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
                                     <i class="fas fa-eye text-sm" id="eyeIcon"></i>
@@ -194,45 +197,17 @@
                         </div>
 
                         <!-- Recordar credenciales -->
-                        <div class="flex items-center pt-1">
+                        <div class="flex items-center pt-0.5">
                             <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
                             <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
                                 Recordar mis datos en este equipo
                             </label>
                         </div>
 
-                        <!-- Selector Rápido de 3 Tipos de Cuentas: Admin, Agente Maximus y Usuario Normal -->
-                        <div class="pt-2">
-                            <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Acceso Rápido por Perfil:</p>
-                            <div class="grid grid-cols-3 gap-2">
-                                <button type="button" onclick="selectDemoAccount('admin')" 
-                                        class="p-2.5 rounded-xl border border-gray-200 hover:border-emerald-600 hover:bg-emerald-50/50 text-left transition group">
-                                    <span class="block text-[11px] font-extrabold text-maximus-dark group-hover:text-emerald-700 flex items-center gap-1">
-                                        <i class="fas fa-shield-alt text-[9px] text-amber-500"></i> Director
-                                    </span>
-                                    <span class="block text-[9px] text-gray-500 font-semibold truncate">admin@maximus.com</span>
-                                </button>
-                                <button type="button" onclick="selectDemoAccount('asesor_maximus')" 
-                                        class="p-2.5 rounded-xl border border-emerald-500 bg-emerald-50/60 hover:bg-emerald-100/60 text-left transition group shadow-sm">
-                                    <span class="block text-[11px] font-extrabold text-emerald-800 flex items-center gap-1">
-                                        <i class="fas fa-check-circle text-[9px]"></i> Asesor Maximus
-                                    </span>
-                                    <span class="block text-[9px] text-emerald-700 font-semibold truncate">asesor.maximus</span>
-                                </button>
-                                <button type="button" onclick="selectDemoAccount('cliente')" 
-                                        class="p-2.5 rounded-xl border border-teal-300 bg-teal-50/50 hover:bg-teal-100/60 text-left transition group shadow-sm">
-                                    <span class="block text-[11px] font-extrabold text-teal-800 flex items-center gap-1">
-                                        <i class="fas fa-user text-[9px]"></i> Usuario Normal
-                                    </span>
-                                    <span class="block text-[9px] text-teal-700 font-semibold truncate">cliente@maximus.com</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Botón Principal -->
-                        <div class="pt-2">
+                        <!-- Botón Principal (Producción Listo) -->
+                        <div class="pt-1.5 sm:pt-2">
                             <button type="submit" id="loginSubmitBtn"
-                                    class="w-full py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                                    class="w-full py-3 sm:py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
                                 <span>Ingresar al Portal Inmobiliario</span>
                                 <i class="fas fa-arrow-right text-xs"></i>
                             </button>
@@ -440,9 +415,9 @@
                 </div>
 
                 <!-- Pie de contacto directo con Lic. Eva Camargo & Abg. José Guerrero -->
-                <div class="mt-6 pt-5 border-t border-gray-100 text-center">
-                    <p class="text-xs text-gray-500">
-                        ¿Requieres acceso como asesor inmobiliario o alianzas?
+                <div class="mt-4 sm:mt-6 pt-3.5 sm:pt-5 border-t border-gray-100 text-center">
+                    <p class="text-[11px] sm:text-xs text-gray-500">
+                        ¿Requieres acceso como asesor o alianzas?
                         <a href="https://wa.me/584247835697" target="_blank" class="text-maximus-dark hover:text-maximus-accent font-semibold inline-flex items-center gap-1 ml-1 transition">
                             <i class="fab fa-whatsapp text-maximus-accent"></i> Contactar a Dirección
                         </a>
@@ -451,6 +426,7 @@
 
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Scripts de Configuración, Supabase, Mock Data, Services y AuthService -->
