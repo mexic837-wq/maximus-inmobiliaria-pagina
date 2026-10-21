@@ -6683,8 +6683,8 @@
                 </p>
             </div>
 
-            <!-- Formulario Interactivo -->
-            <form id="formDejarResena" onsubmit="enviarResenaUsuario(event)" class="p-6 space-y-4">
+            <!-- Formulario Interactivo con espacio inferior para el tab bar móvil -->
+            <form id="formDejarResena" onsubmit="enviarResenaUsuario(event)" class="p-5 sm:p-6 pb-32 sm:pb-6 space-y-4">
                 <!-- Calificación de Estrellas -->
                 <div class="text-center py-2 bg-emerald-50/50 dark:bg-[#0A1F1B] rounded-2xl border border-emerald-100 dark:border-emerald-900/40">
                     <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Tu Calificación General</label>
@@ -6729,12 +6729,12 @@
                 </div>
 
                 <!-- Acciones -->
-                <div class="pt-2 flex items-center justify-end gap-2.5">
-                    <button type="button" onclick="cerrarModalDejarResena()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900 text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#0A1F1B] transition cursor-pointer">
+                <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5">
+                    <button type="button" onclick="cerrarModalDejarResena()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900 text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#0A1F1B] transition cursor-pointer text-center">
                         Cancelar
                     </button>
-                    <button type="submit" id="btn-submit-resena" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-extrabold shadow-md shadow-emerald-950/20 hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95">
-                        <i class="ph-bold ph-paper-plane-right"></i>
+                    <button type="submit" id="btn-submit-resena" class="w-full sm:w-auto px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-extrabold shadow-md shadow-emerald-950/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                        <i class="ph-bold ph-paper-plane-right text-sm"></i>
                         <span id="btn-submit-resena-text">Publicar Reseña en MAXIMUS</span>
                     </button>
                 </div>
@@ -12933,6 +12933,18 @@
             const content = document.getElementById('modalDejarResenaContent');
             if (!modal || !content) return;
 
+            // Sincronizar resaltado visual de pestaña en la barra móvil
+            if (typeof window.syncMobileTabs === 'function') {
+                window.syncMobileTabs('resenas');
+            } else {
+                const tabBar = document.getElementById('mobileTabBar');
+                if (tabBar) {
+                    tabBar.querySelectorAll('button[data-tab]').forEach(b => {
+                        b.classList.toggle('active', b.dataset.tab === 'resenas');
+                    });
+                }
+            }
+
             const inputNombre = document.getElementById('resena-input-nombre');
             const inputEmail = document.getElementById('resena-input-email');
             
@@ -12958,6 +12970,20 @@
             const modal = document.getElementById('modalDejarResena');
             const content = document.getElementById('modalDejarResenaContent');
             if (!modal || !content) return;
+
+            // Restaurar pestaña activa anterior en la barra móvil
+            const activeSec = document.querySelector('.view-section.active');
+            const targetTab = activeSec ? activeSec.id : 'view-inmuebles';
+            if (typeof window.syncMobileTabs === 'function') {
+                window.syncMobileTabs(targetTab);
+            } else {
+                const tabBar = document.getElementById('mobileTabBar');
+                if (tabBar) {
+                    tabBar.querySelectorAll('button[data-tab]').forEach(b => {
+                        b.classList.toggle('active', b.dataset.tab === targetTab);
+                    });
+                }
+            }
 
             content.classList.remove('scale-100', 'opacity-100');
             content.classList.add('scale-95', 'opacity-0');
@@ -16105,7 +16131,7 @@
     <nav id="mobileTabBar" aria-label="Navegación principal">
         <button type="button" data-tab="view-inmuebles"><i class="ph-fill ph-house"></i><span>Inmuebles</span></button>
         <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-buildings"></i><span>Captaciones</span></button>
-        <button type="button" data-action="resena" onclick="abrirModalDejarResena()" class="cliente-only" title="Subir Reseña"><i class="ph-fill ph-star text-amber-500"></i><span>Reseñas</span></button>
+        <button type="button" data-tab="resenas" data-action="resena" onclick="abrirModalDejarResena()" class="cliente-only" title="Subir Reseña"><i class="ph-fill ph-star text-amber-500"></i><span>Reseñas</span></button>
         <button type="button" data-tab="view-resumen" class="staff-only"><i class="ph-fill ph-squares-four"></i><span>Panorama</span></button>
         <button type="button" data-tab="view-colecciones" class="staff-only"><i class="ph-fill ph-folder-simple"></i><span>Colecciones</span></button>
         <button type="button" data-tab="view-perfil"><i class="ph-fill ph-user-circle"></i><span>Perfil</span></button>
@@ -16130,6 +16156,7 @@
                     b.classList.toggle('active', b.dataset.tab === target);
                 });
             }
+            window.syncMobileTabs = syncTabs;
 
             function goTo(target) {
                 const link = document.querySelector(`#sidebar .nav-link[data-target="${target}"]`);
@@ -16141,7 +16168,7 @@
             }
 
             tabBar.addEventListener('click', e => {
-                const resenaBtn = e.target.closest('button[data-action="resena"]');
+                const resenaBtn = e.target.closest('button[data-action="resena"], button[data-tab="resenas"]');
                 if (resenaBtn) {
                     if (typeof abrirModalDejarResena === 'function') abrirModalDejarResena();
                     return;
@@ -16149,6 +16176,7 @@
                 const btn = e.target.closest('button[data-tab]');
                 if (!btn) return;
                 if (btn.dataset.tab === '__menu') { toggleMobileDrawer(true); return; }
+                if (typeof cerrarModalDejarResena === 'function') cerrarModalDejarResena();
                 goTo(btn.dataset.tab);
             });
 
