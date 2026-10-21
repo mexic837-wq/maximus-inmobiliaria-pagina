@@ -1190,8 +1190,8 @@
                 const res = await InmuebleService.getAll(filtros);
                 let items = (res && res.data && res.data.length > 0) ? res.data : [];
 
-                // Respaldo secundario si la consulta no arrojó resultados sin búsqueda específica
-                if (items.length === 0 && !busqueda) {
+                // Respaldo secundario solo en modo mock local (si USE_MOCK_DATA está activo)
+                if (items.length === 0 && !busqueda && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.USE_MOCK_DATA) {
                     if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
                         items = [...MOCK_DATA.inmuebles];
                         if (operacion && operacion !== 'todos') {

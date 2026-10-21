@@ -2,3 +2,18 @@
 Thumbs.db
 node_modules/
 *.log
+
+# Agente WhatsApp: Ignorar lotes de proyectos con cientos de fotos crudas, excepto las plantillas y READMEs
+agente_whatsapp/proyectos/*
+!agente_whatsapp/proyectos/00_plantilla_lote/
+!agente_whatsapp/proyectos/00_plantilla_lote/**
+!agente_whatsapp/proyectos/captaciones_externas/
+agente_whatsapp/proyectos/captaciones_externas/*
+!agente_whatsapp/proyectos/captaciones_externas/README.md
+!agente_whatsapp/proyectos/captaciones_maximus/
+agente_whatsapp/proyectos/captaciones_maximus/*
+!agente_whatsapp/proyectos/captaciones_maximus/README.md
+__pycache__/
+*.pyc
+.env
+

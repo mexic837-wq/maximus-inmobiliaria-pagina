@@ -1,0 +1,477 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+MAXIMUS Inmobiliaria - Skill 4: maximus-supabase-publisher (Dual-Flow)
+=======================================================================
+Valida el payload completo contra `sql/migration-inmuebles-sync-dashboard.sql`
+y `js/services.js`, respetando la carpeta de origen:
+  - `captaciones_externas/` -> is_maximus = False, en_oferta = False, Asesor Externo
+  - `captaciones_maximus/`  -> is_maximus = True, en_oferta = True, Asesor Oficial MAXIMUS
+Inserta en `public.inmuebles` y genera `reporte_ejecucion.md`.
+"""
+
+import os
+import re
+import json
+import argparse
+import urllib.request
+import urllib.error
+from datetime import datetime
+from pathlib import Path
+from typing import List, Dict, Any, Tuple, Optional
+
+ICONOS_VALIDOS_DASHBOARD = {
+    "ph-star", "ph-waves", "ph-lightning", "ph-drop", "ph-shield-check",
+    "ph-car", "ph-armchair", "ph-cooking-pot", "ph-wifi-high", "ph-snowflake",
+    "ph-sun-horizon", "ph-tree", "ph-storefront", "ph-warehouse", "ph-plant",
+    "ph-lock-key", "ph-bathtub", "ph-elevator", "ph-wine", "ph-trend-up",
+    "ph-buildings", "ph-sparkle", "ph-check",
+}
+
+
+def load_config(repo_root: Path) -> Dict[str, str]:
+    url = os.environ.get("SUPABASE_URL", "").strip()
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "") or os.environ.get("SUPABASE_ANON_KEY", "")
+    n8n_url = os.environ.get("N8N_BASE_URL", "https://n8n.maximusinmobiliaria.tech")
+
+    config_js = repo_root / "js" / "config.js"
+    if config_js.exists():
+        content = config_js.read_text(encoding="utf-8", errors="replace")
+        if not url:
+            m_u = re.search(r"SUPABASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
+            if m_u:
+                url = m_u.group(1).rstrip("/")
+        if not key:
+            m_k = re.search(r"SUPABASE_ANON_KEY\s*:\s*['\"]([^'\"]+)['\"]", content)
+            if m_k:
+                key = m_k.group(1).strip()
+        m_n = re.search(r"N8N_BASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
+        if m_n:
+            n8n_url = m_n.group(1).rstrip("/")
+
+    return {"sb_url": url, "sb_key": key, "n8n_url": n8n_url}
+
+
+def obtener_siguiente_correlativo_max(sb_url: str, sb_key: str) -> int:
+    endpoint = f"{sb_url}/rest/v1/inmuebles?select=codigo"
+    req = urllib.request.Request(
+        endpoint,
+        headers={"apikey": sb_key, "Authorization": f"Bearer {sb_key}", "Accept": "application/json"},
+        method="GET",
+    )
+    max_num = 106
+    try:
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            rows = json.loads(resp.read().decode("utf-8"))
+            for r in rows:
+                cod = str(r.get("codigo") or "")
+                m = re.search(r"(\d+)", cod)
+                if m:
+                    val = int(m.group(1))
+                    if 100 <= val <= 99999 and val > max_num:
+                        max_num = val
+    except Exception:
+        pass
+    return max_num + 1
+
+
+def construir_payload_supabase(
+    inm: Dict[str, Any],
+    codigo: str,
+    es_lote_maximus: bool,
+    use_canonical_tipo: bool = False,
+    omit_agente_id: bool = False,
+) -> Dict[str, Any]:
+    operacion = str(inm.get("operacion") or "venta").lower().strip()
+    if operacion not in ("venta", "alquiler"):
+        raise ValueError(f"Operación inválida: {operacion}")
+
+    precio = float(inm.get("precio") or 0)
+    if precio <= 0:
+        raise ValueError(f"Precio inválido ({precio}) — Regla de Oro 1 prohíbe publicar sin precio.")
+
+    tipo_dash = str(inm.get("tipo_sql_dashboard") or "casa").lower()
+    tipo_canon = str(inm.get("tipo_sql_canonical") or "casa").lower()
+    tipo_final = tipo_canon if use_canonical_tipo else tipo_dash
+
+    habs = int(inm.get("habitaciones") or 0)
+    if tipo_canon in ("local", "galpon", "terreno") and habs < 0:
+        habs = 0
+
+    banos = float(inm.get("banos") or 0.0)
+    m2 = float(inm.get("metros_cuadrados") or 0.0)
+    estac_int = int(inm.get("estacionamientos") or 0)
+    estac_ui = str(inm.get("estacionamientos_ui") or f"{estac_int} Puestos")
+    precio_m2 = round(precio / m2) if m2 > 0 else 0
+
+    is_maximus_flag = bool(inm.get("is_maximus", es_lote_maximus))
+
+    aspectos_raw = inm.get("aspectos_destacados") or []
+    aspectos_limpios = []
+    for asp in aspectos_raw[:4]:
+        ico = asp.get("icono", "ph-star")
+        if ico not in ICONOS_VALIDOS_DASHBOARD:
+            ico = "ph-star"
+        aspectos_limpios.append({
+            "icono": ico,
+            "titulo": str(asp.get("titulo") or "Destacado"),
+            "desc": str(asp.get("desc") or ""),
+        })
+
+    amenidades_raw = inm.get("amenidades") or []
+    amenidades_limpias = [
+        {"icono": "ph-check", "nombre": str(a.get("nombre") if isinstance(a, dict) else a)}
+        for a in amenidades_raw
+    ]
+
+    fotos = [f for f in (inm.get("fotos") or []) if f]
+    foto_principal = fotos[0] if fotos else (
+        inm.get("foto_principal") or "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85"
+    )
+
+    flujo_txt = "Captación Directa MAXIMUS" if is_maximus_flag else "Captación Externa WhatsApp"
+    notas_privadas = (
+        f"[{flujo_txt}] Modo: {inm.get('modo_entrada', 'modo_1')} | "
+        f"Grupo/Carpeta: {inm.get('grupo_origen', 'N/D')} | "
+        f"Estacionamiento UI: {estac_ui} | Precio m²: ${precio_m2} USD/m²"
+    )
+
+    agente_id_val = None if (not is_maximus_flag or omit_agente_id) else inm.get("agente_id")
+
+    return {
+        "codigo": codigo,
+        "titulo": str(inm.get("titulo") or "").strip(),
+        "subtitulo": str(inm.get("subtitulo") or "").strip(),
+        "descripcion": str(inm.get("descripcion") or "").strip(),
+        "precio": precio,
+        "moneda": str(inm.get("moneda") or ("USD/mes" if operacion == "alquiler" else "USD")),
+        "operacion": operacion,
+        "tipo": tipo_final,
+        "estatus": "disponible",
+        "ubicacion": str(inm.get("ubicacion") or "San Cristóbal, Táchira"),
+        "estado": "Táchira",
+        "sector_nombre": str(inm.get("sector_nombre") or "San Cristóbal"),
+        "sector_desc": str(inm.get("sector_desc") or ""),
+        "habitaciones": habs,
+        "banos": banos,
+        "metros_cuadrados": m2,
+        "estacionamientos": estac_int,
+        "foto_principal": foto_principal,
+        "fotos": fotos,
+        "is_maximus": is_maximus_flag,
+        "en_oferta": is_maximus_flag,
+        "comision_porcentaje": float(inm.get("comision_porcentaje") or 5.0),
+        "asesor_nombre": str(inm.get("asesor_nombre") or ("José Guerrero" if is_maximus_flag else "Asesor Externo")),
+        "asesor_telefono": str(inm.get("asesor_telefono") or "+58 424-1234567"),
+        "aspectos_destacados": aspectos_limpios,
+        "amenidades": amenidades_limpias,
+        "notas_privadas": notas_privadas,
+        "agente_id": agente_id_val,
+    }
+
+
+def insertar_en_supabase(
+    inm_raw: Dict[str, Any],
+    codigo: str,
+    es_lote_maximus: bool,
+    sb_url: str,
+    sb_key: str,
+) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    endpoint = f"{sb_url}/rest/v1/inmuebles"
+    headers = {
+        "apikey": sb_key,
+        "Authorization": f"Bearer {sb_key}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation",
+    }
+
+    # Intentar combinaciones seguras (por si el constraint de tipo o FK de agente_id aplica en BD)
+    attempts = [
+        (False, False),
+        (True, False),
+        (True, True),
+    ]
+    last_err = None
+    for use_canon, omit_ag in attempts:
+        row_try = construir_payload_supabase(
+            inm_raw, codigo=codigo, es_lote_maximus=es_lote_maximus,
+            use_canonical_tipo=use_canon, omit_agente_id=omit_ag
+        )
+        req = urllib.request.Request(
+            endpoint,
+            data=json.dumps(row_try).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                if isinstance(res_data, list) and len(res_data) > 0:
+                    return res_data[0], None
+                return row_try, None
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="replace")
+            last_err = f"HTTPError {e.code}: {err_body}"
+            continue
+        except Exception as e:
+            return None, str(e)
+
+    return None, last_err
+
+
+def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify_n8n: bool = False) -> Dict[str, Any]:
+    procesados_dir = lote_dir / "procesados"
+    dedup_json = procesados_dir / "inmuebles_deduplicados.json"
+    extraidos_json = procesados_dir / "inmuebles_extraidos.json"
+
+    target_json = dedup_json if dedup_json.exists() else extraidos_json
+    if not target_json.exists():
+        raise FileNotFoundError(f"No existe archivo de inmuebles procesados en {procesados_dir}")
+
+    data = json.loads(target_json.read_text(encoding="utf-8"))
+    extraidos_data = json.loads(extraidos_json.read_text(encoding="utf-8")) if extraidos_json.exists() else {}
+
+    ruta_lote_str = str(lote_dir.resolve()).lower().replace("\\", "/")
+    es_lote_maximus = ("captaciones_maximus" in ruta_lote_str) or bool(extraidos_data.get("is_maximus_default", False))
+
+    inmuebles_a_publicar = data.get("unicos_verificados") if "unicos_verificados" in data else data.get("inmuebles", [])
+    duplicados_descartados = data.get("duplicados_descartados", [])
+    dudosos_pausados = data.get("dudosos_pausados", [])
+    pendientes_regla1 = extraidos_data.get("pendientes_revision", [])
+    stats_img = data.get("estadisticas_imagenes", {})
+
+    cfg = load_config(repo_root)
+    corr_num = obtener_siguiente_correlativo_max(cfg["sb_url"], cfg["sb_key"]) if not dry_run else 107
+
+    creados = []
+    errores_publicacion = []
+
+    for inm in inmuebles_a_publicar:
+        codigo = f"#MAX-{corr_num}"
+        corr_num += 1
+        try:
+            payload_sb = construir_payload_supabase(inm, codigo=codigo, es_lote_maximus=es_lote_maximus)
+        except Exception as val_err:
+            errores_publicacion.append({
+                "temp_id": inm.get("temp_id"),
+                "titulo": inm.get("titulo"),
+                "error": str(val_err),
+            })
+            continue
+
+        if dry_run:
+            creados.append({
+                "id": f"dry-run-{inm.get('temp_id')}",
+                "codigo": codigo,
+                "titulo": payload_sb["titulo"],
+                "tipo": inm.get("tipo_ui"),
+                "operacion": payload_sb["operacion"].upper(),
+                "precio": payload_sb["precio"],
+                "moneda": payload_sb["moneda"],
+                "precio_m2": inm.get("precio_m2"),
+                "sector": payload_sb["sector_nombre"],
+                "metros_cuadrados": payload_sb["metros_cuadrados"],
+                "habitaciones": payload_sb["habitaciones"],
+                "banos": payload_sb["banos"],
+                "estacionamientos_ui": inm.get("estacionamientos_ui"),
+                "is_maximus": payload_sb["is_maximus"],
+                "tipo_asesor": "Oficial MAXIMUS" if payload_sb["is_maximus"] else "Asesor Externo",
+                "asesor_info": f"{payload_sb['asesor_nombre']} ({payload_sb['asesor_telefono']})",
+                "fotos_count": len(payload_sb["fotos"]),
+                "modo": "DRY-RUN (Simulación)",
+            })
+        else:
+            inserted, err = insertar_en_supabase(inm, codigo, es_lote_maximus, cfg["sb_url"], cfg["sb_key"])
+            if inserted:
+                creados.append({
+                    "id": inserted.get("id", "N/D"),
+                    "codigo": inserted.get("codigo", codigo),
+                    "titulo": payload_sb["titulo"],
+                    "tipo": inm.get("tipo_ui"),
+                    "operacion": payload_sb["operacion"].upper(),
+                    "precio": payload_sb["precio"],
+                    "moneda": payload_sb["moneda"],
+                    "precio_m2": inm.get("precio_m2"),
+                    "sector": payload_sb["sector_nombre"],
+                    "metros_cuadrados": payload_sb["metros_cuadrados"],
+                    "habitaciones": payload_sb["habitaciones"],
+                    "banos": payload_sb["banos"],
+                    "estacionamientos_ui": inm.get("estacionamientos_ui"),
+                    "is_maximus": payload_sb["is_maximus"],
+                    "tipo_asesor": "Oficial MAXIMUS" if payload_sb["is_maximus"] else "Asesor Externo",
+                    "asesor_info": f"{payload_sb['asesor_nombre']} ({payload_sb['asesor_telefono']})",
+                    "fotos_count": len(payload_sb["fotos"]),
+                    "modo": "SUPABASE LIVE",
+                })
+            else:
+                errores_publicacion.append({
+                    "temp_id": inm.get("temp_id"),
+                    "titulo": inm.get("titulo"),
+                    "error": err,
+                })
+
+    generar_reporte_ejecucion(
+        lote_dir=lote_dir,
+        es_lote_maximus=es_lote_maximus,
+        creados=creados,
+        duplicados=duplicados_descartados,
+        stats_img=stats_img,
+        pendientes_regla1=pendientes_regla1,
+        dudosos=dudosos_pausados,
+        errores=errores_publicacion,
+        dry_run=dry_run,
+    )
+
+    resumen = {
+        "lote": lote_dir.name,
+        "flujo_carpeta": "captaciones_maximus" if es_lote_maximus else "captaciones_externas",
+        "dry_run": dry_run,
+        "total_creados": len(creados),
+        "total_duplicados_descartados": len(duplicados_descartados),
+        "total_casos_dudosos_o_pendientes": len(pendientes_regla1) + len(dudosos_pausados),
+        "total_errores": len(errores_publicacion),
+        "creados": creados,
+    }
+    (procesados_dir / "resultado_publicacion.json").write_text(
+        json.dumps(resumen, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    return resumen
+
+
+def generar_reporte_ejecucion(
+    lote_dir: Path,
+    es_lote_maximus: bool,
+    creados: List[Dict[str, Any]],
+    duplicados: List[Dict[str, Any]],
+    stats_img: Dict[str, Any],
+    pendientes_regla1: List[Dict[str, Any]],
+    dudosos: List[Dict[str, Any]],
+    errores: List[Dict[str, Any]],
+    dry_run: bool,
+) -> None:
+    report_path = lote_dir / "reporte_ejecucion.md"
+    modo_badge = "🧪 SIMULACIÓN (DRY-RUN)" if dry_run else "🟢 PRODUCCIÓN (SUPABASE LIVE)"
+    flujo_badge = "🏛️ CAPTACIONES DIRECTAS MAXIMUS (`is_maximus = true`)" if es_lote_maximus else "📥 CAPTACIONES EXTERNAS DE COLEGAS (`is_maximus = false`)"
+
+    lines = [
+        f"# 📊 Reporte de Ejecución del Agente Captador MAXIMUS — `{lote_dir.name}`",
+        "",
+        f"- **Fecha y Hora de Ejecución:** `{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}`",
+        f"- **Flujo de Carpeta:** **{flujo_badge}**",
+        f"- **Modo de Ejecución:** **{modo_badge}**",
+        f"- **Inmuebles Creados / Validados:** `{len(creados)}`",
+        f"- **Duplicados Descartados:** `{len(duplicados)}`",
+        f"- **Collages Divididos:** `{stats_img.get('total_collages_divididos', 0)}`",
+        f"- **Capturas WhatsApp Web Recortadas (Modo 2):** `{stats_img.get('total_screenshots_recortados', 0)}`",
+        f"- **Imágenes Finales:** `{stats_img.get('total_imagenes_individuales_generadas', 0)}` (`{stats_img.get('total_marcas_agua_recortadas', 0)}` con recorte Smart Crop)",
+        f"- **Casos Dudosos / Pendientes (`pendientes_revision.md`):** `{len(pendientes_regla1) + len(dudosos)}`",
+        "",
+        "---",
+        "",
+        "## 1. 🏛️ Inmuebles Creados en Catálogo (`public.inmuebles`)",
+        "",
+    ]
+
+    if not creados:
+        lines.append("_No se insertaron inmuebles nuevos en esta corrida._\n")
+    else:
+        lines.extend([
+            "| Código | ID Supabase | Título | Tipo | Operación | Precio | $/m² | Sector | Especificaciones | `is_maximus` | Asesor Responsable | Fotos |",
+            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :---: | :--- | :---: |",
+        ])
+        for c in creados:
+            precio_str = f"${c['precio']:,.0f} {c['moneda']}"
+            pm2_str = f"${c['precio_m2']}" if c.get("precio_m2") else "N/D"
+            specs = f"{c['habitaciones']}H · {c['banos']}B · {c['estacionamientos_ui']} · {c['metros_cuadrados']}m²"
+            lines.append(
+                f"| **{c['codigo']}** | `{c['id']}` | {c['titulo']} | {c['tipo']} | {c['operacion']} | **{precio_str}** | {pm2_str} | {c['sector']} | {specs} | `{c['is_maximus']}` | **{c['tipo_asesor']}:** {c['asesor_info']} | {c['fotos_count']} |"
+            )
+        lines.append("")
+
+    lines.extend([
+        "---",
+        "",
+        "## 2. ♻️ Duplicados Descartados (Intra-Lote y Supabase)",
+        "",
+    ])
+    if not duplicados:
+        lines.append("_No se detectaron inmuebles duplicados en este lote._\n")
+    else:
+        lines.extend([
+            "| Candidato | Título / Propiedad | Sector | Precio | Área m² | Score | Origen de Duplicidad |",
+            "| :--- | :--- | :--- | :--- | :--- | :---: | :--- |",
+        ])
+        for d in duplicados:
+            lines.append(
+                f"| `{d.get('temp_id')}` | {d.get('titulo')} | {d.get('sector')} | ${float(d.get('precio') or 0):,.0f} | {d.get('metros_cuadrados')} m² | `{d.get('score')}` | {d.get('origen_duplicado')} |"
+            )
+        lines.append("")
+
+    lines.extend([
+        "---",
+        "",
+        "## 3. 🖼️ Procesamiento de Imágenes",
+        "",
+    ])
+    det_imgs = stats_img.get("detalle_por_inmueble", [])
+    if not det_imgs:
+        lines.append("_Sin estadísticas detalladas de imágenes en esta corrida._\n")
+    else:
+        lines.extend([
+            "| Inmueble | Título | Originales | Screenshots Extraídos | Collages Divididos | Fotos Finales | Marcas de Agua Recortadas |",
+            "| :--- | :--- | :---: | :---: | :---: | :---: | :---: |",
+        ])
+        for di in det_imgs:
+            lines.append(
+                f"| `{di.get('temp_id')}` | {di.get('titulo')} | {di.get('originales', 0)} | {di.get('screenshots_extraidos', 0)} | {di.get('collages_divididos', 0)} | **{di.get('fotos_finales', 0)}** | {di.get('marcas_agua_recortadas', 0)} |"
+            )
+        lines.append("")
+
+    lines.extend([
+        "---",
+        "",
+        "## 4. ⚠️ Casos Dudosos y Pausados en `pendientes_revision.md`",
+        "",
+    ])
+    if not pendientes_regla1 and not dudosos:
+        lines.append("✅ _Ningún caso pendiente de revisión humana._\n")
+    else:
+        lines.extend([
+            "| ID Temporal | Categoría de Pausa | Sector | Asesor | Detalle / Motivo |",
+            "| :--- | :--- | :--- | :--- | :--- |",
+        ])
+        for p in pendientes_regla1:
+            lines.append(
+                f"| `{p.get('temp_id')}` | **Regla de Oro 1 (Dato Faltante)** | {p.get('sector_detectado')} | {p.get('asesor_nombre')} (`{p.get('asesor_telefono')}`) | {p.get('motivo')} |"
+            )
+        for du in dudosos:
+            c = du.get("candidato", {})
+            lines.append(
+                f"| `{du.get('temp_id')}` | **Similitud Dudosa (`{du.get('score')}`)** | {c.get('sector_nombre')} | {c.get('asesor_nombre')} (`{c.get('asesor_telefono')}`) | {du.get('motivo')} |"
+            )
+        lines.append("")
+
+    report_path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Skill 4: Publicador de Inmuebles en Supabase MAXIMUS (Dual-Flow)")
+    parser.add_argument("--lote", required=True, help="Ruta a la carpeta del lote")
+    parser.add_argument("--dry-run", action="store_true", help="Simula la validación y genera reporte_ejecucion.md sin insertar en Supabase")
+    parser.add_argument("--notify-n8n", action="store_true", help="Dispara el webhook de n8n por cada inmueble publicado")
+    args = parser.parse_args()
+
+    lote_dir = Path(args.lote).resolve()
+    repo_root = Path(__file__).resolve().parents[4]
+    res = publicar_lote(lote_dir, repo_root, dry_run=args.dry_run, notify_n8n=args.notify_n8n)
+    print(
+        f"[OK] Publicación finalizada para '{res['lote']}' ({res['flujo_carpeta']} | dry_run={res['dry_run']}):\n"
+        f"  - Inmuebles creados/validados: {res['total_creados']}\n"
+        f"  - Duplicados descartados: {res['total_duplicados_descartados']}\n"
+        f"  - Casos en pendientes_revision.md: {res['total_casos_dudosos_o_pendientes']}\n"
+        f"  - Reporte generado en: {lote_dir / 'reporte_ejecucion.md'}"
+    )
+
+
+if __name__ == "__main__":
+    main()

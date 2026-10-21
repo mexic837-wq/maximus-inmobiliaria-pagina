@@ -1811,279 +1811,7 @@
 
                 <!-- Grilla de Inmuebles: 4 columnas en Desktop para vista en primer plano de los 4 primeros inmuebles -->
                 <div id="grilla-inmuebles" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
-                    <!-- Tarjeta 1 (MAXIMUS) -->
-                    <div data-inm-id="inm-1" onclick="abrirDetalleInmuebleAirbnb('inm-1')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
-                         data-maximus="true" data-operacion="venta" data-search="quinta moderna piscina jardin guaparo san cristobal manuel rodriguez jose guerrero maximus">
-                        <div class="relative h-[165px] w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
-                            <!-- Badges -->
-                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
-                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
-                                </span>
-                                <span class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">VENTA</span>
-                            </div>
-                            
-                            <!-- Precio sobre la imagen -->
-                            <div class="absolute bottom-2.5 left-3 text-white">
-                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">270.000 <span class="text-xs font-bold opacity-80">USD</span></h3>
-                            </div>
-                        </div>
-                        <div class="p-3.5">
-                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-maximus-accent bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 uppercase tracking-widest">CASA</span>
-                                <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-maximus-accent"></i> Urb. Guaparo</span>
-                            </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Quinta moderna con piscina y jardín">Quinta moderna con piscina y jardín</h4>
-                            
-                            <!-- Asesor Asignado -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
-                                <img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
-                                <div class="text-[11px] leading-tight truncate">
-                                    <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
-                                    <span class="font-extrabold text-maximus-dark truncate">José Guerrero</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-bold text-gray-500 border-t border-gray-100 pt-2.5">
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-bed text-base text-gray-400"></i> 4</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-shower text-base text-gray-400"></i> 3</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-ruler text-base text-gray-400"></i> 350 m²</span>
-                                <div class="ml-auto flex gap-1">
-                                    <button onclick="event.stopPropagation(); toggleFavoritoDashboard('inm-1', this)" class="btn-fav-card w-7 h-7 rounded-full bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors" title="Guardar en Favoritos"><i class="ph-bold ph-heart text-xs"></i></button>
-                                    <button onclick="event.stopPropagation(); abrirModalFichaVIP('inm-1')" class="w-7 h-7 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir Ficha VIP"><i class="ph-bold ph-share-network text-xs"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 2 (MAXIMUS) -->
-                    <div data-inm-id="inm-2" onclick="abrirDetalleInmuebleAirbnb('inm-2')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
-                         data-maximus="true" data-operacion="alquiler" data-search="local comercial nivel feria cc sambil san cristobal alquiler maximus carlos santander">
-                        <div class="relative h-[165px] w-full bg-gray-100 flex flex-col items-center justify-center overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
-                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
-                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
-                                </span>
-                                <span class="bg-blue-500 text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">ALQUILER</span>
-                            </div>
-                            <div class="absolute bottom-2.5 left-3 text-white">
-                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">1.500 <span class="text-xs font-bold opacity-80">USD/m</span></h3>
-                            </div>
-                        </div>
-                        <div class="p-3.5">
-                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest">LOCAL COMERCIAL</span>
-                                <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-blue-500"></i> C.C Sambil</span>
-                            </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Local comercial Nivel Feria">Local comercial Nivel Feria</h4>
-                            
-                            <!-- Asesor Asignado -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
-                                <img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
-                                <div class="text-[11px] leading-tight truncate">
-                                    <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
-                                    <span class="font-extrabold text-maximus-dark truncate">Carlos Santander</span>
-                                </div>
-                                <span class="ml-auto text-[9px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded shrink-0">1 Mes</span>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-bold text-gray-500 border-t border-gray-100 pt-2.5">
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-door-open text-base text-gray-400"></i> 1 Amb</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-shower text-base text-gray-400"></i> 1</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-ruler text-base text-gray-400"></i> 80 m²</span>
-                                <div class="ml-auto flex gap-1">
-                                    <button onclick="event.stopPropagation(); toggleFavoritoDashboard('inm-2', this)" class="btn-fav-card w-7 h-7 rounded-full bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors" title="Guardar en Favoritos"><i class="ph-bold ph-heart text-xs"></i></button>
-                                    <button onclick="event.stopPropagation(); abrirModalFichaVIP('inm-2')" class="w-7 h-7 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir Ficha VIP"><i class="ph-bold ph-share-network text-xs"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 3 (MAXIMUS) -->
-                    <div data-inm-id="inm-3" onclick="abrirDetalleInmuebleAirbnb('inm-3')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
-                         data-maximus="true" data-operacion="venta" data-search="apartamento amoblado piso medio res el bosque valeria mendez san cristobal venta maximus">
-                        <div class="relative h-[165px] w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
-                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
-                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
-                                </span>
-                                <span class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">VENTA</span>
-                            </div>
-                            <div class="absolute bottom-2.5 left-3 text-white">
-                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">120.000 <span class="text-xs font-bold opacity-80">USD</span></h3>
-                            </div>
-                        </div>
-                        <div class="p-3.5">
-                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 uppercase tracking-widest">DEPARTAMENTO</span>
-                                <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-blue-500"></i> Res. El Bosque</span>
-                            </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Apartamento amoblado piso medio">Apartamento amoblado piso medio</h4>
-                            
-                            <!-- Asesora Asignada -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
-                                <img src="https://ui-avatars.com/api/?name=Valeria+Mendez&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
-                                <div class="text-[11px] leading-tight truncate">
-                                    <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesora Asignada</span>
-                                    <span class="font-extrabold text-maximus-dark truncate">Valeria Méndez</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-bold text-gray-500 border-t border-gray-100 pt-2.5">
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-bed text-base text-gray-400"></i> 2</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-shower text-base text-gray-400"></i> 2</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-ruler text-base text-gray-400"></i> 110 m²</span>
-                                <div class="ml-auto flex gap-1">
-                                    <button onclick="event.stopPropagation(); toggleFavoritoDashboard('inm-3', this)" class="btn-fav-card w-7 h-7 rounded-full bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors" title="Guardar en Favoritos"><i class="ph-bold ph-heart text-xs"></i></button>
-                                    <button onclick="event.stopPropagation(); abrirModalFichaVIP('inm-3')" class="w-7 h-7 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir Ficha VIP"><i class="ph-bold ph-share-network text-xs"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 4 (MAXIMUS) -->
-                    <div data-inm-id="inm-4" onclick="abrirDetalleInmuebleAirbnb('inm-4')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
-                         data-maximus="true" data-operacion="venta" data-search="penthouse duplex terraza 360 pueblo nuevo carlos santander venta maximus">
-                        <div class="relative h-[165px] w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
-                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
-                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
-                                </span>
-                                <span class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">VENTA</span>
-                            </div>
-                            <div class="absolute bottom-2.5 left-3 text-white">
-                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">340.000 <span class="text-xs font-bold opacity-80">USD</span></h3>
-                            </div>
-                        </div>
-                        <div class="p-3.5">
-                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100 uppercase tracking-widest">DEPARTAMENTO</span>
-                                <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-amber-500"></i> Pueblo Nuevo</span>
-                            </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Penthouse Dúplex con Terraza 360°">Penthouse Dúplex con Terraza 360°</h4>
-                            
-                            <!-- Asesor Asignado -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
-                                <img src="https://ui-avatars.com/api/?name=Carlos+Santander&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
-                                <div class="text-[11px] leading-tight truncate">
-                                    <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
-                                    <span class="font-extrabold text-maximus-dark truncate">Carlos Santander</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-bold text-gray-500 border-t border-gray-100 pt-2.5">
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-bed text-base text-gray-400"></i> 4</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-shower text-base text-gray-400"></i> 4</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-ruler text-base text-gray-400"></i> 290 m²</span>
-                                <div class="ml-auto flex gap-1">
-                                    <button onclick="event.stopPropagation(); toggleFavoritoDashboard('inm-4', this)" class="btn-fav-card w-7 h-7 rounded-full bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors" title="Guardar en Favoritos"><i class="ph-bold ph-heart text-xs"></i></button>
-                                    <button onclick="event.stopPropagation(); abrirModalFichaVIP('inm-4')" class="w-7 h-7 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir Ficha VIP"><i class="ph-bold ph-share-network text-xs"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 5 (MAXIMUS) -->
-                    <div data-inm-id="inm-5" onclick="abrirDetalleInmuebleAirbnb('inm-5')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
-                         data-maximus="true" data-operacion="venta" data-search="townhouse estrenar conjunto cerrado paramillo san cristobal venta maximus jose guerrero">
-                        <div class="relative h-[165px] w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
-                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
-                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
-                                </span>
-                                <span class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">VENTA</span>
-                            </div>
-                            <div class="absolute bottom-2.5 left-3 text-white">
-                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">95.000 <span class="text-xs font-bold opacity-80">USD</span></h3>
-                            </div>
-                        </div>
-                        <div class="p-3.5">
-                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 uppercase tracking-widest">CASA DE CAMPO</span>
-                                <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-gray-500"></i> Paramillo</span>
-                            </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Townhouse a estrenar en conjunto cerrado">Townhouse a estrenar en conjunto cerrado</h4>
-                            
-                            <!-- Asesor Asignado -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
-                                <img src="https://ui-avatars.com/api/?name=Jose+Guerrero&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
-                                <div class="text-[11px] leading-tight truncate">
-                                    <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesor Asignado</span>
-                                    <span class="font-extrabold text-maximus-dark truncate">José Guerrero</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-bold text-gray-500 border-t border-gray-100 pt-2.5">
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-bed text-base text-gray-400"></i> 3</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-shower text-base text-gray-400"></i> 3</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-ruler text-base text-gray-400"></i> 160 m²</span>
-                                <div class="ml-auto flex gap-1">
-                                    <button onclick="event.stopPropagation(); toggleFavoritoDashboard('inm-5', this)" class="btn-fav-card w-7 h-7 rounded-full bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors" title="Guardar en Favoritos"><i class="ph-bold ph-heart text-xs"></i></button>
-                                    <button onclick="event.stopPropagation(); abrirModalFichaVIP('inm-5')" class="w-7 h-7 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir Ficha VIP"><i class="ph-bold ph-share-network text-xs"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tarjeta 6 (MAXIMUS) -->
-                    <div data-inm-id="inm-6" onclick="abrirDetalleInmuebleAirbnb('inm-6')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
-                         data-maximus="true" data-operacion="alquiler" data-search="galpon corporativo oficinas industrial barrancas andrea colmenares alquiler maximus">
-                        <div class="relative h-[165px] w-full overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                            
-                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
-                                <span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1">
-                                    <i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS
-                                </span>
-                                <span class="bg-blue-500 text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">ALQUILER</span>
-                            </div>
-                            <div class="absolute bottom-2.5 left-3 text-white">
-                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">3.200 <span class="text-xs font-bold opacity-80">USD/m</span></h3>
-                            </div>
-                        </div>
-                        <div class="p-3.5">
-                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
-                                <span class="text-[9px] font-extrabold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100 uppercase tracking-widest">GALPONES</span>
-                                <span class="text-[11px] font-semibold text-gray-400 flex items-center gap-1 truncate"><i class="ph-fill ph-map-pin text-purple-500"></i> Z.I. Barrancas</span>
-                            </div>
-                            <h4 class="font-extrabold text-xs sm:text-sm text-maximus-dark mb-2 leading-tight group-hover:text-maximus-accent transition-colors truncate" title="Galpón Corporativo y Oficinas AAA">Galpón Corporativo y Oficinas AAA</h4>
-                            
-                            <!-- Asesora Asignada -->
-                            <div class="mb-2 p-1.5 sm:p-2 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-2">
-                                <img src="https://ui-avatars.com/api/?name=Andrea+Colmenares&background=0B4A3F&color=fff&bold=true" class="w-6 h-6 rounded-full shadow-sm shrink-0">
-                                <div class="text-[11px] leading-tight truncate">
-                                    <span class="text-[9px] uppercase font-bold text-gray-400 block leading-none">Asesora Asignada</span>
-                                    <span class="font-extrabold text-maximus-dark truncate">Andrea Colmenares</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-3 text-xs font-bold text-gray-500 border-t border-gray-100 pt-2.5">
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-warehouse text-base text-gray-400"></i> Galpón</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-shower text-base text-gray-400"></i> 4</span>
-                                <span class="flex items-center gap-1 text-[11px]"><i class="ph-light ph-ruler text-base text-gray-400"></i> 820 m²</span>
-                                <div class="ml-auto flex gap-1">
-                                    <button onclick="event.stopPropagation(); toggleFavoritoDashboard('inm-6', this)" class="btn-fav-card w-7 h-7 rounded-full bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-colors" title="Guardar en Favoritos"><i class="ph-bold ph-heart text-xs"></i></button>
-                                    <button onclick="event.stopPropagation(); abrirModalFichaVIP('inm-6')" class="w-7 h-7 rounded-full bg-gray-50 text-gray-600 hover:bg-maximus-dark hover:text-white flex items-center justify-center transition-colors" title="Compartir Ficha VIP"><i class="ph-bold ph-share-network text-xs"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Grilla dinámica poblada desde Supabase en vivo -->
                 </div>
 
                 <!-- Estado Vacío Cuando el Filtro no Encuentra Resultados -->
@@ -7254,11 +6982,9 @@
         function actualizarMetricasResumenDesdeDB() {
             let props = (typeof INMUEBLES_DETALLE_DATA !== 'undefined') ? Object.values(INMUEBLES_DETALLE_DATA) : [];
             
-            // Si el catálogo está vacío en memoria, intentar leer respaldo local o MOCK_DATA
-            if (!props || props.length === 0) {
-                if (typeof InmuebleService !== 'undefined' && typeof InmuebleService._getLocal === 'function') {
-                    props = InmuebleService._getLocal();
-                } else if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
+            // Si el catálogo está vacío en memoria y estamos en modo mock local, usar MOCK_DATA
+            if ((!props || props.length === 0) && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.USE_MOCK_DATA) {
+                if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
                     props = MOCK_DATA.inmuebles;
                 }
             }
@@ -8739,7 +8465,9 @@
             }
         ];
 
-        var INMUEBLES_DETALLE_DATA = window.INMUEBLES_DETALLE_DATA || {
+        var INMUEBLES_DETALLE_DATA = {};
+        if (typeof APP_CONFIG === 'undefined' || APP_CONFIG.USE_MOCK_DATA) {
+            INMUEBLES_DETALLE_DATA = window.INMUEBLES_DETALLE_DATA || {
             'inm-1': {
                 id: 'inm-1',
                 codigo: '#MAX-101',
@@ -9216,6 +8944,7 @@
                 ]
             }
         };
+        }
 
         let currentInmuebleAirbnb = null;
         let lightboxFotosActuales = [];
@@ -11622,7 +11351,13 @@
             try {
                 if (typeof InmuebleService !== 'undefined') {
                     const res = await InmuebleService.getAll();
-                    if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+                    
+                    // Si estamos en modo producción con Supabase, reiniciamos el catálogo para reflejar la verdad de la DB
+                    if (typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA) {
+                        INMUEBLES_DETALLE_DATA = {};
+                    }
+
+                    if (res && res.data && Array.isArray(res.data)) {
                         res.data.forEach(inm => {
                             const idKey = inm.id ? String(inm.id) : ('inm-' + Date.now());
                             const existing = INMUEBLES_DETALLE_DATA[idKey] || {};
@@ -11724,8 +11459,120 @@
             } catch (err) {
                 console.warn('Sincronización con base de datos en segundo plano:', err);
             }
+            if (typeof renderCatalogoInmueblesDinamico === 'function') {
+                renderCatalogoInmueblesDinamico();
+            }
             return INMUEBLES_DETALLE_DATA;
         }
+
+        // ========================================================
+        // RENDERIZADO DINÁMICO DEL CATÁLOGO DE INMUEBLES (100% SUPABASE)
+        // ========================================================
+        function renderCatalogoInmueblesDinamico() {
+            const container = document.getElementById('grilla-inmuebles');
+            if (!container) return;
+
+            const propiedades = Object.values(INMUEBLES_DETALLE_DATA || {});
+            
+            // Actualizar contadores
+            const totalProps = propiedades.length;
+            const totalVenta = propiedades.filter(p => (p.operacion || '').toLowerCase() === 'venta').length;
+            const totalAlquiler = propiedades.filter(p => (p.operacion || '').toLowerCase() === 'alquiler').length;
+            const totalMaximus = propiedades.filter(p => p.isMaximus).length;
+
+            const badgeMaximus = document.getElementById('badge-count-captaciones-toggle');
+            if (badgeMaximus) badgeMaximus.textContent = totalMaximus;
+
+            const contadorRes = document.getElementById('contador-resultados');
+            if (contadorRes) {
+                contadorRes.textContent = `${totalProps} ${totalProps === 1 ? 'inmueble disponible' : 'inmuebles disponibles'}`;
+            }
+
+            // Actualizar botones de filtro de categorías
+            const pills = document.querySelectorAll('.filtro-pill');
+            if (pills && pills.length >= 3) {
+                pills[0].innerHTML = `Todos <span class="opacity-75 font-normal ml-0.5">(${totalProps})</span>`;
+                pills[1].innerHTML = `En Venta <span class="text-gray-400 font-normal ml-0.5">(${totalVenta})</span>`;
+                pills[2].innerHTML = `En Alquiler <span class="text-gray-400 font-normal ml-0.5">(${totalAlquiler})</span>`;
+            }
+
+            // Caso Estado Vacío (Base de datos sin registros)
+            if (propiedades.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-16 px-6 text-center bg-white dark:bg-[#0A1F1B] rounded-3xl border border-gray-100 dark:border-emerald-900/40 shadow-sm flex flex-col items-center justify-center">
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-3xl mb-4 shadow-inner">
+                            <i class="ph-bold ph-buildings"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-maximus-dark dark:text-white mb-1">Catálogo Vacío en Supabase</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 max-w-md mb-6 leading-relaxed">No hay propiedades activas registradas en la base de datos de Supabase en este momento. Puedes publicar una nueva propiedad haciendo clic en el botón inferior.</p>
+                        <button onclick="activateTab('view-admin-cargar-inmueble')" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#0B4A3F] to-[#10B981] hover:brightness-110 text-white text-xs font-black tracking-wide shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                            <i class="ph-bold ph-plus-circle text-base"></i> Cargar Inmueble en Supabase
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            // Generar tarjetas dinámicamente con data real de Supabase
+            container.innerHTML = propiedades.map(inm => {
+                const imgUrl = (inm.fotos && inm.fotos.length > 0) ? inm.fotos[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
+                const avatar = inm.asesor?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(inm.asesor?.nombre || 'Asesor')}&background=0B4A3F&color=fff&bold=true`;
+                const asesorNombre = inm.asesor?.nombre || 'Asesor MAXIMUS';
+                const operacion = (inm.operacion || 'VENTA').toUpperCase();
+                const tipoBadge = (inm.badgeTipo || inm.tipo || 'INMUEBLE').toUpperCase();
+                const precio = inm.precio || '$0';
+                const moneda = inm.moneda || 'USD';
+                const searchString = `${inm.titulo || ''} ${inm.ubicacion || ''} ${inm.sectorNombre || ''} ${asesorNombre} ${inm.codigo || ''}`.toLowerCase();
+
+                return `
+                    <div data-inm-id="${inm.id}" onclick="abrirDetalleInmuebleAirbnb('${inm.id}')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
+                         data-maximus="${inm.isMaximus ? 'true' : 'false'}" data-operacion="${operacion.toLowerCase()}" data-search="${searchString}">
+                        <div class="relative h-[165px] w-full overflow-hidden">
+                            <img src="${imgUrl}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
+                                ${inm.isMaximus ? '<span class="bg-[#0B4A3F] text-white border border-emerald-400/40 text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow flex items-center gap-1"><i class="ph-fill ph-buildings text-emerald-300"></i> MAXIMUS</span>' : ''}
+                                <span class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">${operacion}</span>
+                            </div>
+                            
+                            <div class="absolute bottom-2.5 left-3 text-white">
+                                <h3 class="text-xl sm:text-2xl font-black drop-shadow-md">${precio} <span class="text-xs font-bold opacity-80">${moneda}</span></h3>
+                            </div>
+                        </div>
+                        <div class="p-3.5">
+                            <div class="flex items-center justify-between gap-1.5 mb-1.5">
+                                <span class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-0.5 rounded-md">${tipoBadge}</span>
+                                <span class="text-[11px] font-bold text-gray-400 truncate"><i class="ph-fill ph-map-pin text-emerald-600"></i> ${inm.sectorNombre || inm.ubicacion || 'San Cristóbal'}</span>
+                            </div>
+                            <h4 class="font-extrabold text-sm text-maximus-dark line-clamp-1 mb-2 group-hover:text-emerald-700 transition-colors">${inm.titulo}</h4>
+                            
+                            <div class="flex items-center gap-2 p-2 rounded-xl bg-gray-50 mb-3 border border-gray-100">
+                                <img src="${avatar}" class="w-6 h-6 rounded-full object-cover">
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Asesor Asignado</p>
+                                    <p class="text-[11px] font-extrabold text-maximus-dark truncate">${asesorNombre}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-2 border-t border-gray-100 text-xs font-bold text-gray-500">
+                                <span class="flex items-center gap-1"><i class="ph-bold ph-bed text-emerald-600"></i> ${inm.habitaciones || '-'}</span>
+                                <span class="flex items-center gap-1"><i class="ph-bold ph-bathtub text-emerald-600"></i> ${inm.banos || '-'}</span>
+                                <span class="flex items-center gap-1"><i class="ph-bold ph-arrows-out-cardinal text-emerald-600"></i> ${inm.m2 || '-'}</span>
+                                <button onclick="event.stopPropagation(); if (typeof compartirInmuebleWhatsApp === 'function') compartirInmuebleWhatsApp('${inm.id}');" class="w-7 h-7 rounded-full bg-gray-100 hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center transition-colors">
+                                    <i class="ph-bold ph-share-network"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            // Aplicar cualquier filtro o buscador activo
+            if (typeof filtrarCatalogoInmuebles === 'function') {
+                filtrarCatalogoInmuebles();
+            }
+        }
+        window.renderCatalogoInmueblesDinamico = renderCatalogoInmueblesDinamico;
+
 
         // Renderizar Asesores Oficiales en la Vista de Captaciones
         

@@ -23,13 +23,32 @@ const InmuebleService = {
     _storageKey: 'maximus_inmuebles_data',
 
     _getLocal() {
+        // En modo producción con Supabase, la base de datos es la única fuente de verdad
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            const stored = localStorage.getItem(this._storageKey);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        // Limpiar mocks de prueba heredados (inm-1, Penthouse Dúplex, etc.)
+                        const tieneMocksViejos = parsed.some(p => p && (p.id === 'inm-1' || p.id === 'inm-001' || (p.titulo && p.titulo.includes('Penthouse Dúplex'))));
+                        if (tieneMocksViejos) {
+                            localStorage.removeItem(this._storageKey);
+                            return [];
+                        }
+                        return parsed;
+                    }
+                } catch(e) {}
+            }
+            return [];
+        }
+
+        // Si USE_MOCK_DATA es true explícitamente (modo demostración local offline):
         const stored = localStorage.getItem(this._storageKey);
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed) && parsed.length > 0 && parsed.some(p => p.titulo && p.titulo.includes('Penthouse Dúplex'))) {
-                    return parsed;
-                }
+                if (Array.isArray(parsed)) return parsed;
             } catch(e) {}
         }
         if (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.inmuebles)) {
@@ -42,13 +61,13 @@ const InmuebleService = {
         try {
             localStorage.setItem(this._storageKey, JSON.stringify(list));
         } catch(e) {}
-        if (typeof MOCK_DATA !== 'undefined') {
+        if (APP_CONFIG.USE_MOCK_DATA && typeof MOCK_DATA !== 'undefined') {
             MOCK_DATA.inmuebles = list;
         }
     },
 
     async getAll(filtros = {}) {
-        let sbData = [];
+        // 1. MODO PRODUCCIÓN: SUPABASE ES LA FUENTE DE VERDAD
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
@@ -64,28 +83,30 @@ const InmuebleService = {
                     }
                     if (filtros.busqueda) query = query.ilike('titulo', `%${filtros.busqueda}%`);
                     query = query.order('created_at', { ascending: false });
+                    
                     const res = await query;
-                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                        sbData = res.data;
+                    // Si Supabase responde exitosamente (incluso si la tabla está vacía: [])
+                    if (res && !res.error && Array.isArray(res.data)) {
+                        this._saveLocal(res.data);
+                        return { data: res.data, error: null };
+                    }
+                    if (res && res.error) {
+                        console.warn('InmuebleService: Error devuelto por Supabase:', res.error);
                     }
                 }
             } catch (err) {
-                console.warn('MAXIMUS InmuebleService: Aviso conexión Supabase, usando almacenamiento local');
+                console.warn('InmuebleService: Excepción al conectar con Supabase:', err);
             }
         }
 
-        // ---- RESPALDO LOCAL / PERSISTENCIA HÍBRIDA ----
+        // 2. MODO FALLBACK OFFLINE O MOCK LOCAL
         const localList = this._getLocal();
-        const map = new Map();
-        localList.forEach(item => { if (item && item.id) map.set(String(item.id), item); });
-        sbData.forEach(item => { if (item && item.id) map.set(String(item.id), { ...(map.get(String(item.id)) || {}), ...item }); });
-
-        let data = Array.from(map.values());
+        let data = [...localList];
         if (filtros.operacion && filtros.operacion !== 'todos') data = data.filter(i => i.operacion === filtros.operacion);
         if (filtros.estatus) data = data.filter(i => i.estatus === filtros.estatus);
         if (filtros.tipo) data = data.filter(i => i.tipo === filtros.tipo);
         if (filtros.is_maximus !== undefined) {
-            data = data.filter(i => Boolean(i.is_maximus || i.en_oferta || (i.comision_porcentaje && i.comision_porcentaje >= 5)) === Boolean(filtros.is_maximus));
+            data = data.filter(i => Boolean(i.is_maximus || i.en_oferta) === Boolean(filtros.is_maximus));
         }
         if (filtros.busqueda) {
             const q = filtros.busqueda.toLowerCase();
