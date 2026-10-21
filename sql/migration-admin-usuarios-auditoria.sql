@@ -1,14 +1,13 @@
 -- ==============================================================================
--- MAXIMUS INMOBILIARIA - MIGRACIÓN COMPLETA PARA SUPABASE
+-- MAXIMUS INMOBILIARIA - MIGRACIÓN COMPLETA PARA SUPABASE (CORREGIDA)
 -- AUDITORÍA DE USUARIOS REGISTRADOS, TRAZABILIDAD DE FAVORITOS & PERMISOS RLS
 -- ==============================================================================
 -- 
 -- INSTRUCCIONES:
--- 1. Ve a tu proyecto de Supabase (https://supabase.com/dashboard) o a tu VPS.
--- 2. Entra a "SQL Editor" en el menú izquierdo y haz clic en "New query".
--- 3. Pega todo el contenido de este archivo y presiona "RUN" (Ejecutar).
--- 4. ¡Listo! La base de datos sincronizará automáticamente todos los usuarios
---    que se registren, sus inmuebles favoritos y su actividad.
+-- 1. Ve a tu panel de Supabase (https://supabase.com/dashboard) o VPS.
+-- 2. Entra a "SQL Editor" en el menú izquierdo.
+-- 3. Abre una nueva consulta ("New query"), pega TODO este contenido y presiona "RUN".
+-- 4. ¡Listo! Esta versión es 100% segura e idempotente (agrega columnas si no existen).
 -- ==============================================================================
 
 -- 1. EXTENSIONES NECESARIAS
@@ -35,6 +34,7 @@ ALTER TABLE public.usuarios ALTER COLUMN rol SET DEFAULT 'cliente';
 ALTER TABLE public.usuarios ALTER COLUMN tipo_asesor DROP NOT NULL;
 
 -- 3. AÑADIR COLUMNAS DE AUDITORÍA Y TRAZABILIDAD EN public.usuarios
+ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS prefijo TEXT DEFAULT '+58';
 ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS telefono_e164 TEXT;
 ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS asesor_asignado_id TEXT;
@@ -56,6 +56,12 @@ CREATE TABLE IF NOT EXISTS public.favoritos (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Asegurar que existan todas las columnas si la tabla ya había sido creada previamente
+ALTER TABLE public.favoritos ADD COLUMN IF NOT EXISTS user_id UUID;
+ALTER TABLE public.favoritos ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.favoritos ADD COLUMN IF NOT EXISTS inmueble_id TEXT;
+ALTER TABLE public.favoritos ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+
 -- 5. TABLA DE AUDITORÍA DE ACTIVIDAD E INTERACCIONES EN VIVO
 CREATE TABLE IF NOT EXISTS public.auditoria_actividad (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -69,7 +75,17 @@ CREATE TABLE IF NOT EXISTS public.auditoria_actividad (
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 6. ÍNDICES DE RENDIMIENTO
+-- Asegurar que existan todas las columnas si la tabla ya había sido creada previamente
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS user_id UUID;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS tipo TEXT;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS inmueble_id TEXT;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS titulo TEXT;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS detalle TEXT;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE public.auditoria_actividad ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now();
+
+-- 6. ÍNDICES DE RENDIMIENTO (Ahora garantizados porque las columnas existen)
 CREATE INDEX IF NOT EXISTS idx_usuarios_rol ON public.usuarios(rol);
 CREATE INDEX IF NOT EXISTS idx_usuarios_email ON public.usuarios(email);
 CREATE INDEX IF NOT EXISTS idx_usuarios_temperatura ON public.usuarios(temperatura);
