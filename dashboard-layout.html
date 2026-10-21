@@ -3902,13 +3902,10 @@
                                         <option value="USD/mes">USD/mes</option>
                                     </select>
                                 </div>
-                                <div>
+                                <div class="md:col-span-2">
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio m² (Opcional)</label>
                                     <input type="text" id="inm-preciom2" placeholder="Ej: $771 USD / m²" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Comisión</label>
-                                    <input type="text" id="inm-comision" placeholder="Ej: 50/50 o 5%" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    <input type="hidden" id="inm-comision" value="">
                                 </div>
                             </div>
                         </div>
@@ -3959,14 +3956,42 @@
                         <div>
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
-                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Asesor</h3>
+                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Asesor Responsable</h3>
                                     
+                                    <!-- Selector de Tipo de Asesor (Oficial MAXIMUS vs Externo) -->
+                                    <div class="flex items-center gap-6 mb-4">
+                                        <label class="flex items-center gap-2.5 cursor-pointer group">
+                                            <input type="radio" name="tipo_asesor" value="maximus" checked onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4 cursor-pointer">
+                                            <span class="text-sm font-bold text-maximus-dark group-hover:text-emerald-700 flex items-center gap-1.5 transition-colors">
+                                                <i class="ph-fill ph-seal-check text-emerald-600 text-base"></i> Asesor Oficial MAXIMUS
+                                            </span>
+                                        </label>
+                                        <label class="flex items-center gap-2.5 cursor-pointer group">
+                                            <input type="radio" name="tipo_asesor" value="externo" onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4 cursor-pointer">
+                                            <span class="text-sm font-bold text-gray-600 group-hover:text-gray-900 flex items-center gap-1.5 transition-colors">
+                                                <i class="ph-fill ph-user text-gray-500 text-base"></i> Asesor Externo
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    <!-- Contenedor Asesor Oficial MAXIMUS -->
                                     <div id="container-asesor-maximus">
-                                        <input type="hidden" name="tipo_asesor" value="maximus">
                                         <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Seleccionar Asesor Oficial MAXIMUS</label>
                                         <select id="inm-asesor-select" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                             <!-- Poblado via JS -->
                                         </select>
+                                    </div>
+
+                                    <!-- Contenedor Asesor Externo Manual -->
+                                    <div id="container-asesor-externo" style="display: none;" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nombre del Asesor Externo *</label>
+                                            <input type="text" id="inm-asesor-nombre" placeholder="Ej: Carlos Mendoza" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Número de WhatsApp / Teléfono *</label>
+                                            <input type="text" id="inm-asesor-telefono" placeholder="Ej: +58 414 1234567" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                        </div>
                                     </div>
                                 </div>
                                 <div>
@@ -12571,8 +12596,16 @@
         window.togglePasswordVisibility = togglePasswordVisibility;
 
         function toggleTipoAsesor() {
-            // Unificado a Asesor Oficial MAXIMUS
+            const isMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]')?.checked ?? true;
+            const containerMaximus = document.getElementById('container-asesor-maximus');
+            const containerExterno = document.getElementById('container-asesor-externo');
+            
+            if (containerMaximus && containerExterno) {
+                containerMaximus.style.display = isMaximus ? 'block' : 'none';
+                containerExterno.style.display = isMaximus ? 'none' : 'grid';
+            }
         }
+        window.toggleTipoAsesor = toggleTipoAsesor;
 
         function popularSelectAsesores() {
             const select = document.getElementById('inm-asesor-select');
@@ -12610,20 +12643,44 @@
             const isMaximus = document.getElementById('inm-ismaximus').checked;
             const descripcion = document.getElementById('inm-descripcion').value;
             
-            // Lógica de Asesor Oficial MAXIMUS
-            const asesorId = document.getElementById('inm-asesor-select')?.value;
-            let asesorIdRelacional = asesorId || null;
-            const asesorBuscado = ASESORES_MAXIMUS_DATA.find(a => a.id === asesorId) || ASESORES_MAXIMUS_DATA[0];
-            let asesor = {
-                id: asesorBuscado ? asesorBuscado.id : 'asesor-1',
-                nombre: asesorBuscado ? asesorBuscado.nombre : 'Asesor MAXIMUS',
-                cargo: asesorBuscado ? asesorBuscado.cargo : 'Asesor Inmobiliario',
-                telefono: asesorBuscado ? asesorBuscado.telefono : '+58 424-1234567',
-                email: (asesorBuscado && asesorBuscado.email) || 'contacto@maximusinmobiliaria.com',
-                avatar: asesorBuscado ? asesorBuscado.avatar : '',
-                rating: `${(asesorBuscado && asesorBuscado.rating) || '5.0'}`,
-                experiencia: 'Asesor Oficial MAXIMUS'
-            };
+            // Lógica de Asesor Responsable (Oficial MAXIMUS o Externo Manual)
+            const isMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]')?.checked ?? true;
+            let asesor = {};
+            let asesorIdRelacional = null;
+
+            if (isMaximus) {
+                const asesorId = document.getElementById('inm-asesor-select')?.value;
+                asesorIdRelacional = asesorId || null;
+                const asesorBuscado = ASESORES_MAXIMUS_DATA.find(a => a.id === asesorId) || ASESORES_MAXIMUS_DATA[0];
+                asesor = {
+                    id: asesorBuscado ? asesorBuscado.id : 'asesor-1',
+                    nombre: asesorBuscado ? asesorBuscado.nombre : 'Asesor MAXIMUS',
+                    cargo: asesorBuscado ? asesorBuscado.cargo : 'Asesor Inmobiliario',
+                    telefono: asesorBuscado ? asesorBuscado.telefono : '+58 424-1234567',
+                    whatsapp: asesorBuscado ? (asesorBuscado.whatsapp || asesorBuscado.telefono) : '+58 424-1234567',
+                    email: (asesorBuscado && asesorBuscado.email) || 'contacto@maximusinmobiliaria.com',
+                    avatar: asesorBuscado ? asesorBuscado.avatar : '',
+                    rating: `${(asesorBuscado && asesorBuscado.rating) || '5.0'}`,
+                    experiencia: 'Asesor Oficial MAXIMUS',
+                    tipo: 'maximus'
+                };
+            } else {
+                const nombreExt = (document.getElementById('inm-asesor-nombre')?.value || '').trim() || 'Asesor Externo';
+                const telefonoExt = (document.getElementById('inm-asesor-telefono')?.value || '').trim() || '+58 414-1234567';
+                const nomFormateado = nombreExt.replace(/\s+/g, '+');
+                asesor = {
+                    id: 'asesor-ext-' + Date.now(),
+                    nombre: nombreExt,
+                    cargo: 'Asesor Externo Aliado',
+                    telefono: telefonoExt,
+                    whatsapp: telefonoExt,
+                    email: 'contacto@maximusinmobiliaria.com',
+                    avatar: `https://ui-avatars.com/api/?name=${nomFormateado}&background=0B4A3F&color=fff&bold=true`,
+                    rating: '5.0',
+                    experiencia: 'Asesor Externo Aliado',
+                    tipo: 'externo'
+                };
+            }
 
             // Fotos (URLs separadas por comas)
             const fotosStr = document.getElementById('inm-fotos').value;
