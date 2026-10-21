@@ -4037,7 +4037,13 @@
                                         </div>
                                         <div>
                                             <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Número de WhatsApp / Teléfono *</label>
-                                            <input type="text" id="inm-asesor-telefono" placeholder="Ej: +58 414 1234567" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                            <div class="flex items-center gap-2">
+                                                <select id="inm-asesor-telefono-prefijo" class="w-36 px-3 py-3 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent transition-all cursor-pointer">
+                                                    <option value="+58" selected>🇻🇪 +58 (VE)</option>
+                                                    <option value="+57">🇨🇴 +57 (CO)</option>
+                                                </select>
+                                                <input type="tel" id="inm-asesor-telefono" placeholder="Ej: 414 1234567" class="flex-1 min-w-0 px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -12732,14 +12738,20 @@
                 };
             } else {
                 const nombreExt = (document.getElementById('inm-asesor-nombre')?.value || '').trim() || 'Asesor Externo';
-                const telefonoExt = (document.getElementById('inm-asesor-telefono')?.value || '').trim() || '+58 414-1234567';
+                const prefijoExt = (document.getElementById('inm-asesor-telefono-prefijo')?.value || '+58').trim();
+                const numeroRaw = (document.getElementById('inm-asesor-telefono')?.value || '').trim();
+                
+                // Limpiar prefijo repetido si el usuario lo ingresó manualmente
+                const numeroLimpio = numeroRaw.replace(/^\+?(58|57)\s*/, '').trim();
+                const telefonoCompleto = numeroLimpio ? `${prefijoExt} ${numeroLimpio}` : `${prefijoExt} 414-1234567`;
+
                 const nomFormateado = nombreExt.replace(/\s+/g, '+');
                 asesor = {
                     id: 'asesor-ext-' + Date.now(),
                     nombre: nombreExt,
                     cargo: 'Asesor Externo Aliado',
-                    telefono: telefonoExt,
-                    whatsapp: telefonoExt,
+                    telefono: telefonoCompleto,
+                    whatsapp: telefonoCompleto,
                     email: 'contacto@maximusinmobiliaria.com',
                     avatar: `https://ui-avatars.com/api/?name=${nomFormateado}&background=0B4A3F&color=fff&bold=true`,
                     rating: '5.0',
