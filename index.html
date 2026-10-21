@@ -376,8 +376,16 @@
             <!-- Grupo 2 (Duplicado para animación continua sin salto) -->
             <div id="marquee-group-2" class="marquee-group" aria-hidden="true"></div>
         </div>
+
+        <!-- Indicador de desplazamiento horizontal -->
+        <div class="flex items-center justify-center mt-3 text-center select-none">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 text-gray-500 text-xs font-semibold border border-gray-200/90 shadow-2xs">
+                <i class="fas fa-arrows-left-right text-emerald-600 text-xs animate-pulse"></i>
+                <span>Desliza para ver más inmuebles</span>
+            </span>
+        </div>
         
-        <div class="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="mt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
             <a id="btn-ver-catalogo" href="/catalogo" class="inline-flex items-center text-white bg-maximus-dark hover:bg-black px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all group text-sm">
                 <span>Ver catálogo completo</span>
                 <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -672,7 +680,15 @@
                 <div id="marquee-resenas-2" class="marquee-group flex gap-6 items-stretch" aria-hidden="true"></div>
             </div>
 
-            <div class="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+            <!-- Indicador de desplazamiento horizontal -->
+            <div class="flex items-center justify-center mt-3 text-center select-none">
+                <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 text-gray-500 text-xs font-semibold border border-gray-200/90 shadow-2xs">
+                    <i class="fas fa-arrows-left-right text-amber-500 text-xs animate-pulse"></i>
+                    <span>Desliza para ver más reseñas</span>
+                </span>
+            </div>
+
+            <div class="mt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="/login" class="inline-flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 px-6 py-3 rounded-xl border border-emerald-300 transition-all shadow-2xs hover:scale-105 active:scale-95">
                     <i class="fas fa-star text-amber-500"></i>
                     <span>¿Eres cliente? Sube tu reseña desde tu cuenta</span>
