@@ -5049,7 +5049,7 @@
                     </div>
                     
                     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                        <button type="button" onclick="copiarEnlaceAsesor()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white dark:bg-emerald-950/40 border border-gray-200 dark:border-emerald-800 hover:border-emerald-500 text-gray-700 dark:text-gray-200 font-bold text-xs shadow-xs hover:shadow transition-all flex items-center gap-2 cursor-pointer">
+                        <button type="button" id="btn-copiar-bio" onclick="copiarEnlaceAsesor()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white dark:bg-emerald-950/40 border border-gray-200 dark:border-emerald-800 hover:border-emerald-500 text-gray-700 dark:text-gray-200 font-bold text-xs shadow-xs hover:shadow transition-all flex items-center gap-2 cursor-pointer">
                             <i class="ph-bold ph-link text-emerald-600 text-sm"></i>
                             <span>Copiar Enlace Bio</span>
                         </button>
@@ -5092,31 +5092,37 @@
                                         <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                                         <strong id="perfil-card-security-text" class="text-[11px] font-bold text-emerald-800 dark:text-emerald-200">2FA Activo</strong>
                                     </div>
-                                    <div class="px-3 py-1 rounded-full bg-gray-50 dark:bg-emerald-950/30 border border-gray-200/80 dark:border-emerald-900/40 text-[11px] font-medium text-gray-600 dark:text-gray-300">
-                                        Licencia: <strong id="perfil-card-licencia-badge" class="font-bold text-gray-900 dark:text-white">CIV-9842</strong>
-                                    </div>
-                                    <div class="px-3 py-1 rounded-full bg-gray-50 dark:bg-emerald-950/30 border border-gray-200/80 dark:border-emerald-900/40 text-[11px] font-medium text-gray-600 dark:text-gray-300">
-                                        Split: <strong class="font-bold text-emerald-700 dark:text-emerald-400">70% Neto</strong>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Enlace a Catálogo Exclusivo -->
-                        <div class="p-4 rounded-2xl bg-gray-50/80 dark:bg-emerald-950/30 border border-gray-200/70 dark:border-emerald-900/40 space-y-2 md:max-w-xs w-full">
+                        <!-- Enlace a Catálogo Exclusivo del Asesor -->
+                        <div id="perfil-box-catalogo-publico" class="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 space-y-2.5 md:max-w-sm w-full transition-all">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-                                    <i class="ph-bold ph-globe text-emerald-600"></i> Catálogo Público
+                                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                                    <i class="ph-bold ph-globe text-emerald-600"></i> Mi Catálogo Público
                                 </span>
-                                <span class="text-[10px] font-semibold text-emerald-600">Activo</span>
+                                <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800">Activo</span>
                             </div>
-                            <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-white dark:bg-[#0A1F1B] border border-gray-200/80 dark:border-emerald-900/50 text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300">
-                                <span id="perfil-link-catalogo" class="truncate">maximusinmobiliaria.com/asesor/carlos-perez</span>
-                                <button onclick="copiarEnlaceAsesor()" class="text-gray-400 hover:text-emerald-600 p-1 transition-colors cursor-pointer" title="Copiar enlace">
-                                    <i class="ph-bold ph-copy text-sm"></i>
-                                </button>
+                            <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white dark:bg-[#0A1F1B] border border-emerald-200/80 dark:border-emerald-900/60 text-xs font-mono font-bold shadow-xs">
+                                <a id="perfil-link-catalogo" href="catalog.html" target="_blank" class="truncate text-emerald-800 dark:text-emerald-300 hover:text-emerald-600 hover:underline flex-1" title="Abrir mi catálogo público">
+                                    catalog.html?asesor=Asesor
+                                </a>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <a id="perfil-btn-abrir-catalogo" href="catalog.html" target="_blank" class="p-1 rounded-lg text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 transition-colors" title="Abrir catálogo en nueva pestaña">
+                                        <i class="ph-bold ph-arrow-square-out text-sm"></i>
+                                    </a>
+                                    <button type="button" onclick="copiarEnlaceAsesor()" class="p-1 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-gray-100 dark:hover:bg-emerald-900/40 transition-colors cursor-pointer" title="Copiar enlace">
+                                        <i class="ph-bold ph-copy text-sm"></i>
+                                    </button>
+                                </div>
                             </div>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400 font-medium leading-tight">
+                                Este enlace muestra en tiempo real las propiedades asignadas a tu cartera comercial.
+                            </p>
                         </div>
+                    </div>
                     </div>
                 </div>
 
@@ -5186,13 +5192,7 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Carnet / Licencia Inmobiliaria</label>
-                                <div class="relative">
-                                    <i class="ph-bold ph-identification-badge absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                                    <input type="text" id="perfil-input-licencia" placeholder="Ej: CIV-9842 / Cámara Inmobiliaria" class="w-full pl-11 pr-4 h-12 rounded-xl bg-gray-50/70 dark:bg-emerald-950/20 border border-gray-200/80 dark:border-emerald-900/50 text-sm font-semibold text-gray-900 dark:text-white focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all">
-                                </div>
-                            </div>
+                            
 
                             <!-- Campo de Foto de Perfil con Subida Directa y Drag & Drop -->
                             <div>
@@ -13857,9 +13857,39 @@
             if (cardEmail) cardEmail.textContent = p.email || 'asesor@maximus.com';
 
             const cardRolBadge = document.getElementById('perfil-card-rol-badge');
+            // Determinar rol exacto del usuario (normal vs asesor)
+            const userRoleRaw = (p.role || p.rol || (typeof userRole !== 'undefined' ? userRole : '')).toLowerCase().trim();
+            const esUsuarioNormal = (userRoleRaw === 'cliente' || userRoleRaw === 'usuario' || userRoleRaw === 'user' || userRoleRaw === 'comprador' || userRoleRaw === 'propietario');
+
             if (cardRolBadge) {
-                const rol = (p.role || '').toUpperCase();
-                cardRolBadge.textContent = rol === 'ADMIN' ? 'DIRECTOR / ADMIN' : (rol.includes('EXTERNO') ? 'ASESOR EXTERNO' : 'MAXIMUS OFICIAL');
+                if (esUsuarioNormal) {
+                    cardRolBadge.textContent = 'USUARIO REGISTRADO';
+                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700';
+                } else if (userRoleRaw === 'admin' || userRoleRaw === 'director') {
+                    cardRolBadge.textContent = 'DIRECTOR / ADMIN';
+                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
+                } else if (userRoleRaw.includes('externo')) {
+                    cardRolBadge.textContent = 'ASESOR EXTERNO';
+                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+                } else {
+                    cardRolBadge.textContent = 'ASESOR MAXIMUS';
+                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800';
+                }
+            }
+
+            // Para usuarios normales: ocultar catálogo público y botón copiar bio
+            // Para asesores maximus: mostrar catálogo público con enlace 100% funcional a sus propiedades
+            const boxCatalogo = document.getElementById('perfil-box-catalogo-publico');
+            const btnCopiarBio = document.getElementById('btn-copiar-bio');
+            if (esUsuarioNormal) {
+                if (boxCatalogo) boxCatalogo.classList.add('hidden');
+                if (btnCopiarBio) btnCopiarBio.classList.add('hidden');
+                if (document.getElementById('perfil-card-titulo')) {
+                    document.getElementById('perfil-card-titulo').textContent = 'Usuario Registrado';
+                }
+            } else {
+                if (boxCatalogo) boxCatalogo.classList.remove('hidden');
+                if (btnCopiarBio) btnCopiarBio.classList.remove('hidden');
             }
 
             const cardLicBadge = document.getElementById('perfil-card-licencia-badge');
@@ -13903,11 +13933,19 @@
             const inputBio = document.getElementById('perfil-input-bio');
             if (inputBio) inputBio.value = p.bio || '';
 
-            // Slug catálogo
+            // Enlace real al Catálogo Público del Asesor
+            const nombreAsesor = p.name || 'Asesor MAXIMUS';
             const linkCatalogo = document.getElementById('perfil-link-catalogo');
+            const btnAbrirCatalogo = document.getElementById('perfil-btn-abrir-catalogo');
+            const urlCatalogoRelativa = `catalog.html?asesor=${encodeURIComponent(nombreAsesor)}`;
+            const hostActual = window.location.host || 'maximusinmobiliaria.tech';
+
             if (linkCatalogo) {
-                const slug = (p.name || 'asesor').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-                linkCatalogo.textContent = `maximusinmobiliaria.com/asesor/${slug}`;
+                linkCatalogo.href = urlCatalogoRelativa;
+                linkCatalogo.textContent = `${hostActual}/${urlCatalogoRelativa}`;
+            }
+            if (btnAbrirCatalogo) {
+                btnAbrirCatalogo.href = urlCatalogoRelativa;
             }
 
             // 2FA
@@ -14527,11 +14565,19 @@
         }
 
         function copiarEnlaceAsesor() {
-            const txt = document.getElementById('perfil-link-catalogo')?.textContent || '';
-            if (!txt) return;
-            navigator.clipboard.writeText(`https://${txt}`).then(() => {
-                mostrarToastNotificacion('📋 Enlace de catálogo de asesor copiado');
-            });
+            const linkEl = document.getElementById('perfil-link-catalogo');
+            const href = linkEl ? linkEl.getAttribute('href') : '';
+            const fullUrl = href ? (window.location.origin + '/' + href.replace(/^\/+/, '')) : (window.location.origin + '/catalog.html');
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    mostrarToastNotificacion('📋 ¡Enlace de tu catálogo comercial copiado al portapapeles!');
+                }).catch(() => {
+                    mostrarToastNotificacion('📋 Enlace: ' + fullUrl);
+                });
+            } else {
+                mostrarToastNotificacion('📋 Enlace: ' + fullUrl);
+            }
         }
 
         function togglePasswordVisibility(inputId, btn) {
