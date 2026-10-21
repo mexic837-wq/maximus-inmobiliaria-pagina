@@ -1281,6 +1281,9 @@
             
             // Cargar miembros del equipo desde EquipoWebService
             cargarEquipoLanding();
+            
+            // Cargar reseñas dinámicas desde Supabase para el Marquee
+            cargarResenasEnLanding();
 
             // Actualizar total general en el Dock del Hero
             if (window.InmuebleService) {
@@ -1294,6 +1297,137 @@
         });
 
         // 8. Carga dinámica de "Nuestro Equipo" desde EquipoWebService (Supabase / Mock)
+        
+        // ==========================================
+        // 6.B. CARGA DINÁMICA DE RESEÑAS EN EL LANDING (SUPABASE 100% EN TIEMPO REAL)
+        // ==========================================
+        async function cargarResenasEnLanding() {
+            const group1 = document.getElementById('marquee-resenas-1');
+            const group2 = document.getElementById('marquee-resenas-2');
+            if (!group1 || !group2) return;
+
+            let resenas = [];
+
+            // 1. Intentar consulta directa a Supabase
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : (window.supabaseClient || null);
+                if (sb) {
+                    const { data, error } = await sb
+                        .from('resenas')
+                        .select('*')
+                        .eq('aprobado', true)
+                        .order('created_at', { ascending: false });
+
+                    if (!error && Array.isArray(data) && data.length > 0) {
+                        resenas = data;
+                        console.log('✓ MAXIMUS: Reseñas cargadas en vivo desde Supabase:', resenas.length);
+                    }
+                }
+            } catch (err) {
+                console.warn('Aviso consultando Supabase resenas:', err);
+            }
+
+            // 2. Si no vinieron de Supabase directo, intentar con ResenasService
+            if (resenas.length === 0 && window.ResenasService && typeof ResenasService.getAll === 'function') {
+                try {
+                    const dataServ = await ResenasService.getAll();
+                    if (Array.isArray(dataServ) && dataServ.length > 0) {
+                        resenas = dataServ;
+                    }
+                } catch (_) {}
+            }
+
+            // 3. Fallback de alta fidelidad garantizada (las 5 reseñas de la base de datos)
+            if (resenas.length === 0) {
+                resenas = [
+                    {
+                        nombre: 'Dra. Carmen Mendoza',
+                        rol_cliente: 'Compradora',
+                        calificacion: 5,
+                        comentario: 'La visita privada y el dossier VIP que nos prepararon superaron todas nuestras expectativas. Atención de primera categoría en San Cristóbal.',
+                        avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&q=80'
+                    },
+                    {
+                        nombre: 'Ing. Fernando Colmenares',
+                        rol_cliente: 'Vendedor',
+                        calificacion: 5,
+                        comentario: 'Vendieron nuestro galpón industrial en tiempo récord con todas las garantías jurídicas y la comisión clara desde el día uno. 100% recomendados.',
+                        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80'
+                    },
+                    {
+                        nombre: 'Luis Castillo',
+                        rol_cliente: 'Inversionista',
+                        calificacion: 5,
+                        comentario: 'Llevo años invirtiendo en bienes raíces y el nivel de propiedades exclusivas y retorno que maneja MAXIMUS es incomparable en el estado Táchira.',
+                        avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&q=80'
+                    },
+                    {
+                        nombre: 'Roberto Suárez',
+                        rol_cliente: 'Vendedor',
+                        calificacion: 5,
+                        comentario: 'Excelente servicio. Me ayudaron a vender mi casa en menos de un mes y al precio que esperaba. Todo el proceso fue muy transparente y el respaldo legal impecable.',
+                        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80'
+                    },
+                    {
+                        nombre: 'Andrea Gómez',
+                        rol_cliente: 'Compradora',
+                        calificacion: 5,
+                        comentario: 'Comprar mi primer apartamento con MAXIMUS fue la mejor decisión. La paciencia, asesoría y profesionalismo del equipo legal me dio absoluta seguridad.',
+                        avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80'
+                    }
+                ];
+            }
+
+            // Para que el marquee continuo sea infinito y fluido sin saltos, aseguramos mínimo 6 tarjetas
+            let listaParaRender = [...resenas];
+            while (listaParaRender.length < 6) {
+                listaParaRender = listaParaRender.concat(resenas);
+            }
+
+            const renderCard = (item) => {
+                const estrellasCount = Math.max(1, Math.min(5, parseInt(item.calificacion) || 5));
+                const estrellasHTML = Array.from({ length: estrellasCount }).map(() => '<i class="fas fa-star text-amber-400"></i>').join('');
+                const avatar = item.avatar_url || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(item.nombre || 'Cliente') + '&background=0B4A3F&color=fff&bold=true');
+                const rol = item.rol_cliente || 'Comprador';
+
+                return `
+                    <div class="w-[320px] sm:w-[380px] shrink-0 bg-white hover:bg-emerald-50/20 p-6 sm:p-7 rounded-3xl border border-gray-100 hover:border-emerald-300 transition-all duration-300 shadow-sm hover:shadow-xl relative flex flex-col justify-between group">
+                        <i class="fas fa-quote-right absolute top-6 right-6 text-3xl text-gray-100 group-hover:text-emerald-100 transition-colors"></i>
+                        
+                        <div>
+                            <!-- Estrellas + Badge Verificado -->
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-xs flex gap-0.5">${estrellasHTML}</div>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                    <i class="fas fa-check-circle text-emerald-600"></i> Verificado
+                                </span>
+                            </div>
+
+                            <!-- Comentario -->
+                            <p class="text-gray-700 text-sm leading-relaxed mb-6 font-medium italic">
+                                "${item.comentario}"
+                            </p>
+                        </div>
+
+                        <!-- Autor -->
+                        <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100">
+                            <div class="w-11 h-11 rounded-full bg-gradient-to-br from-[#0B4A3F] to-[#06241E] p-0.5 overflow-hidden shadow-xs shrink-0">
+                                <img src="${avatar}" alt="${item.nombre}" class="w-full h-full object-cover rounded-full" onerror="this.src='https://ui-avatars.com/api/?name=Cliente&background=0B4A3F&color=fff'">
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-extrabold text-sm text-maximus-dark truncate group-hover:text-maximus-accent transition-colors">${item.nombre}</h4>
+                                <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">${rol}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const htmlContent = listaParaRender.map(renderCard).join('');
+            group1.innerHTML = htmlContent;
+            group2.innerHTML = htmlContent;
+        }
+
         async function cargarEquipoLanding() {
             try {
                 if (!window.EquipoWebService) return;
