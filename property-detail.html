@@ -2,8 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle Propiedad | MAXIMUS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Detalle Propiedad | MAXIMUS Inmobiliaria</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -14,181 +19,252 @@
                         'maximus-accent': '#10B981',
                         'maximus-silver': '#D1D5DB',
                         'maximus-black': '#111827',
+                        'maximus-bg': '#F4F7F6',
                     },
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
+                        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body class="bg-gray-50 p-4 md:p-8 font-sans text-maximus-black">
-    <!-- Este contenido iría dentro del <main> de dashboard-layout.html -->
-    <div class="max-w-7xl mx-auto">
+<body class="bg-gray-50 font-sans text-maximus-black min-h-screen flex flex-col antialiased">
+
+    <!-- ========================================================
+         NAVBAR OFICIAL DE MAXIMUS
+         ======================================================== -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-xs" style="padding-top: env(safe-area-inset-top);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <!-- Logotipo Oficial -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="/inicio" class="flex items-center gap-1 group">
+                        <span class="text-xl md:text-2xl font-black text-maximus-dark tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                    </a>
+                </div>
+                
+                <!-- Enlaces Centrales Desktop -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="/inicio" class="text-gray-600 hover:text-maximus-dark font-medium transition-colors text-sm">Inicio</a>
+                    <a href="/catalogo" class="text-maximus-dark font-bold border-b-2 border-maximus-accent pb-1 text-sm">Propiedades</a>
+                    <a href="/inicio#nosotros" class="text-gray-600 hover:text-maximus-dark font-medium transition-colors text-sm">Nosotros</a>
+                    <a href="/inicio#equipo" class="text-gray-600 hover:text-maximus-dark font-medium transition-colors text-sm">Equipo</a>
+                    <a href="#contacto" class="text-gray-600 hover:text-maximus-dark font-medium transition-colors text-sm">Contacto</a>
+                </div>
+
+                <!-- Botones de Cuenta / Sesión (Dinámico según sesión) -->
+                <div class="hidden md:flex items-center space-x-3" id="nav-auth-container">
+                    <a href="/login?tab=register" class="text-xs uppercase tracking-wider font-bold text-gray-700 hover:text-maximus-dark px-3 py-2 transition-colors">
+                        Crear Cuenta
+                    </a>
+                    <a href="/login" class="bg-maximus-dark hover:bg-black text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all flex items-center gap-2">
+                        <i class="ph-bold ph-sign-in text-emerald-400"></i>
+                        <span>Iniciar Sesión</span>
+                    </a>
+                </div>
+
+                <!-- Botón Menú Móvil -->
+                <div class="md:hidden flex items-center">
+                    <button type="button" onclick="toggleMenuMobile()" class="p-2 rounded-xl text-gray-700 hover:text-maximus-dark hover:bg-gray-100 focus:outline-none" aria-label="Abrir menú">
+                        <i id="btn-icon-mobile" class="ph-bold ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Drawer Menú Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 px-4 pt-3 pb-6 space-y-3">
+            <a href="/inicio" class="block px-3 py-2 rounded-xl text-base font-bold text-gray-700 hover:bg-gray-50">Inicio</a>
+            <a href="/catalogo" class="block px-3 py-2 rounded-xl text-base font-bold text-maximus-accent bg-emerald-50/50">Catálogo de Propiedades</a>
+            <a href="/inicio#nosotros" class="block px-3 py-2 rounded-xl text-base font-bold text-gray-700 hover:bg-gray-50">Nosotros</a>
+            <a href="/inicio#equipo" class="block px-3 py-2 rounded-xl text-base font-bold text-gray-700 hover:bg-gray-50">Nuestro Equipo</a>
+            <a href="#contacto" class="block px-3 py-2 rounded-xl text-base font-bold text-gray-700 hover:bg-gray-50">Contacto</a>
+            <div class="pt-3 border-t border-gray-100 flex flex-col gap-2" id="nav-auth-mobile-container">
+                <a href="/login?tab=register" class="w-full text-center py-2.5 rounded-xl border border-gray-200 font-bold text-sm text-gray-700 hover:bg-gray-50">Crear Cuenta</a>
+                <a href="/login" class="w-full text-center py-2.5 rounded-xl bg-maximus-dark text-white font-bold text-sm shadow-sm">Iniciar Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Espaciador fijo para el navbar -->
+    <div class="h-16 md:h-20"></div>
+
+    <!-- Contenido Principal -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
         
-        <div class="mb-6 flex justify-between items-center">
-            <a href="/catalogo" class="inline-flex items-center text-gray-500 hover:text-maximus-dark transition bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100">
-                <i class="fas fa-arrow-left mr-2"></i> Volver al catálogo
+        <!-- Barra Superior de Navegación del Detalle -->
+        <div class="mb-6 flex justify-between items-center gap-3">
+            <a href="/catalogo" class="inline-flex items-center text-gray-600 hover:text-maximus-dark transition bg-white px-4 py-2.5 rounded-xl shadow-xs border border-gray-200 text-xs font-bold">
+                <i class="fas fa-arrow-left mr-2 text-maximus-accent"></i> Volver al catálogo
             </a>
-            <div class="flex gap-2">
-                <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 text-gray-600 hover:text-maximus-accent transition"><i class="far fa-heart mr-2"></i>Guardar</button>
-                <button class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-100 text-gray-600 hover:text-maximus-accent transition"><i class="fas fa-share-alt mr-2"></i>Compartir</button>
-                <button class="bg-maximus-dark text-white px-4 py-2 rounded-lg shadow-sm hover:bg-maximus-dark/90 transition"><i class="fas fa-edit mr-2"></i>Editar</button>
+            
+            <div class="flex items-center gap-2">
+                <!-- Botón Guardar / Favorito -->
+                <button type="button" id="btn-guardar-prop" onclick="toggleGuardarPropiedadDetalle()" class="bg-white px-4 py-2.5 rounded-xl shadow-xs border border-gray-200 text-gray-700 hover:text-red-500 hover:border-red-200 transition flex items-center gap-2 text-xs font-bold cursor-pointer">
+                    <i id="icono-guardar-prop" class="far fa-heart text-sm"></i>
+                    <span id="texto-guardar-prop">Guardar</span>
+                </button>
+                
+                <!-- Botón Compartir (Funcional) -->
+                <button type="button" onclick="compartirPropiedadDetalle()" class="bg-white px-4 py-2.5 rounded-xl shadow-xs border border-gray-200 text-gray-700 hover:text-maximus-accent hover:border-emerald-200 transition flex items-center gap-2 text-xs font-bold cursor-pointer">
+                    <i class="fas fa-share-alt text-sm text-emerald-600"></i>
+                    <span>Compartir</span>
+                </button>
             </div>
         </div>
 
         <!-- Header: Galería estilo Collage Moderno -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 h-[50vh] min-h-[400px] mb-10 relative rounded-2xl overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 h-[45vh] sm:h-[50vh] min-h-[360px] mb-10 relative rounded-3xl overflow-hidden shadow-sm">
             <div class="h-full">
-                <img id="prop-img-main" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Principal" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer">
+                <img id="prop-img-main" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1000&q=80" alt="Principal" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-pointer">
             </div>
-            <div class="hidden md:grid grid-cols-2 grid-rows-2 gap-4 h-full">
-                <img id="prop-img-2" src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
-                <img id="prop-img-3" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
-                <img id="prop-img-4" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+            <div class="hidden md:grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4 h-full">
+                <img id="prop-img-2" src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img id="prop-img-3" src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
+                <img id="prop-img-4" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Detalle" class="w-full h-full object-cover hover:opacity-90 transition cursor-pointer">
                 <div class="relative w-full h-full">
-                    <img id="prop-img-5" src="https://images.unsplash.com/photo-1613977257363-707ba9348227?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Detalle" class="w-full h-full object-cover brightness-50">
-                    <button class="absolute inset-0 flex items-center justify-center text-white font-medium hover:underline text-lg">
-                        Ver galería
+                    <img id="prop-img-5" src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&q=80" alt="Detalle" class="w-full h-full object-cover brightness-50">
+                    <button type="button" onclick="document.getElementById('prop-img-main').scrollIntoView({behavior:'smooth'})" class="absolute inset-0 flex items-center justify-center text-white font-bold hover:underline text-sm sm:text-base">
+                        <i class="ph-bold ph-images mr-2"></i> Ver galería
                     </button>
                 </div>
             </div>
             <!-- Etiqueta status sobre imagen -->
-            <div id="prop-badge-status" class="absolute top-4 left-4 bg-maximus-accent text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-sm">
+            <div id="prop-badge-status" class="absolute top-4 left-4 bg-maximus-accent text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-xs sm:text-sm">
                 En Venta
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 relative">
             
-            <!-- Columna Izquierda (Info Pública) -->
-            <div class="lg:col-span-2">
-                <div class="flex flex-wrap justify-between items-start mb-6">
-                    <div>
-                        <h1 id="prop-title" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Villa Moderna en Barrio Obrero</h1>
-                        <p id="prop-location" class="text-lg text-gray-600 flex items-center"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i> Av. Principal, Barrio Obrero, San Cristóbal, Táchira</p>
-                    </div>
+            <!-- Columna Izquierda (Info Pública de la Propiedad) -->
+            <div class="lg:col-span-2 space-y-8">
+                <div>
+                    <h1 id="prop-title" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">Villa Moderna en Barrio Obrero</h1>
+                    <p id="prop-location" class="text-sm sm:text-base text-gray-600 flex items-center"><i class="fas fa-map-marker-alt text-maximus-accent mr-2"></i> Av. Principal, Barrio Obrero, San Cristóbal, Táchira</p>
                 </div>
 
-                <!-- Lista de Características Rapidas -->
-                <div class="flex flex-wrap gap-6 py-6 border-y border-gray-200 mb-8">
-                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
-                        <i class="fas fa-bed text-2xl text-maximus-dark mb-2"></i>
-                        <span id="prop-habs" class="font-semibold">4</span>
-                        <span class="text-xs text-gray-500">Habitaciones</span>
+                <!-- Lista de Características Rápidas -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-6 border-y border-gray-200">
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-gray-100 shadow-xs">
+                        <i class="fas fa-bed text-2xl text-maximus-dark mb-1.5"></i>
+                        <span id="prop-habs" class="font-extrabold text-base">4</span>
+                        <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Habitaciones</span>
                     </div>
-                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
-                        <i class="fas fa-bath text-2xl text-maximus-dark mb-2"></i>
-                        <span id="prop-banos" class="font-semibold">3</span>
-                        <span class="text-xs text-gray-500">Baños</span>
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-gray-100 shadow-xs">
+                        <i class="fas fa-bath text-2xl text-maximus-dark mb-1.5"></i>
+                        <span id="prop-banos" class="font-extrabold text-base">3</span>
+                        <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Baños</span>
                     </div>
-                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
-                        <i class="fas fa-ruler-combined text-2xl text-maximus-dark mb-2"></i>
-                        <span id="prop-metros" class="font-semibold">250</span>
-                        <span class="text-xs text-gray-500">m² Totales</span>
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-gray-100 shadow-xs">
+                        <i class="fas fa-ruler-combined text-2xl text-maximus-dark mb-1.5"></i>
+                        <span id="prop-metros" class="font-extrabold text-base">250</span>
+                        <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">m² Totales</span>
                     </div>
-                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm min-w-[100px]">
-                        <i class="fas fa-layer-group text-2xl text-maximus-dark mb-2"></i>
-                        <span id="prop-tipo" class="font-semibold uppercase">Casa</span>
-                        <span class="text-xs text-gray-500">Tipo</span>
+                    <div class="flex flex-col items-center justify-center bg-white p-4 rounded-2xl border border-gray-100 shadow-xs">
+                        <i class="fas fa-layer-group text-2xl text-maximus-dark mb-1.5"></i>
+                        <span id="prop-tipo" class="font-extrabold text-base uppercase">CASA</span>
+                        <span class="text-[11px] text-gray-400 font-bold uppercase tracking-wider">Tipo</span>
                     </div>
                 </div>
 
                 <!-- Descripción Completa -->
-                <div class="mb-10">
-                    <h2 class="text-2xl font-bold mb-4">Acerca de la propiedad</h2>
-                    <div class="prose prose-lg text-gray-600">
-                        <p id="prop-descripcion" class="mb-4">Espectacular villa de diseño contemporáneo ubicada en una de las zonas más exclusivas de la ciudad. Completamente remodelada con acabados de lujo, iluminación inteligente y sistema de seguridad 24/7 integrado.</p>
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-3">Acerca de la propiedad</h2>
+                    <div class="text-gray-600 text-sm sm:text-base leading-relaxed">
+                        <p id="prop-descripcion">Espectacular villa de diseño contemporáneo ubicada en una de las zonas más exclusivas de la ciudad. Completamente remodelada con acabados de lujo, iluminación inteligente y sistema de seguridad 24/7 integrado.</p>
                     </div>
                 </div>
 
-                <!-- Amenities -->
-                <div class="mb-10">
-                    <h2 class="text-2xl font-bold mb-4">Comodidades</h2>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div class="flex items-center text-gray-600"><i class="fas fa-wifi w-6 text-center text-maximus-accent mr-2"></i> Internet Fibra Óptica</div>
-                        <div class="flex items-center text-gray-600"><i class="fas fa-swimming-pool w-6 text-center text-maximus-accent mr-2"></i> Piscina Privada</div>
-                        <div class="flex items-center text-gray-600"><i class="fas fa-snowflake w-6 text-center text-maximus-accent mr-2"></i> Aire Acondicionado</div>
-                        <div class="flex items-center text-gray-600"><i class="fas fa-shield-alt w-6 text-center text-maximus-accent mr-2"></i> Vigilancia 24/7</div>
-                        <div class="flex items-center text-gray-600"><i class="fas fa-fire-burner w-6 text-center text-maximus-accent mr-2"></i> Área de Parrilla</div>
-                        <div class="flex items-center text-gray-600"><i class="fas fa-bolt w-6 text-center text-maximus-accent mr-2"></i> Planta Eléctrica</div>
+                <!-- Amenities / Comodidades -->
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4">Comodidades</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5 text-xs sm:text-sm">
+                        <div class="flex items-center text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-xs"><i class="fas fa-wifi w-6 text-center text-maximus-accent mr-2"></i> Internet Fibra Óptica</div>
+                        <div class="flex items-center text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-xs"><i class="fas fa-swimming-pool w-6 text-center text-maximus-accent mr-2"></i> Piscina Privada</div>
+                        <div class="flex items-center text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-xs"><i class="fas fa-snowflake w-6 text-center text-maximus-accent mr-2"></i> Aire Acondicionado</div>
+                        <div class="flex items-center text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-xs"><i class="fas fa-shield-alt w-6 text-center text-maximus-accent mr-2"></i> Vigilancia 24/7</div>
+                        <div class="flex items-center text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-xs"><i class="fas fa-fire-burner w-6 text-center text-maximus-accent mr-2"></i> Área de Parrilla</div>
+                        <div class="flex items-center text-gray-700 bg-white p-3 rounded-xl border border-gray-100 shadow-xs"><i class="fas fa-bolt w-6 text-center text-maximus-accent mr-2"></i> Planta Eléctrica</div>
                     </div>
                 </div>
 
-                <!-- Mapa -->
-                <div class="mb-10">
-                    <h2 class="text-2xl font-bold mb-4">Ubicación</h2>
-                    <div class="w-full h-64 bg-gray-200 rounded-2xl overflow-hidden relative border border-gray-100">
-                        <div class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-400">
-                            <div class="text-center">
-                                <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
-                                <p>Vista de Mapa Integrado</p>
-                            </div>
+                <!-- Ubicación -->
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold mb-3">Ubicación</h2>
+                    <div class="w-full h-56 bg-gray-100 rounded-3xl overflow-hidden relative border border-gray-200 flex items-center justify-center text-gray-400">
+                        <div class="text-center">
+                            <i class="fas fa-map-marked-alt text-4xl mb-2 text-emerald-600"></i>
+                            <p class="text-xs font-bold text-gray-600">San Cristóbal, Estado Táchira</p>
+                            <p class="text-[11px] text-gray-400">Coordenadas y acceso exacto provistos por el asesor en la visita privada</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Columna Derecha (Panel de Agente - Tarjeta Flotante) -->
+            <!-- Columna Derecha (Tarjeta Flotante de Contacto) -->
             <div class="lg:col-span-1">
                 <div class="sticky top-24 space-y-6">
                     
-                    <!-- Tarjeta Principal Info Venta -->
-                    <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
-                        <div class="mb-4">
-                            <span id="prop-label-precio" class="text-sm text-gray-500 font-medium uppercase tracking-wider block mb-1">Precio</span>
-                            <span id="prop-precio" class="text-4xl font-bold text-maximus-dark">$450,000</span>
+                    <!-- Tarjeta Principal de Contacto -->
+                    <div class="bg-white p-6 rounded-3xl shadow-lg border border-gray-200/80 space-y-5">
+                        <div>
+                            <span id="prop-label-precio" class="text-xs text-gray-400 font-bold uppercase tracking-wider block mb-1">Precio</span>
+                            <span id="prop-precio" class="text-3xl sm:text-4xl font-black text-maximus-dark">$450,000</span>
                         </div>
                         
-                        <div class="space-y-3 mb-6">
-                            <a id="prop-btn-whatsapp" href="https://wa.me/584240000000" target="_blank" onclick="registrarContactoWhatsAppDetalle()" class="w-full bg-maximus-accent hover:bg-emerald-400 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-md shadow-maximus-accent/30 flex justify-center items-center">
-                                <i class="fab fa-whatsapp mr-2 text-lg"></i> Consultar por WhatsApp
+                        <div class="space-y-3">
+                            <a id="prop-btn-whatsapp" href="https://wa.me/584240000000" target="_blank" onclick="registrarContactoWhatsAppDetalle()" class="w-full bg-maximus-accent hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-sm flex justify-center items-center gap-2 text-xs uppercase tracking-wider">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                                <span>Consultar por WhatsApp</span>
                             </a>
-                            <button type="button" onclick="abrirModalSolicitarFichaPropiedad()" class="w-full bg-maximus-dark hover:bg-[#07362e] text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-md flex justify-center items-center cursor-pointer">
-                                <i class="fas fa-envelope-open-text mr-2"></i> Recibir Ficha por Correo / Agendar Visita
+                            
+                            <button type="button" onclick="abrirModalSolicitarFichaPropiedad()" class="w-full bg-maximus-dark hover:bg-black text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-sm flex justify-center items-center gap-2 text-xs uppercase tracking-wider cursor-pointer">
+                                <i class="fas fa-envelope-open-text text-emerald-400"></i>
+                                <span>Recibir Ficha / Agendar Visita</span>
                             </button>
-                            <a href="/catalogo" class="w-full bg-white hover:bg-gray-50 text-maximus-dark font-semibold py-3 px-4 rounded-xl border border-gray-200 transition duration-200 text-center block">
-                                <i class="fas fa-th-large mr-2"></i> Ver catálogo completo
+                            
+                            <a href="/catalogo" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold py-3 px-4 rounded-xl border border-gray-200 transition duration-200 text-center block text-xs">
+                                <i class="fas fa-th-large mr-2 text-maximus-accent"></i> Ver catálogo completo
                             </a>
                         </div>
 
-                        <div class="pt-4 border-t border-gray-100">
-                            <p class="text-xs text-gray-400 text-center">ID del Inmueble: <span id="prop-id-code" class="font-mono text-gray-700">MX-8492</span></p>
+                        <div class="pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+                            <span>Código de Inmueble:</span>
+                            <span id="prop-id-code" class="font-mono font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">MX-8492</span>
                         </div>
                     </div>
 
-                    <!-- CRUCIAL: Notas Privadas del Agente -->
-                    <div class="bg-amber-50 p-6 rounded-2xl border-2 border-dashed border-amber-200 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-bl-lg">
-                            <i class="fas fa-lock mr-1"></i> PRIVADO
-                        </div>
-                        
-                        <h3 class="text-amber-900 font-bold text-lg mb-4 flex items-center">
-                            <i class="fas fa-user-secret mr-2"></i> Notas del Agente
+                    <!-- Panel Exclusivo para Asesores y Administradores (Oculto para Clientes Públicos) -->
+                    <div id="panel-notas-agente" class="hidden bg-amber-50 p-6 rounded-3xl border border-amber-200 shadow-sm">
+                        <h3 class="font-bold text-amber-900 text-sm flex items-center justify-between mb-4 border-b border-amber-200 pb-2">
+                            <span class="flex items-center"><i class="fas fa-store-alt mr-2 text-amber-600"></i> Notas del Asesor</span>
+                            <span class="text-[10px] bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full uppercase font-extrabold tracking-wider">Privado CRM</span>
                         </h3>
                         
-                        <div class="space-y-4">
-                            <div class="bg-white/60 p-3 rounded-lg border border-amber-100">
-                                <p class="text-xs text-amber-700 font-semibold mb-1 uppercase tracking-wider">Estructura de Comisión</p>
+                        <div class="space-y-4 text-xs">
+                            <div class="bg-white/80 p-3 rounded-xl border border-amber-100">
+                                <p class="text-[10px] text-amber-700 font-bold mb-1 uppercase tracking-wider">Estructura de Comisión</p>
                                 <div class="flex justify-between items-center">
-                                    <span class="font-bold text-xl text-amber-900">5%</span>
-                                    <span class="text-sm text-amber-800 font-medium">($22,500 est.)</span>
+                                    <span class="font-extrabold text-lg text-amber-900">5%</span>
+                                    <span class="text-xs text-amber-800 font-medium">División estándar MAXIMUS</span>
                                 </div>
                             </div>
                             
                             <div>
-                                <p class="text-xs text-amber-700 font-semibold mb-1 uppercase tracking-wider">Datos del Propietario</p>
-                                <p class="font-medium text-amber-900">Sr. Roberto Mendoza</p>
-                                <p class="text-sm text-amber-800 flex items-center mt-1"><i class="fas fa-phone-alt text-amber-600 mr-2"></i> +58 414-1234567</p>
+                                <p class="text-[10px] text-amber-700 font-bold mb-1 uppercase tracking-wider">Datos del Propietario</p>
+                                <p class="font-bold text-amber-900">Sr. Roberto Mendoza</p>
+                                <p class="text-amber-800 flex items-center mt-1"><i class="fas fa-phone-alt text-amber-600 mr-2"></i> +58 414-1234567</p>
                             </div>
                             
                             <div class="pt-3 border-t border-amber-200/50">
-                                <p class="text-xs text-amber-700 font-semibold mb-1 uppercase tracking-wider">Instrucciones de Visita</p>
-                                <p class="text-sm text-amber-900 bg-amber-100/50 p-2 rounded leading-relaxed">
-                                    Avisar con 24h de anticipación. Las llaves están en la conserjería del edf contiguo. El perro (Golden Retriever) es amigable pero dejarlo en el patio trasero durante la visita. Negociable hasta $420,000.
+                                <p class="text-[10px] text-amber-700 font-bold mb-1 uppercase tracking-wider">Instrucciones de Visita</p>
+                                <p class="text-amber-900 bg-amber-100/50 p-2.5 rounded-xl leading-relaxed">
+                                    Avisar con 24h de anticipación. Las llaves están en la conserjería del edificio contiguo.
                                 </p>
                             </div>
                         </div>
@@ -200,7 +276,9 @@
         </div>
     </div>
 
-    <!-- Modal: Solicitar Ficha por Correo / Agendar Visita -->
+    <!-- ========================================================
+         MODAL: SOLICITAR FICHA POR CORREO / AGENDAR VISITA
+         ======================================================== -->
     <div id="modalSolicitarFichaLead" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onclick="if(event.target === this) cerrarModalSolicitarFichaPropiedad()">
         <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-gray-100 overflow-hidden">
             <div class="bg-gradient-to-r from-[#0B4A3F] to-emerald-900 p-6 text-white flex justify-between items-start">
@@ -216,7 +294,7 @@
             <form id="formSolicitarFichaLead" onsubmit="enviarSolicitudFichaPropiedad(event)" class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Nombre Completo *</label>
-                    <input type="text" id="lead-prop-nombre" required placeholder="Ej: Ing. Roberto Pérez" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-sm outline-none focus:border-maximus-accent transition">
+                    <input type="text" id="lead-prop-nombre" required placeholder="Ej: Roberto Pérez" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-sm outline-none focus:border-maximus-accent transition">
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
@@ -238,8 +316,8 @@
                 </div>
                 <div class="pt-2 flex items-center justify-end gap-2.5">
                     <button type="button" onclick="cerrarModalSolicitarFichaPropiedad()" class="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-xs font-bold hover:bg-gray-50 transition">Cancelar</button>
-                    <button type="submit" id="btn-submit-lead-prop" class="px-5 py-2.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-xs font-bold shadow-md transition flex items-center gap-2 cursor-pointer">
-                        <i class="fas fa-paper-plane"></i>
+                    <button type="submit" id="btn-submit-lead-prop" class="px-5 py-2.5 rounded-xl bg-maximus-dark hover:bg-black text-white text-xs font-bold shadow-md transition flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-paper-plane text-emerald-400"></i>
                         <span>Enviar Ficha a mi Correo</span>
                     </button>
                 </div>
@@ -247,22 +325,260 @@
         </div>
     </div>
 
-    <!-- Scripts de Supabase y Servicios para Carga Dinámica -->
+    <!-- ========================================================
+         MODAL: INICIAR SESIÓN / REGISTRO PARA GUARDAR FAVORITOS
+         ======================================================== -->
+    <div id="modalGuardarAuth" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-gray-100 overflow-hidden transform transition-all">
+            <div class="bg-gradient-to-br from-[#071714] to-[#0B4A3F] p-6 text-white relative">
+                <button type="button" onclick="cerrarModalGuardarAuth()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+                <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-red-400 text-2xl mb-3 shadow-inner">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="text-[10px] font-black uppercase tracking-widest text-emerald-300">GUARDA TUS PROPIEDADES FAVORITAS</div>
+                <h3 class="text-xl font-extrabold mt-1">Inicia Sesión o Regístrate</h3>
+                <p class="text-xs text-gray-300 mt-1">
+                    Crea tu cuenta gratis en 15 segundos para guardar esta propiedad en tus favoritos y consultarla cuando quieras en tu panel.
+                </p>
+            </div>
+            <div class="p-6 space-y-3">
+                <a href="/login?tab=register" class="w-full py-3.5 rounded-xl bg-maximus-dark hover:bg-black text-white font-extrabold text-xs uppercase tracking-wider text-center block shadow-md transition-all">
+                    Crear mi Cuenta Gratis →
+                </a>
+                <a href="/login" class="w-full py-3 rounded-xl border border-gray-200 text-gray-700 hover:text-maximus-dark font-bold text-xs uppercase tracking-wider text-center block hover:bg-gray-50 transition-colors">
+                    Ya tengo cuenta · Iniciar Sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         FOOTER OFICIAL DE MAXIMUS
+         ======================================================== -->
+    <footer id="contacto" class="bg-maximus-black text-white pt-16 pb-8 border-t-4 border-maximus-accent mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div>
+                    <span class="text-3xl font-bold text-white tracking-tighter block mb-4">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                    <p class="text-gray-400 mb-6">Tu aliado estratégico en inversiones inmobiliarias de alto valor en San Cristóbal y el Estado Táchira.</p>
+                    <div class="flex space-x-4">
+                        <a href="https://instagram.com" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-maximus-dark transition-colors"><i class="fab fa-instagram"></i></a>
+                        <a href="https://facebook.com" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-maximus-dark transition-colors"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://wa.me/584240000000" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-maximus-dark transition-colors"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 border-b border-gray-800 pb-2">Navegación Rápida</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/inicio" class="text-gray-400 hover:text-white transition-colors">Inicio</a></li>
+                        <li><a href="/catalogo" class="text-maximus-accent font-semibold transition-colors">Catálogo de Propiedades</a></li>
+                        <li><a href="/inicio#nosotros" class="text-gray-400 hover:text-white transition-colors">Nosotros</a></li>
+                        <li><a href="/inicio#equipo" class="text-gray-400 hover:text-white transition-colors">Equipo Inmobiliario</a></li>
+                        <li><a href="/login" class="text-gray-400 hover:text-white transition-colors">Acceso Asesores / Clientes</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 border-b border-gray-800 pb-2">Atención Inmobiliaria</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="flex items-center"><i class="fas fa-map-marker-alt text-maximus-accent mr-3"></i> San Cristóbal, Estado Táchira, Venezuela</li>
+                        <li class="flex items-center"><i class="fas fa-phone-alt text-maximus-accent mr-3"></i> +58 424 000 0000</li>
+                        <li class="flex items-center"><i class="fas fa-envelope text-maximus-accent mr-3"></i> contacto@maximusinmobiliaria.tech</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
+                <p>&copy; 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados. Experiencia y respaldo legal en cada operación.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts de Supabase, Servicios y Autenticación -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/config.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/services.js"></script>
+    <script src="js/auth.js"></script>
+    
     <script>
-        window.currentDetailProperty = {
-            id: 'inm-8492',
-            codigo: 'MX-8492',
-            titulo: 'Villa Moderna en Barrio Obrero',
-            precio: 450000,
-            precioFormateado: '$450,000',
-            ubicacion: 'Av. Principal, Barrio Obrero, San Cristóbal, Táchira',
-            asesor_nombre: 'Equipo Comercial MAXIMUS'
-        };
+        window.currentDetailProperty = null;
+
+        // Alternar menú móvil
+        function toggleMenuMobile() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('btn-icon-mobile');
+            if (menu) {
+                const isOpen = !menu.classList.contains('hidden');
+                menu.classList.toggle('hidden', isOpen);
+                if (icon) {
+                    icon.className = isOpen ? 'ph-bold ph-list text-2xl' : 'ph-bold ph-x text-2xl';
+                }
+            }
+        }
+
+        // Renderizar estado de autenticación en el Navbar
+        function renderAuthState() {
+            let user = null;
+            if (window.AuthService && typeof AuthService.getCurrentUser === 'function') {
+                user = AuthService.getCurrentUser();
+            } else {
+                try {
+                    const raw = localStorage.getItem('maximus_user') || sessionStorage.getItem('maximus_user');
+                    if (raw) user = JSON.parse(raw);
+                } catch(e) {}
+            }
+
+            const desktopContainer = document.getElementById('nav-auth-container');
+            const mobileContainer = document.getElementById('nav-auth-mobile-container');
+            const panelNotas = document.getElementById('panel-notas-agente');
+
+            // Mostrar notas privadas solo si es asesor o admin
+            if (panelNotas) {
+                const esAdminOAsesor = user && (user.role === 'admin' || user.role === 'asesor' || user.role === 'asesor_maximus' || user.role === 'asesor_externo');
+                panelNotas.classList.toggle('hidden', !esAdminOAsesor);
+            }
+
+            if (user) {
+                const nombreCorto = (user.nombre || user.email || 'Mi Cuenta').split(' ')[0];
+                const avatar = user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombreCorto)}&background=0B4A3F&color=fff&bold=true`;
+                
+                const htmlAuth = `
+                    <div class="flex items-center gap-3">
+                        <a href="/dashboard" class="flex items-center gap-2.5 p-1.5 pr-4 rounded-xl bg-gray-50 hover:bg-emerald-50/60 border border-gray-200 transition-all group" title="Ir a mi Panel">
+                            <img src="${avatar}" class="w-8 h-8 rounded-lg object-cover border border-emerald-500/30">
+                            <span class="text-xs font-extrabold text-maximus-dark group-hover:text-emerald-700">${nombreCorto}</span>
+                            <span class="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Panel</span>
+                        </a>
+                        <button type="button" onclick="cerrarSesionUsuario()" class="w-9 h-9 rounded-xl bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-600 flex items-center justify-center transition" title="Cerrar Sesión">
+                            <i class="ph-bold ph-sign-out text-base"></i>
+                        </button>
+                    </div>
+                `;
+
+                if (desktopContainer) desktopContainer.innerHTML = htmlAuth;
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <a href="/dashboard" class="w-full text-center py-2.5 rounded-xl bg-maximus-dark text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-layout"></i>
+                            <span>Ir a mi Panel (${nombreCorto})</span>
+                        </a>
+                        <button type="button" onclick="cerrarSesionUsuario()" class="w-full text-center py-2 rounded-xl text-red-600 font-bold text-xs">Cerrar Sesión</button>
+                    `;
+                }
+            }
+        }
+
+        function cerrarSesionUsuario() {
+            if (window.AuthService && typeof AuthService.logout === 'function') {
+                AuthService.logout();
+            } else {
+                localStorage.removeItem('maximus_user');
+                sessionStorage.removeItem('maximus_user');
+            }
+            window.location.reload();
+        }
+
+        // Compartir Propiedad (Funcional)
+        async function compartirPropiedadDetalle() {
+            const prop = window.currentDetailProperty || {};
+            const titulo = prop.titulo || 'Propiedad en MAXIMUS Inmobiliaria';
+            const texto = `Descubre esta propiedad en MAXIMUS: ${titulo} por ${prop.precioFormateado || ''}`;
+            const url = window.location.href;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: titulo, text: texto, url });
+                    return;
+                } catch(e) {}
+            }
+
+            // Fallback al portapapeles
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(url);
+                } else {
+                    const temp = document.createElement('input');
+                    temp.value = url;
+                    document.body.appendChild(temp);
+                    temp.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(temp);
+                }
+                mostrarToastNotificacion('📋 Enlace copiado al portapapeles');
+            } catch (err) {
+                mostrarToastNotificacion('⚠️ Enlace: ' + url);
+            }
+        }
+
+        // Guardar en Favoritos (Requiere Sesión)
+        function toggleGuardarPropiedadDetalle() {
+            const isAuth = window.AuthService ? AuthService.isAuthenticated() : Boolean(localStorage.getItem('maximus_user'));
+            if (!isAuth) {
+                const modal = document.getElementById('modalGuardarAuth');
+                if (modal) modal.classList.remove('hidden');
+                return;
+            }
+
+            const prop = window.currentDetailProperty;
+            if (!prop || !prop.id) return;
+
+            let favs = [];
+            try {
+                const raw = localStorage.getItem('maximus_favoritos');
+                if (raw) favs = JSON.parse(raw);
+            } catch(e) {}
+
+            const idx = favs.indexOf(prop.id);
+            if (idx === -1) {
+                favs.push(prop.id);
+                mostrarToastNotificacion('❤️ Propiedad añadida a tus favoritos');
+            } else {
+                favs.splice(idx, 1);
+                mostrarToastNotificacion('Propiedad removida de favoritos');
+            }
+
+            localStorage.setItem('maximus_favoritos', JSON.stringify(favs));
+            actualizarEstadoBotonGuardar();
+        }
+
+        function actualizarEstadoBotonGuardar() {
+            const prop = window.currentDetailProperty;
+            if (!prop || !prop.id) return;
+
+            let favs = [];
+            try {
+                const raw = localStorage.getItem('maximus_favoritos');
+                if (raw) favs = JSON.parse(raw);
+            } catch(e) {}
+
+            const guardado = favs.includes(prop.id);
+            const icono = document.getElementById('icono-guardar-prop');
+            const texto = document.getElementById('texto-guardar-prop');
+            const btn = document.getElementById('btn-guardar-prop');
+
+            if (guardado) {
+                if (icono) icono.className = 'fas fa-heart text-red-500 text-sm';
+                if (texto) {
+                    texto.textContent = 'Guardado';
+                    texto.className = 'text-red-600 font-bold';
+                }
+                if (btn) btn.className = 'bg-red-50/60 px-4 py-2.5 rounded-xl shadow-xs border border-red-200 text-red-600 transition flex items-center gap-2 text-xs font-bold cursor-pointer';
+            } else {
+                if (icono) icono.className = 'far fa-heart text-sm';
+                if (texto) {
+                    texto.textContent = 'Guardar';
+                    texto.className = '';
+                }
+                if (btn) btn.className = 'bg-white px-4 py-2.5 rounded-xl shadow-xs border border-gray-200 text-gray-700 hover:text-red-500 hover:border-red-200 transition flex items-center gap-2 text-xs font-bold cursor-pointer';
+            }
+        }
+
+        function cerrarModalGuardarAuth() {
+            const modal = document.getElementById('modalGuardarAuth');
+            if (modal) modal.classList.add('hidden');
+        }
 
         function abrirModalSolicitarFichaPropiedad() {
             const modal = document.getElementById('modalSolicitarFichaLead');
@@ -343,12 +659,30 @@
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Enviar Ficha a mi Correo</span>';
+                    btn.innerHTML = '<i class="fas fa-paper-plane text-emerald-400"></i> <span>Enviar Ficha a mi Correo</span>';
                 }
             }
         }
 
+        function mostrarToastNotificacion(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 z-50 bg-maximus-dark text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl border border-emerald-500/30 flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `<i class="ph-bold ph-bell-simple text-emerald-400 text-sm"></i> <span>${msg}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         document.addEventListener('DOMContentLoaded', async function() {
+            renderAuthState();
+
             try {
                 const params = new URLSearchParams(window.location.search);
                 const propId = params.get('id');
@@ -366,9 +700,8 @@
 
                 if (!item) return;
 
-                // Formateador
                 const formatUSD = num => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num || 0);
-                const codigoStr = item.id ? ('MAX-' + item.id.replace('inm-', '').toUpperCase()) : 'MAX-PRO';
+                const codigoStr = item.codigo || (item.id ? ('MAX-' + item.id.replace('inm-', '').toUpperCase()) : 'MAX-PRO');
 
                 window.currentDetailProperty = {
                     id: item.id,
@@ -381,7 +714,7 @@
                 };
 
                 // Actualizar textos
-                document.title = `${item.titulo} | MAXIMUS`;
+                document.title = `${item.titulo} | MAXIMUS Inmobiliaria`;
                 const titleEl = document.getElementById('prop-title');
                 if (titleEl) titleEl.textContent = item.titulo;
 
@@ -407,22 +740,29 @@
                 const badgeEl = document.getElementById('prop-badge-status');
                 if (badgeEl) {
                     badgeEl.textContent = esAlquiler ? 'En Alquiler' : 'En Venta';
-                    badgeEl.className = `absolute top-4 left-4 ${esAlquiler ? 'bg-blue-600' : 'bg-maximus-accent'} text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-sm`;
+                    badgeEl.className = `absolute top-4 left-4 ${esAlquiler ? 'bg-blue-600' : 'bg-maximus-accent'} text-white px-4 py-1.5 rounded-full font-bold shadow-md uppercase tracking-wider text-xs sm:text-sm`;
                 }
 
                 const labelPrecio = document.getElementById('prop-label-precio');
                 if (labelPrecio) labelPrecio.textContent = esAlquiler ? 'Canon de Alquiler' : 'Precio de Venta';
 
                 const precioEl = document.getElementById('prop-precio');
-                if (precioEl) precioEl.innerHTML = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-sm font-normal text-gray-500">/ mes</span>' : '');
+                if (precioEl) precioEl.innerHTML = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-xs sm:text-sm font-normal text-gray-500">/ mes</span>' : '');
 
                 const codeEl = document.getElementById('prop-id-code');
                 if (codeEl) codeEl.textContent = codigoStr;
 
-                // Fotos
-                const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1000&q=80';
+                // Fotos de Galería
+                const fotoPrincipal = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1000&q=80';
                 const imgMain = document.getElementById('prop-img-main');
-                if (imgMain) imgMain.src = foto;
+                if (imgMain) imgMain.src = fotoPrincipal;
+
+                if (Array.isArray(item.fotos) && item.fotos.length > 0) {
+                    ['prop-img-2', 'prop-img-3', 'prop-img-4', 'prop-img-5'].forEach((imgId, idx) => {
+                        const el = document.getElementById(imgId);
+                        if (el && item.fotos[idx + 1]) el.src = item.fotos[idx + 1];
+                    });
+                }
 
                 // WhatsApp de consulta con el título del inmueble
                 const waBtn = document.getElementById('prop-btn-whatsapp');
@@ -430,6 +770,9 @@
                     const mensaje = encodeURIComponent(`Hola MAXIMUS, deseo recibir más información sobre "${item.titulo}" (${codigoStr}) por ${formatUSD(item.precio)}.`);
                     waBtn.href = `https://wa.me/584240000000?text=${mensaje}`;
                 }
+
+                // Actualizar estado del botón Guardar (Favoritos)
+                actualizarEstadoBotonGuardar();
             } catch (err) {
                 console.warn('Error cargando detalle dinámico de propiedad:', err);
             }

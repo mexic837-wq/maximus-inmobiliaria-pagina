@@ -332,18 +332,18 @@
             <div class="max-w-3xl relative z-10 space-y-4">
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-emerald-300 text-xs font-black uppercase tracking-widest">
                     <i class="ph-bold ph-crown text-amber-400"></i>
-                    <span>CLUB VIP MAXIMUS</span>
+                    <span>CLUB MAXIMUS</span>
                 </div>
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
                     ¿Deseas acceder a propiedades confidenciales fuera de mercado?
                 </h2>
                 <p class="text-gray-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
-                    Crea tu cuenta de Inversionista VIP de forma gratuita. Podrás descargar Fichas Técnicas oficiales en PDF, guardar tus propiedades favoritas y recibir alertas anticipadas cuando ingrese una captación que coincida con tu presupuesto.
+                    Crea tu cuenta gratuita. Podrás descargar Fichas Técnicas oficiales en PDF, guardar tus propiedades favoritas y recibir alertas anticipadas cuando ingrese una captación que coincida con tu presupuesto.
                 </p>
                 <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <a href="/login?tab=register" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-gray-950 font-extrabold text-xs uppercase tracking-wider text-center shadow-lg transition-all flex items-center justify-center gap-2">
                         <i class="ph-bold ph-user-plus text-base"></i>
-                        <span>Crear mi Cuenta VIP Gratis</span>
+                        <span>Crear mi Cuenta Gratis</span>
                     </a>
                     <a href="/login" class="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider text-center transition-colors">
                         Ya tengo cuenta · Iniciar Sesión
@@ -368,7 +368,7 @@
                     <i class="ph-bold ph-crown"></i>
                 </div>
                 <div class="text-[10px] font-black uppercase tracking-widest text-emerald-300">BENEFICIO EXCLUSIVO</div>
-                <h3 id="modalVipTitulo" class="text-xl font-extrabold mt-1">Acceso Club VIP MAXIMUS</h3>
+                <h3 id="modalVipTitulo" class="text-xl font-extrabold mt-1">Acceso Club MAXIMUS</h3>
                 <p id="modalVipSubtitulo" class="text-xs text-gray-300 mt-1">
                     Crea tu cuenta gratuita en 15 segundos para desbloquear esta función y acceder al portafolio completo.
                 </p>
@@ -897,7 +897,7 @@
 
             const isAuth = window.AuthService ? AuthService.isAuthenticated() : Boolean(localStorage.getItem('maximus_user'));
             if (!isAuth) {
-                abrirModalVip('Guarda tus Propiedades Favoritas', 'Crea tu cuenta de Inversionista VIP para guardar y comparar inmuebles en tu portafolio personal.');
+                abrirModalVip('Guarda tus Propiedades Favoritas', 'Crea tu cuenta gratuita para guardar y comparar inmuebles en tu portafolio personal.');
                 return;
             }
 
