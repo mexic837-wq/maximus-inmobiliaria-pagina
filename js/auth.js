@@ -159,7 +159,7 @@ const AuthService = {
      * @param {object} data - { nombre, email, password, telefono, rememberDevice }
      * @returns {Promise<{success: boolean, user?: object, error?: string, requiresEmailConfirmation?: boolean, message?: string}>}
      */
-    async register({ nombre, email, password, telefono = '', rememberDevice = true }) {
+    async register({ nombre, email, password, telefono = '', telefono_e164 = '', prefijo = '+58', rememberDevice = true }) {
         if (!nombre || !email || !password) {
             return { success: false, error: 'Por favor completa todos los campos obligatorios.' };
         }
@@ -170,14 +170,14 @@ const AuthService = {
         const cleanEmail = email.trim().toLowerCase();
 
         if (APP_CONFIG.USE_MOCK_DATA) {
-            const mockRes = this._mockRegister({ nombre, email: cleanEmail, password, telefono });
+            const mockRes = this._mockRegister({ nombre, email: cleanEmail, password, telefono, telefono_e164, prefijo });
             if (mockRes.success && mockRes.user) {
                 this._saveSession(mockRes.user, cleanEmail, rememberDevice);
             }
             return mockRes;
         }
 
-        const supaRes = await this._supabaseRegister({ nombre, email: cleanEmail, password, telefono });
+        const supaRes = await this._supabaseRegister({ nombre, email: cleanEmail, password, telefono, telefono_e164, prefijo });
         if (supaRes.success && supaRes.user) {
             this._saveSession(supaRes.user, cleanEmail, rememberDevice);
         }
@@ -667,7 +667,7 @@ const AuthService = {
     /**
      * Registro MOCK para desarrollo local sin backend.
      */
-    _mockRegister({ nombre, email, password, telefono }) {
+    _mockRegister({ nombre, email, password, telefono, telefono_e164 = '', prefijo = '+58' }) {
         const cleanEmail = email.toLowerCase().trim();
 
         let registeredUsers = {};
@@ -684,6 +684,8 @@ const AuthService = {
             name: nombre.trim(),
             email: cleanEmail,
             telefono: telefono ? telefono.trim() : '',
+            telefono_e164: telefono_e164 ? telefono_e164.trim() : (telefono ? telefono.trim() : ''),
+            prefijo: prefijo || '+58',
             role: APP_CONFIG.ROLES.CLIENTE,
             tipo_asesor: null,
             title: 'Usuario Registrado',
@@ -762,7 +764,7 @@ const AuthService = {
     /**
      * Registro REAL con Supabase Auth.
      */
-    async _supabaseRegister({ nombre, email, password, telefono }) {
+    async _supabaseRegister({ nombre, email, password, telefono, telefono_e164 = '', prefijo = '+58' }) {
         try {
             const sb = typeof getSupabase === 'function' ? getSupabase() : null;
             if (!sb) {
@@ -777,6 +779,8 @@ const AuthService = {
                     data: {
                         nombre_completo: nombre.trim(),
                         telefono: telefono ? telefono.trim() : '',
+            telefono_e164: telefono_e164 ? telefono_e164.trim() : (telefono ? telefono.trim() : ''),
+            prefijo: prefijo || '+58',
                         rol: 'cliente',
                         tipo_asesor: null,
                     }
@@ -814,6 +818,8 @@ const AuthService = {
                     name: nombre.trim(),
                     email: data.user.email,
                     telefono: telefono ? telefono.trim() : '',
+            telefono_e164: telefono_e164 ? telefono_e164.trim() : (telefono ? telefono.trim() : ''),
+            prefijo: prefijo || '+58',
                     role: 'cliente',
                     title: 'Usuario Registrado',
                     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre.trim())}&background=0B4A3F&color=fff&bold=true`,

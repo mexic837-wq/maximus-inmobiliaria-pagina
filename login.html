@@ -368,17 +368,32 @@
                             </div>
                         </div>
 
-                        <!-- Campo Teléfono / WhatsApp -->
+                        <!-- Campo Teléfono / WhatsApp con Prefijo Internacional para n8n (+58 predeterminado / +57) -->
                         <div>
-                            <label for="regTelefono" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Teléfono / WhatsApp <span class="text-gray-400 font-normal lowercase">(opcional)</span></label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                    <i class="fab fa-whatsapp text-sm text-emerald-600"></i>
+                            <label for="regTelefono" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1 flex items-center justify-between">
+                                <span>Teléfono / WhatsApp <span class="text-gray-400 font-normal lowercase">(opcional)</span></span>
+                                <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1">
+                                    <i class="fab fa-whatsapp text-emerald-600"></i> Sincronizado n8n
+                                </span>
+                            </label>
+                            <div class="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:bg-white focus-within:border-maximus-accent focus-within:ring-2 focus-within:ring-maximus-accent/20 transition overflow-hidden shadow-sm">
+                                <!-- Selector de Prefijo Internacional (+58 Venezuela predeterminado / +57 Colombia) -->
+                                <div class="relative flex items-center bg-gray-100/90 border-r border-gray-200 px-2.5 py-1 shrink-0">
+                                    <i class="fab fa-whatsapp text-sm text-emerald-600 mr-1.5"></i>
+                                    <select id="regPrefijo" class="bg-transparent text-gray-900 font-bold text-xs sm:text-sm outline-none cursor-pointer pr-1 py-1.5" title="Seleccionar código de país">
+                                        <option value="+58" selected>🇻🇪 +58</option>
+                                        <option value="+57">🇨🇴 +57</option>
+                                    </select>
                                 </div>
                                 <input type="tel" id="regTelefono"
-                                       class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                       placeholder="+58 414-1234567">
+                                       class="block w-full px-3.5 py-2.5 bg-transparent text-gray-900 placeholder-gray-400 text-sm outline-none"
+                                       placeholder="414 1234567"
+                                       autocomplete="tel">
                             </div>
+                            <p class="text-[10px] text-gray-400 mt-1 pl-1 flex items-center gap-1">
+                                <i class="fas fa-bolt text-emerald-500 text-[10px]"></i>
+                                <span>Prefijo predeterminado (+58 Venezuela / +57 Colombia) optimizado para WhatsApp y n8n.</span>
+                            </p>
                         </div>
 
                         <!-- Campo Contraseña -->
@@ -853,17 +868,50 @@
         });
 
         // 3. Lógica de Registro de Usuario Normal
+        
+        // Actualizar placeholder dinámico según prefijo (+58 / +57)
+        const prefijoSelectEl = document.getElementById('regPrefijo');
+        const regTelefonoEl = document.getElementById('regTelefono');
+        if (prefijoSelectEl && regTelefonoEl) {
+            prefijoSelectEl.addEventListener('change', () => {
+                if (prefijoSelectEl.value === '+58') {
+                    regTelefonoEl.placeholder = '414 1234567';
+                } else if (prefijoSelectEl.value === '+57') {
+                    regTelefonoEl.placeholder = '300 1234567';
+                }
+            });
+        }
+
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             hideAlert();
 
             const nombre = document.getElementById('regNombre').value.trim();
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
-            const telefono = document.getElementById('regTelefono').value.trim();
+            const prefijo = document.getElementById('regPrefijo') ? document.getElementById('regPrefijo').value : '+58';
+            const rawTelefono = document.getElementById('regTelefono') ? document.getElementById('regTelefono').value.trim() : '';
             const password = document.getElementById('regPassword').value;
             const confirmPassword = document.getElementById('regPasswordConfirm').value;
             const submitBtn = document.getElementById('registerSubmitBtn');
             const originalText = submitBtn.innerHTML;
+
+            // Normalización y preparación de teléfono E.164 para n8n y WhatsApp (+58 / +57)
+            let telefono = '';
+            let telefonoE164 = '';
+            if (rawTelefono) {
+                let numLimpio = rawTelefono.replace(/[^0-9]/g, '');
+                // Quitar prefijo repetido si el usuario lo escribió en el input
+                if (prefijo === '+58' && numLimpio.startsWith('58')) numLimpio = numLimpio.substring(2);
+                if (prefijo === '+57' && numLimpio.startsWith('57')) numLimpio = numLimpio.substring(2);
+                // Quitar ceros a la izquierda
+                while (numLimpio.startsWith('0')) numLimpio = numLimpio.substring(1);
+                
+                if (numLimpio) {
+                    const prefijoNum = prefijo.replace(/[^0-9]/g, '');
+                    telefonoE164 = '+' + prefijoNum + numLimpio;
+                    telefono = prefijo + ' ' + numLimpio;
+                }
+            }
 
             if (password !== confirmPassword) {
                 showAlert('Las contraseñas no coinciden. Por favor verifícalas.');
@@ -879,8 +927,48 @@
             submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Creando tu cuenta...';
 
             if (window.AuthService) {
-                const res = await window.AuthService.register({ nombre, email, password, telefono, rememberDevice: true });
+                const res = await window.AuthService.register({ 
+                    nombre, 
+                    email, 
+                    password, 
+                    telefono, 
+                    telefono_e164: telefonoE164, 
+                    prefijo, 
+                    rememberDevice: true 
+                });
+
                 if (res.success) {
+                    // Disparar Webhook de n8n para Registro de Usuario / Secuencia de Bienvenida
+                    try {
+                        if (window.N8nService && typeof window.N8nService.trigger === 'function') {
+                            window.N8nService.trigger('NUEVO_LEAD', {
+                                evento: 'NUEVO_USUARIO_REGISTRO',
+                                nombre,
+                                email,
+                                telefono,
+                                telefono_e164: telefonoE164,
+                                prefijo,
+                                rol: 'cliente',
+                                origen: 'portal_web_registro',
+                                whatsapp_listo: Boolean(telefonoE164),
+                                mensaje: 'Nuevo cliente registrado en MAXIMUS Inmobiliaria'
+                            }).catch(err => console.warn('Aviso webhook registro n8n:', err));
+                        }
+                        if (window.LeadService && typeof window.LeadService.create === 'function') {
+                            window.LeadService.create({
+                                nombre,
+                                email,
+                                telefono: telefono || telefonoE164,
+                                origen: 'Registro Web (Cliente)',
+                                tipo_interes: 'Compra / Alquiler',
+                                estado: 'nuevo',
+                                temperatura: 'tibio',
+                                notas: 'Usuario registrado desde el portal web con teléfono ' + (telefono || 'No indicado')
+                            }).catch(err => console.warn('Aviso LeadService create:', err));
+                        }
+                    } catch(n8nErr) {
+                        console.warn('Aviso al disparar automatización n8n:', n8nErr);
+                    }
                     if (res.requiresEmailConfirmation) {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalText;
