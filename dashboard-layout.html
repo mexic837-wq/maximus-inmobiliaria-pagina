@@ -3997,53 +3997,185 @@
                         <!-- Aspectos Destacados -->
                         <div>
                             <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Aspectos Destacados (4)</h3>
-                            <div class="space-y-4" id="aspectos-container">
+                                                        <div class="space-y-3" id="aspectos-container">
                                 <!-- Aspecto 1 -->
-                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                                    <div class="sm:col-span-3">
-                                        <input type="text" id="asp-ico-1" placeholder="Icono (ej: ph-star)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-gray-50/70 p-2 sm:p-2.5 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-colors">
+                                    <div class="sm:col-span-4 flex items-center gap-2">
+                                        <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-emerald-700 shrink-0 text-lg shadow-2xs">
+                                            <i id="asp-ico-preview-1" class="ph-bold ph-star text-maximus-accent"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Icono</label>
+                                            <select id="asp-ico-1" onchange="actualizarPreviewIcono(1, this.value)" class="w-full px-2.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent cursor-pointer truncate">
+
+                <option value="ph-star" selected>⭐ Estrella (Destacado)</option>
+                <option value="ph-waves">🏊 Piscina / Solárium</option>
+                <option value="ph-lightning">⚡ Planta Eléctrica / Generador</option>
+                <option value="ph-drop">💧 Tanque de Agua Subterráneo</option>
+                <option value="ph-shield-check">🛡️ Seguridad Privada 24/7</option>
+                <option value="ph-car">🚗 Estacionamiento / Garaje</option>
+                <option value="ph-armchair">🛋️ 100% Amoblado / Equipado</option>
+                <option value="ph-cooking-pot">🍳 Cocina Moderna / Granito</option>
+                <option value="ph-wifi-high">📶 Internet Fibra Óptica</option>
+                <option value="ph-snowflake">❄️ Aire Acondicionado / Clima</option>
+                <option value="ph-sun-horizon">🌅 Terraza / Vista Panorámica</option>
+                <option value="ph-tree">🌳 Jardín / Áreas Verdes</option>
+                <option value="ph-storefront">🏬 Local / Alto Tráfico</option>
+                <option value="ph-warehouse">🏭 Galpón / Patio Maniobras</option>
+                <option value="ph-plant">🌾 Finca / Terreno / Campo</option>
+                <option value="ph-lock-key">🔒 Cerradura Digital / Acceso</option>
+                <option value="ph-bathtub">🛁 Jacuzzi / Spa Privado</option>
+                <option value="ph-elevator">🛗 Ascensor Directo</option>
+                <option value="ph-wine">🍷 Cava / Bar Privado</option>
+                <option value="ph-trend-up">📈 Alta Plusvalía / Retorno</option>
+                <option value="ph-buildings">🏢 Torre Residencial / Penthouse</option>
+                <option value="ph-sparkle">✨ A Estrenar / Lujo</option>
+                <option value="ph-check">✅ Garantía y Respaldo Legal</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="sm:col-span-3">
-                                        <input type="text" id="asp-tit-1" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Título del Aspecto</label>
+                                        <input type="text" id="asp-tit-1" placeholder="Ej: Piscina Climatizada" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
-                                    <div class="sm:col-span-6">
-                                        <input type="text" id="asp-desc-1" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    <div class="sm:col-span-5">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Descripción breve</label>
+                                        <input type="text" id="asp-desc-1" placeholder="Ej: Área con iluminación LED y cascada" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
                                 </div>
                                 <!-- Aspecto 2 -->
-                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                                    <div class="sm:col-span-3">
-                                        <input type="text" id="asp-ico-2" placeholder="Icono (ej: ph-drop)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-gray-50/70 p-2 sm:p-2.5 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-colors">
+                                    <div class="sm:col-span-4 flex items-center gap-2">
+                                        <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-emerald-700 shrink-0 text-lg shadow-2xs">
+                                            <i id="asp-ico-preview-2" class="ph-bold ph-drop text-maximus-accent"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Icono</label>
+                                            <select id="asp-ico-2" onchange="actualizarPreviewIcono(2, this.value)" class="w-full px-2.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent cursor-pointer truncate">
+
+                <option value="ph-star">⭐ Estrella (Destacado)</option>
+                <option value="ph-waves">🏊 Piscina / Solárium</option>
+                <option value="ph-lightning">⚡ Planta Eléctrica / Generador</option>
+                <option value="ph-drop" selected>💧 Tanque de Agua Subterráneo</option>
+                <option value="ph-shield-check">🛡️ Seguridad Privada 24/7</option>
+                <option value="ph-car">🚗 Estacionamiento / Garaje</option>
+                <option value="ph-armchair">🛋️ 100% Amoblado / Equipado</option>
+                <option value="ph-cooking-pot">🍳 Cocina Moderna / Granito</option>
+                <option value="ph-wifi-high">📶 Internet Fibra Óptica</option>
+                <option value="ph-snowflake">❄️ Aire Acondicionado / Clima</option>
+                <option value="ph-sun-horizon">🌅 Terraza / Vista Panorámica</option>
+                <option value="ph-tree">🌳 Jardín / Áreas Verdes</option>
+                <option value="ph-storefront">🏬 Local / Alto Tráfico</option>
+                <option value="ph-warehouse">🏭 Galpón / Patio Maniobras</option>
+                <option value="ph-plant">🌾 Finca / Terreno / Campo</option>
+                <option value="ph-lock-key">🔒 Cerradura Digital / Acceso</option>
+                <option value="ph-bathtub">🛁 Jacuzzi / Spa Privado</option>
+                <option value="ph-elevator">🛗 Ascensor Directo</option>
+                <option value="ph-wine">🍷 Cava / Bar Privado</option>
+                <option value="ph-trend-up">📈 Alta Plusvalía / Retorno</option>
+                <option value="ph-buildings">🏢 Torre Residencial / Penthouse</option>
+                <option value="ph-sparkle">✨ A Estrenar / Lujo</option>
+                <option value="ph-check">✅ Garantía y Respaldo Legal</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="sm:col-span-3">
-                                        <input type="text" id="asp-tit-2" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Título del Aspecto</label>
+                                        <input type="text" id="asp-tit-2" placeholder="Ej: Tanque de 18.000 L" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
-                                    <div class="sm:col-span-6">
-                                        <input type="text" id="asp-desc-2" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    <div class="sm:col-span-5">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Descripción breve</label>
+                                        <input type="text" id="asp-desc-2" placeholder="Ej: Sistema hidroneumático de presión constante" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
                                 </div>
                                 <!-- Aspecto 3 -->
-                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                                    <div class="sm:col-span-3">
-                                        <input type="text" id="asp-ico-3" placeholder="Icono (ej: ph-shield-check)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-gray-50/70 p-2 sm:p-2.5 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-colors">
+                                    <div class="sm:col-span-4 flex items-center gap-2">
+                                        <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-emerald-700 shrink-0 text-lg shadow-2xs">
+                                            <i id="asp-ico-preview-3" class="ph-bold ph-shield-check text-maximus-accent"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Icono</label>
+                                            <select id="asp-ico-3" onchange="actualizarPreviewIcono(3, this.value)" class="w-full px-2.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent cursor-pointer truncate">
+
+                <option value="ph-star">⭐ Estrella (Destacado)</option>
+                <option value="ph-waves">🏊 Piscina / Solárium</option>
+                <option value="ph-lightning">⚡ Planta Eléctrica / Generador</option>
+                <option value="ph-drop">💧 Tanque de Agua Subterráneo</option>
+                <option value="ph-shield-check" selected>🛡️ Seguridad Privada 24/7</option>
+                <option value="ph-car">🚗 Estacionamiento / Garaje</option>
+                <option value="ph-armchair">🛋️ 100% Amoblado / Equipado</option>
+                <option value="ph-cooking-pot">🍳 Cocina Moderna / Granito</option>
+                <option value="ph-wifi-high">📶 Internet Fibra Óptica</option>
+                <option value="ph-snowflake">❄️ Aire Acondicionado / Clima</option>
+                <option value="ph-sun-horizon">🌅 Terraza / Vista Panorámica</option>
+                <option value="ph-tree">🌳 Jardín / Áreas Verdes</option>
+                <option value="ph-storefront">🏬 Local / Alto Tráfico</option>
+                <option value="ph-warehouse">🏭 Galpón / Patio Maniobras</option>
+                <option value="ph-plant">🌾 Finca / Terreno / Campo</option>
+                <option value="ph-lock-key">🔒 Cerradura Digital / Acceso</option>
+                <option value="ph-bathtub">🛁 Jacuzzi / Spa Privado</option>
+                <option value="ph-elevator">🛗 Ascensor Directo</option>
+                <option value="ph-wine">🍷 Cava / Bar Privado</option>
+                <option value="ph-trend-up">📈 Alta Plusvalía / Retorno</option>
+                <option value="ph-buildings">🏢 Torre Residencial / Penthouse</option>
+                <option value="ph-sparkle">✨ A Estrenar / Lujo</option>
+                <option value="ph-check">✅ Garantía y Respaldo Legal</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="sm:col-span-3">
-                                        <input type="text" id="asp-tit-3" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Título del Aspecto</label>
+                                        <input type="text" id="asp-tit-3" placeholder="Ej: Seguridad Integral 24/7" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
-                                    <div class="sm:col-span-6">
-                                        <input type="text" id="asp-desc-3" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    <div class="sm:col-span-5">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Descripción breve</label>
+                                        <input type="text" id="asp-desc-3" placeholder="Ej: Urbanismo privado con control de acceso y cerco" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
                                 </div>
                                 <!-- Aspecto 4 -->
-                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                                    <div class="sm:col-span-3">
-                                        <input type="text" id="asp-ico-4" placeholder="Icono (ej: ph-car)" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-gray-50/70 p-2 sm:p-2.5 rounded-2xl border border-gray-100 hover:border-emerald-200 transition-colors">
+                                    <div class="sm:col-span-4 flex items-center gap-2">
+                                        <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-emerald-700 shrink-0 text-lg shadow-2xs">
+                                            <i id="asp-ico-preview-4" class="ph-bold ph-lightning text-maximus-accent"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Icono</label>
+                                            <select id="asp-ico-4" onchange="actualizarPreviewIcono(4, this.value)" class="w-full px-2.5 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent cursor-pointer truncate">
+
+                <option value="ph-star">⭐ Estrella (Destacado)</option>
+                <option value="ph-waves">🏊 Piscina / Solárium</option>
+                <option value="ph-lightning" selected>⚡ Planta Eléctrica / Generador</option>
+                <option value="ph-drop">💧 Tanque de Agua Subterráneo</option>
+                <option value="ph-shield-check">🛡️ Seguridad Privada 24/7</option>
+                <option value="ph-car">🚗 Estacionamiento / Garaje</option>
+                <option value="ph-armchair">🛋️ 100% Amoblado / Equipado</option>
+                <option value="ph-cooking-pot">🍳 Cocina Moderna / Granito</option>
+                <option value="ph-wifi-high">📶 Internet Fibra Óptica</option>
+                <option value="ph-snowflake">❄️ Aire Acondicionado / Clima</option>
+                <option value="ph-sun-horizon">🌅 Terraza / Vista Panorámica</option>
+                <option value="ph-tree">🌳 Jardín / Áreas Verdes</option>
+                <option value="ph-storefront">🏬 Local / Alto Tráfico</option>
+                <option value="ph-warehouse">🏭 Galpón / Patio Maniobras</option>
+                <option value="ph-plant">🌾 Finca / Terreno / Campo</option>
+                <option value="ph-lock-key">🔒 Cerradura Digital / Acceso</option>
+                <option value="ph-bathtub">🛁 Jacuzzi / Spa Privado</option>
+                <option value="ph-elevator">🛗 Ascensor Directo</option>
+                <option value="ph-wine">🍷 Cava / Bar Privado</option>
+                <option value="ph-trend-up">📈 Alta Plusvalía / Retorno</option>
+                <option value="ph-buildings">🏢 Torre Residencial / Penthouse</option>
+                <option value="ph-sparkle">✨ A Estrenar / Lujo</option>
+                <option value="ph-check">✅ Garantía y Respaldo Legal</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="sm:col-span-3">
-                                        <input type="text" id="asp-tit-4" placeholder="Título" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Título del Aspecto</label>
+                                        <input type="text" id="asp-tit-4" placeholder="Ej: Autonomía Eléctrica 100%" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
-                                    <div class="sm:col-span-6">
-                                        <input type="text" id="asp-desc-4" placeholder="Descripción breve" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium">
+                                    <div class="sm:col-span-5">
+                                        <label class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Descripción breve</label>
+                                        <input type="text" id="asp-desc-4" placeholder="Ej: Planta automática para iluminación y aires" class="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 outline-none focus:border-maximus-accent placeholder-gray-400">
                                     </div>
                                 </div>
                             </div>
@@ -12541,6 +12673,13 @@
             if (typeof inicializarGestionAsesoresAdmin === 'function') inicializarGestionAsesoresAdmin();
         }
 
+        
+        function actualizarPreviewIcono(idx, icono) {
+            const preview = document.getElementById('asp-ico-preview-' + idx);
+            if (preview) {
+                preview.className = 'ph-bold ' + (icono || 'ph-star') + ' text-maximus-accent';
+            }
+        }
         function formatUSD(num) {
             const val = parseFloat(num) || 0;
             return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
