@@ -105,6 +105,12 @@ def normalizar_sector_comparacion(item: Dict[str, Any]) -> str:
     return sec or "tachira"
 
 
+PALABRAS_GENERICAS_SECTOR = {
+    "nuevo", "nueva", "viejo", "vieja", "san", "santa", "alto", "alta",
+    "bajo", "baja", "centro", "del", "los", "las", "urb", "valle", "villa"
+}
+
+
 def sectores_coinciden(sec1: str, sec2: str) -> bool:
     if not sec1 or not sec2:
         return False
@@ -112,9 +118,10 @@ def sectores_coinciden(sec1: str, sec2: str) -> bool:
         return True
     tokens1 = {w for w in sec1.split() if len(w) > 2}
     tokens2 = {w for w in sec2.split() if len(w) > 2}
-    if tokens1 and tokens2 and len(tokens1.intersection(tokens2)) >= 1:
-        return True
-    return False
+    inter = tokens1.intersection(tokens2)
+    # Evitar falsos positivos como 'Pueblo Nuevo' vs 'Capacho Nuevo' o 'San Carlos' vs 'San Cristóbal'
+    tokens_significativos = {w for w in inter if w not in PALABRAS_GENERICAS_SECTOR}
+    return len(tokens_significativos) >= 1
 
 
 def calcular_score_similitud(cand: Dict[str, Any], ref: Dict[str, Any]) -> Tuple[float, Dict[str, Any]]:
@@ -134,7 +141,11 @@ def calcular_score_similitud(cand: Dict[str, Any], ref: Dict[str, Any]) -> Tuple
     t1 = normalizar_tipo_familia(cand.get("tipo_ui") or cand.get("tipo") or "")
     t2 = normalizar_tipo_familia(ref.get("tipo_ui") or ref.get("tipo") or "")
     if t1 != t2:
-        return 0.0, {"motivo": "Tipo de inmueble distinto"}
+        # Excepción: Terreno anunciado con frase "Ideal para Casa de Campo" (0 habs y mismo metraje exacto)
+        m2_a = float(cand.get("metros_cuadrados") or 0)
+        m2_b = float(ref.get("metros_cuadrados") or 0)
+        if not ({t1, t2} == {"casa", "terreno"} and m2_a > 100 and abs(m2_a - m2_b) <= 1.0):
+            return 0.0, {"motivo": "Tipo de inmueble distinto"}
 
     sec1 = normalizar_sector_comparacion(cand)
     sec2 = normalizar_sector_comparacion(ref)
@@ -192,6 +203,16 @@ def calidad_registro(item: Dict[str, Any]) -> int:
 
 
 def ejecutar_deduplicacion(lote_dir: Path, repo_root: Path) -> Dict[str, Any]:
+    if not lote_dir.exists():
+        alt1 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_externas" / lote_dir.name
+        alt2 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_maximus" / lote_dir.name
+        if alt1.exists():
+            lote_dir = alt1
+        elif alt2.exists():
+            lote_dir = alt2
+        else:
+            raise FileNotFoundError(f"No existe el directorio del lote: {lote_dir}")
+
     procesados_dir = lote_dir / "procesados"
     in_json = procesados_dir / "inmuebles_extraidos.json"
     if not in_json.exists():

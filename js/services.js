@@ -1947,24 +1947,58 @@ const PerfilService = {
 // SERVICIO DE EQUIPO EN WEB (Landing Page)
 // ============================================
 const EquipoWebService = {
+    _deletedKey: 'maximus_equipo_web_deleted_ids',
+
+    _getDeletedIds() {
+        try {
+            const raw = localStorage.getItem(this._deletedKey);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+    },
+
+    _saveDeletedIds(ids) {
+        try {
+            localStorage.setItem(this._deletedKey, JSON.stringify(ids));
+        } catch (e) {}
+    },
+
+    _deduplicar(list) {
+        if (!Array.isArray(list)) return [];
+        const seen = new Set();
+        return list.filter(item => {
+            const key = (item.nombre || '').toLowerCase().trim();
+            if (!key) return true;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    },
 
     _getLocal() {
+        const deletedIds = this._getDeletedIds();
         try {
             const raw = localStorage.getItem('maximus_equipo_web');
             if (raw) {
                 const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                if (Array.isArray(parsed)) {
+                    const filtrados = parsed.filter(m => m && !deletedIds.includes(String(m.id)));
+                    return this._deduplicar(filtrados);
+                }
             }
         } catch (e) {}
-        return (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.equipo_web)) ? [...MOCK_DATA.equipo_web] : [];
+        if (!APP_CONFIG.USE_MOCK_DATA) return [];
+        const mock = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.equipo_web)) ? [...MOCK_DATA.equipo_web] : [];
+        return this._deduplicar(mock.filter(m => m && !deletedIds.includes(String(m.id))));
     },
 
     _setLocal(data) {
+        const deletedIds = this._getDeletedIds();
+        const cleaned = this._deduplicar(Array.isArray(data) ? data.filter(m => m && !deletedIds.includes(String(m.id))) : []);
         try {
-            localStorage.setItem('maximus_equipo_web', JSON.stringify(data));
+            localStorage.setItem('maximus_equipo_web', JSON.stringify(cleaned));
         } catch (e) {}
         if (typeof MOCK_DATA !== 'undefined') {
-            MOCK_DATA.equipo_web = data;
+            MOCK_DATA.equipo_web = cleaned;
         }
     },
 
@@ -1972,6 +2006,7 @@ const EquipoWebService = {
      * Obtener todos los miembros del equipo (Supabase con fallback inteligente a caché local).
      */
     async getAll(filtros = {}) {
+        const deletedIds = this._getDeletedIds();
         let items = null;
 
         if (!APP_CONFIG.USE_MOCK_DATA) {
@@ -1985,8 +2020,10 @@ const EquipoWebService = {
                     query = query.order('orden', { ascending: true });
 
                     const res = await query;
-                    if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                        items = res.data;
+                    if (res && !res.error && Array.isArray(res.data)) {
+                        // Filtrar miembros eliminados explícitamente y deduplicar
+                        const remotos = res.data.filter(m => m && !deletedIds.includes(String(m.id)));
+                        items = this._deduplicar(remotos);
                         this._setLocal(items);
                         return { data: items, error: null, source: 'supabase' };
                     }
@@ -2014,6 +2051,9 @@ const EquipoWebService = {
      * Obtener miembro por ID.
      */
     async getById(id) {
+        const deletedIds = this._getDeletedIds();
+        if (deletedIds.includes(String(id))) return { data: null, error: 'Miembro no encontrado' };
+
         const local = this._getLocal();
         const item = local.find(m => String(m.id) === String(id));
         if (item) return { data: item, error: null };
@@ -2052,6 +2092,10 @@ const EquipoWebService = {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
+
+        // Si estaba en deletedIds por casualidad, removerlo
+        const deletedIds = this._getDeletedIds().filter(dId => dId !== String(nuevo.id));
+        this._saveDeletedIds(deletedIds);
 
         // Guardar primero en respaldo local inmediato
         const local = this._getLocal();
@@ -2140,15 +2184,26 @@ const EquipoWebService = {
      * Eliminar miembro.
      */
     async delete(id) {
-        const local = this._getLocal().filter(m => String(m.id) !== String(id));
+        const idStr = String(id || '').trim();
+
+        // 1. Registrar ID en la lista negra local para evitar que reaparezca
+        const deletedIds = this._getDeletedIds();
+        if (!deletedIds.includes(idStr)) {
+            deletedIds.push(idStr);
+            this._saveDeletedIds(deletedIds);
+        }
+
+        // 2. Limpiar de localStorage y MOCK_DATA
+        const local = this._getLocal().filter(m => String(m.id) !== idStr);
         this._setLocal(local);
 
+        // 3. Eliminar en Supabase
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
                 if (sb) {
                     const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.EQUIPO_WEB) ? APP_CONFIG.TABLES.EQUIPO_WEB : 'equipo_web';
-                    await sb.from(tabla).delete().eq('id', id);
+                    await sb.from(tabla).delete().eq('id', idStr);
                 }
             } catch (err) {
                 console.warn('⚠️ MAXIMUS EquipoWebService: Error al eliminar en Supabase:', err);
@@ -2213,40 +2268,77 @@ const EquipoWebService = {
 // ============================================
 const AsesorMaximusService = {
     _storageKey: 'maximus_asesores_oficiales_data',
+    _deletedKey: 'maximus_asesores_oficiales_deleted_ids',
+
+    _getDeletedIds() {
+        try {
+            const raw = localStorage.getItem(this._deletedKey);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+    },
+
+    _saveDeletedIds(ids) {
+        try {
+            localStorage.setItem(this._deletedKey, JSON.stringify(ids));
+        } catch (e) {}
+    },
+
+    _deduplicar(list) {
+        if (!Array.isArray(list)) return [];
+        const seen = new Set();
+        return list.filter(item => {
+            const key = (item.nombre || '').toLowerCase().trim();
+            if (!key) return true;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    },
 
     _getLocal() {
+        const deletedIds = this._getDeletedIds();
         const stored = localStorage.getItem(this._storageKey);
         if (stored) {
-            try { return JSON.parse(stored); } catch(e) {}
+            try {
+                const parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) {
+                    const filtrados = parsed.filter(a => a && !deletedIds.includes(String(a.id)));
+                    return this._deduplicar(filtrados);
+                }
+            } catch(e) {}
         }
-        if (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.asesores_maximus) {
-            return [...MOCK_DATA.asesores_maximus];
+        if (APP_CONFIG.USE_MOCK_DATA && typeof MOCK_DATA !== 'undefined' && MOCK_DATA.asesores_maximus) {
+            return this._deduplicar(MOCK_DATA.asesores_maximus.filter(a => a && !deletedIds.includes(String(a.id))));
         }
         return [];
     },
 
     _saveLocal(list) {
-        localStorage.setItem(this._storageKey, JSON.stringify(list));
+        const deletedIds = this._getDeletedIds();
+        const cleaned = this._deduplicar(Array.isArray(list) ? list.filter(a => a && !deletedIds.includes(String(a.id))) : []);
+        localStorage.setItem(this._storageKey, JSON.stringify(cleaned));
         if (typeof MOCK_DATA !== 'undefined') {
-            MOCK_DATA.asesores_maximus = list;
+            MOCK_DATA.asesores_maximus = cleaned;
         }
     },
 
     async getAll(filtros = {}) {
+        const deletedIds = this._getDeletedIds();
+
         if (APP_CONFIG.USE_MOCK_DATA) {
             let data = this._getLocal();
             if (filtros.activo !== undefined) {
                 data = data.filter(a => a.activo === filtros.activo);
             }
             if (filtros.especialidad) {
-                data = data.filter(a => a.especialidad.toLowerCase().includes(filtros.especialidad.toLowerCase()));
+                data = data.filter(a => a.especialidad && a.especialidad.toLowerCase().includes(filtros.especialidad.toLowerCase()));
             }
             if (filtros.busqueda) {
                 const q = filtros.busqueda.toLowerCase();
                 data = data.filter(a => 
-                    a.nombre.toLowerCase().includes(q) || 
-                    a.cargo.toLowerCase().includes(q) || 
-                    a.especialidad.toLowerCase().includes(q)
+                    (a.nombre && a.nombre.toLowerCase().includes(q)) || 
+                    (a.cargo && a.cargo.toLowerCase().includes(q)) || 
+                    (a.especialidad && a.especialidad.toLowerCase().includes(q))
                 );
             }
             data.sort((a, b) => (a.orden || 99) - (b.orden || 99));
@@ -2260,31 +2352,28 @@ const AsesorMaximusService = {
             if (filtros.busqueda) query = query.ilike('nombre', `%${filtros.busqueda}%`);
             query = query.order('orden', { ascending: true });
             const res = await query;
-            if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                // Fusión inteligente: preservar asesores agregados localmente
-                const map = new Map();
-                res.data.forEach(a => map.set(a.id || (a.nombre || '').toLowerCase().trim(), a));
-                const localList = this._getLocal();
-                localList.forEach(a => {
-                    const key = a.id || (a.nombre || '').toLowerCase().trim();
-                    if (!map.has(key)) {
-                        map.set(key, a);
-                    }
-                });
-                const combinados = Array.from(map.values());
-                this._saveLocal(combinados);
-                return { data: combinados, error: null };
+            if (res && !res.error && Array.isArray(res.data)) {
+                // Filtrar eliminados explícitamente y desduplicar
+                const remotos = res.data.filter(a => a && !deletedIds.includes(String(a.id)));
+                const dataLimpiada = this._deduplicar(remotos);
+                this._saveLocal(dataLimpiada);
+                return { data: dataLimpiada, error: null };
             }
-        } catch (err) {}
+        } catch (err) {
+            console.warn('AsesorMaximusService.getAll: Aviso de Supabase, usando respaldo local:', err);
+        }
 
         let data = this._getLocal();
         return { data, error: null };
     },
 
     async getById(id) {
+        const deletedIds = this._getDeletedIds();
+        if (deletedIds.includes(String(id))) return { data: null, error: 'No encontrado' };
+
         if (APP_CONFIG.USE_MOCK_DATA) {
             const list = this._getLocal();
-            const found = list.find(a => a.id === id);
+            const found = list.find(a => String(a.id) === String(id));
             return { data: found || null, error: found ? null : 'No encontrado' };
         }
         const sb = getSupabase();
@@ -2303,6 +2392,11 @@ const AsesorMaximusService = {
             created_at: new Date().toISOString(),
             ...asesorData,
         };
+
+        // Si estaba en deletedIds por casualidad, removerlo
+        const deletedIds = this._getDeletedIds().filter(dId => dId !== String(nuevo.id));
+        this._saveDeletedIds(deletedIds);
+
         list.push(nuevo);
         this._saveLocal(list);
 
@@ -2311,7 +2405,7 @@ const AsesorMaximusService = {
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = getSupabase();
-                // Sanitizar payload para la tabla de Supabase (evitar campos que causan error de tipo o columna desconocida)
+                // Sanitizar payload para la tabla de Supabase
                 const payloadDB = {
                     nombre: asesorData.nombre,
                     cargo: asesorData.cargo,
@@ -2393,16 +2487,22 @@ const AsesorMaximusService = {
     async delete(id) {
         const targetIdStr = String(id || '').trim();
 
-        // 1. Siempre eliminar de localStorage y memoria primero
+        // 1. Registrar ID en la lista negra local
+        const deletedIds = this._getDeletedIds();
+        if (!deletedIds.includes(targetIdStr)) {
+            deletedIds.push(targetIdStr);
+            this._saveDeletedIds(deletedIds);
+        }
+
+        // 2. Siempre eliminar de localStorage y memoria primero
         let list = this._getLocal();
         list = list.filter(a => String(a.id || '').trim() !== targetIdStr);
         this._saveLocal(list);
-
         if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
             ASESORES_MAXIMUS_DATA = ASESORES_MAXIMUS_DATA.filter(a => String(a.id || '').trim() !== targetIdStr);
         }
 
-        // 2. Si no es mock data y es un UUID válido de Supabase, eliminar en base de datos de forma segura
+        // 3. Eliminar en Supabase
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetIdStr);
@@ -2414,7 +2514,7 @@ const AsesorMaximusService = {
                     }
                 }
             } catch (err) {
-                console.warn('AsesorMaximusService.delete: Supabase no disponible o error 401, eliminado localmente');
+                console.warn('AsesorMaximusService.delete: Supabase no disponible o error, eliminado localmente');
             }
         }
 
@@ -2422,9 +2522,6 @@ const AsesorMaximusService = {
     }
 };
 
-// ============================================
-// SERVICIO DE NOTIFICACIONES & OPERACIONES
-// ============================================
 const NotificacionService = {
     _storageKey: 'maximus_notificaciones_data',
 

@@ -35,7 +35,7 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 try:
-    from PIL import Image, ImageOps
+    from PIL import Image, ImageOps, ImageStat
     import numpy as np
 except ImportError as e:
     raise RuntimeError("Se requiere Pillow y numpy instalados (pip install Pillow numpy opencv-python-headless).") from e
@@ -402,6 +402,77 @@ def upload_to_supabase_storage(
         return None, str(e)
 
 
+def evaluar_calidad_portada(img_path: Path) -> float:
+    """
+    Evalúa la idoneidad estética y comercial de una fotografía para ser la portada principal
+    (foto_principal y fotos[0]) del inmueble en las tarjetas del portal y dashboard MAXIMUS:
+      1. Preferencia por Collage/Flyer Completo: Si el archivo es un collage/flyer (_collage.jpg),
+         recibe fuerte bonificación (+65 pts) porque presenta la composición completa diseñada por el corredor.
+      2. Aspect Ratio (Tarjetas web horizontales 16:9 / 4:3):
+         - Apaisado óptimo (1.25 <= ratio <= 1.85): +35 pts
+         - Cuadrado aceptable (0.95 <= ratio < 1.25): +15 pts
+         - Tiras verticales angostas (ratio < 0.85): -75 pts (¡Evita zanjas o cercas cortadas vistas en portada!)
+         - Panorámicas extremas (ratio > 2.3): -30 pts
+      3. Resolución y nitidez:
+         - Alta resolución (w >= 700 y h >= 500): +25 pts
+         - Mediana resolución (w >= 550 y h >= 400): +15 pts
+         - Baja resolución / recortes pequeños (w < 380 o h < 380): -40 pts
+      4. Luminancia y riqueza cromática:
+         - Luminancia balanceada (0.32 <= luma <= 0.78): +15 pts
+         - Oscura o sobreexpuesta (luma < 0.20 o luma > 0.88): -30 pts
+         - Variedad de color (std_color > 35): +15 pts (premia fachadas/espacios sobre paredes lisas monocromáticas)
+    """
+    try:
+        name_lower = img_path.name.lower()
+        with Image.open(img_path) as im:
+            w, h = im.size
+            if w <= 0 or h <= 0:
+                return 0.0
+            ratio = w / float(h)
+            score = 50.0
+
+            # 1. Regla del Usuario: Prioridad al collage/flyer publicitario si existe
+            if "_collage" in name_lower or "collage" in name_lower:
+                score += 65.0
+
+            # 2. Relación de aspecto
+            if 1.25 <= ratio <= 1.85:
+                score += 35.0
+            elif 0.95 <= ratio < 1.25:
+                score += 15.0
+            elif ratio < 0.85:
+                score -= 75.0
+            elif ratio > 2.3:
+                score -= 30.0
+
+            # 3. Resolución
+            if w >= 700 and h >= 500:
+                score += 25.0
+            elif w >= 550 and h >= 400:
+                score += 15.0
+            elif w < 380 or h < 380:
+                score -= 40.0
+
+            # 4. Luminancia y varianza de color
+            stat = ImageStat.Stat(im.convert("RGB"))
+            mean_luma = sum(stat.mean) / 3.0 / 255.0
+            mean_std = sum(stat.stddev) / 3.0
+
+            if 0.32 <= mean_luma <= 0.78:
+                score += 15.0
+            elif mean_luma < 0.20 or mean_luma > 0.88:
+                score -= 30.0
+
+            if mean_std > 35.0:
+                score += 15.0
+            elif mean_std < 18.0:
+                score -= 25.0
+
+            return max(score, 0.0)
+    except Exception:
+        return 0.0
+
+
 def procesar_imagenes_lote(
     lote_dir: Path,
     repo_root: Path,
@@ -409,6 +480,16 @@ def procesar_imagenes_lote(
     extra_bottom_crop: float = 0.0,
     skip_upload: bool = False,
 ) -> Dict[str, Any]:
+    if not lote_dir.exists():
+        alt1 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_externas" / lote_dir.name
+        alt2 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_maximus" / lote_dir.name
+        if alt1.exists():
+            lote_dir = alt1
+        elif alt2.exists():
+            lote_dir = alt2
+        else:
+            raise FileNotFoundError(f"No existe el directorio del lote: {lote_dir}")
+
     procesados_dir = lote_dir / "procesados"
     dedup_json = procesados_dir / "inmuebles_deduplicados.json"
     extraidos_json = procesados_dir / "inmuebles_extraidos.json"
@@ -524,9 +605,49 @@ def procesar_imagenes_lote(
                 else:
                     urls_publicas.append(f"{sb_url}/storage/v1/object/public/{bucket}/{storage_rel}")
 
+            # Si era un collage, conservar y subir TAMBIÉN el collage completo además de las fotos cortadas
+            if es_collage:
+                stem_clean = re.sub(r"[^a-zA-Z0-9_\-]", "_", orig_p.stem)
+                collage_filename = f"{stem_clean}_collage.jpg"
+                collage_path = inm_clean_dir / collage_filename
+                img_orig.convert("RGB").save(collage_path, format="JPEG", quality=93, optimize=True)
+                rutas_limpias_locales.append(str(collage_path))
+                estadisticas_imagenes["total_imagenes_individuales_generadas"] += 1
+
+                carpeta_flujo = "maximus" if inm_is_maximus else "externas"
+                storage_rel_col = f"whatsapp/{carpeta_flujo}/{lote_folder_clean}/{temp_id}/{collage_filename}"
+                if not skip_upload:
+                    pub_url_col, err_col = upload_to_supabase_storage(collage_path, storage_rel_col, sb_url, sb_key, bucket)
+                    if pub_url_col:
+                        urls_publicas.append(pub_url_col)
+                        estadisticas_imagenes["total_subidas_supabase_storage"] += 1
+                    else:
+                        print(f"[WARN] Falló subida a Storage para {collage_filename}: {err_col}")
+                        urls_publicas.append(f"{sb_url}/storage/v1/object/public/{bucket}/{storage_rel_col}")
+                else:
+                    urls_publicas.append(f"{sb_url}/storage/v1/object/public/{bucket}/{storage_rel_col}")
+
+        # Selector Inteligente de Foto de Portada (Mejor imagen para foto_principal y fotos[0])
+        if rutas_limpias_locales and urls_publicas:
+            pares = list(zip(rutas_limpias_locales, urls_publicas))
+            puntuados = []
+            for r_local, r_url in pares:
+                sc = evaluar_calidad_portada(Path(r_local))
+                puntuados.append((sc, r_local, r_url))
+            puntuados.sort(key=lambda x: x[0], reverse=True)
+            mejor_score, mejor_local, mejor_url = puntuados[0]
+
+            otras_locales = [x[1] for x in puntuados if x[1] != mejor_local]
+            otras_urls = [x[2] for x in puntuados if x[2] != mejor_url]
+
+            rutas_limpias_locales = [mejor_local] + otras_locales
+            urls_publicas = [mejor_url] + otras_urls
+            inm["foto_principal"] = mejor_url
+        else:
+            inm["foto_principal"] = urls_publicas[0] if urls_publicas else ""
+
         inm["imagenes_limpias_locales"] = rutas_limpias_locales
         inm["fotos"] = urls_publicas
-        inm["foto_principal"] = urls_publicas[0] if urls_publicas else ""
         inm["fotos_coma_str"] = ", ".join(urls_publicas)
         inm["stats_imagenes"] = {
             "originales": len(orig_paths),

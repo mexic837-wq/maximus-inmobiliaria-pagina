@@ -307,6 +307,16 @@ def limpiar_externos_en_supabase(sb_url: str, sb_key: str) -> int:
 
 
 def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify_n8n: bool = False, clean_external: bool = False) -> Dict[str, Any]:
+    if not lote_dir.exists():
+        alt1 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_externas" / lote_dir.name
+        alt2 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_maximus" / lote_dir.name
+        if alt1.exists():
+            lote_dir = alt1
+        elif alt2.exists():
+            lote_dir = alt2
+        else:
+            raise FileNotFoundError(f"No existe el directorio del lote: {lote_dir}")
+
     procesados_dir = lote_dir / "procesados"
     dedup_json = procesados_dir / "inmuebles_deduplicados.json"
     extraidos_json = procesados_dir / "inmuebles_extraidos.json"

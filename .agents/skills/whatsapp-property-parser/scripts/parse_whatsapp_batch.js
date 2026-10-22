@@ -175,10 +175,27 @@ function parseTxtFile(txtPath) {
     const patIos = /^\[(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[apAP]\.?\s*[mM]\.?)?)\]\s*([^:]+):\s*(.*)$/;
     const patAttach = /([a-zA-Z0-9_\-\.]+\.(?:jpg|jpeg|png|webp))/gi;
 
-    let currentMsg = null;
+    const patTsStart = /^\[?(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[apAP]\.?\s*[mM]\.?)?)\]?\s*-\s*/;
+    const mergedLines = [];
+    for (let i = 0; i < lines.length; i++) {
+        const cleanCur = lines[i].replace(/[\u200e\u200f\u202a-\u202e\ufeff\u202f]/g, ' ').trim();
+        const mStart = cleanCur.match(patTsStart);
+        if (mStart) {
+            const restCur = cleanCur.slice(mStart[0].length);
+            if (!restCur.includes(':') && (i + 1) < lines.length) {
+                const cleanNxt = lines[i + 1].replace(/[\u200e\u200f\u202a-\u202e\ufeff\u202f]/g, ' ').trim();
+                if (!patTsStart.test(cleanNxt) && cleanNxt.includes(':')) {
+                    mergedLines.push(`${cleanCur} ${cleanNxt}`);
+                    i++;
+                    continue;
+                }
+            }
+        }
+        mergedLines.push(cleanCur);
+    }
 
-    for (const rawLine of lines) {
-        const line = rawLine.replace(/[\u200e\u200f\u202a-\u202e\ufeff\u202f]/g, ' ').trim();
+    let currentMsg = null;
+    for (const line of mergedLines) {
         if (!line) continue;
 
         const m = line.match(patAndroid) || line.match(patIos);

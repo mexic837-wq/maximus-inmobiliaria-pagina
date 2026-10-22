@@ -134,7 +134,7 @@ UBICACIONES_TACHIRA_REGLAS = [
     ("palo-gordo", "Palo Gordo", "Cárdenas", r"\b(palo\s+gordo|v[ií]a\s+palo\s+gordo|altos\s+de\s+palo\s+gordo)\b"),
     ("tariba", "Táriba", "Cárdenas", r"\b(t[aá]riba|colinas\s+de\s+t[aá]riba|las\s+vegas\s+de\s+t[aá]riba|arjona|colegio\s+virgen\s+del\s+valle|el\s+diamante|las\s+margaritas|barrancas|z\.?i\.?\s+barrancas)\b"),
     ("palmira-centro", "Palmira Centro", "Guásimos", r"\b(palmira\s+centro|casco\s+de\s+palmira)\b"),
-    ("palmira", "Palmira", "Cárdenas", r"\b(palmira|el\s+abejal|la\s+flautera|patiecitos|gu[aá]simos|caneyes)\b"),
+    ("palmira", "Palmira", "Cárdenas", r"\b(palmira|el\s+abejal|la\s+flautera|patiecitos|gu[aá]simos|caneyes|canelles)\b"),
     ("san-josecito", "San Josecito", "Torbes", r"\b(san\s+josecito|torbes)\b"),
     ("la-grita", "La Grita", "Jáuregui", r"\b(la\s+grita|j[aá]uregui)\b"),
     ("rubio", "Rubio", "Junín", r"\b(rubio|jun[ií]n|las\s+dantas)\b"),
@@ -189,14 +189,32 @@ def consultar_asesores_maximus_supabase(repo_root: Path) -> List[Dict[str, Any]]
     Consulta `public.asesores_maximus` y `public.equipo_web` en Supabase
     (según sql/migration-asesores-maximus-rls.sql y sql/migration-equipo-web-rls.sql).
     """
-    config_js = repo_root / "js" / "config.js"
-    sb_url, sb_key = "", ""
-    if config_js.exists():
-        content = config_js.read_text(encoding="utf-8", errors="replace")
-        m_u = re.search(r"SUPABASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
-        m_k = re.search(r"SUPABASE_ANON_KEY\s*:\s*['\"]([^'\"]+)['\"]", content)
-        if m_u and m_k:
-            sb_url, sb_key = m_u.group(1).rstrip("/"), m_k.group(1).strip()
+    sb_url = os.environ.get("SUPABASE_URL", "").strip()
+    sb_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "") or os.environ.get("SUPABASE_ANON_KEY", "")
+
+    env_file = repo_root / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip("'").strip('"')
+            if k == "SUPABASE_URL" and not sb_url:
+                sb_url = v
+            if k in ("SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_ANON_KEY") and not sb_key:
+                sb_key = v
+
+    if not sb_url or not sb_key:
+        config_js = repo_root / "js" / "config.js"
+        if config_js.exists():
+            content = config_js.read_text(encoding="utf-8", errors="replace")
+            m_u = re.search(r"SUPABASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
+            m_k = re.search(r"SUPABASE_ANON_KEY\s*:\s*['\"]([^'\"]+)['\"]", content)
+            if m_u and not sb_url:
+                sb_url = m_u.group(1).rstrip("/")
+            if m_k and not sb_key:
+                sb_key = m_k.group(1).strip()
 
     asesores_combinados = list(ASESORES_MAXIMUS_FALLBACK)
     if not sb_url or not sb_key:
@@ -358,9 +376,26 @@ def parse_txt_file(txt_path: Path) -> List[Dict[str, Any]]:
     except Exception:
         return []
 
+    pat_ts_start = re.compile(r"^\[?(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}),?\s+(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[apAP]\.?\s*[mM]\.?)?)\]?\s*-\s*")
+    raw_lines = content.splitlines()
+    merged_lines = []
+    i = 0
+    while i < len(raw_lines):
+        clean_cur = re.sub(r"[\u200e\u200f\u202a-\u202e\ufeff\u202f]", " ", raw_lines[i]).strip()
+        m_start = pat_ts_start.match(clean_cur)
+        if m_start:
+            rest_cur = clean_cur[m_start.end():]
+            if ":" not in rest_cur and (i + 1) < len(raw_lines):
+                clean_nxt = re.sub(r"[\u200e\u200f\u202a-\u202e\ufeff\u202f]", " ", raw_lines[i + 1]).strip()
+                if not pat_ts_start.match(clean_nxt) and ":" in clean_nxt:
+                    merged_lines.append(f"{clean_cur} {clean_nxt}")
+                    i += 2
+                    continue
+        merged_lines.append(clean_cur)
+        i += 1
+
     current_msg = None
-    for raw_line in content.splitlines():
-        line = re.sub(r"[\u200e\u200f\u202a-\u202e\ufeff\u202f]", " ", raw_line).strip()
+    for line in merged_lines:
         if not line:
             if current_msg:
                 current_msg["text"] += "\n"
@@ -635,12 +670,14 @@ def extraer_precio(texto: str, operacion: Optional[str]) -> Optional[float]:
         r"(?:precio|inversi[oó]n|canon|cano|valor|costo|oferta|monto)[\s:\*]*?(?:de\s*)?(?:usd|us\$|\$|ref\.?)?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})(?:\s*(?:usd|us\$|\$|💲|🇺🇸|d[oó]lares|mensual))?",
         r"(?:usd|us\$|\$)\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\b",
         r"\b(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\s*(?:\$|💲|🇺🇸|usd|us\$|d[oó]lares)",
-        r"(?:precio|inversi[oó]n|\$)\s*(\d{2,3}(?:[\.,]\d)?)\s*[kK]\b",
+        r"(?:precio|inversi[oó]n|\$)\s*(\d{1,4}(?:[\.,]\d)?)\s*(?:[kK]|mil)\b",
+        r"\b(\d{1,4}(?:[\.,]\d)?)\s*(?:mil|[kK])\s*(?:\$|usd|us\$|d[oó]lares)",
     ]
     for pat in patrones:
         for m in re.finditer(pat, t_clean, flags=re.IGNORECASE):
             raw_val = m.group(1)
-            if m.group(0).lower().endswith("k"):
+            raw_full = m.group(0).lower()
+            if raw_full.endswith("k") or "mil" in raw_full:
                 val = float(raw_val.replace(",", ".")) * 1000.0
             else:
                 if re.match(r"^\d{1,3}([\.,]\d{3})+$", raw_val):
@@ -901,7 +938,14 @@ def resolver_rutas_imagenes(lote_dir: Path, source_txt: Path, attachment_names: 
 # ==============================================================================
 def procesar_lote(lote_dir: Path, repo_root: Path, window_minutes: int = 3, modo_captacion: Optional[str] = None) -> Dict[str, Any]:
     if not lote_dir.exists():
-        raise FileNotFoundError(f"No existe el directorio del lote: {lote_dir}")
+        alt1 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_externas" / lote_dir.name
+        alt2 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_maximus" / lote_dir.name
+        if alt1.exists():
+            lote_dir = alt1
+        elif alt2.exists():
+            lote_dir = alt2
+        else:
+            raise FileNotFoundError(f"No existe el directorio del lote: {lote_dir}")
 
     es_captacion_maximus = detectar_flujo_captacion(lote_dir, modo_captacion)
     catalogo_asesores_maximus = consultar_asesores_maximus_supabase(repo_root) if es_captacion_maximus else []

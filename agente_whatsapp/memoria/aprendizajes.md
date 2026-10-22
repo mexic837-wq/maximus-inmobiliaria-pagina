@@ -120,8 +120,9 @@ Parámetros utilizados por `property-image-cleaner` (`scripts/clean_images.py` y
   - Se detectan calculando el salto cromático entre píxeles adyacentes (`mean_diff >= 18.0`, ratio contra mediana local `>= 2.8` y fracción de nitidez de costura `frac_sharp >= 0.32`) primero en el eje horizontal (`1/3 + 2/3` o `1/2`) y luego independientemente en cada franja sobre el eje vertical (`1/3 + 2/3` o `1/2`).
 - **Recorte de Cintillos Interiores de Costura (`Inner Seam Banner Trim`):**
   - En collages de `captaciones_externas/`, los asesores suelen colocar cintillos de texto (`"Alquiler de Amplia Oficina"`, `"Canon 260$"`, `"REMAX"`) justo sobre las costuras horizontales o en la base del collage. Al separar cada sub-foto, se recorta automáticamente el `11%` del borde adyacente a la costura interior y el `8%` inferior externo para entregar fotografías limpias sin texto superpuesto.
-- **Filtro de proporción mínima:**
+- **Filtro de proporción mínima y subida de Collage + Imágenes Cortadas:**
   - Ningún sub-recorte de collage se guarda si su ancho o alto resultante es menor a `180px` o si su relación de aspecto es extrema (`> 3.6:1`).
+  - **Regla de Subida Dual (Cortadas + Collage Original):** Siempre que una imagen sea detectada como collage (`len(partes) > 1`), se suben a Supabase Storage **tanto las imágenes individuales cortadas (`_01.jpg`, `_02.jpg`, ...) como el collage completo (`_collage.jpg`)**, quedando todas incluidas en el arreglo `fotos` del inmueble en Supabase.
 
 ### 3.2. Recorte Inteligente de Marcas de Agua y Cintillos (Smart Crop)
 | Franquicia / Estilo en Táchira | Ubicación Típica de Marca de Agua / Cintillo | Regla de Recorte (`Smart Crop`) |
@@ -142,3 +143,9 @@ Esta sección registra casos reales aprendidos durante la ejecución de lotes pa
   - **Match Exacto / Duplicado Confirmado (`score >= 0.85`):** Misma `operacion` + mismo `tipo` + mismo `sector_nombre` normalizado + `precio` dentro de `±5%` + `metros_cuadrados` dentro de `±10%`. Acción: **Omitir inserción** y registrar en `reporte_ejecucion.md` bajo *Duplicados Descartados*.
   - **Match Dudoso (`0.65 <= score < 0.85`):** Mismo sector, tipo y metraje muy cercano (`±5%`), pero el precio varía más del `5%` (ej. un asesor lo publica en `$65.000` y otro en `$60.000`), o mismo teléfono de asesor y precio en el mismo sector pero sin metraje. Acción: **No insertar automáticamente**; enviar a `pendientes_revision.md` para decisión del usuario.
   - **Deduplicación Intra-Lote:** Cuando el mismo inmueble aparece repetido en 3 o más grupos dentro del mismo lote diario, conservar la versión que tenga **mayor cantidad de fotografías de alta resolución y descripción más completa**, fusionando cualquier dato faltante verificado.
+  - **[Aprendizaje Lote SOLO VENTAS - 2026-10-21]:**
+    - **Remitentes con salto de línea (`\n`) en nombre de WhatsApp:** Algunos asesores (ej. `Johana Elizondo \nBroker CONECTA Bienes Raíces`) colocan saltos de línea en su perfil. Pre-procesar el `.txt` unificando líneas de timestamp sin dos puntos para capturar el 100% de los archivos adjuntos sin pérdidas.
+    - **Deduplicación de Terrenos con frases publicitarias tipo "Ideal para Casa de Campo":** Cuando un anuncio de Terreno/Finca incluye frases como "Ideal para casa de campo o proyecto turístico", puede ser clasificado como `Casa de campo` en un post y `Fincas/Terreno` en otro. Si coinciden exactamente Sector, Operación, Precio exacto y Metraje exacto (> 100 m²), se consideran duplicados y se conserva la publicación con más fotos.
+    - **[Regla de Portada Heroica - 2026-10-22]:**
+      - **Preferencia por el Collage Completo:** Cuando una propiedad proviene de un collage/flyer, se selecciona prioritariamente `_collage.jpg` como `foto_principal` (y `fotos[0]`). Esto evita que un recorte vertical angosto (como una cerca con letras cortadas o un camino) desfavorezca la tarjeta en el inicio de la web.
+      - **Penalización a Formatos Verticales:** Fotografías con relación de aspecto < 0.85 reciben -75 puntos para que jamás queden como foto de portada en tarjetas apaisadas (16:9 / 4:3).
