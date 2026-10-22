@@ -23,32 +23,54 @@
 | `"Obra gris"` / `"Obra blanca"` | Propiedad para remodelar o terminar acabados | Especificar en `descripcion` |
 | `"Listo para firmar"` / `"Libre de hipoteca"` | Documentación solvente en Registro | Aspecto destacado con icono `ph-check` |
 
-### 1.2. Zonas, Urbanizaciones y Abreviaturas del Estado Táchira
-| Abreviatura / Nombre en Chat | Sector Normalizado (`sector_nombre`) | Ubicación General (`ubicacion`) | Municipio |
+### 1.2. Plantilla Oficial Estricta de Ubicaciones (`UBICACIONES_TACHIRA` en `dashboard-layout.html`)
+> **REGLA ESTRICTA DE UBICACIONES (Cero Invención):** Prohibido usar `"San Cristóbal"` a secas o inventar sectores fuera del desplegable `#inm-sector-select` (`UBICACIONES_TACHIRA`). Todo inmueble DEBE mapearse exactamente a una de las 39 opciones de `UBICACIONES_TACHIRA` con el formato:
+> - `sector_nombre`: `loc.label`
+> - `ubicacion`: `${loc.label}, ${loc.municipio}, Táchira`
+> - `sector_desc`: `Sector residencial ${loc.label}, Municipio ${loc.municipio}, Estado Táchira.`
+> Si el mensaje no menciona ninguna referencia reconocible de la plantilla, se pausa en `pendientes_revision.md`.
+
+| Clave Oficial (`UBICACIONES_TACHIRA`) | `sector_nombre` (`label`) | `ubicacion` (`${label}, ${municipio}, Táchira`) | Referencias / Abreviaturas del Chat Mapeadas |
 | :--- | :--- | :--- | :--- |
-| `"B.O."`, `"Barrio Obrero"`, `"Pasaje Acueducto"`, `"Plaza Los Mangos"` | `Barrio Obrero` | `Barrio Obrero, San Cristóbal` | San Cristóbal |
-| `"Pueblo Nuevo"`, `"Av. España"`, `"Plaza de Toros"`, `"Polígono de Tiro"` | `Pueblo Nuevo` | `Pueblo Nuevo, San Cristóbal` | San Cristóbal |
-| `"Urb. Guaparo"`, `"Guaparo"` | `Urbanización Guaparo` | `Urbanización Guaparo, San Cristóbal` | San Cristóbal |
-| `"Pirineos"`, `"Pirineos I"`, `"Pirineos II"`, `"Don Bosco"` | `Los Pirineos` | `Los Pirineos, San Cristóbal` | San Cristóbal |
-| `"Quinimarí"`, `"Urb. Quinimarí"` | `Quinimarí` | `Quinimarí, San Cristóbal` | San Cristóbal |
-| `"Las Lomas"`, `"Av. Libertador"` | `Las Lomas` | `Las Lomas, San Cristóbal` | San Cristóbal |
-| `"Paramillo"`, `"Altos de Paramillo"`, `"Colinas de Paramillo"` | `Paramillo` | `Paramillo, San Cristóbal` | San Cristóbal |
-| `"Z.I. Paramillo"`, `"Zona Industrial Paramillo"` | `Zona Industrial Paramillo` | `Zona Industrial Paramillo, San Cristóbal` | San Cristóbal |
-| `"Z.I. Barrancas"`, `"Barrancas"` | `Zona Industrial Barrancas` | `Zona Industrial Barrancas, San Cristóbal` | San Cristóbal |
-| `"Av. 19 de Abril"`, `"19 de Abril"` | `Av. 19 de Abril` | `Av. 19 de Abril, San Cristóbal` | San Cristóbal |
-| `"La Castellana"`, `"Urb. La Castellana"` | `La Castellana` | `La Castellana, San Cristóbal` | San Cristóbal |
-| `"El Bosque"`, `"Res. El Bosque"` | `Residencias El Bosque` | `Residencias El Bosque, San Cristóbal` | San Cristóbal |
-| `"La Concordia"`, `"Av. Marginal del Torbes"` | `La Concordia` | `La Concordia, San Cristóbal` | San Cristóbal |
-| `"La Ermita"`, `"Centro"`, `"5ta Avenida"`, `"7ma Avenida"` | `Centro de San Cristóbal` | `Centro, San Cristóbal` | San Cristóbal |
-| `"Santa Teresa"`, `"Urb. Santa Teresa"`, `"Hosp. Central"` | `Santa Teresa` | `Santa Teresa, San Cristóbal` | San Cristóbal |
-| `"Palo Gordo"`, `"Vía Palo Gordo"`, `"Las Vegas de Táriba"` | `Palo Gordo` | `Palo Gordo, Cárdenas` | Cárdenas |
-| `"Táriba"`, `"Colinas de Táriba"`, `"Tucapé"`, `"El Diamante"` | `Táriba` | `Táriba, Cárdenas` | Cárdenas |
-| `"Palmira"`, `"La Flautera"`, `"El Abejal"`, `"Patiecitos"` | `Palmira` | `Palmira, Guásimos` | Guásimos |
-| `"Cordero"`, `"Lomas Blancas"` | `Cordero` | `Cordero, Andrés Bello` | Andrés Bello |
-| `"Rubio"`, `"Las Dantas"` | `Rubio` | `Rubio, Junín` | Junín |
-| `"San Antonio"`, `"Ureña"` | `San Antonio del Táchira` | `San Antonio, Bolívar` | Bolívar |
-| `"La Fría"` | `La Fría` | `La Fría, García de Hevia` | García de Hevia |
-| `"La Grita"` | `La Grita` | `La Grita, Jáuregui` | Jáuregui |
+| `centro` | `Centro de San Cristóbal` | `Centro de San Cristóbal, San Cristóbal, Táchira` | `"Centro"`, `"5ta Avenida"`, `"7ma Avenida"`, `"Casco Central"` |
+| `barrio-obrero` | `Barrio Obrero` | `Barrio Obrero, San Cristóbal, Táchira` | `"B.O."`, `"Barrio Obrero"`, `"Pasaje Acueducto"`, `"Plaza Los Mangos"`, `"Av. Carabobo"`, `"Edif. Alcázar"`, `"Res. El Parque"` |
+| `pueblo-nuevo` | `Pueblo Nuevo` | `Pueblo Nuevo, San Cristóbal, Táchira` | `"Pueblo Nuevo"`, `"Av. España"`, `"Plaza de Toros"`, `"Los Kioskos"`, `"Tierra Dorada"`, `"Edif. Terracota"`, `"Santa Teresa"`, `"Santa Cecilia"`, `"Las Acacias"` |
+| `pirineos` | `Los Pirineos` | `Los Pirineos, San Cristóbal, Táchira` | `"Los Pirineos"`, `"Pirineos I"`, `"Don Bosco"`, `"Av. 19 de Abril"`, `"Doña Juanita"`, `"La Arboleda"` |
+| `urb-pirineos` | `Urb. Pirineos II` | `Urb. Pirineos II, San Cristóbal, Táchira` | `"Pirineos II"`, `"Pirineos 2"` |
+| `la-concordia` | `La Concordia` | `La Concordia, San Cristóbal, Táchira` | `"La Concordia"`, `"Al lado de TRT"`, `"Marginal del Torbes"`, `"Urb. Coromoto"`, `"Res. La Hacienda"` |
+| `las-lomas` | `Las Lomas` | `Las Lomas, San Cristóbal, Táchira` | `"Las Lomas"`, `"Av. Libertador"`, `"Barrio Libertador"` |
+| `la-romera` | `La Romera` | `La Romera, San Cristóbal, Táchira` | `"La Romera"` |
+| `paramillo` | `Paramillo` | `Paramillo, San Cristóbal, Táchira` | `"Paramillo"`, `"Altos de Paramillo"`, `"Colinas de Paramillo"`, `"Z.I. Paramillo"`, `"Sambil"` |
+| `urb-guaparo` | `Urb. Guaparo` | `Urb. Guaparo, San Cristóbal, Táchira` | `"Guaparo"`, `"Urb. Guaparo"` |
+| `el-lobo` | `El Lobo` | `El Lobo, San Cristóbal, Táchira` | `"El Lobo"` |
+| `la-ermita` | `La Ermita` | `La Ermita, San Cristóbal, Táchira` | `"La Ermita"`, `"Deporte Japonés"` |
+| `la-castellana` | `La Castellana` | `La Castellana, San Cristóbal, Táchira` | `"La Castellana"`, `"Urb. Alto Pino"`, `"Terrazas de La Castellana"`, `"Av. Ferrero Tamayo"`, `"Paramillo Suite & Plaza"`, `"Colegio Montessori"` |
+| `san-carlos` | `San Carlos` | `San Carlos, San Cristóbal, Táchira` | `"San Carlos"`, `"Barrio San Carlos"`, `"Edif. Hotel Moncricket"` |
+| `la-popita` | `La Popita` | `La Popita, San Cristóbal, Táchira` | `"La Popita"` |
+| `las-pilas` | `Las Pilas` | `Las Pilas, San Cristóbal, Táchira` | `"Las Pilas"`, `"Santa Eduvigis"` |
+| `barrio-sucre` | `Barrio Sucre` | `Barrio Sucre, San Cristóbal, Táchira` | `"Barrio Sucre"`, `"Urb. Sucre"`, `"UNET"`, `"ULA"`, `"Barrio Bolívar"` |
+| `unidad-vecinal` | `Unidad Vecinal` | `Unidad Vecinal, San Cristóbal, Táchira` | `"Unidad Vecinal"` |
+| `madre-juana` | `Madre Juana` | `Madre Juana, San Cristóbal, Táchira` | `"Madre Juana"` |
+| `santa-ines` | `Santa Inés` | `Santa Inés, San Cristóbal, Táchira` | `"Santa Inés"` |
+| `quinimari` | `Quinimarí` | `Quinimarí, San Cristóbal, Táchira` | `"Quinimarí"`, `"Urb. Torbes"` |
+| `tariba` | `Táriba` | `Táriba, Cárdenas, Táchira` | `"Táriba"`, `"Colinas de Táriba"`, `"Las Vegas de Táriba"`, `"Arjona"`, `"Colegio Virgen del Valle"`, `"Z.I. Barrancas"` |
+| `palmira` | `Palmira` | `Palmira, Cárdenas, Táchira` | `"Palmira"`, `"El Abejal"`, `"La Flautera"`, `"Patiecitos"`, `"Caneyes"` |
+| `palo-gordo` | `Palo Gordo` | `Palo Gordo, Cárdenas, Táchira` | `"Palo Gordo"`, `"Vía Palo Gordo"`, `"Altos de Palo Gordo"` |
+| `san-josecito` | `San Josecito` | `San Josecito, Torbes, Táchira` | `"San Josecito"`, `"Torbes"` |
+| `palmira-centro` | `Palmira Centro` | `Palmira Centro, Guásimos, Táchira` | `"Palmira Centro"` |
+| `la-grita` | `La Grita` | `La Grita, Jáuregui, Táchira` | `"La Grita"` |
+| `rubio` | `Rubio` | `Rubio, Junín, Táchira` | `"Rubio"`, `"Las Dantas"` |
+| `capacho-nuevo` | `Capacho Nuevo` | `Capacho Nuevo, Independencia, Táchira` | `"Capacho Nuevo"`, `"Independencia"`, `"Peribeca"` |
+| `capacho-viejo` | `Capacho Viejo` | `Capacho Viejo, Independencia, Táchira` | `"Capacho Viejo"`, `"Libertad"` |
+| `san-antonio` | `San Antonio del Táchira` | `San Antonio del Táchira, Bolívar, Táchira` | `"San Antonio"`, `"Ureña"` |
+| `lobatera` | `Lobatera` | `Lobatera, Lobatera, Táchira` | `"Lobatera"`, `"Borotá"` |
+| `michelena` | `Michelena` | `Michelena, Michelena, Táchira` | `"Michelena"` |
+| `santa-ana` | `Santa Ana del Táchira` | `Santa Ana del Táchira, Córdoba, Táchira` | `"Santa Ana"`, `"Córdoba"` |
+| `tucape` | `Tucapé` | `Tucapé, Fernández Feo, Táchira` | `"Tucapé"` |
+| `coloncito` | `Coloncito` | `Coloncito, Panamericano, Táchira` | `"Coloncito"` |
+| `la-fria` | `La Fría` | `La Fría, García de Hevia, Táchira` | `"La Fría"` |
+| `el-piñal` | `El Piñal` | `El Piñal, Fernández Feo, Táchira` | `"El Piñal"` |
+| `pregonero` | `Pregonero` | `Pregonero, Uribante, Táchira` | `"Pregonero"`, `"Cordero"` |
 
 ---
 
@@ -74,20 +96,32 @@
 6. **Validación de Asesor Externo:**
    - Siempre `is_maximus = false` y `en_oferta = false`.
    - Teléfono normalizado al estándar `+58 4XX XXXXXXX` (ej. `0414-7123456` → `+58 414 7123456`).
+7. **Exclusividad Absoluta de `"Gestión MAXIMUS"` (Regla Entrenada 2026-10-21):**
+   - El aspecto destacado `{ icono: 'ph-check', titulo: 'Gestión MAXIMUS', ... }` o `'Gestión Comercial MAXIMUS'` **SOLO** se puede incluir cuando el inmueble proviene de la carpeta `captaciones_maximus/` (`is_maximus = true`).
+   - En los inmuebles de `captaciones_externas/` (`is_maximus = false`), **PROHIBIDO** colocar `"Gestión MAXIMUS"` en `aspectos_destacados`, `amenidades` o `subtitulo`. En su lugar usar aspectos reales del inmueble o `{ icono: 'ph-CheckCircle', titulo: 'Disponibilidad Inmediata', desc: 'Propiedad lista para coordinar visita previa cita' }`.
+8. **Separación de Inmuebles Distintos de un Mismo Asesor en el Mismo Minuto (Regla Entrenada 2026-10-21):**
+   - Cuando un mismo asesor envía varios anuncios seguidos en el mismo minuto (ej. Jesús Cánchica enviando 4 flyers de locales distintos + 1 oficina en Barrio San Carlos + 1 habitación estudiantil + 1 local en Barrio Obrero), **NUNCA mezclar mensajes que ya tengan su propio texto descriptivo o pie de foto (`text.length > 0`)**.
+   - Solo agrupar mensajes consecutivos del mismo autor en ventana de ±3 minutos cuando:
+     1. El mensaje previo tiene la descripción completa (`>= 45` caracteres) y los mensajes siguientes son fotos sueltas del álbum sin texto (`msg.text === ""`).
+     2. Varios mensajes seguidos son fotos sueltas sin texto (`prev.text === ""` y `msg.text === ""`) pertenecientes al mismo álbum.
+     3. Un álbum de `>= 2` fotos sueltas sin texto es seguido inmediatamente por el mensaje con la descripción del inmueble.
 
 ---
 
 ## SECCIÓN 3: Parámetros de Recorte de Imágenes y Collages por Inmobiliaria
 
-Parámetros utilizados por `property-image-cleaner` (`scripts/clean_images.py`):
+Parámetros utilizados por `property-image-cleaner` (`scripts/clean_images.py` y `scripts/clean_images.js`):
 
-### 3.1. Detección y Separación de Collages
+### 3.1. Detección y Separación de Collages (Con Margen y Sin Margen `Borderless`)
 - **Líneas divisorias sólidas (blancas, negras o de color corporativo):**
-  - Muchas fotos de WhatsApp unen 2, 3 o 4 fotografías en un solo archivo JPEG separadas por franjas rectas horizontales o verticales de entre `3px` y `35px` de grosor con varianza cromática baja (`std_dev < 18`).
-- **Transiciones bruscas de borde (Grid sin margen):**
-  - Collages 2x2 o 1x3 pegados sin borde blanco se detectan mediante el gradiente de Sobel horizontal/vertical a lo largo del 100% del ancho o alto en las zonas de tercios (`33%`, `50%`, `66%`).
+  - Detecta franjas divisorias rectas horizontales o verticales de entre `2px` y `45px` de grosor con baja desviación estándar (`std_dev < 14.5`).
+- **Costuras Rectas Sin Margen (`Borderless Seam Detection` 3x2, 3x1, 2x2, 2x1, 1x2):**
+  - Muchos flyers de Táchira (ej. `IMG-20261021-WA0030.jpg` de RE/MAX o `IMG-20261016-WA0051.jpg`) unen 3 o 6 fotos sin línea blanca intermedia.
+  - Se detectan calculando el salto cromático entre píxeles adyacentes (`mean_diff >= 18.0`, ratio contra mediana local `>= 2.8` y fracción de nitidez de costura `frac_sharp >= 0.32`) primero en el eje horizontal (`1/3 + 2/3` o `1/2`) y luego independientemente en cada franja sobre el eje vertical (`1/3 + 2/3` o `1/2`).
+- **Recorte de Cintillos Interiores de Costura (`Inner Seam Banner Trim`):**
+  - En collages de `captaciones_externas/`, los asesores suelen colocar cintillos de texto (`"Alquiler de Amplia Oficina"`, `"Canon 260$"`, `"REMAX"`) justo sobre las costuras horizontales o en la base del collage. Al separar cada sub-foto, se recorta automáticamente el `11%` del borde adyacente a la costura interior y el `8%` inferior externo para entregar fotografías limpias sin texto superpuesto.
 - **Filtro de proporción mínima:**
-  - Ningún sub-recorte de collage se guarda si su ancho o alto resultante es menor a `220px` o si su relación de aspecto es extrema (`> 3.5:1`), evitando recortar por error cintillos publicitarios como si fueran fotos independientes.
+  - Ningún sub-recorte de collage se guarda si su ancho o alto resultante es menor a `180px` o si su relación de aspecto es extrema (`> 3.6:1`).
 
 ### 3.2. Recorte Inteligente de Marcas de Agua y Cintillos (Smart Crop)
 | Franquicia / Estilo en Táchira | Ubicación Típica de Marca de Agua / Cintillo | Regla de Recorte (`Smart Crop`) |

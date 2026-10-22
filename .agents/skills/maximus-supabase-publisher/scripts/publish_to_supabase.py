@@ -153,13 +153,18 @@ def construir_payload_supabase(
     aspectos_raw = inm.get("aspectos_destacados") or []
     aspectos_limpios = []
     for asp in aspectos_raw[:4]:
+        titulo_asp = str(asp.get("titulo") or "Destacado")
+        desc_asp = str(asp.get("desc") or "")
+        if not is_maximus_flag and ("maximus" in titulo_asp.lower() or "maximus" in desc_asp.lower()):
+            titulo_asp = "Disponibilidad Inmediata"
+            desc_asp = "Inmueble captado en red de aliados inmobiliarios del Táchira."
         ico = asp.get("icono", "ph-star")
         if ico not in ICONOS_VALIDOS_DASHBOARD:
             ico = "ph-star"
         aspectos_limpios.append({
             "icono": ico,
-            "titulo": str(asp.get("titulo") or "Destacado"),
-            "desc": str(asp.get("desc") or ""),
+            "titulo": titulo_asp,
+            "desc": desc_asp,
         })
 
     amenidades_raw = inm.get("amenidades") or []
@@ -276,7 +281,32 @@ def upsert_en_supabase(
     return None, last_err
 
 
-def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify_n8n: bool = False) -> Dict[str, Any]:
+def limpiar_externos_en_supabase(sb_url: str, sb_key: str) -> int:
+    """Elimina los registros externos anteriores (is_maximus=false) para re-sincronizar limpio"""
+    endpoint = f"{sb_url}/rest/v1/inmuebles?is_maximus=eq.false"
+    headers = {
+        "apikey": sb_key,
+        "Authorization": f"Bearer {sb_key}",
+        "Prefer": "return=representation",
+    }
+    try:
+        if HAS_REQUESTS:
+            r = requests.delete(endpoint, headers=headers, timeout=20)
+            if r.status_code in (200, 204):
+                rows = r.json() if r.text else []
+                return len(rows)
+        else:
+            req = urllib.request.Request(endpoint, headers=headers, method="DELETE")
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                raw = resp.read().decode("utf-8")
+                rows = json.loads(raw) if raw else []
+                return len(rows)
+    except Exception as e:
+        print(f"  ⚠️ Aviso limpiando registros externos previos: {e}")
+    return 0
+
+
+def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify_n8n: bool = False, clean_external: bool = False) -> Dict[str, Any]:
     procesados_dir = lote_dir / "procesados"
     dedup_json = procesados_dir / "inmuebles_deduplicados.json"
     extraidos_json = procesados_dir / "inmuebles_extraidos.json"
@@ -298,6 +328,9 @@ def publicar_lote(lote_dir: Path, repo_root: Path, dry_run: bool = False, notify
     stats_img = data.get("estadisticas_imagenes", {})
 
     cfg = load_config(repo_root)
+    if clean_external and not dry_run:
+        borrados = limpiar_externos_en_supabase(cfg["sb_url"], cfg["sb_key"])
+        print(f"🧹 Limpieza previa en Supabase: {borrados} registros externos anteriores eliminados.")
     corr_num = obtener_siguiente_correlativo_max(cfg["sb_url"], cfg["sb_key"]) if not dry_run else 107
 
     creados = []
@@ -485,11 +518,12 @@ def main():
     parser.add_argument("--lote", required=True, help="Ruta a la carpeta del lote")
     parser.add_argument("--dry-run", action="store_true", help="Simula validación sin enviar a Supabase")
     parser.add_argument("--notify-n8n", action="store_true", help="Dispara el webhook de n8n por cada inmueble publicado")
+    parser.add_argument("--clean-external", action="store_true", help="Elimina registros externos anteriores antes de insertar")
     args = parser.parse_args()
 
     lote_dir = Path(args.lote).resolve()
     repo_root = Path(__file__).resolve().parents[4]
-    res = publicar_lote(lote_dir, repo_root, dry_run=args.dry_run, notify_n8n=args.notify_n8n)
+    res = publicar_lote(lote_dir, repo_root, dry_run=args.dry_run, notify_n8n=args.notify_n8n, clean_external=args.clean_external)
     print(
         f"\n✨ [COMPLETADO] Publicación finalizada para '{res['lote']}':\n"
         f"  - Inmuebles insertados/actualizados en Supabase: {res['total_creados']}\n"

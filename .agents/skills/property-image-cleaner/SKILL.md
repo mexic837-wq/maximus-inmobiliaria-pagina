@@ -20,8 +20,10 @@ Esta skill adapta automáticamente el procesamiento visual según la bandeja de 
 
 ### A) En `agente_whatsapp/proyectos/captaciones_externas/`
 - **Extractor de Foto de Screenshot (Modo 2):** Si la imagen proviene de una captura de pantalla de WhatsApp Web, recorta primero el recuadro interior de la fotografía eliminando el fondo de WhatsApp y el texto de la burbuja.
-- **Separador de Collages (`ON`):** Divide mosaicos y collages en imágenes individuales numeradas (`_01.jpg`, `_02.jpg`, `_03.jpg`).
-- **Smart Crop de Marcas de Agua (`ON` — OBLIGATORIO):** Recorta cintillos superiores/inferiores y bordes donde otras inmobiliarias (RE/MAX, Cúspide, Century21, etc.) colocan sus logos o precios sobrepuestos.
+- **Separador de Collages con Margen y Sin Margen (`ON`):**
+  - Detecta y divide tanto collages con líneas divisorias sólidas (blancas/negras/color) como **collages sin margen (`borderless` `3x2`, `3x1`, `2x2`, `2x1`, `1x2`)** analizando costuras rectas de alto salto de gradiente y baja varianza de segunda derivada (`_find_true_collage_seams`), generando fotos individuales (`_01.jpg`, `_02.jpg`, `_03.jpg`, ...).
+  - En cada sub-imagen extraída de un collage sin margen, recorta automáticamente cintillos de texto o teléfonos pegados sobre la costura interior (`_trim_inner_seam_text_banners`).
+- **Smart Crop de Marcas de Agua (`ON` — OBLIGATORIO):** Recorta cintillos superiores/inferiores y bordes donde otras inmobiliarias (RE/MAX, Cúspide, Century21, etc.) colocan sus logos o precios sobrepuestos, y sube todas las fotografías individuales al bucket `inmuebles-fotos` de Supabase Storage leyendo `.env`.
 
 ### B) En `agente_whatsapp/proyectos/captaciones_maximus/`
 - **Extractor de Foto de Screenshot (Modo 2):** Si se subió una captura de WhatsApp Web, extrae la fotografía interior sin interfaz de WhatsApp.

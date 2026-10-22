@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-MAXIMUS Inmobiliaria - Skill 3: property-image-cleaner (Dual-Flow & Screenshot Extractor)
-=========================================================================================
+MAXIMUS Inmobiliaria - Skill 3: property-image-cleaner (Dual-Flow & Collage/Watermark Engine)
+=============================================================================================
 Limpia y procesa las imágenes de WhatsApp:
   1. Extractor de Fotografía desde Captura de Pantalla de WhatsApp Web (Modo 2):
-     Si la imagen es un screenshot de WhatsApp Web (con burbuja de chat, teléfono arriba,
-     foto en medio y descripción abajo), recorta primero únicamente el recuadro de la
-     fotografía del inmueble eliminando el fondo de WhatsApp y el texto de la burbuja.
-  2. Separador Automático de Collages (vertical, horizontal y cuadrícula 2x2):
-     Detecta líneas rectas divisorias o saltos bruscos de borde y separa en imágenes
-     individuales numeradas (_01.jpg, _02.jpg, _03.jpg).
+     Recorta únicamente el recuadro interior de la fotografía del inmueble.
+  2. Separador Automático de Collages (Con Margen y Sin Margen `Borderless` 3x2, 3x1, 2x2, 2x1, 1x2):
+     Detecta líneas divisorias sólidas (blancas/negras/color) Y costuras rectas sin margen
+     (`find_true_collage_seams`), dividiendo el collage en fotografías individuales numeradas
+     (`_01.jpg`, `_02.jpg`, `_03.jpg`, ...) y recortando cintillos de texto sobre las costuras.
   3. Comportamiento Diferenciado por Carpeta:
      - `captaciones_externas/` -> Ejecuta SIEMPRE Smart Crop para recortar marcas de agua,
        logos y cintillos de otras inmobiliarias.
      - `captaciones_maximus/`  -> NO recorta bordes de marcas de agua (Smart Crop = OFF),
        conservando las fotos oficiales de MAXIMUS en máxima calidad (JPEG quality=95).
-  4. Upload a Supabase Storage (`inmuebles-fotos`) y generación de URLs separadas por coma.
+  4. Upload en vivo a Supabase Storage (`inmuebles-fotos`) leyendo credenciales desde `.env`.
 """
 
 import os
 import re
+import sys
 import json
 import argparse
 import urllib.request
@@ -29,11 +29,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 try:
     from PIL import Image, ImageOps
     import numpy as np
 except ImportError as e:
-    raise RuntimeError("Se requiere Pillow y numpy instalados (pip install Pillow numpy opencv-python).") from e
+    raise RuntimeError("Se requiere Pillow y numpy instalados (pip install Pillow numpy opencv-python-headless).") from e
 
 try:
     import cv2
@@ -43,21 +48,38 @@ except ImportError:
 
 
 PERFILES_MARCA_AGUA = {
-    "remax": {"top_crop": 0.02, "bottom_crop": 0.10},
-    "century21": {"top_crop": 0.02, "bottom_crop": 0.11},
-    "c21": {"top_crop": 0.02, "bottom_crop": 0.11},
-    "cuspide": {"top_crop": 0.06, "bottom_crop": 0.08},
+    "remax": {"top_crop": 0.02, "bottom_crop": 0.09},
+    "century21": {"top_crop": 0.02, "bottom_crop": 0.10},
+    "c21": {"top_crop": 0.02, "bottom_crop": 0.10},
+    "cuspide": {"top_crop": 0.05, "bottom_crop": 0.08},
     "default": {"top_crop": 0.00, "bottom_crop": 0.04},
 }
 
 
 def load_supabase_config(repo_root: Path) -> Tuple[str, str, str]:
     url = os.environ.get("SUPABASE_URL", "").strip()
-    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "") or os.environ.get("SUPABASE_ANON_KEY", "")
-    bucket = os.environ.get("SUPABASE_STORAGE_BUCKET", "inmuebles-fotos")
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip() or os.environ.get("SUPABASE_ANON_KEY", "").strip()
+    bucket = os.environ.get("STORAGE_BUCKET", "inmuebles-fotos").strip()
+
+    env_path = repo_root / ".env"
+    if env_path.exists():
+        for raw_line in env_path.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip()
+            if k == "SUPABASE_URL" and not url:
+                url = v
+            elif k == "SUPABASE_SERVICE_ROLE_KEY" and v:
+                key = v
+            elif k == "SUPABASE_ANON_KEY" and not key:
+                key = v
+            elif k == "STORAGE_BUCKET" and v:
+                bucket = v
 
     config_js = repo_root / "js" / "config.js"
-    if config_js.exists():
+    if config_js.exists() and (not url or not key):
         content = config_js.read_text(encoding="utf-8", errors="replace")
         if not url:
             m_url = re.search(r"SUPABASE_URL\s*:\s*['\"]([^'\"]+)['\"]", content)
@@ -67,32 +89,22 @@ def load_supabase_config(repo_root: Path) -> Tuple[str, str, str]:
             m_key = re.search(r"SUPABASE_ANON_KEY\s*:\s*['\"]([^'\"]+)['\"]", content)
             if m_key:
                 key = m_key.group(1).strip()
-        m_b = re.search(r"STORAGE_BUCKET\s*:\s*['\"]([^'\"]+)['\"]", content)
-        if m_b:
-            bucket = m_b.group(1).strip()
 
     if not url or not key:
-        raise RuntimeError("No se encontraron credenciales de Supabase en js/config.js.")
-    return url, key, bucket
+        raise RuntimeError("No se encontraron credenciales de Supabase en .env ni en js/config.js.")
+    return url.rstrip("/"), key, bucket
 
 
 # ==============================================================================
 # 0. MODO 2: EXTRACTOR DEL RECUADRO FOTOGRÁFICO DESDE SCREENSHOT DE WHATSAPP WEB
 # ==============================================================================
 def extraer_foto_de_screenshot_whatsapp(img: Image.Image) -> Tuple[Image.Image, bool]:
-    """
-    Recibe una captura de pantalla completa de WhatsApp Web (donde se ve el fondo
-    del chat, la burbuja con el teléfono arriba, la foto en medio y el texto abajo)
-    y recorta únicamente el recuadro interior de la fotografía del inmueble.
-    """
     rgb = img.convert("RGB")
     arr = np.array(rgb)
     h, w, _ = arr.shape
 
     if HAS_CV2:
         gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
-        # En WhatsApp Web (modo claro o modo oscuro), el fondo de chat y la burbuja de texto
-        # tienen baja varianza local en comparación con la riqueza cromática de la foto del inmueble.
         edges = cv2.Canny(gray, 35, 120)
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 11))
         closed = cv2.morphologyEx(edges, cv2.MORPH_CLOSE, kernel)
@@ -103,7 +115,6 @@ def extraer_foto_de_screenshot_whatsapp(img: Image.Image) -> Tuple[Image.Image, 
         for cnt in contours:
             x, y, cw, ch = cv2.boundingRect(cnt)
             area = cw * ch
-            # El recuadro de la fotografía debe ocupar al menos 15% de la captura y no ser toda la pantalla
             if (w * h * 0.12) <= area <= (w * h * 0.92) and cw >= 180 and ch >= 180:
                 roi_std = float(np.std(arr[y:y + ch, x:x + cw]))
                 if roi_std > 28.0 and area > best_area:
@@ -112,10 +123,8 @@ def extraer_foto_de_screenshot_whatsapp(img: Image.Image) -> Tuple[Image.Image, 
 
         if best_box is not None:
             x0, y0, x1, y1 = best_box
-            # Refinar verticalmente para excluir el encabezado del teléfono (arriba) y el bloque de texto (abajo)
             sub_arr = arr[y0:y1, x0:x1]
             sh, sw, _ = sub_arr.shape
-            # Calcular saturación y desviación por fila: el texto sobre fondo blanco/oscuro tiene menor saturación media
             sat = np.max(sub_arr, axis=2) - np.min(sub_arr, axis=2)
             row_sat = np.mean(sat, axis=1)
 
@@ -136,42 +145,38 @@ def extraer_foto_de_screenshot_whatsapp(img: Image.Image) -> Tuple[Image.Image, 
                 return rgb.crop((x0, y0 + r_top, x1, y0 + r_bot)), True
             return rgb.crop(best_box), True
 
-    # Heurística NumPy pura si OpenCV no está instalado:
-    # Detectar la ventana rectangular con mayor saturación y varianza cromática
-    sat = np.max(arr, axis=2).astype(np.float32) - np.min(arr, axis=2).astype(np.float32)
-    row_score = np.mean(sat, axis=1) + np.std(arr.mean(axis=2), axis=1) * 0.5
-    col_score = np.mean(sat, axis=0) + np.std(arr.mean(axis=2), axis=0) * 0.5
-
-    active_rows = np.where(row_score > 22.0)[0]
-    active_cols = np.where(col_score > 22.0)[0]
-
-    if len(active_rows) > 160 and len(active_cols) > 160:
-        y0, y1 = int(active_rows[0]), int(active_rows[-1])
-        x0, x1 = int(active_cols[0]), int(active_cols[-1])
-        if (y1 - y0) >= 160 and (x1 - x0) >= 160 and ((y1 - y0) < h * 0.96 or (x1 - x0) < w * 0.96):
-            return rgb.crop((x0, y0, x1, y1)), True
-
     return rgb, False
 
 
 # ==============================================================================
-# 1. DETECTOR Y SEPARADOR AUTOMÁTICO DE COLLAGES
+# 1. DETECTOR Y SEPARADOR AUTOMÁTICO DE COLLAGES (CON MARGEN Y BORDERLESS)
 # ==============================================================================
-def _find_gutter_splits(arr_gray: np.ndarray, axis: int, min_chunk: int = 200) -> List[Tuple[int, int]]:
-    length = arr_gray.shape[axis]
+def _find_true_collage_seams(arr_rgb: np.ndarray, axis: int, min_chunk: int = 160) -> List[Tuple[int, int]]:
+    """
+    Detecta divisiones de collage a lo largo de `axis` (0 = horizontal, 1 = vertical):
+      1) Líneas divisorias sólidas (blancas, negras o de color uniforme de 2 a 45px).
+      2) Costuras rectas sin margen (`Borderless Seams`) en proporciones 1/3 + 2/3 o 1/2,
+         verificando salto cromático (`mean_diff >= 18.0`), pico sobre mediana local (`>= 2.8x`)
+         y nitidez continua a lo largo de la costura (`frac_sharp >= 0.32`).
+    """
+    arr = arr_rgb.astype(np.float32)
+    length = arr.shape[axis]
     if length < min_chunk * 2:
         return [(0, length)]
 
-    line_std = np.std(arr_gray, axis=(1 if axis == 0 else 0))
+    other_axis = 1 if axis == 0 else 0
+    arr_gray = np.mean(arr, axis=2)
+    line_std = np.std(arr_gray, axis=other_axis)
+
+    # 1. Buscar franjas divisorias sólidas (gutters)
     margin = int(length * 0.14)
     is_gutter = np.zeros(length, dtype=bool)
     is_gutter[margin:length - margin] = line_std[margin:length - margin] < 14.5
 
-    splits = []
+    splits: List[Tuple[int, int]] = []
     in_gutter = False
     g_start = 0
     last_end = 0
-
     for i in range(length):
         if is_gutter[i] and not in_gutter:
             in_gutter = True
@@ -182,43 +187,101 @@ def _find_gutter_splits(arr_gray: np.ndarray, axis: int, min_chunk: int = 200) -
             if 2 <= g_width <= 45 and (g_start - last_end) >= min_chunk:
                 splits.append((last_end, g_start))
                 last_end = i
+    if splits and (length - last_end) >= min_chunk:
+        splits.append((last_end, length))
+        return splits
 
-    if splits:
-        if (length - last_end) >= min_chunk:
-            splits.append((last_end, length))
-            return splits
+    # 2. Buscar costuras rectas sin margen (Borderless Seams: 3x2, 3x1, 2x2, 2x1, 1x2)
+    diffs = np.mean(np.abs(np.diff(arr, axis=axis)), axis=2)
+    mean_diff = np.mean(diffs, axis=other_axis)
 
-    row_diffs = np.mean(np.abs(np.diff(arr_gray.astype(np.float32), axis=axis)), axis=(1 if axis == 0 else 0))
-    median_diff = float(np.median(row_diffs)) + 1e-5
+    def is_valid_seam(idx: int) -> Tuple[bool, float]:
+        if idx < min_chunk or (length - idx) < min_chunk:
+            return False, 0.0
+        w_start = max(10, idx - 35)
+        w_end = min(length - 10, idx + 35)
+        window = np.concatenate([mean_diff[w_start:max(w_start + 1, idx - 3)], mean_diff[min(idx + 4, w_end):w_end]])
+        loc_med = float(np.median(window)) + 1e-5
+        val = float(mean_diff[idx])
+        ratio = val / loc_med
 
-    mid_zone = range(int(length * 0.47), int(length * 0.53))
-    best_mid = max(mid_zone, key=lambda idx: row_diffs[idx]) if mid_zone else None
-    if best_mid and row_diffs[best_mid] > max(38.0, median_diff * 4.2) and (best_mid >= min_chunk) and (length - best_mid >= min_chunk):
-        return [(0, best_mid), (best_mid + 1, length)]
+        if axis == 0:
+            seam_line = diffs[idx, :]
+            prev_line = diffs[max(0, idx - 4), :]
+            next_line = diffs[min(diffs.shape[0] - 1, idx + 4), :]
+        else:
+            seam_line = diffs[:, idx]
+            prev_line = diffs[:, max(0, idx - 4)]
+            next_line = diffs[:, min(diffs.shape[1] - 1, idx + 4)]
+
+        neighbor_avg = 0.5 * (prev_line + next_line)
+        sharp = (seam_line > 10.0) & (seam_line > neighbor_avg * 1.6 + 4.0)
+        frac_sharp = float(np.mean(sharp))
+        ok = (val >= 18.0) and (ratio >= 2.8) and (frac_sharp >= 0.32)
+        return ok, val
+
+    # Probar división en tercios (1/3 y 2/3)
+    z1 = range(int(length * 0.30), int(length * 0.37))
+    z2 = range(int(length * 0.63), int(length * 0.70))
+    if z1 and z2:
+        b1 = max(z1, key=lambda i: mean_diff[i])
+        b2 = max(z2, key=lambda i: mean_diff[i])
+        ok1, _ = is_valid_seam(b1)
+        ok2, _ = is_valid_seam(b2)
+        if ok1 and ok2 and (b2 - b1) >= min_chunk:
+            return [(0, b1), (b1 + 1, b2), (b2 + 1, length)]
+
+    # Probar división a la mitad (1/2)
+    zm = range(int(length * 0.45), int(length * 0.55))
+    if zm:
+        bm = max(zm, key=lambda i: mean_diff[i])
+        okm, _ = is_valid_seam(bm)
+        if okm:
+            return [(0, bm), (bm + 1, length)]
 
     return [(0, length)]
 
 
-def separar_collage(img: Image.Image) -> List[Image.Image]:
+def separar_collage(img: Image.Image, is_maximus: bool = False) -> List[Image.Image]:
+    """
+    Separa un collage (horizontal, vertical o cuadrícula 3x2 / 2x2) en fotografías individuales.
+    En `captaciones_externas/` (`is_maximus=False`), recorta automáticamente los cintillos de
+    texto que suelen colocarse sobre las costuras horizontales (`11%`) y el borde inferior (`8%`).
+    """
     rgb = img.convert("RGB")
-    arr_gray = np.array(rgb.convert("L"))
-    h, w = arr_gray.shape
+    arr_rgb = np.array(rgb)
+    h, w, _ = arr_rgb.shape
 
-    min_h = max(180, int(h * 0.22))
-    min_w = max(180, int(w * 0.22))
+    min_h = max(160, int(h * 0.22))
+    min_w = max(160, int(w * 0.22))
 
-    y_ranges = _find_gutter_splits(arr_gray, axis=0, min_chunk=min_h)
+    y_ranges = _find_true_collage_seams(arr_rgb, axis=0, min_chunk=min_h)
     sub_images: List[Image.Image] = []
+    num_rows = len(y_ranges)
 
-    for (y0, y1) in y_ranges:
-        strip_gray = arr_gray[y0:y1, :]
-        x_ranges = _find_gutter_splits(strip_gray, axis=1, min_chunk=min_w)
+    for r_idx, (y0, y1) in enumerate(y_ranges):
+        strip_rgb = arr_rgb[y0:y1, :, :]
+        x_ranges = _find_true_collage_seams(strip_rgb, axis=1, min_chunk=min_w)
         for (x0, x1) in x_ranges:
+            cy0, cy1 = y0, y1
+            sh = cy1 - cy0
+            sw = x1 - x0
+
+            # En captaciones externas, si es un collage de múltiples filas, recortar
+            # cintillos publicitarios pegados a las costuras horizontales y pie de foto
+            if not is_maximus and num_rows > 1 and sh >= 200:
+                if r_idx < num_rows - 1:
+                    cy1 -= int(sh * 0.11)
+                if r_idx > 0:
+                    cy0 += int(sh * 0.08)
+                if r_idx == num_rows - 1:
+                    cy1 -= int(sh * 0.08)
+
             crop_w = x1 - x0
-            crop_h = y1 - y0
+            crop_h = cy1 - cy0
             aspect = max(crop_w / max(crop_h, 1), crop_h / max(crop_w, 1))
-            if crop_w >= 180 and crop_h >= 180 and aspect <= 3.6:
-                sub_images.append(rgb.crop((x0, y0, x1, y1)))
+            if crop_w >= 160 and crop_h >= 140 and aspect <= 3.6:
+                sub_images.append(rgb.crop((x0, cy0, x1, cy1)))
 
     return sub_images if len(sub_images) > 1 else [rgb]
 
@@ -239,39 +302,42 @@ def smart_crop_watermark(
     extra_top_crop: float = 0.0,
     extra_bottom_crop: float = 0.0,
     texto_anuncio: str = "",
+    from_collage: bool = False,
 ) -> Tuple[Image.Image, bool]:
     rgb = img.convert("RGB")
     gray = np.array(rgb.convert("L"))
     h, w = gray.shape
 
-    if h < 160 or w < 160:
+    if h < 140 or w < 140:
         return rgb, False
 
     row_std = np.std(gray, axis=1)
 
     top_cut = 0
-    for y in range(int(h * 0.15)):
-        if row_std[y] < 22.0:
+    for y in range(int(h * 0.14)):
+        if row_std[y] < 20.0:
             top_cut = y + 1
         else:
             break
 
     bottom_cut = h
-    for y in range(h - 1, int(h * 0.84), -1):
-        if row_std[y] < 24.0:
+    for y in range(h - 1, int(h * 0.85), -1):
+        if row_std[y] < 22.0:
             bottom_cut = y
         else:
             break
 
     row_diffs = np.mean(np.abs(np.diff(gray.astype(np.float32), axis=0)), axis=1)
-    for y in range(int(h * 0.85), h - 10):
-        if row_diffs[y] > 32.0 and np.median(row_std[y + 2:]) < 38.0:
+    for y in range(int(h * 0.86), h - 8):
+        if row_diffs[y] > 32.0 and np.median(row_std[y + 2:]) < 36.0:
             bottom_cut = min(bottom_cut, y)
             break
 
     perfil = detectar_perfil_inmobiliaria(texto_anuncio)
-    min_top_px = int(h * max(extra_top_crop, perfil["top_crop"]))
-    min_bot_px = int(h * max(extra_bottom_crop, perfil["bottom_crop"]))
+    # Si ya se recortaron las costuras en `separar_collage`, aplicar un recorte adicional suave
+    factor_collage = 0.4 if from_collage else 1.0
+    min_top_px = int(h * max(extra_top_crop, perfil["top_crop"] * factor_collage))
+    min_bot_px = int(h * max(extra_bottom_crop, perfil["bottom_crop"] * factor_collage))
 
     final_top = max(top_cut, min_top_px)
     final_bottom = min(bottom_cut, h - min_bot_px)
@@ -294,7 +360,7 @@ def smart_crop_watermark(
         else:
             break
 
-    fue_recortada = (final_top > 2) or (final_bottom < h - 2) or (left_cut > 2) or (right_cut < w - 2)
+    fue_recortada = (final_top > 2) or (final_bottom < h - 2) or (left_cut > 2) or (right_cut < w - 2) or from_collage
     cropped = rgb.crop((left_cut, final_top, right_cut, final_bottom))
     return cropped, fue_recortada
 
@@ -355,13 +421,13 @@ def procesar_imagenes_lote(
     key_list = "unicos_verificados" if "unicos_verificados" in payload else "inmuebles"
     inmuebles = payload.get(key_list, [])
 
-    # Detectar si el lote pertenece a `captaciones_maximus/`
     ruta_lote_str = str(lote_dir.resolve()).lower().replace("\\", "/")
     es_lote_maximus = ("captaciones_maximus" in ruta_lote_str) or bool(payload.get("is_maximus_default", False))
 
     sb_url, sb_key, bucket = load_supabase_config(repo_root)
     clean_base_dir = procesados_dir / "imagenes_limpias"
     clean_base_dir.mkdir(parents=True, exist_ok=True)
+    lote_folder_clean = re.sub(r"[^a-zA-Z0-9_\-]", "_", lote_dir.name)
 
     estadisticas_imagenes = {
         "flujo_carpeta": "captaciones_maximus" if es_lote_maximus else "captaciones_externas",
@@ -382,6 +448,12 @@ def procesar_imagenes_lote(
 
         inm_clean_dir = clean_base_dir / temp_id
         inm_clean_dir.mkdir(parents=True, exist_ok=True)
+        # Limpiar imágenes viejas en la carpeta del candidato antes de regenerar
+        for old_f in inm_clean_dir.glob("*.jpg"):
+            try:
+                old_f.unlink()
+            except Exception:
+                pass
 
         orig_paths = [Path(p) for p in inm.get("imagenes_locales", []) if Path(p).exists()]
         estadisticas_imagenes["total_imagenes_originales"] += len(orig_paths)
@@ -400,7 +472,6 @@ def procesar_imagenes_lote(
                 print(f"[WARN] No se pudo abrir imagen {orig_p}: {e}")
                 continue
 
-            # Paso 0 (Modo 2): Si es una captura de pantalla de WhatsApp Web, recortar primero el recuadro de la fotografía
             es_nombre_screenshot = bool(re.search(r"(screenshot|captura|whatsapp\s*web|screen)", orig_p.stem, re.I))
             if son_screenshots or es_nombre_screenshot:
                 img_orig, recorte_sc = extraer_foto_de_screenshot_whatsapp(img_orig)
@@ -408,31 +479,29 @@ def procesar_imagenes_lote(
                     screenshots_en_inm += 1
                     estadisticas_imagenes["total_screenshots_recortados"] += 1
 
-            # Paso A: Separar collage si contiene múltiples fotos
-            partes = separar_collage(img_orig)
+            # Paso A: Separar collage (con margen o borderless 3x2, 3x1, 2x2, 2x1)
+            partes = separar_collage(img_orig, is_maximus=inm_is_maximus)
             es_collage = len(partes) > 1
             if es_collage:
                 collages_en_inm += 1
                 estadisticas_imagenes["total_collages_divididos"] += 1
 
             for idx_part, sub_img in enumerate(partes, start=1):
-                # Paso B: Comportamiento diferenciado según carpeta:
-                # - En `captaciones_externas/` (inm_is_maximus == False): ejecutar SIEMPRE Smart Crop de marcas de agua
-                # - En `captaciones_maximus/`  (inm_is_maximus == True):  NO recortar bordes de marcas de agua
                 if not inm_is_maximus:
                     limpia_img, fue_recortada = smart_crop_watermark(
                         sub_img,
                         extra_top_crop=extra_top_crop,
                         extra_bottom_crop=extra_bottom_crop,
                         texto_anuncio=inm.get("texto_original", ""),
+                        from_collage=es_collage,
                     )
                     if fue_recortada:
                         recortes_en_inm += 1
                         estadisticas_imagenes["total_marcas_agua_recortadas"] += 1
-                    jpg_quality = 90
+                    jpg_quality = 92
                 else:
                     limpia_img = sub_img.convert("RGB")
-                    jpg_quality = 95  # Máxima calidad para Captaciones Directas MAXIMUS
+                    jpg_quality = 95
 
                 stem_clean = re.sub(r"[^a-zA-Z0-9_\-]", "_", orig_p.stem)
                 out_filename = f"{stem_clean}_{idx_part:02d}.jpg" if es_collage else f"{stem_clean}_01.jpg"
@@ -442,9 +511,8 @@ def procesar_imagenes_lote(
                 rutas_limpias_locales.append(str(out_path))
                 estadisticas_imagenes["total_imagenes_individuales_generadas"] += 1
 
-                # Paso C: Subir a Supabase Storage
                 carpeta_flujo = "maximus" if inm_is_maximus else "externas"
-                storage_rel = f"whatsapp/{carpeta_flujo}/{lote_dir.name}/{temp_id}/{out_filename}"
+                storage_rel = f"whatsapp/{carpeta_flujo}/{lote_folder_clean}/{temp_id}/{out_filename}"
                 if not skip_upload:
                     pub_url, err = upload_to_supabase_storage(out_path, storage_rel, sb_url, sb_key, bucket)
                     if pub_url:
@@ -458,7 +526,7 @@ def procesar_imagenes_lote(
 
         inm["imagenes_limpias_locales"] = rutas_limpias_locales
         inm["fotos"] = urls_publicas
-        inm["foto_principal"] = urls_publicas[0] if urls_publicas else "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85"
+        inm["foto_principal"] = urls_publicas[0] if urls_publicas else ""
         inm["fotos_coma_str"] = ", ".join(urls_publicas)
         inm["stats_imagenes"] = {
             "originales": len(orig_paths),

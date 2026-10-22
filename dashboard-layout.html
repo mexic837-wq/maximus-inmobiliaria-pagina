@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><meta name="theme-color" content="#0B4A3F"><meta name="apple-mobile-web-app-capable" content="yes">
     <title>MAXIMUS | Panel de Asesores Inmobiliarios</title>
     <!-- Favicon Oficial MAXIMUS -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <script>
         // Prevenir parpadeo de modo oscuro al cargar
         if (localStorage.getItem('maximus_theme') === 'dark') {
@@ -9160,14 +9163,39 @@
             if (elTotalCount) elTotalCount.textContent = lightboxFotosActuales.length;
 
             const fallbackImg = lightboxFotosActuales[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1000&q=80';
+            const totalFotos = lightboxFotosActuales.length;
             for (let i = 0; i < 5; i++) {
                 const imgEl = document.getElementById(`airbnb-img-${i}`);
-                if (imgEl) {
-                    imgEl.src = lightboxFotosActuales[i] || fallbackImg;
-                    imgEl.onerror = function() {
-                        this.onerror = null;
-                        this.src = fallbackImg;
-                    };
+                const wrapperEl = imgEl ? imgEl.parentElement : null;
+                if (imgEl && wrapperEl) {
+                    if (i < totalFotos) {
+                        imgEl.src = lightboxFotosActuales[i];
+                        imgEl.onerror = function() {
+                            this.onerror = null;
+                            this.src = fallbackImg;
+                        };
+                        wrapperEl.style.display = '';
+                        // Adaptar el mosaico según la cantidad real de fotos para nunca repetir la misma foto
+                        if (totalFotos === 1 && i === 0) {
+                            wrapperEl.className = 'relative overflow-hidden cursor-pointer group h-full col-span-2 md:col-span-4 row-span-2 active:scale-[0.98] transition-transform';
+                        } else if (totalFotos === 2) {
+                            wrapperEl.className = 'relative overflow-hidden cursor-pointer group h-full col-span-1 md:col-span-2 row-span-2 active:scale-[0.98] transition-transform';
+                        } else if (totalFotos === 3) {
+                            wrapperEl.className = (i === 0)
+                                ? 'relative overflow-hidden cursor-pointer group h-full col-span-1 md:col-span-2 row-span-2 active:scale-[0.98] transition-transform'
+                                : 'relative overflow-hidden cursor-pointer group h-full col-span-1 md:col-span-2 row-span-1 active:scale-[0.98] transition-transform';
+                        } else if (totalFotos === 4) {
+                            wrapperEl.className = (i === 0)
+                                ? 'relative overflow-hidden cursor-pointer group h-full md:col-span-2 md:row-span-2 active:scale-[0.98] transition-transform'
+                                : (i === 3 ? 'relative overflow-hidden cursor-pointer group h-full md:col-span-2 active:scale-[0.98] transition-transform' : 'relative overflow-hidden cursor-pointer group h-full active:scale-[0.98] transition-transform');
+                        } else {
+                            wrapperEl.className = (i === 0)
+                                ? 'relative overflow-hidden cursor-pointer group h-full md:col-span-2 md:row-span-2 active:scale-[0.98] transition-transform'
+                                : (i === 4 ? 'hidden md:block relative overflow-hidden cursor-pointer group h-full' : 'relative overflow-hidden cursor-pointer group h-full active:scale-[0.98] transition-transform');
+                        }
+                    } else {
+                        wrapperEl.style.display = 'none';
+                    }
                 }
             }
 
@@ -11548,13 +11576,18 @@
                                 }
                             }
                             if (!asesorData) {
+                                const esExt = inm.is_maximus === false;
+                                const nomAsesor = inm.asesor_nombre || (esExt ? 'Asesor Externo Aliado' : 'Asesor MAXIMUS');
+                                const telAsesor = inm.asesor_telefono || '+58 424-1234567';
                                 asesorData = {
-                                    nombre: inm.asesor_nombre || 'Asesor MAXIMUS',
-                                    cargo: 'Captador Oficial',
-                                    telefono: '+58 424-1234567',
-                                    avatar: 'https://ui-avatars.com/api/?name=Asesor+MAXIMUS&background=0B4A3F&color=fff&bold=true',
-                                    rating: '5.0 (Oficial)',
-                                    experiencia: 'Equipo MAXIMUS'
+                                    nombre: nomAsesor,
+                                    cargo: esExt ? 'Asesor Externo Aliado' : 'Captador Oficial',
+                                    telefono: telAsesor,
+                                    whatsapp: telAsesor,
+                                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nomAsesor)}&background=0B4A3F&color=fff&bold=true`,
+                                    rating: esExt ? '5.0' : '5.0 (Oficial)',
+                                    experiencia: esExt ? 'Asesor Externo Aliado' : 'Equipo MAXIMUS',
+                                    tipo: esExt ? 'externo' : 'maximus'
                                 };
                             }
 
@@ -11588,21 +11621,24 @@
                                 isMaximus: esMaximus,
                                 precio: precioStr || '$250,000',
                                 moneda: inm.moneda || existing.moneda || 'USD',
-                                precioM2: existing.precioM2 || (inm.metros_cuadrados && inm.precio ? `$${Math.round(Number(inm.precio) / Number(inm.metros_cuadrados))} USD / m²` : '$750 USD / m²'),
+                                precioM2: (inm.metros_cuadrados && Number(inm.metros_cuadrados) > 0 && inm.precio) ? `$${Math.round(Number(inm.precio) / Number(inm.metros_cuadrados))} USD / m²` : (existing.precioM2 || 'N/D'),
                                 comision: (inm.comision_porcentaje ? `${inm.comision_porcentaje}%` : (existing.comision || '50/50')),
                                 ubicacion: inm.ubicacion || existing.ubicacion || 'San Cristóbal, Táchira',
                                 sectorNombre: inm.sector_nombre || existing.sectorNombre || (inm.ubicacion ? inm.ubicacion.split(',')[0].trim() : 'San Cristóbal'),
                                 sectorDesc: inm.sector_desc || existing.sectorDesc || 'Zona residencial de alta cotización en San Cristóbal.',
-                                habitaciones: String(inm.habitaciones || existing.habitaciones || '3'),
-                                banos: String(inm.banos || existing.banos || '2'),
-                                m2: inm.metros_cuadrados ? `${inm.metros_cuadrados} m²` : (existing.m2 || '250 m²'),
-                                estacionamientos: inm.estacionamientos ? `${inm.estacionamientos} Puestos` : (existing.estacionamientos || '2 Puestos'),
+                                habitaciones: (inm.habitaciones !== undefined && inm.habitaciones !== null) ? String(inm.habitaciones) : (existing.habitaciones || '0'),
+                                banos: (inm.banos !== undefined && inm.banos !== null) ? String(inm.banos) : (existing.banos || '0'),
+                                m2: (inm.metros_cuadrados !== undefined && inm.metros_cuadrados !== null && Number(inm.metros_cuadrados) > 0) ? `${inm.metros_cuadrados} m²` : (existing.m2 || 'N/D'),
+                                estacionamientos: (inm.estacionamientos !== undefined && inm.estacionamientos !== null) ? (Number(inm.estacionamientos) > 0 ? `${inm.estacionamientos} Puesto${Number(inm.estacionamientos) === 1 ? '' : 's'}` : 'Sin puesto propio') : (existing.estacionamientos || 'Sin puesto propio'),
                                 fotos: fotosList,
                                 asesor: asesorData,
-                                aspectosDestacados: inm.aspectos_destacados || existing.aspectosDestacados || [
+                                aspectosDestacados: inm.aspectos_destacados || existing.aspectosDestacados || (esMaximus ? [
                                     { icono: 'ph-shield-check', titulo: 'Documentación 100% Verificada', desc: 'Libre de gravamen y lista para firmar en registro.' },
                                     { icono: 'ph-handshake', titulo: 'Comisión Compartida Garantizada', desc: 'Respeto absoluto al acuerdo entre corredores.' }
-                                ],
+                                ] : [
+                                    { icono: 'ph-trend-up', titulo: 'Ubicación Estratégica', desc: 'Excelente conectividad y acceso a servicios.' },
+                                    { icono: 'ph-shield-check', titulo: 'Disponibilidad Verificada', desc: 'Propiedad activa disponible para visitas previa cita.' }
+                                ]),
                                 descripcion: inm.descripcion || existing.descripcion || 'Propiedad captada con respaldo legal integral MAXIMUS.',
                                 amenidades: inm.amenidades || existing.amenidades || [
                                     { icono: 'ph-shield-star', nombre: 'Vigilancia privada 24/7' },

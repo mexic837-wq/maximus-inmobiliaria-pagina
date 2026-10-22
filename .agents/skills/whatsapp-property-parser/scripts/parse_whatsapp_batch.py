@@ -29,6 +29,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 try:
     import pytesseract
     from PIL import Image
@@ -102,84 +107,48 @@ ASESORES_MAXIMUS_FALLBACK = [
 
 
 # ==============================================================================
-# DICCIONARIO DE ZONAS Y SECTORES DEL ESTADO TÁCHIRA
+# PLANTILLA OFICIAL ESTRICTA DE 39 UBICACIONES (`UBICACIONES_TACHIRA` de dashboard-layout.html)
 # ==============================================================================
-ZONAS_TACHIRA = [
-    (r"\b(barrio\s+obrero|b\.?o\.?|pasaje\s+acueducto|plaza\s+los\s+mangos|carrera\s+1[89]|calle\s+1[0-5])\b",
-     "Barrio Obrero", "Barrio Obrero, San Cristóbal",
-     "Zona comercial y residencial consolidada en el corazón de San Cristóbal, con acceso inmediato a servicios, gastronomía y transporte."),
-    (r"\b(pueblo\s+nuevo|av\.?\s+espa[ñn]a|plaza\s+de\s+toros|pol[ií]gono\s+de\s+tiro|los\s+kioscos)\b",
-     "Pueblo Nuevo", "Pueblo Nuevo, San Cristóbal",
-     "Sector residencial de altísima demanda y plusvalía continua en San Cristóbal, rodeado de centros empresariales, clínicas y comercios exclusivos."),
-    (r"\b(guaparo|urb\.?\s+guaparo)\b",
-     "Urbanización Guaparo", "Urbanización Guaparo, San Cristóbal",
-     "Ubicada en una de las zonas residenciales más consolidadas, seguras y cotizadas de San Cristóbal."),
-    (r"\b(pirineos\s+ii|pirineos\s+2|pirineos\s+i|los\s+pirineos|pirineos|don\s+bosco)\b",
-     "Los Pirineos", "Los Pirineos, San Cristóbal",
-     "Zona alta residencial caracterizada por su clima fresco de montaña, urbanismos organizados y excelente conectividad vial."),
-    (r"\b(quinimar[ií]|urb\.?\s+quinimar[ií])\b",
-     "Quinimarí", "Quinimarí, San Cristóbal",
-     "Sector residencial exclusivo al este de la ciudad con clima fresco, tranquilidad y excelente entorno familiar."),
-    (r"\b(las\s+lomas|av\.?\s+libertador)\b",
-     "Las Lomas", "Las Lomas, San Cristóbal",
-     "Sector residencial tranquilo, seguro y cercano a las principales arterias viales de San Cristóbal."),
-    (r"\b(zona\s+industrial\s+paramillo|z\.?i\.?\s+paramillo)\b",
-     "Zona Industrial Paramillo", "Zona Industrial Paramillo, San Cristóbal",
-     "Zona industrial consolidada al norte de la ciudad con fácil acceso para transporte pesado y logística."),
-    (r"\b(paramillo|altos\s+de\s+paramillo|colinas\s+de\s+paramillo)\b",
-     "Paramillo", "Paramillo, San Cristóbal",
-     "Sector de alto crecimiento urbanístico y residencial al norte de San Cristóbal, con excelente proyección de revalorización."),
-    (r"\b(zona\s+industrial\s+barrancas|barrancas)\b",
-     "Zona Industrial Barrancas", "Zona Industrial Barrancas, San Cristóbal",
-     "Complejo industrial y comercial estratégico con amplias vías de acceso para carga y operaciones corporativas."),
-    (r"\b(av\.?\s+19\s+de\s+abril|19\s+de\s+abril)\b",
-     "Av. 19 de Abril", "Av. 19 de Abril, San Cristóbal",
-     "Arteria comercial y empresarial neurálgica de la ciudad con máxima visibilidad para marcas líderes."),
-    (r"\b(la\s+castellana|urb\.?\s+la\s+castellana|av\.?\s+ferrero\s+tamayo|ferrero\s+tamayo)\b",
-     "La Castellana", "La Castellana, San Cristóbal",
-     "Excelente sector residencial y comercial de la parte alta de San Cristóbal con rápido acceso a toda la ciudad."),
-    (r"\b(el\s+bosque|res\.?\s+el\s+bosque)\b",
-     "Residencias El Bosque", "Residencias El Bosque, San Cristóbal",
-     "Conjunto residencial estratégico con excelente ubicación y acceso directo a las principales avenidas."),
-    (r"\b(sambil|c\.?c\.?\s+sambil)\b",
-     "C.C. Sambil", "C.C. Sambil, San Cristóbal",
-     "Principal centro comercial y de negocios del Estado Táchira con tráfico peatonal garantizado y seguridad integral."),
-    (r"\b(la\s+concordia|marginal\s+del\s+torbes)\b",
-     "La Concordia", "La Concordia, San Cristóbal",
-     "Zona de intensa actividad comercial, de transporte y de servicios en San Cristóbal."),
-    (r"\b(la\s+ermita|centro|5ta\s+avenida|7ma\s+avenida|quinta\s+avenida|septima\s+avenida)\b",
-     "Centro de San Cristóbal", "Centro, San Cristóbal",
-     "Núcleo comercial tradicional de San Cristóbal con altísimo flujo peatonal y conectividad urbana."),
-    (r"\b(santa\s+teresa|hospital\s+central|av\.?\s+lucio\s+oquendo)\b",
-     "Santa Teresa", "Santa Teresa, San Cristóbal",
-     "Sector estratégico cercano al complejo médico asistencial y universidades de la ciudad."),
-    (r"\b(las\s+acacias|av\.?\s+rotaria|rotaria)\b",
-     "Las Acacias", "Las Acacias, San Cristóbal",
-     "Zona residencial fresca y tradicional con fácil acceso hacia el este y sur de San Cristóbal."),
-    (r"\b(palo\s+gordo|las\s+vegas\s+de\s+t[aá]riba|v[ií]a\s+palo\s+gordo)\b",
-     "Palo Gordo", "Palo Gordo, Cárdenas",
-     "Sector residencial tranquilo de clima fresco entre San Cristóbal y Cárdenas con alta demanda familiar."),
-    (r"\b(t[aá]riba|colinas\s+de\s+t[aá]riba|tucap[eé]|el\s+diamante|las\s+margaritas)\b",
-     "Táriba", "Táriba, Cárdenas",
-     "Zona residencial de clima agradable y tradición familiar en el Municipio Cárdenas, a pocos minutos de San Cristóbal."),
-    (r"\b(palmira|el\s+abejal|la\s+flautera|patiecitos|gu[aá]simos)\b",
-     "Palmira", "Palmira, Guásimos",
-     "Sector de clima frío de montaña y ambiente tranquilo en el Municipio Guásimos, con excelente calidad de vida."),
-    (r"\b(cordero|lomas\s+blancas|andr[eé]s\s+bello)\b",
-     "Cordero", "Cordero, Andrés Bello",
-     "Población andina de clima fresco de montaña y entorno agrícola y residencial seguro."),
-    (r"\b(rubio|jun[ií]n|las\s+dantas)\b",
-     "Rubio", "Rubio, Junín",
-     "Importante ciudad del eje sur-occidental del Táchira con pujante actividad comercial y cafetalera."),
-    (r"\b(san\s+antonio|ure[ñn]a)\b",
-     "San Antonio del Táchira", "San Antonio, Bolívar",
-     "Eje fronterizo comercial e industrial estratégico del Estado Táchira."),
-    (r"\b(la\s+fr[ií]a|garc[ií]a\s+de\s+hevia)\b",
-     "La Fría", "La Fría, García de Hevia",
-     "Centro agroindustrial y logístico de la zona norte del Estado Táchira."),
-    (r"\b(la\s+grita|j[aá]uregui)\b",
-     "La Grita", "La Grita, Jáuregui",
-     "Ciudad histórica y agrícola de alta montaña en el Estado Táchira.")
+UBICACIONES_TACHIRA_REGLAS = [
+    ("urb-pirineos", "Urb. Pirineos II", "San Cristóbal", r"\b(pirineos\s+ii|pirineos\s+2|urb\.?\s+pirineos\s+ii)\b"),
+    ("pirineos", "Los Pirineos", "San Cristóbal", r"\b(los\s+pirineos|pirineos\s+i\b|pirineos|don\s+bosco|do[ñn]a\s+juanita|la\s+arboleda|av\.?\s+19\s+de\s+abril|avenida\s+19\s+de\s+abril)\b"),
+    ("urb-guaparo", "Urb. Guaparo", "San Cristóbal", r"\b(guaparo|urb\.?\s+guaparo)\b"),
+    ("la-ermita", "La Ermita", "San Cristóbal", r"\b(la\s+ermita|deporte\s+japon[eé]s)\b"),
+    ("san-carlos", "San Carlos", "San Cristóbal", r"\b(san\s+carlos|barrio\s+san\s+carlos|moncricket)\b"),
+    ("madre-juana", "Madre Juana", "San Cristóbal", r"\b(madre\s+juana)\b"),
+    ("unidad-vecinal", "Unidad Vecinal", "San Cristóbal", r"\b(unidad\s+vecinal)\b"),
+    ("santa-ines", "Santa Inés", "San Cristóbal", r"\b(santa\s+in[eé]s)\b"),
+    ("barrio-sucre", "Barrio Sucre", "San Cristóbal", r"\b(barrio\s+sucre|urb\.?\s+sucre|\bunet\b|\bula\b|barrio\s+bol[ií]var)\b"),
+    ("la-castellana", "La Castellana", "San Cristóbal", r"\b(la\s+castellana|terrazas\s+de\s+la\s+castellana|urb\.?\s+alto\s+pino|alto\s+pino|ferrero\s+tamayo|colegio\s+montessori|el\s+bosque|res\.?\s+el\s+bosque)\b"),
+    ("paramillo", "Paramillo", "San Cristóbal", r"\b(paramillo|altos\s+de\s+paramillo|colinas\s+de\s+paramillo|z\.?i\.?\s+paramillo|zona\s+industrial\s+paramillo|sambil)\b"),
+    ("pueblo-nuevo", "Pueblo Nuevo", "San Cristóbal", r"\b(pueblo\s+nuevo|av\.?\s+espa[ñn]a|plaza\s+de\s+toros|pol[ií]gono\s+de\s+tiro|los\s+kioskos|los\s+kioscos|tierra\s+dorada|terracota|santa\s+teresa|santa\s+cecilia|hospital\s+central|las\s+acacias|av\.?\s+rotaria)\b"),
+    ("barrio-obrero", "Barrio Obrero", "San Cristóbal", r"\b(barrio\s+obrero|b\.?o\.?|pasaje\s+acueducto|plaza\s+los\s+mangos|av\.?\s+carabobo|edificio\s+alc[aá]zar|residencias\s+el\s+parque|carrera\s+1[89]|calle\s+1[0-6])\b"),
+    ("quinimari", "Quinimarí", "San Cristóbal", r"\b(quinimar[ií]|urb\.?\s+quinimar[ií]|urb\.?\s+torbes)\b"),
+    ("las-lomas", "Las Lomas", "San Cristóbal", r"\b(las\s+lomas|av\.?\s+libertador|barrio\s+libertador)\b"),
+    ("la-concordia", "La Concordia", "San Cristóbal", r"\b(la\s+concordia|al\s+lado\s+de\s+trt|marginal\s+del\s+torbes|urb\.?\s+coromoto|residencias\s+la\s+hacienda|la\s+castra)\b"),
+    ("la-romera", "La Romera", "San Cristóbal", r"\b(la\s+romera)\b"),
+    ("el-lobo", "El Lobo", "San Cristóbal", r"\b(el\s+lobo)\b"),
+    ("la-popita", "La Popita", "San Cristóbal", r"\b(la\s+popita)\b"),
+    ("las-pilas", "Las Pilas", "San Cristóbal", r"\b(las\s+pilas|santa\s+eduvig[ei]s)\b"),
+    ("centro", "Centro de San Cristóbal", "San Cristóbal", r"\b(centro\s+de\s+san\s+crist[oó]bal|casco\s+central|5ta\s+avenida|7ma\s+avenida|quinta\s+avenida|s[eé]ptima\s+avenida|\bcentro\b)\b"),
+    ("palo-gordo", "Palo Gordo", "Cárdenas", r"\b(palo\s+gordo|v[ií]a\s+palo\s+gordo|altos\s+de\s+palo\s+gordo)\b"),
+    ("tariba", "Táriba", "Cárdenas", r"\b(t[aá]riba|colinas\s+de\s+t[aá]riba|las\s+vegas\s+de\s+t[aá]riba|arjona|colegio\s+virgen\s+del\s+valle|el\s+diamante|las\s+margaritas|barrancas|z\.?i\.?\s+barrancas)\b"),
+    ("palmira-centro", "Palmira Centro", "Guásimos", r"\b(palmira\s+centro|casco\s+de\s+palmira)\b"),
+    ("palmira", "Palmira", "Cárdenas", r"\b(palmira|el\s+abejal|la\s+flautera|patiecitos|gu[aá]simos|caneyes)\b"),
+    ("san-josecito", "San Josecito", "Torbes", r"\b(san\s+josecito|torbes)\b"),
+    ("la-grita", "La Grita", "Jáuregui", r"\b(la\s+grita|j[aá]uregui)\b"),
+    ("rubio", "Rubio", "Junín", r"\b(rubio|jun[ií]n|las\s+dantas)\b"),
+    ("capacho-nuevo", "Capacho Nuevo", "Independencia", r"\b(capacho\s+nuevo|independencia|capacho|peribeca)\b"),
+    ("capacho-viejo", "Capacho Viejo", "Independencia", r"\b(capacho\s+viejo|libertad)\b"),
+    ("san-antonio", "San Antonio del Táchira", "Bolívar", r"\b(san\s+antonio|ure[ñn]a|bol[ií]var)\b"),
+    ("lobatera", "Lobatera", "Lobatera", r"\b(lobatera|borot[aá])\b"),
+    ("michelena", "Michelena", "Michelena", r"\b(michelena)\b"),
+    ("santa-ana", "Santa Ana del Táchira", "Córdoba", r"\b(santa\s+ana|c[oó]rdoba)\b"),
+    ("tucape", "Tucapé", "Fernández Feo", r"\b(tucap[eé])\b"),
+    ("coloncito", "Coloncito", "Panamericano", r"\b(coloncito|panamericano)\b"),
+    ("la-fria", "La Fría", "García de Hevia", r"\b(la\s+fr[ií]a|garc[ií]a\s+de\s+hevia)\b"),
+    ("el-piñal", "El Piñal", "Fernández Feo", r"\b(el\s+pi[ñn]al|fern[aá]ndez\s+feo)\b"),
+    ("pregonero", "Pregonero", "Uribante", r"\b(pregonero|uribante|cordero|lomas\s+blancas)\b"),
 ]
 
 REGLAS_ASPECTOS_DESTACADOS = [
@@ -443,18 +412,17 @@ def parse_txt_file(txt_path: Path) -> List[Dict[str, Any]]:
 
 def group_messages_by_sender_window(messages: List[Dict[str, Any]], window_minutes: int = 3) -> List[Dict[str, Any]]:
     """
-    Agrupa mensajes por remitente (`author`) dentro de una ventana de ±3 minutos.
-    Si un remitente envía 4 fotos seguidas (WA0010..WA0013.jpg) y en la última foto o en el
-    mensaje inmediatamente siguiente envía el texto descriptivo, los une como UN SOLO INMUEBLE,
-    sin mezclarlos jamás con mensajes de otros remitentes aunque hayan escrito entre medias.
+    Agrupa únicamente álbumes de fotos + descripción del mismo inmueble dentro de ±3 minutos,
+    NUNCA mezclando propiedades distintas enviadas por el mismo asesor en el mismo minuto.
     """
     active_by_author: Dict[Tuple[str, str], Dict[str, Any]] = {}
     grouped: List[Dict[str, Any]] = []
 
     for msg in messages:
-        if not msg["text"] and not msg["attachments"]:
+        clean_msg_text = (msg["text"] or "").strip()
+        if not clean_msg_text and not msg["attachments"]:
             continue
-        if re.search(r"(elimin[oó]\s+este\s+mensaje|mensaje\s+eliminado|multimedia\s+omitido|media\s+omitted)", msg["text"], re.I) and not msg["attachments"]:
+        if re.search(r"^(this message was deleted|elimin[oó]\s+este\s+mensaje|mensaje\s+eliminado|multimedia\s+omitido|media\s+omitted)$", clean_msg_text, re.I) and not msg["attachments"]:
             continue
 
         key = (msg["group_name"], msg["author"])
@@ -466,22 +434,30 @@ def group_messages_by_sender_window(messages: List[Dict[str, Any]], window_minut
                 diff_sec = abs((msg["timestamp"] - prev["timestamp"]).total_seconds())
                 within_time = diff_sec <= (window_minutes * 60)
 
-            both_have_full_descriptions = (
-                len(prev["text"].strip()) > 120 and len(msg["text"].strip()) > 120
-            )
+            if within_time:
+                prev_text = (prev["text"] or "").strip()
+                prev_has_text = len(prev_text) > 0
+                msg_has_text = len(clean_msg_text) > 0
+                prev_att_count = len(prev["attachments"])
+                msg_att_count = len(msg["attachments"])
 
-            if within_time and not both_have_full_descriptions:
-                if msg["text"]:
-                    prev["text"] = (prev["text"] + "\n" + msg["text"]).strip()
-                for att in msg["attachments"]:
-                    if att not in prev["attachments"]:
-                        prev["attachments"].append(att)
-                if msg["timestamp"]:
-                    prev["timestamp"] = msg["timestamp"]
-                continue
+                is_album_followup_photos = (len(prev_text) >= 45 and not msg_has_text and msg_att_count > 0)
+                is_consecutive_uncaptioned_photos = (not prev_has_text and prev_att_count > 0 and not msg_has_text and msg_att_count > 0)
+                is_caption_after_multi_photo_album = (not prev_has_text and prev_att_count >= 2 and msg_has_text)
+
+                if is_album_followup_photos or is_consecutive_uncaptioned_photos or is_caption_after_multi_photo_album:
+                    if msg_has_text:
+                        prev["text"] = f"{prev_text}\n{clean_msg_text}".strip() if prev_text else clean_msg_text
+                    for att in msg["attachments"]:
+                        if att not in prev["attachments"]:
+                            prev["attachments"].append(att)
+                    if msg["timestamp"]:
+                        prev["timestamp"] = msg["timestamp"]
+                    continue
 
         nuevo_bloque = {
             **msg,
+            "text": clean_msg_text,
             "attachments": list(msg["attachments"]),
         }
         grouped.append(nuevo_bloque)
@@ -570,19 +546,23 @@ def es_requerimiento_o_basura(text: str, has_images: bool, modo_entrada: str) ->
         return True, "Mensaje vacío sin texto ni imágenes"
 
     pat_busqueda = re.compile(
-        r"\b(busco\s+(?:apartamento|apto|casa|local|galp[oó]n|terreno|inmueble|quinta|townhouse|oficina|habitaci[oó]n)|"
+        r"\b(requiero|requerimos|se\s+requiere|tengo\s+el\s+siguiente\s+requerimiento|siguientes?\s+requerimientos?|"
+        r"requerimiento\s+de\s+(?:alquiler|compra|venta)|"
+        r"busco\s+(?:alquiler|apartamento|apto|casa|local|galp[oó]n|terreno|inmueble|quinta|townhouse|oficina|habitaci[oó]n|propiedad|el\s+captador)|"
+        r"se\s+busca\s+(?:casa|apartamento|local|terreno)|"
         r"cliente\s+(?:busca|solicita|requiere|necesita)|"
-        r"solicito\s+en\s+(?:alquiler|venta|arriendo)|"
-        r"requiero\s+(?:apartamento|casa|local|galp[oó]n|inmueble)|"
+        r"solicito\s*:|solicito\s+en\s+(?:alquiler|venta|arriendo)|"
+        r"tengo\s+un\s+excelente\s+cliente|para\s+cliente\s+repetido|"
+        r"quien\s+con\s+alquiler|quien\s+lleva\s+esta\s+captacion|"
         r"necesito\s+con\s+urgencia\s+para\s+cliente|"
         r"colegas\s+qui[eé]n\s+tiene)\b",
         re.IGNORECASE
     )
-    if pat_busqueda.search(t_low) and not re.search(r"\b(en\s+venta|se\s+vende|se\s+alquila|disponible\s+en\s+venta)\b", t_low):
-        return True, "Requerimiento de búsqueda de cliente (No es oferta de inmueble)"
+    if pat_busqueda.search(t_low):
+        return True, "Requerimiento de búsqueda de cliente / consulta de colega"
 
     palabras_inm = re.search(
-        r"\b(venta|vende|alquiler|alquila|canon|casa|apto|apartamento|quinta|townhouse|local|galp[oó]n|terreno|finca|m2|mts|hab|ba[ñn]os)\b",
+        r"\b(venta|vende|alquiler|alquila|canon|cano|casa|apto|apartamento|quinta|townhouse|local|galp[oó]n|terreno|finca|m2|mts|hab|ba[ñn]os)\b",
         t_low
     )
     if not palabras_inm and not has_images:
@@ -612,13 +592,15 @@ def extraer_ocr_imagenes(image_paths: List[Path]) -> str:
 
 def clasificar_operacion(texto: str) -> Optional[str]:
     t = texto.lower()
-    es_alquiler = bool(re.search(r"\b(alquiler|alquila|alquilo|arriendo|arrendamiento|canon\s+mensual|canon\b|meses\s+de\s+dep[oó]sito|mes\s+adelantado)\b", t))
-    es_venta = bool(re.search(r"\b(en\s+venta|se\s+vende|vendo|venta\s+de|oportunidad\s+de\s+compra|listo\s+para\s+firmar)\b", t))
+    es_alquiler = bool(re.search(r"\b(alquiler|alquila|alquilo|arriendo|arrendamiento|canon\s+mensual|canon\b|cano\b|meses\s+de\s+dep[oó]sito|mes\s+adelantado)\b", t))
+    es_venta = bool(re.search(r"\b(en\s+venta|se\s+vende|vendo|venta\s+de|inversi[oó]n|se\s+traspasa|oportunidad\s+de\s+compra|listo\s+para\s+firmar)\b", t))
     if es_alquiler and not es_venta:
         return "alquiler"
     if es_venta and not es_alquiler:
         return "venta"
     if es_venta and es_alquiler:
+        if re.search(r"\b(se\s+traspasa|inversi[oó]n)\b", t):
+            return "venta"
         idx_v = re.search(r"\b(venta|vende|vendo)\b", t)
         idx_a = re.search(r"\b(alquiler|alquila|canon)\b", t)
         if idx_a and idx_v:
@@ -631,15 +613,15 @@ def clasificar_tipo_inmueble(texto: str) -> Tuple[Optional[str], Optional[str], 
     t = texto.lower()
     if re.search(r"\b(galp[oó]n|galpones|complejo\s+industrial|nave\s+industrial)\b", t):
         return "Galpones", "galpones", "galpon"
-    if re.search(r"\b(local\s+comercial|local\b|oficina\s+comercial|consultorio|punto\s+comercial|nivel\s+feria)\b", t):
+    if re.search(r"\b(local\s+comercial|local\b|oficina|consultorio|punto\s+comercial|nivel\s+feria|tienda\s+de\s+ropa|lavander[ií]a|fondo\s+de\s+comercio)\b", t):
         return "Local Comercial", "local_comercial", "local"
     if re.search(r"\b(finca|hacienda|agropecuaria|hect[aá]reas)\b", t):
         return "Fincas", "fincas", "terreno"
     if re.search(r"\b(casa\s+de\s+campo|chalet\s+de\s+monta[ñn]a|posada\s+campestre)\b", t):
         return "Casa de campo", "casa_de_campo", "casa"
-    if re.search(r"\b(apartamento|apto\.?|departamento|penthouse|p\.?h\.?|apartaestudio|anexo)\b", t):
+    if re.search(r"\b(apartamento|apto\.?|departamento|penthouse|p\.?h\.?|apartaestudio|anexo|habitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n)\b", t):
         return "Departamento", "departamento", "apartamento"
-    if re.search(r"\b(casa|quinta|townhouse|town\s+house|t\.?h\.?|chalet|residencia\s+unifamiliar)\b", t):
+    if re.search(r"\b(casa|quinta|townhouse|town\s+house|t\.?h\.?|chalet|residencia\s+unifamiliar|terrazas\s+de\s+la\s+castellana)\b", t):
         return "Casa", "casa", "casa"
     if re.search(r"\b(terreno|parcela|lote\s+de\s+terreno|solar)\b", t):
         return "Fincas", "fincas", "terreno"
@@ -647,12 +629,12 @@ def clasificar_tipo_inmueble(texto: str) -> Tuple[Optional[str], Optional[str], 
 
 
 def extraer_precio(texto: str, operacion: Optional[str]) -> Optional[float]:
-    t_clean = re.sub(r"\d+[\.,]?\d*\s*(?:litros|lts|l\b|m2|mts2|mts|metros|m²|hab|ba[ñn]os)", " ", texto, flags=re.IGNORECASE)
-    t_clean = re.sub(r"(?:\+?58|0414|0424|0412|0416|0426)[\d\s\-]{7,12}", " ", t_clean)
+    t_clean = re.sub(r"\d+[\.,]?\d*\s*(?:litros|lts|l\b|m2|mts2|mtrs2|mts|metros|m²|mts²|hab|ba[ñn]os)", " ", texto, flags=re.IGNORECASE)
+    t_clean = re.sub(r"(?:\+?58|0414|0424|0412|0416|0426|0422)[\d\s\-\.]{7,12}", " ", t_clean)
     patrones = [
-        r"(?:precio|inversi[oó]n|canon|valor|costo|oferta|monto)[\s:]*?(?:de\s*)?(?:usd|us\$|\$|ref\.?)?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})(?:\s*(?:usd|us\$|\$|d[oó]lares|mensual))?",
+        r"(?:precio|inversi[oó]n|canon|cano|valor|costo|oferta|monto)[\s:\*]*?(?:de\s*)?(?:usd|us\$|\$|ref\.?)?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})(?:\s*(?:usd|us\$|\$|💲|🇺🇸|d[oó]lares|mensual))?",
         r"(?:usd|us\$|\$)\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\b",
-        r"\b(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\s*(?:\$|usd|us\$|d[oó]lares)",
+        r"\b(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\s*(?:\$|💲|🇺🇸|usd|us\$|d[oó]lares)",
         r"(?:precio|inversi[oó]n|\$)\s*(\d{2,3}(?:[\.,]\d)?)\s*[kK]\b",
     ]
     for pat in patrones:
@@ -665,52 +647,51 @@ def extraer_precio(texto: str, operacion: Optional[str]) -> Optional[float]:
                     val = float(re.sub(r"[\.,]", "", raw_val))
                 else:
                     val = float(raw_val.replace(",", "."))
-            if operacion == "alquiler" and 80 <= val <= 25000:
+            if operacion == "alquiler" and 50 <= val <= 25000:
                 return val
             elif operacion == "venta" and 5000 <= val <= 5000000:
                 return val
-            elif operacion is None and 100 <= val <= 5000000:
+            elif operacion is None and 50 <= val <= 5000000:
                 return val
     return None
 
 
-def extraer_sector_tachira(texto: str) -> Tuple[str, str, str]:
-    for regex, sec_nombre, ubicacion, sec_desc in ZONAS_TACHIRA:
+def extraer_sector_tachira(texto: str) -> Optional[Dict[str, str]]:
+    """
+    Resuelve la ubicación EXCLUSIVAMENTE contra las 39 opciones de la plantilla oficial
+    `UBICACIONES_TACHIRA` (`#inm-sector-select` en `dashboard-layout.html`).
+    Retorna None si el texto no menciona ninguna ubicación válida de la plantilla (Cero Invención).
+    """
+    for sec_key, sec_label, municipio, regex in UBICACIONES_TACHIRA_REGLAS:
         if re.search(regex, texto, flags=re.IGNORECASE):
-            return sec_nombre, ubicacion, sec_desc
-    m = re.search(r"\b(?:urb(?:anizaci[oó]n)?|sector|res(?:idencias)?|barrio|conjunto\s+residencial|av(?:enida)?)\.?\s+([A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s]{3,28})", texto)
-    if m:
-        sec_custom = m.group(1).strip().title()
-        sec_custom = re.split(r"[,.\n\-]", sec_custom)[0].strip()
-        if len(sec_custom) >= 3:
-            return (
-                sec_custom,
-                f"{sec_custom}, San Cristóbal",
-                f"Sector residencial y comercial ubicado en {sec_custom}, Estado Táchira, con excelente conectividad y servicios cercanos."
-            )
-    return (
-        "San Cristóbal",
-        "San Cristóbal, Táchira",
-        "Ubicación estratégica dentro del área metropolitana de San Cristóbal, Estado Táchira."
-    )
+            return {
+                "sector_key": sec_key,
+                "sector_nombre": sec_label,
+                "municipio": municipio,
+                "ubicacion": f"{sec_label}, {municipio}, Táchira",
+                "sector_desc": f"Sector residencial {sec_label}, Municipio {municipio}, Estado Táchira.",
+            }
+    return None
 
 
 def extraer_caracteristicas(texto: str, tipo_ui: Optional[str]) -> Dict[str, Any]:
     t = texto.lower()
-    habs = None
-    m_hab = re.search(r"\b(\d{1,2})\s*(?:amplias\s+|c[oó]modas\s+)?(?:habitaciones|habitaci[oó]n|habs?\.?|dormitorios|alcobas|cuartos)\b", t)
+    habs = 0
+    m_hab = re.search(r"\b(\d{1,2})\s*(?:amplias\s+|c[oó]modas\s+)?(?:habitaciones|habitaci[oó]n|habs?\.?|dormitorios|alcobas|cuartos|cub[ií]culos|[aá]reas\s+de\s+oficina)\b", t)
     if not m_hab:
         m_hab = re.search(r"\b(?:habitaciones|habs?\.?)[\s:]*(\d{1,2})\b", t)
     if m_hab:
         habs = int(m_hab.group(1))
         if re.search(r"\+\s*(?:1\s*)?(?:hab(?:itaci[oó]n)?\s+de\s+)?servicio", t):
             habs += 1
-    else:
-        if tipo_ui in ("Local Comercial", "Galpones"):
-            m_ofi = re.search(r"\b(\d{1,2})\s*(?:oficinas|ambientes|cub[ií]culos)\b", t)
-            habs = int(m_ofi.group(1)) if m_ofi else 0
-        else:
-            habs = 0
+    elif re.search(r"\btres\s+habitaciones\b", t):
+        habs = 3
+    elif re.search(r"\bdos\s+(?:habitaciones|cub[ií]culos|[aá]reas\s+de\s+oficina)\b", t) or (re.search(r"\bhabitaci[oó]n\s+principal\b", t) and re.search(r"\buna\s+habitaciones?\s+auxiliar", t)):
+        habs = 2
+    elif re.search(r"\b(?:habitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n)\b", t):
+        habs = 1
+    if re.search(r"\bhabitaci[oó]n\s+principal\b", t) and re.search(r"\b2\s+habitaciones\s+auxiliares\b", t):
+        habs = 3
 
     banos = 0.0
     if re.search(r"\b(\d{1,2})\s*ba[ñn]os?\s+y\s+medio\b", t):
@@ -725,15 +706,22 @@ def extraer_caracteristicas(texto: str, tipo_ui: Optional[str]) -> Dict[str, Any
             m_b = re.search(r"\b(?:ba[ñn]os?|sanitarios)[\s:]*(\d{1,2})\b", t)
         if m_b:
             banos = float(m_b.group(1))
+        elif re.search(r"\bdos\s+ba[ñn]os\b", t) or (re.search(r"\bba[ñn]o\s+de\s+uso\s+com[uú]n\b", t) and re.search(r"\bba[ñn]o\s+privado\b", t)):
+            banos = 2.0
+        elif re.search(r"\bba[ñn]o\s+privado\b|\bba[ñn]o\s+compartido\b", t):
+            banos = 1.0
 
     estac_int = 0
-    estac_str = "No especificado"
-    m_est = re.search(r"\b(\d{1,2})\s*(?:puestos?\s+de\s+estacionamiento|puestos?\s+de\s+garaje|estacionamientos?|p\/e|puestos?\s+techados?|veh[ií]culos?|carros?)\b", t)
+    estac_str = "Sin puesto propio"
+    m_est = re.search(r"\b(\d{1,2})\s*(?:puestos?\s+de\s+estacionamiento|puestos?\s+de\s+garaje|estacionamientos?|p\.?\s*e\.?|p\/e|puestos?\s+techados?|veh[ií]culos?|carros?|garaje|garage)\b", t)
     if not m_est:
         m_est = re.search(r"\b(?:estacionamiento|garaje|puestos?)[\s:]*(\d{1,2})\b", t)
     if m_est:
         estac_int = int(m_est.group(1))
         estac_str = f"{estac_int} Puesto" if estac_int == 1 else f"{estac_int} Puestos"
+    elif re.search(r"\b(un\s+puesto\s+de\s+estacionamiento|estacionamiento\s+techado|garage|garaje)\b", t) and not re.search(r"sin\s+estacionamiento", t):
+        estac_int = 1
+        estac_str = "1 Puesto"
     elif re.search(r"a\s+pie\s+de\s+calle", t):
         estac_int = 0
         estac_str = "A pie de calle"
@@ -742,7 +730,7 @@ def extraer_caracteristicas(texto: str, tipo_ui: Optional[str]) -> Dict[str, Any
         estac_str = "Libre en CC"
 
     m2 = 0.0
-    m2_matches = re.findall(r"\b(\d{2,5}(?:[\.,]\d{1,2})?)\s*(?:m2|mts2|mts|m²|metros\s+cuadrados)\b", t)
+    m2_matches = re.findall(r"\b(\d{2,5}(?:[\.,]\d{1,2})?)\s*(?:m2\b|mts2\b|mtrs2\b|mts\b|metros\s+cuadrados\b|m²|mts²)", t)
     if m2_matches:
         vals = [float(x.replace(",", ".")) for x in m2_matches if float(x.replace(",", ".")) >= 12]
         if vals:
@@ -781,29 +769,23 @@ def generar_textos_maximus(
         etiqueta_prop = "Townhouse"
     elif "quinta" in t_low:
         etiqueta_prop = "Quinta"
+    elif re.search(r"\boficina\b", t_low):
+        etiqueta_prop = "Oficina Comercial"
+    elif re.search(r"\b(habitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n)\b", t_low):
+        etiqueta_prop = "Habitación Equipada"
+    elif re.search(r"\banexo\b", t_low):
+        etiqueta_prop = "Apartamento Anexo"
     elif tipo_ui == "Departamento":
         etiqueta_prop = "Apartamento"
 
-    gancho = f"en {sector_nombre}"
-    if "amoblad" in t_low:
-        gancho = f"amoblado en {sector_nombre}"
-    elif "estrenar" in t_low:
-        gancho = f"a estrenar en {sector_nombre}"
-    elif "piscina" in t_low:
-        gancho = f"con piscina en {sector_nombre}"
-    elif "pie de calle" in t_low and tipo_ui == "Local Comercial":
-        gancho = f"a pie de calle en {sector_nombre}"
-
-    titulo = f"{etiqueta_prop} {gancho}"
-    if len(titulo) > 68:
-        titulo = f"{etiqueta_prop} en {sector_nombre}"
+    titulo = f"{etiqueta_prop} en {sector_nombre}"
 
     if is_maximus:
         subtitulo = f"Captación Exclusiva MAXIMUS en {ubicacion} con respaldo legal y acabados verificados"
     elif tipo_ui in ("Local Comercial", "Galpones"):
         subtitulo = f"Espacio corporativo y comercial estratégico en {ubicacion} con alto potencial operativo"
     else:
-        subtitulo = f"Propiedad seleccionada en {ubicacion} con excelente distribución e iluminación natural"
+        subtitulo = f"Propiedad en {operacion} ubicada en {ubicacion}"
 
     aspectos = []
     amenidades_nombres = []
@@ -826,12 +808,22 @@ def generar_textos_maximus(
             })
             usados_iconos.add("ph-car")
 
-    defaults_por_tipo = [
-        ("ph-trend-up", "Zona de Alta Demanda", f"Excelente ubicación y revalorización en {sector_nombre}"),
-        ("ph-star", "Distribución Funcional", "Espacios bien iluminados y ventilación natural"),
-        ("ph-check", "Gestión Comercial MAXIMUS", "Atención personalizada y acompañamiento integral en la negociación"),
-        ("ph-shield-check", "Documentación Verificada", "Estatus legal revisado para una operación segura"),
-    ]
+    # Regla Entrenada: "Gestión MAXIMUS" es EXCLUSIVO de `captaciones_maximus/` (is_maximus=True)
+    if is_maximus:
+        defaults_por_tipo = [
+            ("ph-trend-up", "Zona de Alta Demanda", f"Excelente ubicación y revalorización en {sector_nombre}"),
+            ("ph-star", "Distribución Funcional", "Espacios bien iluminados y ventilación natural"),
+            ("ph-check", "Gestión MAXIMUS", "Captación directa exclusiva con respaldo de nuestra agencia"),
+            ("ph-shield-check", "Documentación Verificada", "Estatus legal revisado para una operación segura"),
+        ]
+    else:
+        defaults_por_tipo = [
+            ("ph-trend-up", "Zona de Alta Demanda", f"Excelente ubicación y revalorización en {sector_nombre}"),
+            ("ph-star", "Distribución Funcional", "Espacios bien iluminados y ventilación natural"),
+            ("ph-shield-check", "Disponibilidad Verificada", "Propiedad activa disponible para visitas previa cita"),
+            ("ph-car", f"Estacionamiento: {estac_ui}", "Comodidad de acceso en la propiedad"),
+        ]
+
     for ico, tit_d, desc_d in defaults_por_tipo:
         if len(aspectos) >= 4:
             break
@@ -840,17 +832,14 @@ def generar_textos_maximus(
             usados_iconos.add(ico)
 
     if not amenidades_nombres:
-        amenidades_nombres = ["Ubicación Estratégica", "Servicios Básicos Operativos", "Acceso Vehicular"]
+        amenidades_nombres = [a["titulo"] for a in aspectos]
 
     m2_str = f" de {int(m2) if m2.is_integer() else m2} m²" if m2 > 0 else ""
     p1 = (
-        f"Presentamos esta excelente opción de {etiqueta_prop.lower()}{m2_str} en {operacion}, "
-        f"ubicada estratégicamente en el sector {sector_nombre} ({ubicacion}). "
+        f"Excelente opción de {etiqueta_prop.lower()}{m2_str} en {operacion} "
+        f"ubicada en {ubicacion}. "
+        f"Cuenta con {habs} habitación(es)/ambiente(s), {int(banos) if banos.is_integer() else banos} baño(s) y estacionamiento ({estac_ui})."
     )
-    if tipo_ui in ("Local Comercial", "Galpones"):
-        p1 += f"Cuenta con {habs} ambiente(s)/oficina(s), {int(banos) if banos.is_integer() else banos} baño(s) y estacionamiento ({estac_ui})."
-    else:
-        p1 += f"Su distribución interior ofrece {habs} habitaciones, {int(banos) if banos.is_integer() else banos} baño(s) y estacionamiento ({estac_ui})."
 
     lineas_limpias = [
         re.sub(r"[^\w\s,.:;\/\-+$%áéíóúÁÉÍÓÚñÑüÜ()]", "", ln).strip()
@@ -858,17 +847,13 @@ def generar_textos_maximus(
         if len(ln.strip()) > 4
     ]
     resumen_detalles = re.sub(r"\s+", " ", " ".join(lineas_limpias)).strip()
-    p2 = f"Especificaciones de la propiedad: {resumen_detalles}" if resumen_detalles else ""
-
-    precio_fmt = f"${precio:,.0f} USD" if precio else "A consultar"
-    sello_str = "Captación Directa Exclusiva de MAXIMUS Inmobiliaria" if is_maximus else "Propiedad comercializada con respaldo de gestión de MAXIMUS Inmobiliaria"
-    p3 = f"Valor ({operacion}): {precio_fmt}. {sello_str} en el Estado Táchira."
+    p2 = f"Detalles: {resumen_detalles}" if resumen_detalles else ""
 
     return {
         "titulo": titulo,
         "subtitulo": subtitulo,
         "sector_desc": sector_desc,
-        "descripcion": "\n\n".join([p for p in (p1, p2, p3) if p]),
+        "descripcion": "\n\n".join([p for p in (p1, p2) if p]),
         "aspectos_destacados": aspectos,
         "amenidades_str": ", ".join(amenidades_nombres),
         "amenidades": [{"icono": "ph-check", "nombre": x} for x in amenidades_nombres],
@@ -877,26 +862,30 @@ def generar_textos_maximus(
 
 def extraer_asesor_externo(author: str, text: str) -> Tuple[str, str]:
     tel = normalizar_telefono_ve(author) or normalizar_telefono_ve(text) or "+58 414 0000000"
-    nombre = None
+    author_clean = re.sub(r"[\+\d\-\s\(\)~]", "", author or "").strip()
+    if len(author_clean) >= 3 and author_clean.lower() != "capturawhatsappweb":
+        return author.replace("~", "").strip(), tel
     m_firma = re.search(
-        r"(?:asesor(?:a)?|corredor(?:a)?|lic\.?|ing\.?|abg\.?|contacto)[\s:]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,2})",
-        text
+        r"(?:captador(?:a)?|asesor(?:a)?|corredor(?:a)?|lic\.?|ing\.?|abg\.?|contacto)[\s:\*]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,2})",
+        text, re.I
     )
     if m_firma:
-        nombre = m_firma.group(1).strip()
-    if not nombre:
-        author_clean = re.sub(r"[\+\d\-\s\(\)~]", "", author).strip()
-        if len(author_clean) >= 3 and author_clean.lower() != "capturawhatsappweb":
-            nombre = author.replace("~", "").strip()
-        else:
-            nombre = "Asesor Aliado Táchira"
-    return nombre, tel
+        return re.sub(r"[\*📲]", "", m_firma.group(1)).strip(), tel
+    m_remax = re.search(
+        r"([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\s*\r?\n\s*(?:RE\/?MAX|C[ÚU]SPIDE|RENT[\-\s]*A[\-\s]*HOUSE|CENTURY|BROTHERS)",
+        text, re.I
+    )
+    if m_remax:
+        return m_remax.group(1).strip(), tel
+    return "Asesor Aliado Táchira", tel
 
 
 def resolver_rutas_imagenes(lote_dir: Path, source_txt: Path, attachment_names: List[str]) -> List[str]:
     resolved = []
     txt_parent = source_txt.parent
     for att in attachment_names:
+        if att.lower().startswith("stk-"):
+            continue
         cand1 = txt_parent / att
         if cand1.exists():
             resolved.append(str(cand1.resolve()))
@@ -975,7 +964,7 @@ def procesar_lote(lote_dir: Path, repo_root: Path, window_minutes: int = 3, modo
         operacion = clasificar_operacion(texto_combinado)
         tipo_ui, tipo_sql_dash, tipo_sql_canon = clasificar_tipo_inmueble(texto_combinado)
         precio = extraer_precio(texto_combinado, operacion)
-        sector_nombre, ubicacion, sector_desc = extraer_sector_tachira(texto_combinado)
+        loc_oficial = extraer_sector_tachira(texto_combinado)
         caract = extraer_caracteristicas(texto_combinado, tipo_ui)
 
         # Asignación diferenciada de Asesor según Bandeja (captaciones_externas vs captaciones_maximus)
@@ -998,6 +987,10 @@ def procesar_lote(lote_dir: Path, repo_root: Path, window_minutes: int = 3, modo
             campos_faltantes.append("Tipo de Inmueble")
         if precio is None or precio <= 0:
             campos_faltantes.append("Precio")
+        if not loc_oficial:
+            campos_faltantes.append("Ubicación Oficial (Plantilla UBICACIONES_TACHIRA)")
+        if len(img_paths) == 0:
+            campos_faltantes.append("Fotografías del Inmueble (Mensaje sin foto adjunta)")
 
         m2 = caract["metros_cuadrados"]
         precio_m2_num = round(precio / m2) if (precio and m2 > 0) else 0
@@ -1009,7 +1002,7 @@ def procesar_lote(lote_dir: Path, repo_root: Path, window_minutes: int = 3, modo
             if son_screenshots:
                 motivo_str += " [Modo 2 Screenshot WhatsApp Web: Requiere lectura por Visión del Agente]"
             pendientes_revision.append({
-                "temp_id": f"PEND-{idx:03d}",
+                "temp_id": f"PEND-{len(pendientes_revision) + 1:03d}",
                 "modo_entrada": modo_entrada,
                 "imagenes_son_screenshots": son_screenshots,
                 "es_captacion_maximus": es_captacion_maximus,
@@ -1022,7 +1015,7 @@ def procesar_lote(lote_dir: Path, repo_root: Path, window_minutes: int = 3, modo
                 "asesor_nombre": asesor_nombre,
                 "asesor_telefono": asesor_telefono,
                 "agente_id": agente_id,
-                "sector_detectado": sector_nombre,
+                "sector_detectado": loc_oficial["sector_nombre"] if loc_oficial else "No especificada en plantilla",
                 "operacion_detectada": operacion,
                 "tipo_detectado": tipo_ui,
                 "precio_detectado": precio,
@@ -1031,6 +1024,10 @@ def procesar_lote(lote_dir: Path, repo_root: Path, window_minutes: int = 3, modo
                 "texto_original": texto_combinado,
             })
             continue
+
+        sector_nombre = loc_oficial["sector_nombre"]
+        ubicacion = loc_oficial["ubicacion"]
+        sector_desc = loc_oficial["sector_desc"]
 
         textos_ed = generar_textos_maximus(
             raw_text=texto_combinado,

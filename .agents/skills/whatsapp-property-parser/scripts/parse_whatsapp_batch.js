@@ -3,15 +3,19 @@
  * MAXIMUS Inmobiliaria - Skill 1: whatsapp-property-parser (Node.js Multi-Formato & Dual-Flow)
  * ============================================================================================
  * Soporta:
- *   1. Separación de flujos por carpeta:
- *      - `captaciones_externas/` -> is_maximus = false, Asesor Externo
- *      - `captaciones_maximus/`  -> is_maximus = true, Asesor Oficial MAXIMUS (consultando
- *        `public.asesores_maximus` y `public.equipo_web` en Supabase)
- *   2. 3 Modos de entrada:
- *      - Modo 1: Exportación nativa (.zip auto-descomprimido o _chat.txt + fotos), agrupando
- *        fotos + texto del mismo remitente en ventana de ±3 minutos sin mezclar otros autores.
- *      - Modo 2: Captura de pantalla completa de WhatsApp Web (`screenshot`).
- *      - Modo 3: Subcarpetas manuales (`inmueble_01/` con `info.txt` + fotos).
+ *   1. Separación estricta de flujos por carpeta:
+ *      - `captaciones_externas/` -> is_maximus = false, Asesor Externo (PROHIBIDO usar "Gestión MAXIMUS")
+ *      - `captaciones_maximus/`  -> is_maximus = true, Asesor Oficial MAXIMUS
+ *   2. Plantilla Oficial Estricta de Ubicaciones (`UBICACIONES_TACHIRA` de `dashboard-layout.html`):
+ *      - Usa exclusivamente las 39 zonas oficiales del desplegable `#inm-sector-select`.
+ *      - Formato estricto:
+ *          sector_nombre = loc.label
+ *          ubicacion     = `${loc.label}, ${loc.municipio}, Táchira`
+ *          sector_desc   = `Sector residencial ${loc.label}, Municipio ${loc.municipio}, Estado Táchira.`
+ *      - Cero Invención: Si no coincide con ninguna zona de la plantilla, va a `pendientes_revision.md`.
+ *   3. Agrupación Inteligente Anti-Mezcla (`groupMessagesBySenderWindow`):
+ *      - Une álbumes de fotos + descripción del mismo inmueble, pero NUNCA mezcla anuncios
+ *        distintos enviados por el mismo asesor en el mismo minuto.
  */
 
 const fs = require('fs');
@@ -28,47 +32,66 @@ const ASESORES_MAXIMUS_FALLBACK = [
     { id: 'eq-004', nombre: 'Carlos Mendoza', cargo: 'Asesor de Inversiones', telefono: '+58 424-7778899', keywords: ['carlos mendoza'], es_principal: false }
 ];
 
-const ZONAS_TACHIRA = [
-    [/\b(barrio\s+obrero|b\.?o\.?|pasaje\s+acueducto|plaza\s+los\s+mangos|carrera\s+1[89]|calle\s+1[0-5])\b/i, 'Barrio Obrero', 'Barrio Obrero, San Cristóbal', 'Zona comercial y residencial consolidada en el corazón de San Cristóbal, con acceso inmediato a servicios, gastronomía y transporte.'],
-    [/\b(pueblo\s+nuevo|av\.?\s+espa[ñn]a|plaza\s+de\s+toros|pol[ií]gono\s+de\s+tiro|los\s+kioscos)\b/i, 'Pueblo Nuevo', 'Pueblo Nuevo, San Cristóbal', 'Sector residencial de altísima demanda y plusvalía continua en San Cristóbal, rodeado de centros empresariales, clínicas y comercios exclusivos.'],
-    [/\b(guaparo|urb\.?\s+guaparo)\b/i, 'Urbanización Guaparo', 'Urbanización Guaparo, San Cristóbal', 'Ubicada en una de las zonas residenciales más consolidadas, seguras y cotizadas de San Cristóbal.'],
-    [/\b(pirineos\s+ii|pirineos\s+2|pirineos\s+i|los\s+pirineos|pirineos|don\s+bosco)\b/i, 'Los Pirineos', 'Los Pirineos, San Cristóbal', 'Zona alta residencial caracterizada por su clima fresco de montaña, urbanismos organizados y excelente conectividad vial.'],
-    [/\b(quinimar[ií]|urb\.?\s+quinimar[ií])\b/i, 'Quinimarí', 'Quinimarí, San Cristóbal', 'Sector residencial exclusivo al este de la ciudad con clima fresco, tranquilidad y excelente entorno familiar.'],
-    [/\b(las\s+lomas|av\.?\s+libertador)\b/i, 'Las Lomas', 'Las Lomas, San Cristóbal', 'Sector residencial tranquilo, seguro y cercano a las principales arterias viales de San Cristóbal.'],
-    [/\b(zona\s+industrial\s+paramillo|z\.?i\.?\s+paramillo)\b/i, 'Zona Industrial Paramillo', 'Zona Industrial Paramillo, San Cristóbal', 'Zona industrial consolidada al norte de la ciudad con fácil acceso para transporte pesado y logística.'],
-    [/\b(paramillo|altos\s+de\s+paramillo|colinas\s+de\s+paramillo)\b/i, 'Paramillo', 'Paramillo, San Cristóbal', 'Sector de alto crecimiento urbanístico y residencial al norte de San Cristóbal, con excelente proyección de revalorización.'],
-    [/\b(zona\s+industrial\s+barrancas|barrancas)\b/i, 'Zona Industrial Barrancas', 'Zona Industrial Barrancas, San Cristóbal', 'Complejo industrial y comercial estratégico con amplias vías de acceso para carga y operaciones corporativas.'],
-    [/\b(av\.?\s+19\s+de\s+abril|19\s+de\s+abril)\b/i, 'Av. 19 de Abril', 'Av. 19 de Abril, San Cristóbal', 'Arteria comercial y empresarial neurálgica de la ciudad con máxima visibilidad para marcas líderes.'],
-    [/\b(la\s+castellana|urb\.?\s+la\s+castellana|av\.?\s+ferrero\s+tamayo|ferrero\s+tamayo)\b/i, 'La Castellana', 'La Castellana, San Cristóbal', 'Excelente sector residencial y comercial de la parte alta de San Cristóbal con rápido acceso a toda la ciudad.'],
-    [/\b(el\s+bosque|res\.?\s+el\s+bosque)\b/i, 'Residencias El Bosque', 'Residencias El Bosque, San Cristóbal', 'Conjunto residencial estratégico con excelente ubicación y acceso directo a las principales avenidas.'],
-    [/\b(sambil|c\.?c\.?\s+sambil)\b/i, 'C.C. Sambil', 'C.C. Sambil, San Cristóbal', 'Principal centro comercial y de negocios del Estado Táchira con tráfico peatonal garantizado y seguridad integral.'],
-    [/\b(la\s+concordia|marginal\s+del\s+torbes)\b/i, 'La Concordia', 'La Concordia, San Cristóbal', 'Zona de intensa actividad comercial, de transporte y de servicios en San Cristóbal.'],
-    [/\b(la\s+ermita|centro|5ta\s+avenida|7ma\s+avenida|quinta\s+avenida|septima\s+avenida)\b/i, 'Centro de San Cristóbal', 'Centro, San Cristóbal', 'Núcleo comercial tradicional de San Cristóbal con altísimo flujo peatonal y conectividad urbana.'],
-    [/\b(santa\s+teresa|hospital\s+central|av\.?\s+lucio\s+oquendo)\b/i, 'Santa Teresa', 'Santa Teresa, San Cristóbal', 'Sector estratégico cercano al complejo médico asistencial y universidades de la ciudad.'],
-    [/\b(palo\s+gordo|las\s+vegas\s+de\s+t[aá]riba|v[ií]a\s+palo\s+gordo)\b/i, 'Palo Gordo', 'Palo Gordo, Cárdenas', 'Sector residencial tranquilo de clima fresco entre San Cristóbal y Cárdenas con alta demanda familiar.'],
-    [/\b(t[aá]riba|colinas\s+de\s+t[aá]riba|tucap[eé]|el\s+diamante|las\s+margaritas)\b/i, 'Táriba', 'Táriba, Cárdenas', 'Zona residencial de clima agradable y tradición familiar en el Municipio Cárdenas, a pocos minutos de San Cristóbal.'],
-    [/\b(palmira|el\s+abejal|la\s+flautera|patiecitos|gu[aá]simos)\b/i, 'Palmira', 'Palmira, Guásimos', 'Sector de clima frío de montaña y ambiente tranquilo en el Municipio Guásimos, con excelente calidad de vida.'],
-    [/\b(cordero|lomas\s+blancas|andr[eé]s\s+bello)\b/i, 'Cordero', 'Cordero, Andrés Bello', 'Población andina de clima fresco de montaña y entorno agrícola y residencial seguro.'],
-    [/\b(rubio|jun[ií]n|las\s+dantas)\b/i, 'Rubio', 'Rubio, Junín', 'Importante ciudad del eje sur-occidental del Táchira con pujante actividad comercial y cafetalera.'],
-    [/\b(san\s+antonio|ure[ñn]a)\b/i, 'San Antonio del Táchira', 'San Antonio, Bolívar', 'Eje fronterizo comercial e industrial estratégico del Estado Táchira.'],
-    [/\b(la\s+fr[ií]a|garc[ií]a\s+de\s+hevia)\b/i, 'La Fría', 'La Fría, García de Hevia', 'Centro agroindustrial y logístico de la zona norte del Estado Táchira.'],
-    [/\b(la\s+grita|j[aá]uregui)\b/i, 'La Grita', 'La Grita, Jáuregui', 'Ciudad histórica y agrícola de alta montaña en el Estado Táchira.']
+// ============================================================================
+// PLANTILLA OFICIAL ESTRICTA DE 39 UBICACIONES (`UBICACIONES_TACHIRA`)
+// Idéntica al desplegable `#inm-sector-select` de `dashboard-layout.html`
+// ============================================================================
+const UBICACIONES_TACHIRA_REGLAS = [
+    { key: 'urb-pirineos', label: 'Urb. Pirineos II', municipio: 'San Cristóbal', regex: /\b(pirineos\s+ii|pirineos\s+2|urb\.?\s+pirineos\s+ii)\b/i },
+    { key: 'pirineos', label: 'Los Pirineos', municipio: 'San Cristóbal', regex: /\b(los\s+pirineos|pirineos\s+i\b|pirineos|don\s+bosco|do[ñn]a\s+juanita|la\s+arboleda|av\.?\s+19\s+de\s+abril|avenida\s+19\s+de\s+abril)\b/i },
+    { key: 'urb-guaparo', label: 'Urb. Guaparo', municipio: 'San Cristóbal', regex: /\b(guaparo|urb\.?\s+guaparo)\b/i },
+    { key: 'la-ermita', label: 'La Ermita', municipio: 'San Cristóbal', regex: /\b(la\s+ermita|deporte\s+japon[eé]s)\b/i },
+    { key: 'san-carlos', label: 'San Carlos', municipio: 'San Cristóbal', regex: /\b(san\s+carlos|barrio\s+san\s+carlos|moncricket)\b/i },
+    { key: 'madre-juana', label: 'Madre Juana', municipio: 'San Cristóbal', regex: /\b(madre\s+juana)\b/i },
+    { key: 'unidad-vecinal', label: 'Unidad Vecinal', municipio: 'San Cristóbal', regex: /\b(unidad\s+vecinal)\b/i },
+    { key: 'santa-ines', label: 'Santa Inés', municipio: 'San Cristóbal', regex: /\b(santa\s+in[eé]s)\b/i },
+    { key: 'barrio-sucre', label: 'Barrio Sucre', municipio: 'San Cristóbal', regex: /\b(barrio\s+sucre|urb\.?\s+sucre|\bunet\b|\bula\b|barrio\s+bol[ií]var)\b/i },
+    { key: 'la-castellana', label: 'La Castellana', municipio: 'San Cristóbal', regex: /\b(la\s+castellana|terrazas\s+de\s+la\s+castellana|urb\.?\s+alto\s+pino|alto\s+pino|ferrero\s+tamayo|colegio\s+montessori|el\s+bosque|res\.?\s+el\s+bosque)\b/i },
+    { key: 'paramillo', label: 'Paramillo', municipio: 'San Cristóbal', regex: /\b(paramillo|altos\s+de\s+paramillo|colinas\s+de\s+paramillo|z\.?i\.?\s+paramillo|zona\s+industrial\s+paramillo|sambil)\b/i },
+    { key: 'pueblo-nuevo', label: 'Pueblo Nuevo', municipio: 'San Cristóbal', regex: /\b(pueblo\s+nuevo|av\.?\s+espa[ñn]a|plaza\s+de\s+toros|pol[ií]gono\s+de\s+tiro|los\s+kioskos|los\s+kioscos|tierra\s+dorada|terracota|santa\s+teresa|santa\s+cecilia|hospital\s+central|las\s+acacias|av\.?\s+rotaria)\b/i },
+    { key: 'barrio-obrero', label: 'Barrio Obrero', municipio: 'San Cristóbal', regex: /\b(barrio\s+obrero|b\.?o\.?|pasaje\s+acueducto|plaza\s+los\s+mangos|av\.?\s+carabobo|edificio\s+alc[aá]zar|residencias\s+el\s+parque|carrera\s+1[89]|calle\s+1[0-6])\b/i },
+    { key: 'quinimari', label: 'Quinimarí', municipio: 'San Cristóbal', regex: /\b(quinimar[ií]|urb\.?\s+quinimar[ií]|urb\.?\s+torbes)\b/i },
+    { key: 'las-lomas', label: 'Las Lomas', municipio: 'San Cristóbal', regex: /\b(las\s+lomas|av\.?\s+libertador|barrio\s+libertador)\b/i },
+    { key: 'la-concordia', label: 'La Concordia', municipio: 'San Cristóbal', regex: /\b(la\s+concordia|al\s+lado\s+de\s+trt|marginal\s+del\s+torbes|urb\.?\s+coromoto|residencias\s+la\s+hacienda|la\s+castra)\b/i },
+    { key: 'la-romera', label: 'La Romera', municipio: 'San Cristóbal', regex: /\b(la\s+romera)\b/i },
+    { key: 'el-lobo', label: 'El Lobo', municipio: 'San Cristóbal', regex: /\b(el\s+lobo)\b/i },
+    { key: 'la-popita', label: 'La Popita', municipio: 'San Cristóbal', regex: /\b(la\s+popita)\b/i },
+    { key: 'las-pilas', label: 'Las Pilas', municipio: 'San Cristóbal', regex: /\b(las\s+pilas|santa\s+eduvig[ei]s)\b/i },
+    { key: 'centro', label: 'Centro de San Cristóbal', municipio: 'San Cristóbal', regex: /\b(centro\s+de\s+san\s+crist[oó]bal|casco\s+central|5ta\s+avenida|7ma\s+avenida|quinta\s+avenida|s[eé]ptima\s+avenida|\bcentro\b)\b/i },
+    { key: 'palo-gordo', label: 'Palo Gordo', municipio: 'Cárdenas', regex: /\b(palo\s+gordo|v[ií]a\s+palo\s+gordo|altos\s+de\s+palo\s+gordo)\b/i },
+    { key: 'tariba', label: 'Táriba', municipio: 'Cárdenas', regex: /\b(t[aá]riba|colinas\s+de\s+t[aá]riba|las\s+vegas\s+de\s+t[aá]riba|arjona|colegio\s+virgen\s+del\s+valle|el\s+diamante|las\s+margaritas|barrancas|z\.?i\.?\s+barrancas)\b/i },
+    { key: 'palmira-centro', label: 'Palmira Centro', municipio: 'Guásimos', regex: /\b(palmira\s+centro|casco\s+de\s+palmira)\b/i },
+    { key: 'palmira', label: 'Palmira', municipio: 'Cárdenas', regex: /\b(palmira|el\s+abejal|la\s+flautera|patiecitos|gu[aá]simos|caneyes)\b/i },
+    { key: 'san-josecito', label: 'San Josecito', municipio: 'Torbes', regex: /\b(san\s+josecito|torbes)\b/i },
+    { key: 'la-grita', label: 'La Grita', municipio: 'Jáuregui', regex: /\b(la\s+grita|j[aá]uregui)\b/i },
+    { key: 'rubio', label: 'Rubio', municipio: 'Junín', regex: /\b(rubio|jun[ií]n|las\s+dantas)\b/i },
+    { key: 'capacho-nuevo', label: 'Capacho Nuevo', municipio: 'Independencia', regex: /\b(capacho\s+nuevo|independencia|capacho|peribeca)\b/i },
+    { key: 'capacho-viejo', label: 'Capacho Viejo', municipio: 'Independencia', regex: /\b(capacho\s+viejo|libertad)\b/i },
+    { key: 'san-antonio', label: 'San Antonio del Táchira', municipio: 'Bolívar', regex: /\b(san\s+antonio|ure[ñn]a|bol[ií]var)\b/i },
+    { key: 'lobatera', label: 'Lobatera', municipio: 'Lobatera', regex: /\b(lobatera|borot[aá])\b/i },
+    { key: 'michelena', label: 'Michelena', municipio: 'Michelena', regex: /\b(michelena)\b/i },
+    { key: 'santa-ana', label: 'Santa Ana del Táchira', municipio: 'Córdoba', regex: /\b(santa\s+ana|c[oó]rdoba)\b/i },
+    { key: 'tucape', label: 'Tucapé', municipio: 'Fernández Feo', regex: /\b(tucap[eé])\b/i },
+    { key: 'coloncito', label: 'Coloncito', municipio: 'Panamericano', regex: /\b(coloncito|panamericano)\b/i },
+    { key: 'la-fria', label: 'La Fría', municipio: 'García de Hevia', regex: /\b(la\s+fr[ií]a|garc[ií]a\s+de\s+hevia)\b/i },
+    { key: 'el-piñal', label: 'El Piñal', municipio: 'Fernández Feo', regex: /\b(el\s+pi[ñn]al|fern[aá]ndez\s+feo)\b/i },
+    { key: 'pregonero', label: 'Pregonero', municipio: 'Uribante', regex: /\b(pregonero|uribante|cordero|lomas\s+blancas)\b/i }
 ];
 
 const REGLAS_ASPECTOS = [
     [/\b(piscina|sol[aá]rium)\b/i, 'ph-waves', 'Piscina y Área Social', 'Espacio recreativo ideal para el disfrute familiar'],
-    [/\b(planta\s+el[eé]ctrica|generador|planta\s+100%|planta\s+total)\b/i, 'ph-lightning', 'Autonomía Eléctrica', 'Respaldo de energía mediante planta eléctrica'],
+    [/\b(planta\s+el[eé]ctrica|generador|planta\s+100%|planta\s+total|inversor)\b/i, 'ph-lightning', 'Autonomía Eléctrica', 'Respaldo de energía mediante planta eléctrica'],
     [/\b(tanque|pozo|hidroneum[aá]tico|reserva\s+de\s+agua|agua\s+constante)\b/i, 'ph-drop', 'Reserva Hídrica Garantizada', 'Sistema de almacenamiento de agua con hidroneumático'],
-    [/\b(vigilancia|conjunto\s+cerrado|seguridad\s+24|garita|cerco\s+el[eé]ctrico|port[oó]n\s+el[eé]ctrico)\b/i, 'ph-shield-check', 'Seguridad Privada 24/7', 'Control de acceso y resguardo continuo en el conjunto'],
+    [/\b(vigilancia|conjunto\s+cerrado|conjunto\s+privado|seguridad\s+24|garita|cerco\s+el[eé]ctrico|port[oó]n\s+el[eé]ctrico)\b/i, 'ph-shield-check', 'Seguridad Privada 24/7', 'Control de acceso y resguardo continuo en el conjunto'],
     [/\b(amoblad[oa]|equipad[oa])\b/i, 'ph-armchair', 'Equipamiento y Mobiliario', 'Se entrega con mobiliario y equipamiento listo para habitar'],
-    [/\b(cocina\s+empotrada|tope\s+de\s+granito|cocina\s+moderna|cocina\s+italiana|cuarzo)\b/i, 'ph-cooking-pot', 'Cocina Moderna Equipada', 'Acabados de primera línea y excelente distribución funcional'],
+    [/\b(cocina\s+empotrada|tope\s+de\s+granito|cocina\s+moderna|cocina\s+equipada|cuarzo)\b/i, 'ph-cooking-pot', 'Cocina Moderna Equipada', 'Acabados de primera línea y excelente distribución funcional'],
     [/\b(fibra\s+[oó]ptica|internet|wifi)\b/i, 'ph-wifi-high', 'Conectividad Fibra Óptica', 'Servicio de internet de alta velocidad instalado'],
     [/\b(aire\s+acondicionado|a\/a|split|climatizad[oa])\b/i, 'ph-snowflake', 'Ambientes Climatizados', 'Unidades de aire acondicionado instaladas'],
-    [/\b(terraza|balc[oó]n|vista\s+panor[aá]mica|vista\s+a\s+la\s+monta[ñn]a)\b/i, 'ph-sun-horizon', 'Terraza con Vista Panorámica', 'Iluminación natural y ventilación privilegiada'],
-    [/\b(jard[ií]n|[aá]reas\s+verdes|patio|parrillera|social)\b/i, 'ph-tree', 'Jardín y Áreas Verdes', 'Espacios exteriores integrados para esparcimiento'],
-    [/\b(estrenar|nuevo|remodelad[oa]|lujo|m[aá]rmol|porcelanato)\b/i, 'ph-sparkle', 'Acabados de Primera', 'Materiales modernos en excelente estado de conservación'],
+    [/\b(terraza|balc[oó]n|vista\s+panor[aá]mica|vista\s+hacia\s+la\s+monta[ñn]a|vista\s+a\s+la\s+monta[ñn]a)\b/i, 'ph-sun-horizon', 'Terraza con Vista Panorámica', 'Iluminación natural y ventilación privilegiada'],
+    [/\b(jard[ií]n|[aá]reas\s+verdes|patio|parrillera|social|boh[ií]o)\b/i, 'ph-tree', 'Jardín y Áreas Verdes', 'Espacios exteriores integrados para esparcimiento'],
+    [/\b(estrenar|de\s+estreno|nuevo|remodelad[oa]|lujo|m[aá]rmol|porcelanato)\b/i, 'ph-sparkle', 'Acabados de Primera', 'Materiales modernos en excelente estado de conservación'],
     [/\b(jacuzzi|tina|spa)\b/i, 'ph-bathtub', 'Jacuzzi Privado', 'Área de confort y relajación en la propiedad'],
-    [/\b(ascensor)\b/i, 'ph-elevator', 'Ascensor Operativo', 'Fácil acceso vertical en la torre residencial']
+    [/\b(ascensor|ascensores)\b/i, 'ph-elevator', 'Ascensor Operativo', 'Fácil acceso vertical en la torre residencial']
 ];
 
 function findFilesRecursive(dir, extFilter) {
@@ -165,6 +188,7 @@ function parseTxtFile(txtPath) {
             const attachments = [...new Set(msgBody.match(patAttach) || [])];
             const cleanBody = msgBody
                 .replace(/<adjunto:\s*[^>]+>/gi, '')
+                .replace(/<media omitted>/gi, '')
                 .replace(/[a-zA-Z0-9_\-\.]+\.(?:jpg|jpeg|png|webp|mp4|pdf|opus)\s*\((?:archivo adjunto|file attached)\)/gi, '')
                 .trim();
 
@@ -186,6 +210,7 @@ function parseTxtFile(txtPath) {
             }
             const cleanCont = line
                 .replace(/<adjunto:\s*[^>]+>/gi, '')
+                .replace(/<media omitted>/gi, '')
                 .replace(/[a-zA-Z0-9_\-\.]+\.(?:jpg|jpeg|png|webp|mp4|pdf|opus)\s*\((?:archivo adjunto|file attached)\)/gi, '')
                 .trim();
             if (cleanCont) {
@@ -197,13 +222,18 @@ function parseTxtFile(txtPath) {
     return messages;
 }
 
+/**
+ * Agrupa únicamente álbumes de fotos + descripción del mismo inmueble,
+ * NUNCA mezclando propiedades distintas enviadas por el mismo asesor en el mismo minuto.
+ */
 function groupMessagesBySenderWindow(messages, windowMinutes = 3) {
     const activeByAuthor = new Map();
     const grouped = [];
 
     for (const msg of messages) {
-        if (!msg.text && msg.attachments.length === 0) continue;
-        if (/elimin[oó]\s+este\s+mensaje|multimedia\s+omitido/i.test(msg.text) && msg.attachments.length === 0) continue;
+        const cleanMsgText = (msg.text || '').trim();
+        if (!cleanMsgText && msg.attachments.length === 0) continue;
+        if (/^(this message was deleted|elimin[oó]\s+este\s+mensaje|mensaje\s+eliminado|multimedia\s+omitido|media\s+omitted)$/i.test(cleanMsgText) && msg.attachments.length === 0) continue;
 
         const key = `${msg.group_name}:::${msg.author}`;
         const prev = activeByAuthor.get(key);
@@ -214,18 +244,36 @@ function groupMessagesBySenderWindow(messages, windowMinutes = 3) {
                 const diffSec = Math.abs(msg.timestamp.getTime() - prev.timestamp.getTime()) / 1000;
                 withinTime = diffSec <= (windowMinutes * 60);
             }
-            const bothLong = prev.text.trim().length > 120 && msg.text.trim().length > 120;
-            if (withinTime && !bothLong) {
-                if (msg.text) prev.text = (prev.text + '\n' + msg.text).trim();
-                for (const a of msg.attachments) {
-                    if (!prev.attachments.includes(a)) prev.attachments.push(a);
+
+            if (withinTime) {
+                const prevText = (prev.text || '').trim();
+                const prevHasText = prevText.length > 0;
+                const msgHasText = cleanMsgText.length > 0;
+                const prevAttCount = prev.attachments.length;
+                const msgAttCount = msg.attachments.length;
+
+                // Caso 1: El mensaje anterior tiene la descripción del inmueble (>= 45 chars)
+                // y los mensajes siguientes son fotos sueltas del álbum sin texto.
+                const isAlbumFollowupPhotos = (prevText.length >= 45 && !msgHasText && msgAttCount > 0);
+
+                // Caso 2: Fotos sueltas consecutivas sin texto (construyendo un álbum de varias fotos).
+                const isConsecutiveUncaptionedPhotos = (!prevHasText && prevAttCount > 0 && !msgHasText && msgAttCount > 0);
+
+                // Caso 3: Álbum de >= 2 fotos sin texto seguido inmediatamente por el mensaje con la descripción.
+                const isCaptionAfterMultiPhotoAlbum = (!prevHasText && prevAttCount >= 2 && msgHasText);
+
+                if (isAlbumFollowupPhotos || isConsecutiveUncaptionedPhotos || isCaptionAfterMultiPhotoAlbum) {
+                    if (msgHasText) prev.text = (prevText ? `${prevText}\n${cleanMsgText}` : cleanMsgText).trim();
+                    for (const a of msg.attachments) {
+                        if (!prev.attachments.includes(a)) prev.attachments.push(a);
+                    }
+                    if (msg.timestamp) prev.timestamp = msg.timestamp;
+                    continue;
                 }
-                if (msg.timestamp) prev.timestamp = msg.timestamp;
-                continue;
             }
         }
 
-        const nuevo = { ...msg, attachments: [...msg.attachments] };
+        const nuevo = { ...msg, text: cleanMsgText, attachments: [...msg.attachments] };
         grouped.push(nuevo);
         activeByAuthor.set(key, nuevo);
     }
@@ -249,7 +297,7 @@ function collectModes2And3(loteDir, usedImagesSet) {
     for (const folder of getAllDirs(loteDir)) {
         const entries = fs.readdirSync(folder, { withFileTypes: true });
         const imgs = entries
-            .filter(e => e.isFile() && imgExts.has(path.extname(e.name).toLowerCase()))
+            .filter(e => e.isFile() && imgExts.has(path.extname(e.name).toLowerCase()) && !/^stk-/i.test(e.name))
             .map(e => path.resolve(folder, e.name))
             .filter(p => !usedImagesSet.has(p));
 
@@ -296,10 +344,59 @@ function collectModes2And3(loteDir, usedImagesSet) {
 
 function normalizarTelefonoVE(raw) {
     if (!raw) return null;
-    const m = raw.match(/(?:\+?58[\s\-]*|0)?(4(?:12|14|24|16|26)|276)[\s\-]*(\d{3})[\s\-]*(\d{2})[\s\-]*(\d{2})/);
+    const m = raw.match(/(?:\+?58[\s\-\.]*|0)?(4(?:12|14|24|16|26|22)|276)[\s\-\.]*(\d{3})[\s\-\.]*(\d{2})[\s\-\.]*(\d{2})/);
     if (m) return `+58 ${m[1]} ${m[2]}${m[3]}${m[4]}`;
-    const mCo = raw.match(/(?:\+?57[\s\-]*)(3\d{2})[\s\-]*(\d{3})[\s\-]*(\d{4})/);
+    const mCo = raw.match(/(?:\+?57[\s\-\.]*)(3\d{2})[\s\-\.]*(\d{3})[\s\-\.]*(\d{4})/);
     if (mCo) return `+57 ${mCo[1]} ${mCo[2]}${mCo[3]}`;
+    return null;
+}
+
+function extraerAsesorExterno(author, text) {
+    const tel = normalizarTelefonoVE(author) || normalizarTelefonoVE(text) || '+58 414 0000000';
+    const cleanAuthor = String(author || '').replace(/[\+\d\-\s\(\)~]/g, '').trim();
+    if (cleanAuthor.length >= 3 && !/^captura/i.test(cleanAuthor)) {
+        return { nombre: String(author).replace(/~/g, '').trim(), telefono: tel };
+    }
+    const mCap = text.match(/(?:captador(?:a)?|asesor(?:a)?|corredor(?:a)?|lic\.?|ing\.?)[\s:\*]+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){1,2})/i);
+    if (mCap) {
+        return { nombre: mCap[1].replace(/[\*📲]/g, '').trim(), telefono: tel };
+    }
+    const mRemax = text.match(/([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\s*\r?\n\s*(?:RE\/?MAX|C[ÚU]SPIDE|RENT[\-\s]*A[\-\s]*HOUSE|CENTURY|BROTHERS)/i);
+    if (mRemax) {
+        return { nombre: mRemax[1].trim(), telefono: tel };
+    }
+    return { nombre: 'Asesor Aliado Táchira', telefono: tel };
+}
+
+function esRequerimientoOBasura(text, hasImages, modoEntrada) {
+    if (modoEntrada === 'modo_2_screenshot_whatsapp' && hasImages) return { basura: false, motivo: '' };
+    const tLow = String(text || '').toLowerCase().trim();
+    if (!tLow && !hasImages) return { basura: true, motivo: 'Mensaje vacío sin texto ni imágenes' };
+
+    // Detectar requerimientos de búsqueda de clientes (NO son propiedades en oferta)
+    const patRequerimiento = /\b(requiero|requerimos|se\s+requiere|tengo\s+el\s+siguiente\s+requerimiento|siguientes?\s+requerimientos?|requerimiento\s+de\s+(?:alquiler|compra|venta)|busco\s+(?:alquiler|apartamento|apto|casa|local|galp[oó]n|terreno|inmueble|quinta|propiedad|el\s+captador)|se\s+busca\s+(?:casa|apartamento|local|terreno)|solicito\s*:|solicito\s+en\s+(?:alquiler|venta)|tengo\s+un\s+excelente\s+cliente|para\s+cliente\s+repetido|quien\s+con\s+alquiler|quien\s+lleva\s+esta\s+captacion)\b/i;
+    if (patRequerimiento.test(tLow)) {
+        return { basura: true, motivo: 'Requerimiento de búsqueda de cliente / consulta de colega' };
+    }
+
+    if (tLow.length < 20 && !hasImages) {
+        return { basura: true, motivo: 'Saludo / mensaje corto sin inmueble' };
+    }
+    return { basura: false, motivo: '' };
+}
+
+function resolverUbicacionOficialTachira(text) {
+    for (const loc of UBICACIONES_TACHIRA_REGLAS) {
+        if (loc.regex.test(text)) {
+            return {
+                sector_key: loc.key,
+                sector_nombre: loc.label,
+                municipio: loc.municipio,
+                ubicacion: `${loc.label}, ${loc.municipio}, Táchira`,
+                sector_desc: `Sector residencial ${loc.label}, Municipio ${loc.municipio}, Estado Táchira.`
+            };
+        }
+    }
     return null;
 }
 
@@ -373,12 +470,14 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
     for (const tf of txtFilesModo1) {
         const grouped = groupMessagesBySenderWindow(parseTxtFile(tf), windowMinutes);
         for (const g of grouped) {
-            const resolved = g.attachments.map(att => {
-                const p1 = path.resolve(path.dirname(g.source_file), att);
-                if (fs.existsSync(p1)) return p1;
-                const found = findFilesRecursive(loteDir, att);
-                return found.length > 0 ? path.resolve(found[0]) : null;
-            }).filter(Boolean);
+            const resolved = g.attachments
+                .filter(att => !/^stk-/i.test(att))
+                .map(att => {
+                    const p1 = path.resolve(path.dirname(g.source_file), att);
+                    if (fs.existsSync(p1)) return p1;
+                    const found = findFilesRecursive(loteDir, att);
+                    return found.length > 0 ? path.resolve(found[0]) : null;
+                }).filter(Boolean);
             g.resolved_images = resolved;
             g.imagenes_son_screenshots = false;
             resolved.forEach(im => usedImgs.add(im));
@@ -395,60 +494,88 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
 
     todosBloques.forEach((item, i) => {
         const idx = i + 1;
-        const tLow = item.text.toLowerCase();
+        const tLow = (item.text || '').toLowerCase();
         const imgPaths = item.resolved_images || [];
         const modoEntrada = item.modo_entrada || 'modo_1_exportacion_whatsapp';
         const sonScreenshots = Boolean(item.imagenes_son_screenshots);
 
-        if (modoEntrada !== 'modo_2_screenshot_whatsapp') {
-            if (/\b(busco\s+(?:apartamento|apto|casa|local|galp[oó]n|terreno|inmueble|quinta)|cliente\s+(?:busca|solicita)|solicito\s+en\s+(?:alquiler|venta))\b/i.test(tLow) &&
-                !/\b(en\s+venta|se\s+vende|se\s+alquila)\b/i.test(tLow)) {
-                descartados.push({ grupo: item.group_name, autor: item.author, motivo: 'Requerimiento de búsqueda de cliente', extracto: item.text.slice(0, 120) });
-                return;
-            }
-            if (tLow.length < 20 && imgPaths.length === 0) {
-                descartados.push({ grupo: item.group_name, autor: item.author, motivo: 'Saludo / mensaje corto sin inmueble', extracto: item.text.slice(0, 120) });
-                return;
-            }
+        const checkBasura = esRequerimientoOBasura(item.text, imgPaths.length > 0, modoEntrada);
+        if (checkBasura.basura) {
+            descartados.push({
+                grupo: item.group_name,
+                autor: item.author,
+                motivo: checkBasura.motivo,
+                extracto: (item.text || '').replace(/\s+/g, ' ').slice(0, 120)
+            });
+            return;
         }
 
-        const esAlq = /\b(alquiler|alquila|alquilo|arriendo|canon)\b/i.test(tLow);
-        const esVen = /\b(venta|vende|vendo|inversi[oó]n)\b/i.test(tLow);
+        const esAlq = /\b(alquiler|alquila|alquilo|arriendo|canon|cano\b)\b/i.test(tLow);
+        const esVen = /\b(venta|vende|vendo|inversi[oó]n|se\s+traspasa)\b/i.test(tLow);
         const operacion = esAlq && !esVen ? 'alquiler' : (esVen ? 'venta' : null);
 
         let tipoUi = null, tipoSqlDash = null, tipoSqlCanon = null;
         if (/\b(galp[oó]n|galpones|nave\s+industrial)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Galpones', 'galpones', 'galpon'];
-        else if (/\b(local\s+comercial|local\b|oficina|consultorio)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Local Comercial', 'local_comercial', 'local'];
+        else if (/\b(local\s+comercial|local\b|oficina|consultorio|tienda\s+de\s+ropa|lavander[ií]a|fondo\s+de\s+comercio)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Local Comercial', 'local_comercial', 'local'];
         else if (/\b(finca|terreno|parcela|hect[aá]reas)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Fincas', 'fincas', 'terreno'];
         else if (/\b(casa\s+de\s+campo|chalet)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Casa de campo', 'casa_de_campo', 'casa'];
-        else if (/\b(apartamento|apto|departamento|penthouse|p\.?h\.?)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Departamento', 'departamento', 'apartamento'];
-        else if (/\b(casa|quinta|townhouse|t\.?h\.?)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Casa', 'casa', 'casa'];
+        else if (/\b(apartamento|apto|departamento|penthouse|p\.?h\.?|anexo|habitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Departamento', 'departamento', 'apartamento'];
+        else if (/\b(casa|quinta|townhouse|t\.?h\.?|terrazas\s+de\s+la\s+castellana)\b/i.test(tLow)) [tipoUi, tipoSqlDash, tipoSqlCanon] = ['Casa', 'casa', 'casa'];
 
         let precio = null;
-        const cleanForPrice = item.text.replace(/\d+[\.,]?\d*\s*(?:litros|lts|m2|mts2|mts|metros|m²)/gi, ' ');
-        const mPrice = cleanForPrice.match(/(?:precio|inversi[oó]n|canon|valor|\$|usd)\s*:?\s*\$?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{3,6})/i) ||
-                       cleanForPrice.match(/(\d{1,3}(?:[\.,]\d{3})+|\d{3,6})\s*(?:\$|usd)/i);
-        if (mPrice) {
-            const rawVal = mPrice[1];
-            precio = /^\d{1,3}([\.,]\d{3})+$/.test(rawVal) ? parseFloat(rawVal.replace(/[\.,]/g, '')) : parseFloat(rawVal.replace(',', '.'));
-        }
-
-        let [sectorNombre, ubicacion, sectorDesc] = ['San Cristóbal', 'San Cristóbal, Táchira', 'Ubicación estratégica en San Cristóbal, Estado Táchira.'];
-        for (const [rgx, sNom, ubi, sDesc] of ZONAS_TACHIRA) {
-            if (rgx.test(item.text)) {
-                [sectorNombre, ubicacion, sectorDesc] = [sNom, ubi, sDesc];
-                break;
+        const cleanForPrice = item.text
+            .replace(/\d+[\.,]?\d*\s*(?:litros|lts|m2|mts2|mts|mtrs2|metros|m²)/gi, ' ')
+            .replace(/(?:\+?58|0414|0424|0412|0416|0426|0422)[\d\s\-\.]{7,12}/g, ' ');
+        const priceRegexes = [
+            /(?:precio|inversi[oó]n|canon|cano|valor)\s*:?\s*\*?\s*\$?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})/gi,
+            /(?:\$|usd)\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})/gi,
+            /(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\s*(?:\$|💲|🇺🇸|usd|d[oó]lares)/gi
+        ];
+        for (const rgx of priceRegexes) {
+            let m;
+            while ((m = rgx.exec(cleanForPrice)) !== null) {
+                const rawVal = m[1];
+                const val = /^\d{1,3}([\.,]\d{3})+$/.test(rawVal) ? parseFloat(rawVal.replace(/[\.,]/g, '')) : parseFloat(rawVal.replace(',', '.'));
+                if (operacion === 'venta' && val >= 5000) { precio = val; break; }
+                if (operacion === 'alquiler' && val >= 50 && val <= 25000) { precio = val; break; }
+                if (!operacion && val >= 50) { precio = val; break; }
             }
+            if (precio) break;
         }
 
-        const mHab = tLow.match(/\b(\d{1,2})\s*(?:habitaciones|habitaci[oó]n|habs?\.?|dormitorios)\b/);
-        const habitaciones = mHab ? parseInt(mHab[1], 10) : 0;
+        // Resolución estricta de ubicación contra la plantilla oficial UBICACIONES_TACHIRA
+        const locOficial = resolverUbicacionOficialTachira(item.text);
+
+        let habitaciones = 0;
+        const mHab = tLow.match(/\b(\d{1,2})\s*(?:habitaciones|habitaci[oó]n|habs?\.?|dormitorios|cub[ií]culos|[aá]reas\s+de\s+oficina)\b/);
+        if (mHab) {
+            habitaciones = parseInt(mHab[1], 10);
+        } else if (/\btres\s+habitaciones\b/i.test(tLow)) {
+            habitaciones = 3;
+        } else if (/\bdos\s+(?:habitaciones|cub[ií]culos|[aá]reas\s+de\s+oficina)\b/i.test(tLow) || (/\bhabitaci[oó]n\s+principal\b/i.test(tLow) && /\buna\s+habitaciones?\s+auxiliar/i.test(tLow))) {
+            habitaciones = 2;
+        } else if (/\b(?:habitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n)\b/i.test(tLow)) {
+            habitaciones = 1;
+        }
+        if (/\bhabitaci[oó]n\s+principal\b/i.test(tLow) && /\b2\s+habitaciones\s+auxiliares\b/i.test(tLow)) {
+            habitaciones = 3;
+        }
+
+        let banos = 0;
         const mBan = tLow.match(/\b(\d{1,2}(?:[\.,]5)?)\s*(?:ba[ñn]os?|sanitarios)\b/);
-        const banos = mBan ? parseFloat(mBan[1].replace(',', '.')) : 0;
-        const mEst = tLow.match(/\b(\d{1,2})\s*(?:puestos?|estacionamientos?|p\/e|veh[ií]culos?|garaje)\b/);
-        const estacInt = mEst ? parseInt(mEst[1], 10) : 0;
-        const estacUi = mEst ? `${estacInt} Puesto${estacInt === 1 ? '' : 's'}` : (/pie\s+de\s+calle/i.test(tLow) ? 'A pie de calle' : 'No especificado');
-        const mM2 = tLow.match(/\b(\d{2,5}(?:[\.,]\d{1,2})?)\s*(?:m2|mts2|mts|m²)\b/);
+        if (mBan) {
+            banos = parseFloat(mBan[1].replace(',', '.'));
+        } else if (/\bdos\s+ba[ñn]os\b/i.test(tLow) || (/\bba[ñn]o\s+de\s+uso\s+com[uú]n\b/i.test(tLow) && /\bba[ñn]o\s+privado\b/i.test(tLow))) {
+            banos = 2;
+        } else if (/\bba[ñn]o\s+privado\b|\bba[ñn]o\s+compartido\b|\b1\s+ba[ñn]o\b/i.test(tLow)) {
+            banos = 1;
+        }
+
+        const mEst = tLow.match(/\b(\d{1,2})\s*(?:puestos?|estacionamientos?|p\.?\s*e\.?|veh[ií]culos?|garaje|garage)\b/);
+        const estacInt = mEst ? parseInt(mEst[1], 10) : (/\b(un\s+puesto\s+de\s+estacionamiento|estacionamiento\s+techado|garage|garaje)\b/i.test(tLow) && !/sin\s+estacionamiento/i.test(tLow) ? 1 : 0);
+        const estacUi = estacInt > 0 ? `${estacInt} Puesto${estacInt === 1 ? '' : 's'}` : (/pie\s+de\s+calle/i.test(tLow) ? 'A pie de calle' : 'Sin puesto propio');
+
+        const mM2 = tLow.match(/\b(\d{2,5}(?:[\.,]\d{1,2})?)\s*(?:m2\b|mts2\b|mtrs2\b|mts\b|metros\b|m²|mts²)/i);
         const m2 = mM2 ? parseFloat(mM2[1].replace(',', '.')) : 0;
 
         let asesorNombre, asesorTel, tipoAsesor, agenteId;
@@ -459,10 +586,9 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
             tipoAsesor = 'maximus';
             agenteId = info.agente_id;
         } else {
-            asesorTel = normalizarTelefonoVE(item.author) || normalizarTelefonoVE(item.text) || '+58 414 0000000';
-            asesorNombre = item.author.replace(/[\+\d\-\s\(\)~]/g, '').trim().length >= 3 && item.author !== 'Captura WhatsApp Web'
-                ? item.author.replace(/~/g, '').trim()
-                : 'Asesor Aliado Táchira';
+            const extInfo = extraerAsesorExterno(item.author, item.text);
+            asesorNombre = extInfo.nombre;
+            asesorTel = extInfo.telefono;
             tipoAsesor = 'externo';
             agenteId = null;
         }
@@ -471,10 +597,12 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
         if (!operacion) faltantes.push('Tipo de Operación');
         if (!tipoUi) faltantes.push('Tipo de Inmueble');
         if (!precio || precio <= 0) faltantes.push('Precio');
+        if (!locOficial) faltantes.push('Ubicación Oficial (Plantilla UBICACIONES_TACHIRA)');
+        if (imgPaths.length === 0) faltantes.push('Fotografías del Inmueble (Mensaje sin foto adjunta)');
 
         if (faltantes.length > 0) {
             pendientesRevision.push({
-                temp_id: `PEND-${String(idx).padStart(3, '0')}`,
+                temp_id: `PEND-${String(pendientesRevision.length + 1).padStart(3, '0')}`,
                 modo_entrada: modoEntrada,
                 imagenes_son_screenshots: sonScreenshots,
                 es_captacion_maximus: esCaptacionMaximus,
@@ -487,7 +615,7 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
                 asesor_nombre: asesorNombre,
                 asesor_telefono: asesorTel,
                 agente_id: agenteId,
-                sector_detectado: sectorNombre,
+                sector_detectado: locOficial ? locOficial.sector_nombre : 'No especificada en plantilla',
                 operacion_detectada: operacion,
                 tipo_detectado: tipoUi,
                 precio_detectado: precio,
@@ -498,21 +626,43 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
             return;
         }
 
+        const { sector_key: sectorKey, sector_nombre: sectorNombre, ubicacion, sector_desc: sectorDesc } = locOficial;
+
         const aspectos = [];
         for (const [rgx, ico, tit, desc] of REGLAS_ASPECTOS) {
-            if (rgx.test(item.text) && aspectos.length < 4) aspectos.push({ icono: ico, titulo: tit, desc });
+            if (rgx.test(item.text) && aspectos.length < 4) {
+                aspectos.push({ icono: ico, titulo: tit, desc });
+            }
         }
-        while (aspectos.length < 4) {
-            const fallbacks = [
+
+        // Fallbacks diferenciados: "Gestión MAXIMUS" es EXCLUSIVO de `captaciones_maximus/`
+        const fallbacks = esCaptacionMaximus
+            ? [
                 { icono: 'ph-trend-up', titulo: 'Zona de Alta Demanda', desc: `Ubicación consolidada en ${sectorNombre}` },
                 { icono: 'ph-car', titulo: `Estacionamiento: ${estacUi}`, desc: 'Fácil acceso vehicular' },
                 { icono: 'ph-star', titulo: 'Distribución Funcional', desc: 'Ambientes iluminados y ventilados' },
-                { icono: 'ph-check', titulo: 'Gestión MAXIMUS', desc: 'Respaldo comercial en toda la negociación' }
+                { icono: 'ph-check', titulo: 'Gestión MAXIMUS', desc: 'Captación directa exclusiva con respaldo de nuestra agencia' }
+            ]
+            : [
+                { icono: 'ph-trend-up', titulo: 'Zona de Alta Demanda', desc: `Ubicación consolidada en ${sectorNombre}` },
+                { icono: 'ph-car', titulo: `Estacionamiento: ${estacUi}`, desc: 'Comodidad de acceso en la propiedad' },
+                { icono: 'ph-star', titulo: 'Distribución Funcional', desc: 'Ambientes iluminados y ventilados' },
+                { icono: 'ph-shield-check', titulo: 'Disponibilidad Verificada', desc: 'Propiedad activa disponible para visitas previa cita' }
             ];
-            aspectos.push(fallbacks[aspectos.length]);
+
+        for (const fb of fallbacks) {
+            if (aspectos.length >= 4) break;
+            if (!aspectos.some(a => a.titulo === fb.titulo)) {
+                aspectos.push(fb);
+            }
         }
 
         const precioM2 = m2 > 0 ? Math.round(precio / m2) : 0;
+        let etiquetaTitulo = tipoUi === 'Departamento' ? 'Apartamento' : tipoUi;
+        if (/\boficina\b/i.test(tLow)) etiquetaTitulo = 'Oficina Comercial';
+        else if (/\bhabitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n\b/i.test(tLow)) etiquetaTitulo = 'Habitación Equipada';
+        else if (/\banexo\b/i.test(tLow)) etiquetaTitulo = 'Apartamento Anexo';
+
         inmueblesValidos.push({
             temp_id: `CAND-${String(inmueblesValidos.length + 1).padStart(3, '0')}`,
             modo_entrada: modoEntrada,
@@ -520,10 +670,10 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
             flujo_carpeta: esCaptacionMaximus ? 'captaciones_maximus' : 'captaciones_externas',
             grupo_origen: item.group_name,
             fecha_mensaje: item.timestamp_str,
-            titulo: `${tipoUi === 'Departamento' ? 'Apartamento' : tipoUi} en ${sectorNombre}`,
+            titulo: `${etiquetaTitulo} en ${sectorNombre}`,
             subtitulo: esCaptacionMaximus
                 ? `Captación Exclusiva MAXIMUS en ${ubicacion} con respaldo legal`
-                : `Propiedad seleccionada en ${ubicacion} con excelente distribución`,
+                : `Propiedad en ${operacion} ubicada en ${ubicacion}`,
             tipo_ui: tipoUi,
             tipo_sql_dashboard: tipoSqlDash,
             tipo_sql_canonical: tipoSqlCanon,
@@ -533,6 +683,7 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
             moneda: operacion === 'alquiler' ? 'USD/mes' : 'USD',
             precio_m2: precioM2,
             precio_m2_ui: precioM2 > 0 ? `$${precioM2} USD / m²` : 'N/D',
+            sector_key: sectorKey,
             ubicacion,
             estado: 'Táchira',
             sector_nombre: sectorNombre,
@@ -549,7 +700,7 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
             asesor_telefono: asesorTel,
             agente_id: agenteId,
             comision_porcentaje: 5.0,
-            descripcion: `Excelente opción de ${tipoUi.toLowerCase()} en ${operacion} ubicada en ${ubicacion}. Cuenta con ${habitaciones} habitación(es), ${banos} baño(s), ${m2} m² y estacionamiento (${estacUi}).\n\nDetalles: ${item.text.replace(/\s+/g, ' ')}`,
+            descripcion: `Excelente opción de ${etiquetaTitulo.toLowerCase()} en ${operacion} ubicada en ${ubicacion}. Cuenta con ${habitaciones} habitación(es)/ambiente(s), ${banos} baño(s)${m2 > 0 ? `, ${m2} m²` : ''} y estacionamiento (${estacUi}).\n\nDetalles: ${item.text.replace(/\s+/g, ' ')}`,
             aspectos_destacados: aspectos,
             amenidades_str: aspectos.map(a => a.titulo).join(', '),
             amenidades: aspectos.map(a => ({ icono: 'ph-check', nombre: a.titulo })),
@@ -582,7 +733,7 @@ async function procesarLote(loteDir, repoRoot, windowMinutes = 3, overrideModo =
         md += `✅ **No hay inmuebles pendientes de revisión en este lote.**\n`;
     } else {
         for (const p of pendientesRevision) {
-            md += `## 🔹 \`${p.temp_id}\` — Modo: \`${p.modo_entrada}\` — Sector: ${p.sector_detectado}\n- **Motivo:** ${p.motivo}\n- **Asesor (${p.tipo_asesor}):** ${p.asesor_nombre} (\`${p.asesor_telefono}\`)\n- **Imágenes:** \`${p.imagenes_locales.map(x => path.basename(x)).join(', ')}\`\n- **Texto:** \`${p.texto_original.replace(/\n/g, ' ')}\`\n\n`;
+            md += `## 🔹 \`${p.temp_id}\` — Modo: \`${p.modo_entrada}\` — Sector: ${p.sector_detectado}\n- **Motivo:** ${p.motivo}\n- **Asesor (${p.tipo_asesor}):** ${p.asesor_nombre} (\`${p.asesor_telefono}\`)\n- **Imágenes:** \`${p.imagenes_locales.map(x => path.basename(x)).join(', ')}\`\n- **Texto:** \`${(p.texto_original || '').replace(/\n/g, ' ')}\`\n\n`;
         }
     }
     fs.writeFileSync(path.join(loteDir, 'pendientes_revision.md'), md, 'utf8');

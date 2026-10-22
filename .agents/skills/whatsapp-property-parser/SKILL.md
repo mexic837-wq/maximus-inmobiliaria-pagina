@@ -20,20 +20,35 @@ Esta skill ejecuta la primera etapa del pipeline del **Agente Captador de Inmueb
 El script inspecciona la ruta del lote (o recibe `--modo-captacion externas|maximus`):
 - **Si la ruta contiene `captaciones_externas`:**
   - `is_maximus = false`, `en_oferta = false`, `tipo_asesor = "externo"`, `agente_id = null`.
+  - **Prohibición de `"Gestión MAXIMUS"`:** Nunca incluye `"Gestión MAXIMUS"` ni `"Gestión Comercial MAXIMUS"` en `aspectos_destacados`, subtítulo o descripción; usa `"Disponibilidad Inmediata"` (`"Inmueble captado en red de aliados inmobiliarios del Táchira"`).
   - Extrae del remitente o firma del chat el `asesor_nombre` y `asesor_telefono` (`+58 4XX XXXXXXX`).
 - **Si la ruta contiene `captaciones_maximus`:**
   - `is_maximus = true`, `en_oferta = true`, `tipo_asesor = "maximus"`.
+  - Incluye el aspecto destacado exclusivo `"Gestión MAXIMUS"` (`"Captación directa verificada por el equipo de MAXIMUS Inmobiliaria"`).
   - Consulta en vivo `public.asesores_maximus` y `public.equipo_web` en Supabase y vincula el inmueble al asesor oficial de MAXIMUS mencionado en el texto/chat (o asigna por defecto al captador principal **José Guerrero** si no se especifica).
 
 ---
 
-## 2. Los 3 Modos de Emparejamiento Texto + Imágenes
+## 2. Plantilla Oficial de Ubicaciones (`UBICACIONES_TACHIRA` — 39 Sectores)
+
+El parser utiliza **única y exclusivamente** las 39 ubicaciones del desplegable `#inm-sector-select` (`UBICACIONES_TACHIRA` de `dashboard-layout.html`):
+- Asigna exactamente:
+  - `sector_nombre = loc.label` (ej. `"Pueblo Nuevo"`, `"Barrio Obrero"`, `"San Carlos"`, `"La Castellana"`, `"Madre Juana"`).
+  - `ubicacion = "${loc.label}, ${loc.municipio}, Táchira"`.
+  - `sector_desc = "Sector residencial ${loc.label}, Municipio ${loc.municipio}, Estado Táchira."`.
+- **Cero Invención de Ubicaciones:** Nunca inventa `"San Cristóbal"` a secas ni nombres fuera de la plantilla. Si un mensaje no menciona ninguno de los 39 sectores oficiales, se envía a `pendientes_revision.md`.
+
+---
+
+## 3. Los 3 Modos de Emparejamiento Texto + Imágenes
 
 ### Modo 1: Exportación Nativa de WhatsApp (`.zip` o `_chat.txt` + fotos)
 1. **Descompresión Automática de `.zip`:** Si encuentra archivos `.zip` dentro de la carpeta del lote, los descomprime automáticamente en subcarpetas antes de iniciar el parseo.
-2. **Agrupación por Remitente en Ventana de `±3 minutos`:**
+2. **Agrupación por Remitente en Ventana de `±3 minutos` + Regla Anti-Mezcla:**
    - Mantiene buffers separados por remitente (`author`) dentro de cada grupo.
-   - Si un remitente envía 4 fotos seguidas (`WA0010.jpg`, `WA0011.jpg`, `WA0012.jpg`, `WA0013.jpg`) y en la última foto o en el mensaje inmediatamente siguiente (dentro de `±3 minutos`) envía la descripción del inmueble, el algoritmo une las 4 fotos + el texto como **UN SOLO INMUEBLE**, incluso si otro remitente envió un mensaje distinto en el medio.
+   - Si un remitente envía un álbum de varias fotos sin texto (`WA0010.jpg`, `WA0011.jpg`, `WA0012.jpg`) y en la última foto o en el mensaje inmediatamente siguiente sin foto envía la descripción del inmueble, une las fotos + el texto como **UN SOLO INMUEBLE**.
+   - **Corte Anti-Mezcla:** Si el mismo remitente envía dos mensajes consecutivos donde **ambos tienen texto descriptivo**, o envía un flyer suelto con foto seguido de un mensaje con **su propia foto + texto**, el parser corta el bloque inmediatamente para jamás mezclar fotografías de inmuebles distintos.
+   - **Filtro de Requerimientos y Sin Fotos:** Descarta búsquedas de clientes (`"Requiero..."`, `"Se requiere..."`, `"Tengo el siguiente requerimiento..."`) y envía a `pendientes_revision.md` publicaciones sin fotografías adjuntas (ej. solo video `.mp4`).
 
 ### Modo 2: Captura de Pantalla Completa de WhatsApp Web (`screenshot`)
 - Si en la carpeta o subcarpeta no hay archivo `.txt` sino imágenes de captura de pantalla (`screenshot`, `captura`, `whatsapp web` o imágenes con proporción/interfaz de burbuja de chat):

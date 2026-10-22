@@ -20,8 +20,8 @@ Sus 5 skills operativas residen en `.agents/skills/` y están vinculadas en `age
 ## 2. Las 3 Reglas de Oro Inquebrantables
 
 > [!IMPORTANT]
-> **Regla de Oro 1 (Cero Invención):**
-> *"Si un dato crítico (Precio, Tipo de Operación o Tipo de Inmueble) no aparece ni en el texto del mensaje ni dentro de la imagen tras hacer OCR/Visión, NO lo inventes: mueve el inmueble al reporte de `pendientes_revision.md` y pregunta al usuario."*
+> **Regla de Oro 1 (Cero Invención + Plantilla Oficial de 39 Ubicaciones `UBICACIONES_TACHIRA`):**
+> *"Si un dato crítico (**Precio**, **Tipo de Operación**, **Tipo de Inmueble** o **Sector/Ubicación dentro de las 39 zonas oficiales de `#inm-sector-select`**) no aparece ni en el texto del mensaje ni dentro de la imagen tras hacer OCR/Visión (o el mensaje no tiene fotografías adjuntas), **NO lo inventes**: mueve el inmueble al reporte de `pendientes_revision.md` y pregunta al usuario. Jamás inventes `'San Cristóbal'` a secas ni nombres fuera del desplegable `UBICACIONES_TACHIRA`."*
 
 > [!IMPORTANT]
 > **Regla de Oro 2 (Lectura Previa Obligatoria):**
@@ -39,11 +39,12 @@ El directorio `agente_whatsapp/proyectos/` cuenta con **dos bandejas principales
 
 ### A) `agente_whatsapp/proyectos/captaciones_externas/` (Lotes de los ~15 grupos de WhatsApp de colegas)
 - **En Supabase (`public.inmuebles`):** `is_maximus = false` y `en_oferta = false` (`Captación Directa MAXIMUS = false`).
+- **Prohibición de `"Gestión MAXIMUS"`:** En `captaciones_externas/` **ESTÁ PROHIBIDO** colocar `"Gestión MAXIMUS"` o `"Gestión Comercial MAXIMUS"` en los Aspectos Destacados, subtítulo o descripción. En su lugar se utiliza `"Disponibilidad Inmediata"` (`"Inmueble captado en red de aliados inmobiliarios del Táchira"`).
 - **En `Asesor Responsable`:** Selecciona siempre **Asesor Externo** (`tipo_asesor = "externo"`, `agente_id = null`). Extrae del chat o captura el `Nombre del Asesor Externo` (`asesor_nombre`) y su `Número de WhatsApp / Teléfono` normalizado a `+58 4XX XXXXXXX` (`asesor_telefono`).
-- **En `property-image-cleaner`:** Ejecuta **SIEMPRE** la detección/separación de collages y el recorte inteligente de bordes (**Smart Crop = ON**) para eliminar marcas de agua, logos o cintillos de otras inmobiliarias.
+- **En `property-image-cleaner`:** Ejecuta **SIEMPRE** la detección/separación de collages (tanto con márgenes blancos/negros como **collages sin margen `borderless` `3x2`, `3x1`, `2x2`, `2x1`, `1x2`**) y el recorte inteligente de bordes (**Smart Crop = ON**) + recorte de cintillos internos sobre costuras para eliminar marcas de agua, logos o teléfonos de otras inmobiliarias.
 
 ### B) `agente_whatsapp/proyectos/captaciones_maximus/` (Inmuebles propios/directos de nuestra agencia MAXIMUS)
-- **En Supabase (`public.inmuebles`):** `is_maximus = true` y `en_oferta = true` (`Captación Directa MAXIMUS = true`), para que aparezcan en la sección exclusiva con la insignia **Captación MAXIMUS**.
+- **En Supabase (`public.inmuebles`):** `is_maximus = true` y `en_oferta = true` (`Captación Directa MAXIMUS = true`), para que aparezcan en la sección exclusiva con la insignia **Captación MAXIMUS** y el aspecto destacado **"Gestión MAXIMUS"**.
 - **En `Asesor Responsable`:** Selecciona **Asesor Oficial MAXIMUS** (`tipo_asesor = "maximus"`). Consulta en vivo nuestras tablas `public.asesores_maximus` y `public.equipo_web` en Supabase (según `sql/migration-asesores-maximus-rls.sql` y `sql/migration-equipo-web-rls.sql`) para vincular el inmueble al asesor oficial que corresponda (si el texto indica quién lo captó lo asigna automáticamente; si no lo especifica, usa al asesor principal por defecto **José Guerrero** o pregunta antes de insertar).
 - **En `property-image-cleaner`:** **NO recorta bordes de marcas de agua (`Smart Crop = OFF`)**, ya que son fotos oficiales nuestras. Solo separa si viene un collage (o extrae la foto interior si es captura de pantalla de WhatsApp Web) y sube las fotografías originales en máxima calidad a Supabase Storage.
 
@@ -56,7 +57,10 @@ Dentro de cualquier lote (ya sea en `captaciones_externas/` o `captaciones_maxim
 1. **Modo 1 — Exportación Nativa de WhatsApp (`.zip` o carpeta descomprimida con `_chat.txt` + fotos):**
    - Si detecta un archivo `.zip`, lo descomprime automáticamente dentro del lote.
    - Parsea las referencias explícitas de archivos dentro del `.txt` (`IMG-YYYYMMDD-WAXXXX.jpg (archivo adjunto)`, `<adjunto: ...PHOTO...jpg>`) y agrupa líneas consecutivas del **mismo remitente** en un rango de **`±3 minutos`**.
-   - Si un remitente envía 4 fotos seguidas (`WA0010.jpg`, `WA0011.jpg`, `WA0012.jpg`, `WA0013.jpg`) y en la última foto o en el mensaje inmediatamente siguiente envía el texto descriptivo, el script agrupa esas 4 fotos + el texto como **UN SOLO INMUEBLE**, manteniendo los mensajes aislados por remitente para jamás mezclar fotos de otro corredor que haya escrito entre medias.
+   - **Regla Anti-Mezcla de Inmuebles del Mismo Remitente:**
+     - Si un remitente envía un álbum de varias fotos sin texto (`WA0010.jpg`, `WA0011.jpg`, `WA0012.jpg`) y el texto descriptivo viene en la última foto o en el mensaje inmediatamente siguiente sin foto, se agrupan como **UN SOLO INMUEBLE**.
+     - **PERO** si el mismo remitente envía dos mensajes consecutivos donde **ambos tienen texto descriptivo**, o envía primero un flyer suelto con foto y luego un mensaje con **su propia foto + texto** (ej. dos inmuebles distintos reenviados el mismo minuto por el mismo corredor), el parser **corta el bloque inmediatamente** para jamás mezclar fotos de propiedades distintas.
+     - Además, descarta automáticamente mensajes de búsqueda de clientes (`"Requiero..."`, `"Se requiere..."`, `"Tengo el siguiente requerimiento..."`) y pausa mensajes que solo contengan video (`VID-...mp4`) sin fotografías.
 
 2. **Modo 2 — Captura de Pantalla Completa de WhatsApp Web (`screenshot`):**
    - Si en la carpeta del lote (o subcarpeta) no hay `.txt`, sino capturas de pantalla completas de WhatsApp Web (donde se ve la burbuja del chat con el teléfono arriba, la foto en medio y el texto abajo):

@@ -86,11 +86,19 @@ function buildPayload(inm, codigo, esLoteMaximus, useCanonTipo = false, omitAgen
 
     const isMaximusFlag = Boolean(inm.is_maximus ?? esLoteMaximus);
 
-    const aspectos = (inm.aspectos_destacados || []).slice(0, 4).map(a => ({
-        icono: ICONOS_VALIDOS.has(a.icono) ? a.icono : 'ph-star',
-        titulo: String(a.titulo || 'Destacado'),
-        desc: String(a.desc || '')
-    }));
+    const aspectos = (inm.aspectos_destacados || []).slice(0, 4).map(a => {
+        let titulo = String(a.titulo || 'Destacado');
+        let desc = String(a.desc || '');
+        if (!isMaximusFlag && (/maximus/i.test(titulo) || /maximus/i.test(desc))) {
+            titulo = 'Disponibilidad Inmediata';
+            desc = 'Inmueble captado en red de aliados inmobiliarios del Táchira.';
+        }
+        return {
+            icono: ICONOS_VALIDOS.has(a.icono) ? a.icono : 'ph-star',
+            titulo,
+            desc
+        };
+    });
 
     const fotos = (inm.fotos || []).filter(Boolean);
     const flujoLabel = isMaximusFlag ? 'Captación Directa MAXIMUS' : 'Captación Externa WhatsApp';

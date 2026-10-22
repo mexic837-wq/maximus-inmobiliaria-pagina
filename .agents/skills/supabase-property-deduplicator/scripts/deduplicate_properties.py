@@ -12,6 +12,7 @@ extraído del lote de WhatsApp no esté repetido:
 
 import os
 import re
+import sys
 import json
 import argparse
 import urllib.request
@@ -20,9 +21,25 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Tuple, Optional
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 
 def load_supabase_config(repo_root: Path) -> Tuple[str, str]:
-    """Lee SUPABASE_URL y SUPABASE_ANON_KEY desde variables de entorno o js/config.js."""
+    """Lee SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY/ANON_KEY desde .env, entorno o js/config.js."""
+    env_file = repo_root / ".env"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip("'").strip('"')
+            if k and v and k not in os.environ:
+                os.environ[k] = v
+
     url = os.environ.get("SUPABASE_URL", "").strip()
     key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "") or os.environ.get("SUPABASE_ANON_KEY", "")
     if url and key:
@@ -64,7 +81,7 @@ def fetch_existing_inmuebles_supabase(sb_url: str, sb_key: str) -> List[Dict[str
 def normalizar_tipo_familia(tipo_raw: str) -> str:
     """Agrupa sinónimos de tipo de inmueble en una misma familia canónica para comparar."""
     t = (tipo_raw or "").lower().strip()
-    if any(k in t for k in ["depto", "departamento", "apartamento", "apto", "penthouse"]):
+    if any(k in t for k in ["depto", "departamento", "apartamento", "apto", "penthouse", "anexo", "habitaci"]):
         return "apartamento"
     if any(k in t for k in ["casa", "quinta", "townhouse", "chalet"]):
         return "casa"
@@ -79,14 +96,13 @@ def normalizar_tipo_familia(tipo_raw: str) -> str:
 
 def normalizar_sector_comparacion(item: Dict[str, Any]) -> str:
     """Extrae una cadena limpia y sin acentos del sector/ubicación para comparación."""
-    sec = str(item.get("sector_nombre") or item.get("ubicacion") or "").lower()
-    # Quitar acentos comunes
+    raw_sec = str(item.get("sector_nombre") or (str(item.get("ubicacion") or "").split(",")[0]) or "").lower()
     reemplazos = str.maketrans("áéíóúñ", "aeioun")
-    sec = sec.translate(reemplazos)
-    sec = re.sub(r"\b(urbanizacion|urb|residencias|res|sector|barrio|san cristobal|tachira|estado)\b", " ", sec)
+    sec = raw_sec.translate(reemplazos)
+    sec = re.sub(r"\b(urbanizacion|urb|residencias|res|sector|tachira|estado)\b", " ", sec)
     sec = re.sub(r"[^a-z0-9\s]", " ", sec)
     sec = re.sub(r"\s+", " ", sec).strip()
-    return sec
+    return sec or "tachira"
 
 
 def sectores_coinciden(sec1: str, sec2: str) -> bool:
