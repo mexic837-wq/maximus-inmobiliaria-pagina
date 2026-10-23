@@ -61,6 +61,7 @@ const APP_CONFIG = {
         ADMIN: 'admin',
         ASESOR_MAXIMUS: 'asesor_maximus',
         AGENTE: 'agente', // Compatibilidad hacia atrás
+        ASESOR_EXTERNO: 'asesor_externo', // Cuenta de paga para Asesores Externos
         CLIENTE: 'cliente', // Usuario normal / cliente
         USUARIO: 'cliente', // Alias
     },

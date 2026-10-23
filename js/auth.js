@@ -33,6 +33,7 @@ const AuthService = {
         const demoAccounts = [
             'admin@maximus.com', 
             'asesor.maximus@maximus.com',  
+            'asesor.externo@maximus.com',
             'agente@maximus.com',
             'cliente@maximus.com',
             'usuario@maximus.com'
@@ -83,6 +84,7 @@ const AuthService = {
         const demoAccounts = [
             'admin@maximus.com', 
             'asesor.maximus@maximus.com',  
+            'asesor.externo@maximus.com',
             'agente@maximus.com',
             'cliente@maximus.com',
             'usuario@maximus.com'
@@ -157,7 +159,7 @@ const AuthService = {
      * @param {object} data - { nombre, email, password, telefono, rememberDevice }
      * @returns {Promise<{success: boolean, user?: object, error?: string, requiresEmailConfirmation?: boolean, message?: string}>}
      */
-    async register({ nombre, email, password, telefono = '', telefono_e164 = '', prefijo = '+58', rememberDevice = true }) {
+    async register({ nombre, email, password, telefono = '', telefono_e164 = '', prefijo = '+58', rol = 'cliente', rememberDevice = true }) {
         if (!nombre || !email || !password) {
             return { success: false, error: 'Por favor completa todos los campos obligatorios.' };
         }
@@ -168,14 +170,14 @@ const AuthService = {
         const cleanEmail = email.trim().toLowerCase();
 
         if (APP_CONFIG.USE_MOCK_DATA) {
-            const mockRes = this._mockRegister({ nombre, email: cleanEmail, password, telefono, telefono_e164, prefijo });
+            const mockRes = this._mockRegister({ nombre, email: cleanEmail, password, telefono, telefono_e164, prefijo, rol });
             if (mockRes.success && mockRes.user) {
                 this._saveSession(mockRes.user, cleanEmail, rememberDevice);
             }
             return mockRes;
         }
 
-        const supaRes = await this._supabaseRegister({ nombre, email: cleanEmail, password, telefono, telefono_e164, prefijo });
+        const supaRes = await this._supabaseRegister({ nombre, email: cleanEmail, password, telefono, telefono_e164, prefijo, rol });
         if (supaRes.success && supaRes.user) {
             this._saveSession(supaRes.user, cleanEmail, rememberDevice);
         }
@@ -308,7 +310,7 @@ const AuthService = {
                                 email: session.user.email,
                                 telefono: perfil ? perfil.telefono : (session.user.user_metadata?.telefono || ''),
                                 role: perfil ? perfil.rol : (session.user.user_metadata?.rol || 'cliente'),
-                                title: perfil ? perfil.titulo : 'Usuario Registrado',
+                                title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
                                 avatar: perfil ? perfil.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`
                             };
                             this._saveSession(user, session.user.email, this.shouldRemember());
@@ -362,7 +364,7 @@ const AuthService = {
     },
 
     isAsesorExterno() {
-        return false;
+        return this.hasRole(APP_CONFIG.ROLES.ASESOR_EXTERNO) || this.hasRole('asesor_externo');
     },
 
     isCliente() {
@@ -512,6 +514,20 @@ const AuthService = {
                     tipo_asesor: 'maximus',
                     title: 'Asesor MAXIMUS Oficial',
                     avatar: 'https://ui-avatars.com/api/?name=Valeria+Mendez&background=0A3D33&color=fff&bold=true',
+                }
+            },
+            'asesor.externo@maximus.com': {
+                password: 'externo123',
+                user: {
+                    id: 'mock-asesor-ext-001',
+                    name: 'Pedro Ramírez',
+                    email: 'asesor.externo@maximus.com',
+                    telefono: '+58 414-9988776',
+                    role: APP_CONFIG.ROLES.ASESOR_EXTERNO,
+                    tipo_asesor: 'externo',
+                    plan: 'pro',
+                    title: 'Asesor Inmobiliario Externo (Pro)',
+                    avatar: 'https://ui-avatars.com/api/?name=Pedro+Ramirez&background=1E3A8A&color=fff&bold=true',
                 }
             },
             // Usuario Normal / Cliente
@@ -734,7 +750,7 @@ const AuthService = {
                 email: data.user.email,
                 telefono: perfil?.telefono || data.user.user_metadata?.telefono || '',
                 role: perfil?.rol || data.user.user_metadata?.rol || 'cliente',
-                title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : 'Usuario Registrado')),
+                title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
                 avatar: perfil?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(perfil?.nombre_completo || data.user.email)}&background=0B4A3F&color=fff&bold=true`,
             };
 
@@ -748,7 +764,11 @@ const AuthService = {
     /**
      * Registro REAL con Supabase Auth.
      */
-    async _supabaseRegister({ nombre, email, password, telefono, telefono_e164 = '', prefijo = '+58' }) {
+    async _supabaseRegister({ nombre, email, password, telefono, telefono_e164 = '', prefijo = '+58', rol = 'cliente' }) {
+        const esAsesorExt = (rol === 'asesor_externo' || (APP_CONFIG.ROLES && rol === APP_CONFIG.ROLES.ASESOR_EXTERNO));
+        const rolFinal = esAsesorExt ? (APP_CONFIG.ROLES?.ASESOR_EXTERNO || 'asesor_externo') : 'cliente';
+        const tituloFinal = esAsesorExt ? 'Asesor Inmobiliario Externo (Pro)' : 'Usuario Registrado';
+        const avatarBg = esAsesorExt ? '1E3A8A' : '0B4A3F';
         try {
             const sb = typeof getSupabase === 'function' ? getSupabase() : null;
             if (!sb) {
@@ -765,8 +785,9 @@ const AuthService = {
                         telefono: telefono ? telefono.trim() : '',
             telefono_e164: telefono_e164 ? telefono_e164.trim() : (telefono ? telefono.trim() : ''),
             prefijo: prefijo || '+58',
-                        rol: 'cliente',
-                        tipo_asesor: null,
+                        rol: rolFinal,
+                        tipo_asesor: esAsesorExt ? 'externo' : null,
+                        plan: esAsesorExt ? 'pro' : 'gratis',
                     }
                 }
             });
@@ -788,9 +809,10 @@ const AuthService = {
                     telefono: telefono ? telefono.trim() : null,
                     telefono_e164: telefono_e164 ? telefono_e164.trim() : (telefono ? telefono.trim() : ''),
                     prefijo: prefijo || '+58',
-                    rol: 'cliente',
-                    tipo_asesor: null,
-                    titulo: 'Usuario Registrado',
+                    rol: rolFinal,
+                    tipo_asesor: esAsesorExt ? 'externo' : null,
+                    plan: esAsesorExt ? 'pro' : 'gratis',
+                    titulo: tituloFinal,
                     avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre.trim())}&background=0B4A3F&color=fff&bold=true`,
                     origen: 'Portal Web (Crear Cuenta)',
                     score: 70,
