@@ -197,9 +197,68 @@
         [data-reveal="zoom"]  { transform: scale(.88); }
         [data-reveal="tilt"]  { transform: perspective(900px) rotateX(14deg) translate3d(0, 40px, 0); transform-origin: 50% 100%; }
         [data-reveal].is-visible { opacity: 1; transform: none; }
+        /* ========================================================
+           MAXIMUS CHROME MOTION (Liquid Silver Shimmer & 3D Tilt)
+           ======================================================== */
+        @keyframes chromeSweep {
+            0% { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+            15% { opacity: 0.95; }
+            55%, 100% { transform: translateX(260%) skewX(-20deg); opacity: 0; }
+        }
+        .chrome-sheen-sweep {
+            position: absolute;
+            inset: 0;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), rgba(110, 231, 183, 0.5), transparent);
+            pointer-events: none;
+            animation: chromeSweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        .logo-shimmer-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        .logo-shimmer-badge::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 45%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+            transform: rotate(30deg);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .logo-shimmer-badge:hover::after {
+            opacity: 1;
+            animation: chromeSweep 1.3s ease-in-out infinite;
+        }
+        .chrome-tilt-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: transform;
+        }
+        .chrome-tilt-card .tilt-content {
+            transform: translateZ(28px);
+            transition: transform 0.22s ease;
+        }
+        .chrome-glare-layer {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.35) 0%, rgba(16, 185, 129, 0.12) 35%, transparent 65%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            mix-blend-mode: overlay;
+            border-radius: inherit;
+        }
+        .chrome-tilt-card:hover .chrome-glare-layer {
+            opacity: 1;
+        }
         @media (prefers-reduced-motion: reduce) {
             [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
-            .scroll-progress { display: none; }
+            .scroll-progress, .chrome-sheen-sweep { display: none !important; animation: none !important; }
         }
     </style>
 </head>
@@ -212,8 +271,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 md:h-20">
                 <div class="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 cursor-pointer group" onclick="if(typeof lenis !== 'undefined'){lenis.scrollTo(0);}else{window.scrollTo({top:0,behavior:'smooth'});}">
-                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#0B4A3F] to-[#06241E] p-1.5 flex items-center justify-center shadow-md shadow-emerald-950/20 border border-emerald-500/30 group-hover:border-emerald-400/60 transition-all duration-300">
-                        <img src="assest/maximus-logo-icon.svg" alt="MAXIMUS Logo" class="w-full h-full object-contain drop-shadow" />
+                    <div class="logo-shimmer-badge w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#0B4A3F] via-[#072B24] to-[#041713] p-1.5 flex items-center justify-center shadow-md shadow-emerald-950/25 border border-emerald-500/40 group-hover:border-emerald-300/80 transition-all duration-300">
+                        <img src="assest/logo_maximus_llamativo_icono.webp" alt="MAXIMUS Logo" class="w-full h-full object-contain filter drop-shadow relative z-10 transition-transform duration-300 group-hover:scale-110" />
                     </div>
                     <span class="text-xl md:text-2xl font-bold text-maximus-dark tracking-tighter flex items-center">MAXIMUS<span class="text-maximus-accent">.</span></span>
                 </div>
@@ -244,8 +303,8 @@
     <div id="mobile-menu" class="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onclick="if(event.target === this) toggleMobileMenu(false)">
         <div class="mobile-menu-panel absolute left-3 right-3 bg-white rounded-3xl shadow-2xl border border-gray-100 p-3" style="top: calc(4.5rem + env(safe-area-inset-top));">
             <div class="flex items-center gap-2.5 px-3 py-2 mb-2 pb-2.5 border-b border-gray-100">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0B4A3F] to-[#06241E] p-1.2 flex items-center justify-center shadow border border-emerald-500/30 flex-shrink-0">
-                    <img src="assest/maximus-logo-icon.svg" alt="MAXIMUS Logo" class="w-full h-full object-contain" />
+                <div class="logo-shimmer-badge w-8 h-8 rounded-xl bg-gradient-to-br from-[#0B4A3F] to-[#041713] p-1 flex items-center justify-center shadow border border-emerald-500/30 flex-shrink-0">
+                    <img src="assest/logo_maximus_llamativo_icono.webp" alt="MAXIMUS Logo" class="w-full h-full object-contain relative z-10" />
                 </div>
                 <span class="text-base font-bold text-maximus-dark tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
             </div>
@@ -581,9 +640,38 @@
             <img src="assest/maximus-logo-icon.svg" alt="" class="w-full h-full object-contain" />
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
+            <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-maximus-dark mb-4">¿Por qué elegir MAXIMUS?</h2>
                 <p class="text-gray-500 max-w-2xl mx-auto">Revolucionamos la experiencia inmobiliaria con un enfoque moderno y transparente.</p>
+            </div>
+
+            <!-- Insignia Luxury 3D Motion (Logo Plateado Llamativo Ultra HD) -->
+            <div class="max-w-xl mx-auto mb-16 px-4">
+                <div class="chrome-tilt-card relative rounded-3xl bg-gradient-to-b from-gray-900 via-[#071F1A] to-[#04120F] p-8 sm:p-10 text-center shadow-2xl border border-emerald-500/30 overflow-hidden cursor-pointer group">
+                    <!-- Haz de luz plateado líquido continuo -->
+                    <div class="chrome-sheen-sweep"></div>
+                    <!-- Capa de brillo especular reactiva al cursor -->
+                    <div class="chrome-glare-layer"></div>
+                    
+                    <div class="tilt-content relative z-10 flex flex-col items-center">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-emerald-300 text-[11px] font-bold tracking-widest uppercase border border-white/15 mb-6 shadow-sm">
+                            <i class="fas fa-gem text-emerald-400"></i> Exclusividad & Respaldo
+                        </div>
+                        
+                        <!-- Logo Plateado Llamativo Ultra HD -->
+                        <div class="relative w-60 sm:w-72 h-auto py-2">
+                            <img src="assest/logo_maximus_llamativo_full.webp" alt="MAXIMUS Inmobiliaria Logo Oficial" class="w-full h-auto object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500" />
+                        </div>
+
+                        <p class="text-xs sm:text-sm text-gray-300 max-w-md mx-auto mt-4 font-light leading-relaxed">
+                            Firma inmobiliaria líder en el estado Táchira. Seguridad jurídica, confidencialidad y comercialización de propiedades de alto estándar.
+                        </p>
+                    </div>
+
+                    <!-- Puntos lumínicos de acento cromo en las esquinas -->
+                    <div class="absolute -top-12 -left-12 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -744,8 +832,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <div>
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0B4A3F] to-[#06241E] p-1.5 flex items-center justify-center shadow-lg shadow-black/40 border border-emerald-500/30 flex-shrink-0">
-                            <img src="assest/maximus-logo-icon.svg" alt="MAXIMUS Logo" class="w-full h-full object-contain drop-shadow" />
+                        <div class="logo-shimmer-badge w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0B4A3F] via-[#072B24] to-[#041713] p-1.5 flex items-center justify-center shadow-lg shadow-black/40 border border-emerald-500/30 flex-shrink-0">
+                            <img src="assest/logo_maximus_llamativo_icono.webp" alt="MAXIMUS Logo" class="w-full h-full object-contain drop-shadow relative z-10" />
                         </div>
                         <span class="text-3xl font-bold text-white tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
                     </div>
@@ -885,6 +973,7 @@
                     ['#valuation-form', 'up', 100],
                     ['#nosotros h2', 'up', 0],
                     ['#nosotros p', 'up', 60],
+                    ['.chrome-tilt-card', 'zoom', 0],
                     ['#nosotros .benefit-card', 'up', 140],
                     ['#equipo #equipo-tag', 'down', 0],
                     ['#equipo h2', 'up', 0],
@@ -1020,6 +1109,30 @@
                 });
             });
         });
+
+        // E2. Microinteracción 3D Tilt Reactivo para la Insignia del Logo Plateado
+        (function initChromeTilt() {
+            const card = document.querySelector('.chrome-tilt-card');
+            if (!card) return;
+            const glare = card.querySelector('.chrome-glare-layer');
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -8;
+                const rotateY = ((x - centerX) / centerX) * 8;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+                if (glare) {
+                    glare.style.setProperty('--mouse-x', `${(x / rect.width * 100).toFixed(1)}%`);
+                    glare.style.setProperty('--mouse-y', `${(y / rect.height * 100).toFixed(1)}%`);
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            });
+        })();
 
         // ========================================================
         // F. SINCRONIZACIÓN HERO Y DESTACADOS CON SUPABASE / MOCK
