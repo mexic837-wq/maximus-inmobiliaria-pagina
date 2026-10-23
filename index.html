@@ -49,8 +49,8 @@
 
     <style>
         /* Lenis Smooth Scroll CSS */
-        html.lenis { height: auto; }
-        .lenis.lenis-smooth { scroll-behavior: auto; }
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
         .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
         /* Marquee continuo e infinito 100% fluido (sin saltos ni espacios en blanco) */
         @keyframes marqueeScroll {
@@ -182,10 +182,10 @@
 
 
     <!-- Navbar Flotante -->
-    <nav class="fixed w-full z-50 top-0 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-maximus-silver/30 shadow-sm" style="padding-top: env(safe-area-inset-top);">
+    <nav class="fixed w-full z-50 top-0 bg-white/85 backdrop-blur-md border-b border-maximus-silver/30 shadow-sm transform-gpu" style="padding-top: env(safe-area-inset-top); will-change: transform;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 md:h-20">
-                <div class="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <div class="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 cursor-pointer group" onclick="if(typeof lenis !== 'undefined'){lenis.scrollTo(0);}else{window.scrollTo({top:0,behavior:'smooth'});}">
                     <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#0B4A3F] to-[#06241E] p-1.5 flex items-center justify-center shadow-md shadow-emerald-950/20 border border-emerald-500/30 group-hover:border-emerald-400/60 transition-all duration-300">
                         <img src="assest/maximus-logo-icon.svg" alt="MAXIMUS Logo" class="w-full h-full object-contain drop-shadow" />
                     </div>
@@ -275,7 +275,7 @@
             </p>
 
             <!-- Omni-Search Bar (Tabs + Search: Comprar y Alquilar sincronizados con Supabase) -->
-            <div class="hero-ctas w-full max-w-3xl mb-12 transform transition-all hover:scale-[1.01] duration-300">
+            <div class="hero-ctas w-full max-w-3xl mb-12 transition-transform duration-200 hover:scale-[1.01]">
                 <div class="bg-white/10 backdrop-blur-md rounded-t-2xl inline-flex overflow-hidden border border-white/20 border-b-0 p-1 gap-1">
                     <button id="tab-comprar" onclick="switchHeroTab('comprar')" class="px-7 py-2.5 text-white bg-maximus-accent font-semibold text-sm rounded-xl transition-all shadow-md flex items-center gap-2">
                         <i class="fas fa-key text-xs"></i> Comprar
@@ -772,17 +772,18 @@
     <script>
         // 1. Lenis Smooth Scroll
         const lenis = new Lenis({
-            duration: 1.2,
+            duration: 1.1,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smooth: true
+            smoothWheel: true,
+            smoothTouch: false
         });
+        window.lenis = lenis;
 
         lenis.on('scroll', ScrollTrigger.update);
 
         gsap.ticker.add((time)=>{
-          lenis.raf(time * 1000)
+          lenis.raf(time * 1000);
         });
-        gsap.ticker.lagSmoothing(0);
 
         // 2. Smooth Scrolling en Enlaces Ancla (Header y Footer)
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -810,7 +811,13 @@
         gsap.registerPlugin(ScrollTrigger);
 
         // A. Animación "OSS Hero" (Staggered Spring Physics Reveal)
-        const ossHeroTl = gsap.timeline({ delay: 0.2 });
+        const ossHeroTl = gsap.timeline({ 
+            delay: 0.2,
+            onComplete: () => {
+                // Limpiar props inline de transform para no generar conflictos con ScrollTrigger
+                gsap.set([".hero-line > span", ".hero-desc", ".hero-ctas > *", ".hero-dock"], { clearProps: "transform" });
+            }
+        });
 
         // 1. Título de líneas enmascaradas: revelación escalonada elegante
         ossHeroTl.from(".hero-line > span", {
@@ -818,7 +825,8 @@
             opacity: 0,
             duration: 0.95,
             stagger: 0.12,
-            ease: "power3.out"
+            ease: "power3.out",
+            clearProps: "transform,opacity"
         });
 
         // 2. Subtítulo: desvanecimiento suave
@@ -826,7 +834,8 @@
             y: 24,
             opacity: 0,
             duration: 0.75,
-            ease: "power2.out"
+            ease: "power2.out",
+            clearProps: "transform,opacity"
         }, "-=0.55");
 
         // 3. Botones CTAs: entrada táctil con sutil resorte
@@ -836,7 +845,8 @@
             scale: 0.94,
             duration: 0.7,
             stagger: 0.1,
-            ease: "back.out(1.5)"
+            ease: "back.out(1.5)",
+            clearProps: "transform,opacity"
         }, "-=0.45");
 
         // 4. Dock de estadísticas: entrada limpia, firme y estable (sin loops de reinicio)
@@ -868,35 +878,35 @@
 
         // B. Hero: Parallax de Fondo y desvanecimiento progresivo
         gsap.to(".hero-bg", {
-            yPercent: 25,
+            yPercent: 18,
             ease: "none",
             scrollTrigger: {
                 trigger: ".hero-section",
                 start: "top top",
                 end: "bottom top",
-                scrub: true
+                scrub: 0.5
             }
         });
 
         gsap.to(".hero-section .relative.z-10", {
-            y: -60,
-            opacity: 0.2,
-            scale: 0.94,
+            y: -30,
+            opacity: 0.35,
             ease: "none",
             scrollTrigger: {
                 trigger: ".hero-section",
                 start: "top top",
-                end: "bottom 30%",
-                scrub: true
+                end: "bottom 35%",
+                scrub: 0.5
             }
         });
 
         // C. Scroll Reveal Estilo Canva (Kinetic Blur & Scale Reveal)
         gsap.from("#propiedades", {
-            y: 100,
+            y: 50,
             opacity: 0,
-            duration: 1.2,
-            ease: "power3.out",
+            duration: 0.9,
+            ease: "power2.out",
+            clearProps: "all",
             scrollTrigger: {
                 trigger: "#propiedades",
                 start: "top 90%",
@@ -904,11 +914,11 @@
         });
 
         gsap.from("#propiedades-header h2", {
-            y: 50,
+            y: 30,
             opacity: 0,
-            filter: "blur(12px)",
-            duration: 1.1,
-            ease: "power3.out",
+            duration: 0.8,
+            ease: "power2.out",
+            clearProps: "all",
             scrollTrigger: {
                 trigger: "#propiedades",
                 start: "top 85%",
@@ -916,12 +926,12 @@
         });
 
         gsap.from("#propiedades-header p", {
-            y: 30,
+            y: 20,
             opacity: 0,
-            filter: "blur(8px)",
-            duration: 1,
-            delay: 0.15,
-            ease: "power3.out",
+            duration: 0.8,
+            delay: 0.1,
+            ease: "power2.out",
+            clearProps: "all",
             scrollTrigger: {
                 trigger: "#propiedades",
                 start: "top 85%",
@@ -929,13 +939,14 @@
         });
 
         gsap.from(".marquee-wrapper", {
-            scale: 0.95,
+            y: 30,
             opacity: 0,
-            duration: 1.2,
+            duration: 0.9,
             ease: "power2.out",
+            clearProps: "all",
             scrollTrigger: {
                 trigger: "#propiedades",
-                start: "top 80%",
+                start: "top 85%",
             }
         });
 
