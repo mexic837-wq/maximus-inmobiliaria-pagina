@@ -48,6 +48,7 @@
     <script src="js/mock-data.js"></script>
     <script src="js/services.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/payments.js"></script>
 
     <style>
         html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -431,6 +432,24 @@
             </div>
         </div>
     </div>
+
+    <!-- Banner PLG para Asesores Inmobiliarios en Catálogo -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-gradient-to-r from-[#06241E] to-[#0A3D33] rounded-3xl p-6 sm:p-8 text-white border border-emerald-500/30 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center justify-center text-2xl shrink-0 mx-auto md:mx-0">
+                    <i class="ph-fill ph-buildings"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg sm:text-xl font-black text-white">¿Tienes propiedades en venta o alquiler en Táchira?</h3>
+                    <p class="text-xs sm:text-sm text-gray-300 font-light mt-0.5">Publica tu cartera de inmuebles en la vitrina inmobiliaria más consultada de San Cristóbal y recibe clientes directos.</p>
+                </div>
+            </div>
+            <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-gray-950 font-black text-xs shadow-md transition shrink-0 cursor-pointer">
+                Activar Plan Asesor Aliado
+            </button>
+        </div>
+    </section>
 
     <!-- ========================================================
          FOOTER OFICIAL DE MAXIMUS

@@ -62,6 +62,7 @@
     <script src="js/mock-data.js?v=3.0"></script>
     <script src="js/services.js?v=3.0"></script>
     <script src="js/auth.js?v=3.0"></script>
+    <script src="js/payments.js?v=3.0"></script>
     
     <style>
         .view-section { display: none; }
@@ -1426,6 +1427,11 @@
                                 <i class="ph-fill ph-user-circle text-lg text-emerald-600"></i> Mi Perfil
                             </button>
 
+                            <!-- Opción Upgrade a Asesor Pro (Visible para Clientes) -->
+                            <button onclick="abrirModalSuscripcionPro('mensual'); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200/80 dark:border-amber-800/60 transition-colors flex items-center gap-3 cursor-pointer">
+                                <i class="ph-fill ph-crown text-lg text-amber-500"></i> Activar Cuenta Asesor Pro
+                            </button>
+
                             <!-- Subir Reseña (Usuarios Normales) -->
                             <button onclick="abrirModalDejarResena(); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-amber-700 dark:text-amber-400 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100/70 transition-colors flex items-center gap-3 cursor-pointer">
                                 <i class="ph-fill ph-star text-lg text-amber-500"></i> Subir Reseña
@@ -1697,6 +1703,29 @@
 
             <!-- B. VISTA: INMUEBLES (Ajustada, Compacta y con 4 Columnas) -->
             <section id="view-inmuebles" class="view-section max-w-[1550px] mx-auto space-y-3.5 pb-6">
+                <!-- Micro-Banner PLG para Clientes / Usuarios Normales (Dismissible) -->
+                <div id="banner-pro-cliente" class="cliente-only p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-950 via-[#0A2E26] to-[#061814] border border-emerald-500/30 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center justify-center text-lg shrink-0">
+                            <i class="ph-fill ph-sparkle"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-black text-white flex items-center gap-2">
+                                ¿Comercializas propiedades en Táchira?
+                                <span class="px-2 py-0.2 rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] font-black uppercase tracking-wider border border-emerald-400/30">Membresía Pro</span>
+                            </p>
+                            <p class="text-[11px] text-gray-300 font-light">Conviértete en Asesor Externo Aliado para publicar inmuebles en este catálogo y usar nuestro CRM.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                        <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-gray-950 text-xs font-black shadow transition cursor-pointer">
+                            Ver Beneficios Pro
+                        </button>
+                        <button type="button" onclick="document.getElementById('banner-pro-cliente').style.display='none'; localStorage.setItem('maximus_banner_pro_dismissed', 'true');" class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-gray-400 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" title="Cerrar aviso">
+                            <i class="ph-bold ph-x"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                     <div>
                         <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">Inmuebles</h2>
@@ -4867,6 +4896,10 @@
                     </div>
                     
                     <div class="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
+                        <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="cliente-only px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer" title="Convertir mi cuenta a Asesor Pro">
+                            <i class="ph-fill ph-crown text-amber-200 text-sm"></i>
+                            <span>Activar Plan Asesor Pro</span>
+                        </button>
                         <button type="button" onclick="abrirModalDejarResena()" class="cliente-only px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/80 text-amber-800 dark:text-amber-300 font-bold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer" title="Subir reseña sobre mi experiencia">
                             <i class="ph-fill ph-star text-amber-500 text-sm"></i>
                             <span>Dejar Reseña</span>
@@ -6864,6 +6897,12 @@
                 agenteElements.forEach(el => el.style.display = 'none');
                 staffElements.forEach(el => el.style.display = 'none');
                 clienteElements.forEach(el => el.style.display = '');
+
+                // Respetar si el cliente ya cerró el banner de invitación Pro
+                if (localStorage.getItem('maximus_banner_pro_dismissed') === 'true') {
+                    const b = document.getElementById('banner-pro-cliente');
+                    if (b) b.style.display = 'none';
+                }
             }
 
             // Renderizar dropdown de ubicaciones
