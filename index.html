@@ -175,6 +175,32 @@
             footer .grid { gap: 2rem !important; margin-bottom: 2rem !important; }
             footer { padding-top: 2.75rem !important; }
         }
+
+        /* ========================================================
+           MOTION SCROLL REVEAL (solo transform + opacity = 60/120 FPS)
+           ======================================================== */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+            background: linear-gradient(90deg, #0B4A3F, #10B981, #6EE7B7);
+            transform-origin: 0 50%; transform: scaleX(0);
+            z-index: 60; pointer-events: none;
+        }
+        [data-reveal] {
+            opacity: 0;
+            transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+            transition-delay: var(--reveal-delay, 0ms);
+        }
+        [data-reveal="up"]    { transform: translate3d(0, 48px, 0); }
+        [data-reveal="down"]  { transform: translate3d(0, -32px, 0); }
+        [data-reveal="left"]  { transform: translate3d(-60px, 0, 0); }
+        [data-reveal="right"] { transform: translate3d(60px, 0, 0); }
+        [data-reveal="zoom"]  { transform: scale(.88); }
+        [data-reveal="tilt"]  { transform: perspective(900px) rotateX(14deg) translate3d(0, 40px, 0); transform-origin: 50% 100%; }
+        [data-reveal].is-visible { opacity: 1; transform: none; }
+        @media (prefers-reduced-motion: reduce) {
+            [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+            .scroll-progress { display: none; }
+        }
     </style>
 </head>
 <body class="font-sans text-maximus-black antialiased bg-gray-50">
@@ -314,6 +340,14 @@
                 <div class="text-left">
                     <p id="stat-trayectoria" class="text-xl sm:text-2xl font-extrabold text-white leading-none">15+</p>
                     <p class="text-[11px] sm:text-xs text-gray-300 font-medium mt-1">Años de Trayectoria</p>
+                </div>
+            </div>
+
+            <!-- Scroll Down Motion Indicator -->
+            <div class="mt-8 flex flex-col items-center cursor-pointer group select-none transition-transform hover:scale-105" onclick="window.smoothScrollTo('.rutas-section', -40)">
+                <span class="text-[10px] tracking-widest uppercase font-semibold text-white/70 group-hover:text-emerald-400 transition-colors mb-2">Descubrir</span>
+                <div class="w-5 h-9 rounded-full border-2 border-white/40 group-hover:border-emerald-400 flex items-start justify-center p-1 transition-colors shadow-sm">
+                    <div class="w-1 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
                 </div>
             </div>
         </div>
@@ -809,6 +843,75 @@
 
 
 
+        // 2.B MOTION SCROLL REVEAL (IntersectionObserver + CSS GPU, 100% fluido a 60/120 FPS)
+        (function initMotionReveal() {
+            // Barra de progreso de lectura superior
+            const bar = document.createElement('div');
+            bar.className = 'scroll-progress';
+            document.body.appendChild(bar);
+            let ticking = false;
+            const updateBar = () => {
+                const max = document.documentElement.scrollHeight - window.innerHeight;
+                bar.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
+                ticking = false;
+            };
+            window.addEventListener('scroll', () => {
+                if (!ticking) { ticking = true; requestAnimationFrame(updateBar); }
+            }, { passive: true });
+            updateBar();
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            window.motionObserver = observer;
+
+            window.applyMotionReveal = function(container = document) {
+                const reglas = [
+                    ['.rutas-section .ruta-card', 'up', 120],
+                    ['#propiedades-header h2', 'up', 0],
+                    ['#propiedades-header p', 'up', 60],
+                    ['#propiedades-header .inline-flex', 'zoom', 100],
+                    ['#propiedades .marquee-wrapper', 'up', 0],
+                    ['#propiedades .flex.items-center.justify-center span', 'zoom', 0],
+                    ['#propiedades .mt-5 > a', 'up', 100],
+                    ['#valoracion h2', 'zoom', 0],
+                    ['#valoracion p', 'up', 60],
+                    ['#valuation-form', 'up', 100],
+                    ['#nosotros h2', 'up', 0],
+                    ['#nosotros p', 'up', 60],
+                    ['#nosotros .benefit-card', 'up', 140],
+                    ['#equipo #equipo-tag', 'down', 0],
+                    ['#equipo h2', 'up', 0],
+                    ['#equipo-subtitulo', 'up', 60],
+                    ['#grid-equipo > div', 'up', 120],
+                    ['#testimonios .inline-flex', 'down', 0],
+                    ['#testimonios h2', 'up', 0],
+                    ['#testimonios p', 'up', 60],
+                    ['#testimonios .marquee-wrapper', 'up', 0],
+                    ['#testimonios .mt-5 > a', 'zoom', 0],
+                    ['footer .grid > div', 'up', 130],
+                    ['footer .border-t', 'up', 0]
+                ];
+
+                reglas.forEach(([selector, efecto, stagger]) => {
+                    container.querySelectorAll(selector).forEach((el, i) => {
+                        if (el.hasAttribute('data-reveal')) return;
+                        el.setAttribute('data-reveal', efecto);
+                        if (stagger) el.style.setProperty('--reveal-delay', `${i * stagger}ms`);
+                        observer.observe(el);
+                    });
+                });
+            };
+
+            window.applyMotionReveal();
+        })();
+
         // 3. Animaciones GSAP
         gsap.registerPlugin(ScrollTrigger);
 
@@ -889,126 +992,6 @@
                 scrub: true
             }
         });
-
-        // C. Scroll Reveal Estilo Canva (Kinetic Blur & Scale Reveal)
-        gsap.from("#propiedades", {
-            y: 50,
-            opacity: 0,
-            duration: 0.9,
-            ease: "power2.out",
-            clearProps: "all",
-            scrollTrigger: {
-                trigger: "#propiedades",
-                start: "top 90%",
-            }
-        });
-
-        gsap.from("#propiedades-header h2", {
-            y: 30,
-            opacity: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            clearProps: "all",
-            scrollTrigger: {
-                trigger: "#propiedades",
-                start: "top 85%",
-            }
-        });
-
-        gsap.from("#propiedades-header p", {
-            y: 20,
-            opacity: 0,
-            duration: 0.8,
-            delay: 0.1,
-            ease: "power2.out",
-            clearProps: "all",
-            scrollTrigger: {
-                trigger: "#propiedades",
-                start: "top 85%",
-            }
-        });
-
-        gsap.from(".marquee-wrapper", {
-            y: 30,
-            opacity: 0,
-            duration: 0.9,
-            ease: "power2.out",
-            clearProps: "all",
-            scrollTrigger: {
-                trigger: "#propiedades",
-                start: "top 85%",
-            }
-        });
-
-        // D. Scroll Reveal: Benefit Cards
-        gsap.from(".benefit-card", {
-            y: 80,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.15,
-            ease: "power2.out",
-            scrollTrigger: {
-                trigger: "#nosotros",
-                start: "top 80%",
-            }
-        });
-
-        // D2. Animaciones Scroll Zoom / OSS para nuevas secciones
-        
-        // Rutas de Servicio (Comprar, Alquilar, Vender)
-        gsap.fromTo("section.-mt-10 .grid > div", 
-            { y: 50, opacity: 0 },
-            { 
-                y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out",
-                scrollTrigger: { trigger: "section.-mt-10", start: "top 95%" },
-                clearProps: "all"
-            }
-        );
-
-        // Valoración (Lead Magnet)
-        gsap.fromTo("#valoracion", 
-            { y: 30, opacity: 0 },
-            { 
-                y: 0, opacity: 1, duration: 0.8, ease: "power2.out",
-                scrollTrigger: { trigger: "#valoracion", start: "top 85%" },
-                clearProps: "all"
-            }
-        );
-        
-        gsap.fromTo("#valuation-form", 
-            { y: 30, opacity: 0 },
-            { 
-                y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out",
-                scrollTrigger: { trigger: "#valoracion", start: "top 85%" },
-                clearProps: "all"
-            }
-        );
-
-        // Equipo de Agentes
-        gsap.fromTo("#equipo .grid > div", 
-            { y: 40, opacity: 0 },
-            { 
-                y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: "power2.out",
-                scrollTrigger: { trigger: "#equipo", start: "top 85%" },
-                clearProps: "all"
-            }
-        );
-
-        // Testimonios
-        const testimonioCards = document.querySelectorAll('.fa-quote-right');
-        if(testimonioCards.length > 0) {
-            const container = testimonioCards[0].parentElement.parentElement;
-            testimonioCards.forEach((icon, i) => {
-                gsap.fromTo(icon.parentElement, 
-                    { y: 40, opacity: 0 },
-                    { 
-                        y: 0, opacity: 1, duration: 0.6, delay: i * 0.15, ease: "power2.out",
-                        scrollTrigger: { trigger: container, start: "top 90%" },
-                        clearProps: "all"
-                    }
-                );
-            });
-        }
 
         // E. Microinteracción: Magnetic Hover para Botones del Hero
         const magneticBtns = document.querySelectorAll('.magnetic-btn');
@@ -1534,6 +1517,7 @@
                             </div>
                         `;
                     }).join('');
+                    if (window.applyMotionReveal) window.applyMotionReveal(grid);
                 }
             } catch (err) {
                 console.error('Error al cargar equipo en landing:', err);
