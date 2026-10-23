@@ -121,14 +121,14 @@
     <!-- Cromo Espejo Ultra-Brillante para Texto -->
     <linearGradient id="text-chrome-front" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="15%" stop-color="#F1F5F9" />
-      <stop offset="30%" stop-color="#C0C9D4" />
-      <stop offset="42%" stop-color="#FFFFFF" />
-      <stop offset="52%" stop-color="#8899AA" />
-      <stop offset="62%" stop-color="#FFFFFF" stop-opacity="0.85" />
-      <stop offset="75%" stop-color="#CBD5E1" />
-      <stop offset="88%" stop-color="#F8FAFC" />
-      <stop offset="100%" stop-color="#64748B" />
+      <stop offset="12%" stop-color="#F8FAFC" />
+      <stop offset="25%" stop-color="#D6DEE8" />
+      <stop offset="38%" stop-color="#FFFFFF" />
+      <stop offset="50%" stop-color="#94A3B8" />
+      <stop offset="62%" stop-color="#E2E8F0" />
+      <stop offset="75%" stop-color="#FFFFFF" />
+      <stop offset="88%" stop-color="#CBD5E1" />
+      <stop offset="100%" stop-color="#94A3B8" />
     </linearGradient>
 
     <linearGradient id="text-chrome-bevel" x1="0" y1="0" x2="1" y2="1">
@@ -324,17 +324,18 @@
       MAXIMUS
     </text>
 
-    <!-- 2. Capa Bisel Metálico Intermedio -->
+    <!-- 2. Capa Bisel Metálico Intermedio — contorno cromado sólido -->
     <text x="350" y="450" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
           font-weight="900" 
           font-size="88" 
           letter-spacing="5" 
-          fill="#475569" 
-          stroke="url(#text-chrome-bevel)" 
-          stroke-width="5" 
-          stroke-linejoin="round">
+          fill="url(#text-chrome-front)" 
+          stroke="#94A3B8" 
+          stroke-width="3" 
+          stroke-linejoin="round"
+          paint-order="stroke">
       MAXIMUS
     </text>
 
@@ -345,11 +346,15 @@
           font-weight="900" 
           font-size="88" 
           letter-spacing="5" 
-          fill="url(#text-chrome-front)">
+          fill="url(#text-chrome-front)"
+          stroke="#FFFFFF"
+          stroke-width="0.5"
+          stroke-linejoin="round"
+          paint-order="stroke">
       MAXIMUS
     </text>
 
-    <!-- 4. Resalte Superior de Luz Pura (Inline Stroke con destello) -->
+    <!-- 4. Borde superior sutil de luz continua (sin rayas) -->
     <text x="350" y="448" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
@@ -358,24 +363,10 @@
           letter-spacing="5" 
           fill="none" 
           stroke="#FFFFFF" 
-          stroke-width="1.2" 
-          stroke-dasharray="6 12" 
-          opacity="0.75">
+          stroke-width="0.8" 
+          opacity="0.45">
       MAXIMUS
     </text>
-
-    <!-- 5. Franja de brillo horizontal especular sobre las letras -->
-    <clipPath id="text-clip">
-      <text x="350" y="448" 
-            text-anchor="middle" 
-            font-family="'Montserrat', 'Arial Black', sans-serif" 
-            font-weight="900" 
-            font-size="88" 
-            letter-spacing="5">
-        MAXIMUS
-      </text>
-    </clipPath>
-    <rect x="100" y="408" width="500" height="14" fill="url(#chrome-specular-streak)" clip-path="url(#text-clip)" opacity="0.6" />
 
     <!-- Punto Esmeralda Joya al Final de MAXIMUS (Sello de Marca) -->
     <circle cx="608" cy="442" r="7.5" fill="url(#emerald-dot-grad)" filter="url(#arrow-glow)" />
@@ -400,19 +391,6 @@
           fill="url(#text-chrome-front)">
       INMOBILIARIA
     </text>
-
-    <!-- Franja de brillo sobre INMOBILIARIA -->
-    <clipPath id="subtext-clip">
-      <text x="350" y="522" 
-            text-anchor="middle" 
-            font-family="'Montserrat', sans-serif" 
-            font-weight="800" 
-            font-size="26" 
-            letter-spacing="13">
-        INMOBILIARIA
-      </text>
-    </clipPath>
-    <rect x="120" y="505" width="460" height="8" fill="url(#chrome-specular-streak)" clip-path="url(#subtext-clip)" opacity="0.45" />
 
     <!-- Línea decorativa derecha -->
     <circle cx="481" cy="514" r="3" fill="#10B981" />
