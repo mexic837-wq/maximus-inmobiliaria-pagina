@@ -1,114 +1,137 @@
-<svg viewBox="0 0 540 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 460 400" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <filter id="icon-luxury-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feGaussianBlur stdDeviation="6" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
     
     <filter id="icon-drop-shadow" x="-25%" y="-20%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.5" />
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.45" />
     </filter>
 
-    <linearGradient id="icon-chrome-main" x1="100" y1="50" x2="440" y2="300" gradientUnits="userSpaceOnUse">
+    <!-- Cromo espejo líquido ultra-brillante -->
+    <linearGradient id="icon-chrome-main" x1="80" y1="10" x2="380" y2="280" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="20%" stop-color="#E2E8F0" />
-      <stop offset="40%" stop-color="#94A3B8" />
-      <stop offset="55%" stop-color="#FFFFFF" />
-      <stop offset="70%" stop-color="#64748B" />
-      <stop offset="85%" stop-color="#CBD5E1" />
-      <stop offset="100%" stop-color="#334155" />
+      <stop offset="14%" stop-color="#F1F5F9" />
+      <stop offset="28%" stop-color="#C0C9D4" />
+      <stop offset="40%" stop-color="#FFFFFF" />
+      <stop offset="52%" stop-color="#8899AA" />
+      <stop offset="62%" stop-color="#FFFFFF" stop-opacity="0.85"/>
+      <stop offset="72%" stop-color="#64748B" />
+      <stop offset="84%" stop-color="#D6DEE8" />
+      <stop offset="94%" stop-color="#FFFFFF" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#475569" />
     </linearGradient>
 
-    <linearGradient id="icon-chrome-bevel" x1="90" y1="200" x2="270" y2="40" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#CBD5E1" />
-      <stop offset="50%" stop-color="#FFFFFF" />
+    <linearGradient id="icon-chrome-bevel" x1="80" y1="180" x2="230" y2="10" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2E8F0" />
+      <stop offset="40%" stop-color="#FFFFFF" />
       <stop offset="100%" stop-color="#F8FAFC" />
     </linearGradient>
 
-    <linearGradient id="icon-chrome-shade" x1="270" y1="80" x2="450" y2="240" gradientUnits="userSpaceOnUse">
+    <linearGradient id="icon-chrome-shade" x1="230" y1="70" x2="380" y2="220" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#1E293B" />
       <stop offset="50%" stop-color="#475569" />
       <stop offset="100%" stop-color="#0F172A" />
     </linearGradient>
 
-    <linearGradient id="icon-pillar-grad" x1="0" y1="0" x2="1" y2="1">
+    <!-- Pilar: cromo cilíndrico -->
+    <linearGradient id="icon-pillar-grad" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="35%" stop-color="#CBD5E1" />
-      <stop offset="70%" stop-color="#475569" />
-      <stop offset="100%" stop-color="#1E293B" />
+      <stop offset="18%" stop-color="#E8EDF2" />
+      <stop offset="40%" stop-color="#8899AA" />
+      <stop offset="55%" stop-color="#FFFFFF" />
+      <stop offset="70%" stop-color="#64748B" />
+      <stop offset="88%" stop-color="#C0C9D4" />
+      <stop offset="100%" stop-color="#334155" />
     </linearGradient>
 
-    <linearGradient id="icon-emerald-ridge" x1="160" y1="180" x2="460" y2="20" gradientUnits="userSpaceOnUse">
+    <linearGradient id="icon-emerald-ridge" x1="140" y1="180" x2="380" y2="10" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#A7F3D0" />
       <stop offset="40%" stop-color="#6EE7B7" />
       <stop offset="80%" stop-color="#34D399" />
       <stop offset="100%" stop-color="#A7F3D0" />
     </linearGradient>
 
-    <linearGradient id="icon-emerald-body" x1="160" y1="210" x2="470" y2="30" gradientUnits="userSpaceOnUse">
+    <linearGradient id="icon-emerald-body" x1="140" y1="210" x2="390" y2="20" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#059669" />
       <stop offset="30%" stop-color="#10B981" />
       <stop offset="65%" stop-color="#047857" />
       <stop offset="100%" stop-color="#10B981" />
     </linearGradient>
 
-    <linearGradient id="icon-emerald-shade" x1="250" y1="260" x2="440" y2="110" gradientUnits="userSpaceOnUse">
+    <linearGradient id="icon-emerald-shade" x1="220" y1="260" x2="370" y2="100" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#064E3B" />
       <stop offset="50%" stop-color="#022C22" />
       <stop offset="100%" stop-color="#064E3B" />
     </linearGradient>
   </defs>
 
+  <!-- Estructura Arquitectónica 3D Cromo — PROPORCIONES MÁS ALTAS -->
   <g filter="url(#icon-drop-shadow)">
     <!-- Chimenea 3D -->
-    <rect x="150" y="55" width="24" height="85" rx="3" fill="url(#icon-pillar-grad)" />
-    <polygon points="148,55 158,48 182,48 174,55" fill="#FFFFFF" />
-    <line x1="151" y1="55" x2="151" y2="140" stroke="#FFFFFF" stroke-width="2" opacity="0.8" />
+    <rect x="132" y="28" width="22" height="95" rx="3" fill="url(#icon-pillar-grad)" />
+    <polygon points="130,28 140,20 160,20 154,28" fill="#FFFFFF" />
+    <line x1="133" y1="28" x2="133" y2="123" stroke="#FFFFFF" stroke-width="1.8" opacity="0.85" />
+    <rect x="140" y="32" width="4" height="86" rx="2" fill="#FFFFFF" opacity="0.3" />
 
-    <!-- Pilar Izquierdo 3D -->
-    <rect x="110" y="180" width="30" height="120" rx="4" fill="url(#icon-pillar-grad)" />
-    <line x1="112" y1="182" x2="112" y2="298" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <!-- Pilar Izquierdo 3D (más alto) -->
+    <rect x="94" y="168" width="28" height="130" rx="4" fill="url(#icon-pillar-grad)" />
+    <line x1="96" y1="170" x2="96" y2="296" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <rect x="104" y="174" width="4" height="118" rx="2" fill="#FFFFFF" opacity="0.25" />
 
-    <!-- Pilar Derecho 3D -->
-    <rect x="400" y="180" width="30" height="120" rx="4" fill="url(#icon-pillar-grad)" />
-    <line x1="402" y1="182" x2="402" y2="298" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <!-- Pilar Derecho 3D (más alto) -->
+    <rect x="338" y="168" width="28" height="130" rx="4" fill="url(#icon-pillar-grad)" />
+    <line x1="340" y1="170" x2="340" y2="296" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <rect x="348" y="174" width="4" height="118" rx="2" fill="#FFFFFF" opacity="0.2" />
 
-    <!-- Techo a Dos Aguas 3D -->
-    <path d="M72 186 L270 42 L468 186 L444 212 L270 82 L96 212 Z" fill="url(#icon-chrome-main)" />
+    <!-- Techo a Dos Aguas 3D — MÁS EMPINADO -->
+    <path d="M54 172 L230 8 L406 172 L382 200 L230 56 L78 200 Z" fill="url(#icon-chrome-main)" />
     <!-- Bisel Superior Brillante -->
-    <path d="M72 186 L270 42 L468 186 L460 192 L270 50 L80 192 Z" fill="url(#icon-chrome-bevel)" />
-    <polyline points="74,188 270,45 466,188" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+    <path d="M54 172 L230 8 L406 172 L398 178 L230 18 L62 178 Z" fill="url(#icon-chrome-bevel)" />
+    <polyline points="56,174 230,12 404,174" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
     <!-- Bisel Interior Sombra -->
-    <path d="M96 212 L270 82 L444 212 L434 218 L270 94 L106 218 Z" fill="url(#icon-chrome-shade)" />
+    <path d="M78 200 L230 56 L382 200 L372 206 L230 68 L88 206 Z" fill="url(#icon-chrome-shade)" />
+    <!-- Franja de brillo diagonal izquierda -->
+    <path d="M100 192 L168 132 L174 138 L106 198 Z" fill="#FFFFFF" opacity="0.35" />
+    <!-- Franja de brillo diagonal derecha -->
+    <path d="M292 132 L360 192 L354 198 L286 138 Z" fill="#FFFFFF" opacity="0.25" />
   </g>
 
-  <!-- Flecha Dinámica Verde Esmeralda 3D -->
+  <!-- Flecha Dinámica Verde Esmeralda 3D — más compacta horizontalmente -->
   <g filter="url(#icon-luxury-glow)">
-    <!-- Sombra proyectada por la flecha -->
-    <path d="M176 178 L270 262 L408 86 L428 94 L486 36 L408 58 L270 230 L188 162 Z" fill="#000000" opacity="0.35" />
+    <!-- Sombra proyectada -->
+    <path d="M156 158 L230 240 L348 68 L366 76 L406 26 L348 44 L230 206 L168 142 Z" fill="#000000" opacity="0.35" />
 
-    <!-- Faceta inferior sombra flecha -->
-    <path d="M165 165 L270 258 L394 76 L404 84 L276 268 L171 175 Z" fill="url(#icon-emerald-shade)" />
+    <!-- Faceta inferior sombra -->
+    <path d="M146 146 L230 234 L336 58 L346 66 L236 244 L152 156 Z" fill="url(#icon-emerald-shade)" />
 
     <!-- Cuerpo principal esmeralda -->
-    <path d="M162 156 L270 246 L414 60 L398 46 L270 214 L178 140 Z" fill="url(#icon-emerald-body)" />
+    <path d="M142 136 L230 222 L354 42 L340 30 L230 190 L158 118 Z" fill="url(#icon-emerald-body)" />
 
     <!-- Cresta brillante mint -->
-    <path d="M178 140 L270 214 L398 46 L406 54 L274 222 L184 148 Z" fill="url(#icon-emerald-ridge)" />
-    <polyline points="178,140 270,214 398,46" stroke="#D1FAE5" stroke-width="2" stroke-linecap="round" opacity="0.95" />
+    <path d="M158 118 L230 190 L340 30 L348 38 L234 198 L164 126 Z" fill="url(#icon-emerald-ridge)" />
+    <polyline points="158,118 230,190 340,30" stroke="#D1FAE5" stroke-width="2" stroke-linecap="round" opacity="0.95" />
 
     <!-- Punta de Flecha 3D -->
-    <polygon points="488,18 392,42 434,116" fill="url(#icon-emerald-body)" />
-    <polygon points="488,18 392,42 442,48" fill="url(#icon-emerald-ridge)" />
-    <line x1="392" y1="42" x2="488" y2="18" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    <polygon points="408,8 334,28 372,92" fill="#064E3B" />
+    <polygon points="402,4 338,22 372,84" fill="url(#icon-emerald-body)" />
+    <polygon points="402,4 338,22 378,28" fill="url(#icon-emerald-ridge)" />
+    <line x1="338" y1="22" x2="402" y2="4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <line x1="402" y1="4" x2="372" y2="84" stroke="#A7F3D0" stroke-width="1.5" stroke-linecap="round" />
   </g>
 
-  <!-- Sparkles -->
-  <g transform="translate(488, 18)">
+  <!-- Destellos diamantinos -->
+  <g transform="translate(404, 4)">
     <path d="M0 -14 Q0 0 14 0 Q0 0 0 14 Q0 0 -14 0 Q0 0 0 -14 Z" fill="#FFFFFF" opacity="0.95" />
     <circle cx="0" cy="0" r="2.5" fill="#A7F3D0" />
   </g>
-  <g transform="translate(270, 42)">
+  <g transform="translate(230, 8)">
     <path d="M0 -10 Q0 0 10 0 Q0 0 0 10 Q0 0 -10 0 Q0 0 0 -10 Z" fill="#FFFFFF" opacity="0.9" />
+    <circle cx="0" cy="0" r="2" fill="#E2E8F0" />
+  </g>
+  <g transform="translate(54, 172)">
+    <path d="M0 -8 Q0 0 8 0 Q0 0 0 8 Q0 0 -8 0 Q0 0 0 -8 Z" fill="#FFFFFF" opacity="0.8" />
+    <circle cx="0" cy="0" r="1.8" fill="#FFFFFF" />
   </g>
 </svg>

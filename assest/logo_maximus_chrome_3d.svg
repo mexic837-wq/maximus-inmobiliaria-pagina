@@ -1,106 +1,140 @@
-<svg viewBox="0 0 800 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 700 680" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- Filtros de sombra y resplandor -->
     <filter id="luxury-glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feGaussianBlur stdDeviation="10" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
     
     <filter id="drop-shadow-3d" x="-25%" y="-20%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#000000" flood-opacity="0.6" />
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.55" />
     </filter>
 
     <filter id="arrow-glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="8" result="glow" />
+      <feGaussianBlur stdDeviation="6" result="glow" />
       <feMerge>
         <feMergeNode in="glow" />
         <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
 
-    <!-- Gradientes Metálicos Cromados Ultra-Llamativos (Silver & Platinum) -->
-    <linearGradient id="chrome-roof-main" x1="180" y1="90" x2="620" y2="340" gradientUnits="userSpaceOnUse">
+    <!-- Filtro de brillo especular intenso -->
+    <filter id="specular-shine" x="-10%" y="-10%" width="120%" height="120%">
+      <feSpecularLighting surfaceScale="3" specularConstant="1.8" specularExponent="28" lighting-color="#FFFFFF" result="specLight">
+        <fePointLight x="350" y="-80" z="300" />
+      </feSpecularLighting>
+      <feComposite in="specLight" in2="SourceAlpha" operator="in" result="specMask" />
+      <feComposite in="SourceGraphic" in2="specMask" operator="arithmetic" k1="0" k2="1" k3="0.5" k4="0" />
+    </filter>
+
+    <!-- ============================================
+         GRADIENTES METÁLICOS CROMADOS ULTRA-BRILLANTES
+         ============================================ -->
+
+    <!-- Techo Principal: Cromo Espejo Líquido -->
+    <linearGradient id="chrome-roof-main" x1="200" y1="30" x2="500" y2="320" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="18%" stop-color="#E2E8F0" />
-      <stop offset="38%" stop-color="#94A3B8" />
-      <stop offset="52%" stop-color="#FFFFFF" />
-      <stop offset="70%" stop-color="#64748B" />
-      <stop offset="86%" stop-color="#CBD5E1" />
-      <stop offset="100%" stop-color="#334155" />
+      <stop offset="12%" stop-color="#F1F5F9" />
+      <stop offset="24%" stop-color="#C0C9D4" />
+      <stop offset="36%" stop-color="#FFFFFF" />
+      <stop offset="48%" stop-color="#8899AA" />
+      <stop offset="58%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="68%" stop-color="#64748B" />
+      <stop offset="80%" stop-color="#D6DEE8" />
+      <stop offset="92%" stop-color="#FFFFFF" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#475569" />
     </linearGradient>
 
-    <linearGradient id="chrome-roof-bevel-top" x1="170" y1="230" x2="400" y2="65" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#CBD5E1" />
-      <stop offset="50%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#F8FAFC" />
+    <!-- Bisel Superior Tejado: Luz Pura Diurna -->
+    <linearGradient id="chrome-roof-bevel-top" x1="170" y1="200" x2="350" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2E8F0" />
+      <stop offset="30%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#F8FAFC" />
+      <stop offset="100%" stop-color="#FFFFFF" />
     </linearGradient>
 
-    <linearGradient id="chrome-roof-bevel-bottom" x1="400" y1="120" x2="630" y2="280" gradientUnits="userSpaceOnUse">
+    <!-- Bisel Inferior Tejado: Sombra Profunda -->
+    <linearGradient id="chrome-roof-bevel-bottom" x1="350" y1="100" x2="530" y2="260" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#1E293B" />
-      <stop offset="45%" stop-color="#475569" />
-      <stop offset="75%" stop-color="#0F172A" />
+      <stop offset="40%" stop-color="#475569" />
+      <stop offset="70%" stop-color="#0F172A" />
       <stop offset="100%" stop-color="#334155" />
     </linearGradient>
 
-    <linearGradient id="chrome-pillar-left" x1="200" y1="220" x2="260" y2="360" gradientUnits="userSpaceOnUse">
+    <!-- Pilares: Cromo Cilíndrico con Reflejos Verticales -->
+    <linearGradient id="chrome-pillar-left" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="30%" stop-color="#CBD5E1" />
-      <stop offset="60%" stop-color="#475569" />
+      <stop offset="15%" stop-color="#E8EDF2" />
+      <stop offset="35%" stop-color="#8899AA" />
+      <stop offset="50%" stop-color="#FFFFFF" />
+      <stop offset="65%" stop-color="#64748B" />
+      <stop offset="85%" stop-color="#B8C4D0" />
+      <stop offset="100%" stop-color="#334155" />
+    </linearGradient>
+
+    <linearGradient id="chrome-pillar-right" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="18%" stop-color="#D6DEE8" />
+      <stop offset="40%" stop-color="#475569" />
+      <stop offset="55%" stop-color="#FFFFFF" />
+      <stop offset="70%" stop-color="#8899AA" />
+      <stop offset="88%" stop-color="#C0C9D4" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+
+    <!-- Chimenea: Cromo Satinado con Hot Spot -->
+    <linearGradient id="chrome-chimney" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="20%" stop-color="#E2E8F0" />
+      <stop offset="45%" stop-color="#FFFFFF" />
+      <stop offset="65%" stop-color="#64748B" />
       <stop offset="85%" stop-color="#94A3B8" />
       <stop offset="100%" stop-color="#1E293B" />
     </linearGradient>
 
-    <linearGradient id="chrome-pillar-right" x1="540" y1="220" x2="600" y2="360" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="25%" stop-color="#CBD5E1" />
-      <stop offset="55%" stop-color="#334155" />
-      <stop offset="80%" stop-color="#94A3B8" />
-      <stop offset="100%" stop-color="#0F172A" />
-    </linearGradient>
-
-    <linearGradient id="chrome-chimney" x1="250" y1="70" x2="295" y2="180" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="30%" stop-color="#E2E8F0" />
-      <stop offset="65%" stop-color="#64748B" />
-      <stop offset="100%" stop-color="#1E293B" />
-    </linearGradient>
-
-    <!-- Gradientes Esmeralda Joya 3D para la Flecha -->
-    <linearGradient id="emerald-arrow-ridge" x1="260" y1="220" x2="640" y2="40" gradientUnits="userSpaceOnUse">
+    <!-- ============================================
+         GRADIENTES ESMERALDA JOYA 3D PARA LA FLECHA
+         ============================================ -->
+    <linearGradient id="emerald-arrow-ridge" x1="280" y1="220" x2="530" y2="40" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#A7F3D0" />
       <stop offset="35%" stop-color="#6EE7B7" />
       <stop offset="70%" stop-color="#34D399" />
       <stop offset="100%" stop-color="#A7F3D0" />
     </linearGradient>
 
-    <linearGradient id="emerald-arrow-body" x1="260" y1="260" x2="650" y2="50" gradientUnits="userSpaceOnUse">
+    <linearGradient id="emerald-arrow-body" x1="280" y1="260" x2="540" y2="50" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#059669" />
       <stop offset="30%" stop-color="#10B981" />
       <stop offset="65%" stop-color="#047857" />
       <stop offset="100%" stop-color="#10B981" />
     </linearGradient>
 
-    <linearGradient id="emerald-arrow-shade" x1="380" y1="320" x2="620" y2="150" gradientUnits="userSpaceOnUse">
+    <linearGradient id="emerald-arrow-shade" x1="360" y1="310" x2="520" y2="150" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#064E3B" />
       <stop offset="50%" stop-color="#022C22" />
       <stop offset="100%" stop-color="#064E3B" />
     </linearGradient>
 
-    <!-- Gradientes Metálicos para Tipografía MAXIMUS -->
+    <!-- ============================================
+         GRADIENTES PARA TIPOGRAFÍA MAXIMUS
+         ============================================ -->
+    <!-- Cromo Espejo Ultra-Brillante para Texto -->
     <linearGradient id="text-chrome-front" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="28%" stop-color="#E2E8F0" />
-      <stop offset="48%" stop-color="#94A3B8" />
-      <stop offset="52%" stop-color="#475569" />
-      <stop offset="72%" stop-color="#F1F5F9" />
-      <stop offset="88%" stop-color="#CBD5E1" />
+      <stop offset="15%" stop-color="#F1F5F9" />
+      <stop offset="30%" stop-color="#C0C9D4" />
+      <stop offset="42%" stop-color="#FFFFFF" />
+      <stop offset="52%" stop-color="#8899AA" />
+      <stop offset="62%" stop-color="#FFFFFF" stop-opacity="0.85" />
+      <stop offset="75%" stop-color="#CBD5E1" />
+      <stop offset="88%" stop-color="#F8FAFC" />
       <stop offset="100%" stop-color="#64748B" />
     </linearGradient>
 
     <linearGradient id="text-chrome-bevel" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
       <stop offset="50%" stop-color="#94A3B8" stop-opacity="0.6" />
-      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.95" />
     </linearGradient>
 
     <linearGradient id="emerald-dot-grad" x1="0" y1="0" x2="1" y2="1">
@@ -110,132 +144,160 @@
     </linearGradient>
 
     <!-- Brillo radial de fondo sutil -->
-    <radialGradient id="ambient-emerald-backglow" cx="50%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="#10B981" stop-opacity="0.18" />
-      <stop offset="45%" stop-color="#059669" stop-opacity="0.06" />
+    <radialGradient id="ambient-emerald-backglow" cx="50%" cy="35%" r="50%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.15" />
+      <stop offset="40%" stop-color="#059669" stop-opacity="0.05" />
       <stop offset="80%" stop-color="transparent" stop-opacity="0" />
     </radialGradient>
+
+    <!-- Reflejo especular blanco para franjas de brillo -->
+    <linearGradient id="chrome-specular-streak" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="35%" stop-color="#FFFFFF" stop-opacity="0.7" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="65%" stop-color="#FFFFFF" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
   </defs>
 
   <!-- Halo de Luz Esmeralda Suave de Fondo -->
-  <circle cx="400" cy="240" r="260" fill="url(#ambient-emerald-backglow)" pointer-events="none" />
+  <circle cx="350" cy="200" r="220" fill="url(#ambient-emerald-backglow)" pointer-events="none" />
 
   <!-- ==========================================
        GRUPO 1: ESTRUCTURA ARQUITECTÓNICA 3D CROMO
+       Casa más ALTA verticalmente, menos ancha
        ========================================== -->
   <g filter="url(#drop-shadow-3d)">
-    <!-- 1. Chimenea Metálica 3D -->
+
+    <!-- 1. Chimenea Metálica 3D (ajustada a proporciones más altas) -->
     <g id="chimney-3d">
-      <!-- Sombra base chimenea -->
-      <path d="M255 180 L292 180 L292 85 L255 85 Z" fill="#0F172A" opacity="0.6" />
-      <!-- Lado posterior/sombra -->
-      <polygon points="282,75 294,82 294,185 282,180" fill="#334155" />
+      <!-- Sombra base -->
+      <path d="M226 155 L258 155 L258 52 L226 52 Z" fill="#0F172A" opacity="0.5" />
+      <!-- Lado posterior sombra -->
+      <polygon points="250,42 262,48 262,160 250,155" fill="#334155" />
       <!-- Cara frontal -->
-      <rect x="254" y="80" width="28" height="100" rx="3" fill="url(#chrome-chimney)" />
+      <rect x="224" y="48" width="26" height="108" rx="3" fill="url(#chrome-chimney)" />
       <!-- Bisel superior / tapa -->
-      <polygon points="252,80 262,72 290,72 282,80" fill="#FFFFFF" />
+      <polygon points="222,48 232,40 258,40 250,48" fill="#FFFFFF" />
       <!-- Bisel lateral brillante -->
-      <line x1="255" y1="80" x2="255" y2="180" stroke="#FFFFFF" stroke-width="2" opacity="0.8" />
+      <line x1="225" y1="48" x2="225" y2="155" stroke="#FFFFFF" stroke-width="2" opacity="0.85" />
+      <!-- Franja de brillo especular vertical -->
+      <rect x="232" y="52" width="5" height="98" rx="2" fill="#FFFFFF" opacity="0.35" />
     </g>
 
-    <!-- 2. Pilar Izquierdo 3D -->
+    <!-- 2. Pilar Izquierdo 3D (más alto) -->
     <g id="pillar-left-3d">
       <!-- Cara lateral sombra -->
-      <polygon points="242,230 252,238 252,360 242,352" fill="#1E293B" />
+      <polygon points="222,200 232,208 232,345 222,338" fill="#1E293B" />
       <!-- Cara frontal cromada -->
-      <rect x="208" y="228" width="34" height="126" rx="4" fill="url(#chrome-pillar-left)" />
+      <rect x="188" y="198" width="34" height="142" rx="4" fill="url(#chrome-pillar-left)" />
       <!-- Línea biselada izquierda (luz) -->
-      <line x1="210" y1="230" x2="210" y2="352" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="190" y1="200" x2="190" y2="338" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+      <!-- Franja brillo especular -->
+      <rect x="198" y="204" width="4" height="128" rx="2" fill="#FFFFFF" opacity="0.3" />
       <!-- Base pilar -->
-      <polygon points="208,354 242,354 252,360 218,360" fill="#475569" />
+      <polygon points="188,340 222,340 232,346 198,346" fill="#475569" />
+      <!-- Línea inferior reflejo -->
+      <line x1="190" y1="338" x2="220" y2="338" stroke="#FFFFFF" stroke-width="1" opacity="0.5" />
     </g>
 
-    <!-- 3. Pilar Derecho 3D -->
+    <!-- 3. Pilar Derecho 3D (más alto) -->
     <g id="pillar-right-3d">
       <!-- Cara lateral sombra -->
-      <polygon points="588,230 598,238 598,360 588,352" fill="#0F172A" />
+      <polygon points="508,200 518,208 518,345 508,338" fill="#0F172A" />
       <!-- Cara frontal cromada -->
-      <rect x="554" y="228" width="34" height="126" rx="4" fill="url(#chrome-pillar-right)" />
+      <rect x="474" y="198" width="34" height="142" rx="4" fill="url(#chrome-pillar-right)" />
       <!-- Línea biselada izquierda (luz) -->
-      <line x1="556" y1="230" x2="556" y2="352" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="476" y1="200" x2="476" y2="338" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+      <!-- Franja brillo especular -->
+      <rect x="486" y="204" width="4" height="128" rx="2" fill="#FFFFFF" opacity="0.25" />
       <!-- Base pilar -->
-      <polygon points="554,354 588,354 598,360 564,360" fill="#334155" />
+      <polygon points="474,340 508,340 518,346 484,346" fill="#334155" />
     </g>
 
-    <!-- 4. Techo a Dos Aguas 3D (Gable Roof) -->
+    <!-- 4. Techo a Dos Aguas 3D — MÁS ALTO Y EMPINADO -->
     <g id="roof-3d">
-      <!-- Sombra / Extrusión inferior 3D -->
-      <path d="M165 242 L398 78 L631 242 L616 266 L398 112 L180 266 Z" fill="#0F172A" opacity="0.8" />
-      <path d="M172 248 L398 86 L624 248 L608 270 L398 120 L188 270 Z" fill="#1E293B" />
+      <!-- Sombra / Extrusión inferior 3D profunda -->
+      <path d="M140 210 L348 28 L556 210 L538 238 L348 72 L158 238 Z" fill="#0F172A" opacity="0.75" />
+      <path d="M148 216 L348 36 L548 216 L530 242 L348 80 L166 242 Z" fill="#1E293B" />
 
-      <!-- Cara principal cromada del tejado (Viga gruesa sólida) -->
-      <path d="M162 232 L398 62 L634 232 L606 262 L398 110 L190 262 Z" fill="url(#chrome-roof-main)" />
+      <!-- Cara principal cromada del tejado (Viga gruesa sólida — más empinada) -->
+      <path d="M136 204 L348 18 L560 204 L530 240 L348 72 L166 240 Z" fill="url(#chrome-roof-main)" />
 
       <!-- Faceta de Bisel Superior Brillante (Luz del sol desde arriba) -->
-      <path d="M162 232 L398 62 L634 232 L626 238 L398 72 L170 238 Z" fill="url(#chrome-roof-bevel-top)" />
+      <path d="M136 204 L348 18 L560 204 L552 210 L348 28 L144 210 Z" fill="url(#chrome-roof-bevel-top)" />
       
       <!-- Línea cumbrera ultra-brillante -->
-      <polyline points="166,234 398,66 630,234" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+      <polyline points="140,206 348,22 556,206" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
 
       <!-- Faceta de Bisel Interior (Sombra reflectiva) -->
-      <path d="M190 262 L398 110 L606 262 L596 268 L398 122 L200 268 Z" fill="url(#chrome-roof-bevel-bottom)" />
+      <path d="M166 240 L348 72 L530 240 L520 246 L348 84 L176 246 Z" fill="url(#chrome-roof-bevel-bottom)" />
+
+      <!-- Franja de brillo especular diagonal izquierda del tejado -->
+      <path d="M180 228 L260 162 L266 168 L186 234 Z" fill="#FFFFFF" opacity="0.35" />
+      <!-- Franja de brillo especular diagonal derecha del tejado -->
+      <path d="M440 162 L516 228 L510 234 L434 168 Z" fill="#FFFFFF" opacity="0.25" />
     </g>
   </g>
 
   <!-- ==========================================
        GRUPO 2: FLECHA DINÁMICA VERDE ESMERALDA 3D
+       Menos estirada horizontalmente, más compacta
        ========================================== -->
   <g id="emerald-arrow-3d" filter="url(#arrow-glow)">
-    <!-- Sombra proyectada por la flecha sobre el tejado plateado -->
-    <path d="M282 226 L398 322 L568 110 L592 120 L660 48 L568 76 L398 284 L296 206 Z" fill="#000000" opacity="0.45" filter="url(#luxury-glow)" />
+    <!-- Sombra proyectada por la flecha -->
+    <path d="M264 196 L348 290 L490 86 L510 96 L558 38 L490 60 L348 254 L278 178 Z" fill="#000000" opacity="0.4" filter="url(#luxury-glow)" />
 
     <!-- 1. Faceta Inferior / Extrusión 3D de la flecha (Sombra jade profundo) -->
-    <path d="M270 208 L398 318 L552 98 L562 108 L404 330 L276 220 Z" fill="url(#emerald-arrow-shade)" />
+    <path d="M254 180 L348 286 L476 76 L486 86 L354 298 L260 192 Z" fill="url(#emerald-arrow-shade)" />
 
     <!-- 2. Cuerpo Principal de la Flecha (Cara esmeralda vibrante) -->
-    <!-- Trazado en check dinámico: inicio en 270, valle en 398, ascenso a 575 -->
-    <path d="M266 198 L398 304 L576 80 L556 64 L398 266 L286 178 Z" fill="url(#emerald-arrow-body)" />
+    <path d="M250 170 L348 272 L498 56 L480 42 L348 234 L268 152 Z" fill="url(#emerald-arrow-body)" />
 
     <!-- 3. Arista / Bisel Superior de Luz Especular (Mint Glow) -->
-    <path d="M286 178 L398 266 L556 64 L564 72 L402 276 L292 186 Z" fill="url(#emerald-arrow-ridge)" />
+    <path d="M268 152 L348 234 L480 42 L488 50 L352 244 L274 160 Z" fill="url(#emerald-arrow-ridge)" />
     
     <!-- Línea de brillo de alta intensidad en la cresta -->
-    <polyline points="286,178 398,266 556,64" stroke="#D1FAE5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
+    <polyline points="268,152 348,234 480,42" stroke="#D1FAE5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
 
-    <!-- 4. Punta de Flecha 3D (Arrowhead en ángulo ascendente ~45°) -->
+    <!-- 4. Punta de Flecha 3D (Arrowhead ascendente ~45°) -->
     <!-- Sombra base punta -->
-    <polygon points="662,28 544,56 598,142" fill="#064E3B" />
-    
+    <polygon points="560,18 468,40 514,118" fill="#064E3B" />
     <!-- Cara principal punta -->
-    <polygon points="656,22 548,50 598,132" fill="url(#emerald-arrow-body)" />
-    
+    <polygon points="554,12 472,34 514,108" fill="url(#emerald-arrow-body)" />
     <!-- Faceta superior brillante punta -->
-    <polygon points="656,22 548,50 606,56" fill="url(#emerald-arrow-ridge)" />
+    <polygon points="554,12 472,34 524,40" fill="url(#emerald-arrow-ridge)" />
 
-    <!-- Línea de filo de la punta -->
-    <line x1="548" y1="50" x2="656" y2="22" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
-    <line x1="656" y1="22" x2="598" y2="132" stroke="#A7F3D0" stroke-width="2" stroke-linecap="round" />
+    <!-- Líneas de filo de la punta -->
+    <line x1="472" y1="34" x2="554" y2="12" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="554" y1="12" x2="514" y2="108" stroke="#A7F3D0" stroke-width="1.8" stroke-linecap="round" />
   </g>
 
   <!-- ==========================================
        GRUPO 3: DESTELLOS DIAMANTINOS CROMO (SPARKLES)
        ========================================== -->
   <!-- Destello 1: En la punta de la flecha -->
-  <g transform="translate(658, 22)">
-    <path d="M0 -18 Q0 0 18 0 Q0 0 0 18 Q0 0 -18 0 Q0 0 0 -18 Z" fill="#FFFFFF" opacity="0.95" />
-    <circle cx="0" cy="0" r="3.5" fill="#A7F3D0" />
+  <g transform="translate(556, 12)">
+    <path d="M0 -16 Q0 0 16 0 Q0 0 0 16 Q0 0 -16 0 Q0 0 0 -16 Z" fill="#FFFFFF" opacity="0.95" />
+    <circle cx="0" cy="0" r="3" fill="#A7F3D0" />
   </g>
 
   <!-- Destello 2: En la cumbrera del tejado -->
-  <g transform="translate(398, 62)">
-    <path d="M0 -12 Q0 0 12 0 Q0 0 0 12 Q0 0 -12 0 Q0 0 0 -12 Z" fill="#FFFFFF" opacity="0.9" />
+  <g transform="translate(348, 18)">
+    <path d="M0 -11 Q0 0 11 0 Q0 0 0 11 Q0 0 -11 0 Q0 0 0 -11 Z" fill="#FFFFFF" opacity="0.92" />
     <circle cx="0" cy="0" r="2.5" fill="#E2E8F0" />
   </g>
 
   <!-- Destello 3: En el alero izquierdo -->
-  <g transform="translate(162, 232)">
-    <path d="M0 -10 Q0 0 10 0 Q0 0 0 10 Q0 0 -10 0 Q0 0 0 -10 Z" fill="#FFFFFF" opacity="0.85" />
+  <g transform="translate(136, 204)">
+    <path d="M0 -9 Q0 0 9 0 Q0 0 0 9 Q0 0 -9 0 Q0 0 0 -9 Z" fill="#FFFFFF" opacity="0.85" />
     <circle cx="0" cy="0" r="2" fill="#FFFFFF" />
+  </g>
+
+  <!-- Destello 4: En el alero derecho (nuevo — más brillo) -->
+  <g transform="translate(560, 204)">
+    <path d="M0 -8 Q0 0 8 0 Q0 0 0 8 Q0 0 -8 0 Q0 0 0 -8 Z" fill="#FFFFFF" opacity="0.75" />
+    <circle cx="0" cy="0" r="1.8" fill="#F1F5F9" />
   </g>
 
   <!-- ==========================================
@@ -243,32 +305,32 @@
        ========================================== -->
   <g id="typography-maximus" filter="url(#drop-shadow-3d)">
     <!-- 1. Capa de Extrusión 3D (Profundidad oscura gunmetal) -->
-    <text x="400" y="474" 
+    <text x="350" y="456" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
           font-weight="900" 
-          font-size="94" 
-          letter-spacing="4" 
+          font-size="88" 
+          letter-spacing="5" 
           fill="#0B1320">
       MAXIMUS
     </text>
-    <text x="400" y="471" 
+    <text x="350" y="453" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
           font-weight="900" 
-          font-size="94" 
-          letter-spacing="4" 
+          font-size="88" 
+          letter-spacing="5" 
           fill="#1E293B">
       MAXIMUS
     </text>
 
     <!-- 2. Capa Bisel Metálico Intermedio -->
-    <text x="400" y="468" 
+    <text x="350" y="450" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
           font-weight="900" 
-          font-size="94" 
-          letter-spacing="4" 
+          font-size="88" 
+          letter-spacing="5" 
           fill="#475569" 
           stroke="url(#text-chrome-bevel)" 
           stroke-width="5" 
@@ -276,35 +338,48 @@
       MAXIMUS
     </text>
 
-    <!-- 3. Capa Frontal de Cromo Espejo Brillante -->
-    <text x="400" y="466" 
+    <!-- 3. Capa Frontal de Cromo Espejo Ultra-Brillante -->
+    <text x="350" y="448" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
           font-weight="900" 
-          font-size="94" 
-          letter-spacing="4" 
+          font-size="88" 
+          letter-spacing="5" 
           fill="url(#text-chrome-front)">
       MAXIMUS
     </text>
 
-    <!-- 4. Resalte Superior de Luz Pura (Inline Stroke) -->
-    <text x="400" y="466" 
+    <!-- 4. Resalte Superior de Luz Pura (Inline Stroke con destello) -->
+    <text x="350" y="448" 
           text-anchor="middle" 
           font-family="'Montserrat', 'Arial Black', sans-serif" 
           font-weight="900" 
-          font-size="94" 
-          letter-spacing="4" 
+          font-size="88" 
+          letter-spacing="5" 
           fill="none" 
           stroke="#FFFFFF" 
           stroke-width="1.2" 
-          stroke-dasharray="8 14" 
-          opacity="0.8">
+          stroke-dasharray="6 12" 
+          opacity="0.75">
       MAXIMUS
     </text>
 
+    <!-- 5. Franja de brillo horizontal especular sobre las letras -->
+    <clipPath id="text-clip">
+      <text x="350" y="448" 
+            text-anchor="middle" 
+            font-family="'Montserrat', 'Arial Black', sans-serif" 
+            font-weight="900" 
+            font-size="88" 
+            letter-spacing="5">
+        MAXIMUS
+      </text>
+    </clipPath>
+    <rect x="100" y="408" width="500" height="14" fill="url(#chrome-specular-streak)" clip-path="url(#text-clip)" opacity="0.6" />
+
     <!-- Punto Esmeralda Joya al Final de MAXIMUS (Sello de Marca) -->
-    <circle cx="692" cy="460" r="8" fill="url(#emerald-dot-grad)" filter="url(#arrow-glow)" />
-    <circle cx="690" cy="458" r="2.5" fill="#FFFFFF" opacity="0.9" />
+    <circle cx="608" cy="442" r="7.5" fill="url(#emerald-dot-grad)" filter="url(#arrow-glow)" />
+    <circle cx="606" cy="440" r="2.5" fill="#FFFFFF" opacity="0.9" />
   </g>
 
   <!-- ==========================================
@@ -312,22 +387,35 @@
        ========================================== -->
   <g id="typography-inmobiliaria" filter="url(#drop-shadow-3d)">
     <!-- Línea decorativa izquierda -->
-    <line x1="160" y1="532" x2="250" y2="532" stroke="url(#chrome-roof-main)" stroke-width="2" stroke-linecap="round" />
-    <circle cx="254" cy="532" r="3" fill="#10B981" />
+    <line x1="120" y1="514" x2="215" y2="514" stroke="url(#chrome-roof-main)" stroke-width="2" stroke-linecap="round" />
+    <circle cx="219" cy="514" r="3" fill="#10B981" />
 
     <!-- Texto INMOBILIARIA en Cromo Plateado Pulido -->
-    <text x="400" y="540" 
+    <text x="350" y="522" 
           text-anchor="middle" 
           font-family="'Montserrat', sans-serif" 
           font-weight="800" 
-          font-size="28" 
-          letter-spacing="14" 
+          font-size="26" 
+          letter-spacing="13" 
           fill="url(#text-chrome-front)">
       INMOBILIARIA
     </text>
 
+    <!-- Franja de brillo sobre INMOBILIARIA -->
+    <clipPath id="subtext-clip">
+      <text x="350" y="522" 
+            text-anchor="middle" 
+            font-family="'Montserrat', sans-serif" 
+            font-weight="800" 
+            font-size="26" 
+            letter-spacing="13">
+        INMOBILIARIA
+      </text>
+    </clipPath>
+    <rect x="120" y="505" width="460" height="8" fill="url(#chrome-specular-streak)" clip-path="url(#subtext-clip)" opacity="0.45" />
+
     <!-- Línea decorativa derecha -->
-    <circle cx="546" cy="532" r="3" fill="#10B981" />
-    <line x1="550" y1="532" x2="640" y2="532" stroke="url(#chrome-roof-main)" stroke-width="2" stroke-linecap="round" />
+    <circle cx="481" cy="514" r="3" fill="#10B981" />
+    <line x1="485" y1="514" x2="580" y2="514" stroke="url(#chrome-roof-main)" stroke-width="2" stroke-linecap="round" />
   </g>
 </svg>
