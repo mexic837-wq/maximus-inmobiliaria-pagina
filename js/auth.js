@@ -919,7 +919,15 @@ const AuthService = {
             });
 
             if (error) {
-                return { success: false, error: error.message };
+                let msg = error.message || 'No se pudo completar el registro.';
+                if (msg.includes('Error sending confirmation email') || msg.toLowerCase().includes('confirmation email')) {
+                    msg = 'El servidor no pudo enviar el correo de confirmación. En el panel de Supabase ve a Authentication > Providers > Email y desactiva "Confirm email" (o configura tus credenciales SMTP).';
+                } else if (msg.toLowerCase().includes('already registered')) {
+                    msg = 'Este correo electrónico ya se encuentra registrado. Por favor inicia sesión.';
+                } else if (msg.toLowerCase().includes('password')) {
+                    msg = 'La contraseña no cumple con los requisitos mínimos de seguridad.';
+                }
+                return { success: false, error: msg };
             }
 
             if (!data || !data.user) {
