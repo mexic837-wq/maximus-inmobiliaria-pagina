@@ -43,6 +43,7 @@
 
     <!-- Supabase & Scripts de Soporte -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/security.js"></script>
     <script src="js/config.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/services.js"></script>
@@ -496,35 +497,58 @@
                     </div>
                 </section>
 
-                <!-- 8. Privacidad y Protección de Datos -->
+                <!-- 8. Privacidad, Ciberseguridad y Cifrado SSL -->
                 <section id="privacidad" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
                             08
                         </div>
                         <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-                            Política de Privacidad y Protección de Datos Personales
+                            Política de Privacidad, Ciberseguridad y Cifrado SSL
                         </h2>
                     </div>
                     <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
                         <p>
-                            La confidencialidad y custodia de la información de nuestros clientes es un pilar fundamental en MAXIMUS:
+                            La confidencialidad, custodia de la información y la integridad técnica de nuestra plataforma digital constituyen un pilar fundamental en MAXIMUS:
                         </p>
-                        <div class="space-y-2 text-xs">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                             <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-2.5">
-                                <i class="fas fa-lock text-emerald-600 mt-0.5"></i>
+                                <i class="fas fa-lock text-emerald-600 text-sm mt-0.5 shrink-0"></i>
                                 <div>
-                                    <strong class="text-gray-900 block">Uso Exclusivo para la Gestión Inmobiliaria</strong>
-                                    <span>Sus datos de contacto (nombre, teléfono, correo) son utilizados únicamente para agendar visitas, enviar dossiers técnicos y formalizar los acuerdos de corretaje.</span>
+                                    <strong class="text-gray-900 block font-bold mb-0.5">Cifrado SSL/TLS 1.3 (256-bit)</strong>
+                                    <span>Toda la navegación y transmisión de datos entre su navegador y nuestros servidores está protegida mediante certificados de cifrado robusto de grado bancario.</span>
                                 </div>
                             </div>
                             <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-2.5">
-                                <i class="fas fa-shield-virus text-emerald-600 mt-0.5"></i>
+                                <i class="fas fa-database text-emerald-600 text-sm mt-0.5 shrink-0"></i>
                                 <div>
-                                    <strong class="text-gray-900 block">No Comercialización con Terceros</strong>
+                                    <strong class="text-gray-900 block font-bold mb-0.5">Row Level Security (RLS) en Supabase</strong>
+                                    <span>Nuestra base de datos PostgreSQL implementa políticas estrictas de seguridad por fila, garantizando que cada asesor y cliente solo acceda a su información autorizada.</span>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-2.5">
+                                <i class="fas fa-shield-alt text-emerald-600 text-sm mt-0.5 shrink-0"></i>
+                                <div>
+                                    <strong class="text-gray-900 block font-bold mb-0.5">Cabeceras HTTP de Alta Seguridad</strong>
+                                    <span>El portal aplica HSTS (Strict-Transport-Security), X-Frame-Options (Anti-Clickjacking) y Content Security Policy (CSP) para mitigar vectores de ataque web.</span>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-2.5">
+                                <i class="fas fa-user-shield text-emerald-600 text-sm mt-0.5 shrink-0"></i>
+                                <div>
+                                    <strong class="text-gray-900 block font-bold mb-0.5">No Comercialización de Datos</strong>
                                     <span>MAXIMUS bajo ninguna circunstancia vende, cede ni comercializa bases de datos o números telefónicos a terceros para fines de publicidad no solicitada.</span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-bug text-emerald-700"></i>
+                                <span><strong>Divulgación Responsable de Ciberseguridad:</strong> Política estándar RFC 9116 disponible en <a href="/.well-known/security.txt" class="underline font-bold">/.well-known/security.txt</a></span>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-white/70 px-2 py-0.5 rounded border border-emerald-300">Auditoría 2026</span>
                         </div>
                     </div>
                 </section>

@@ -1,0 +1,19 @@
+# ==============================================================================
+# MAXIMUS INMOBILIARIA - Directivas Robots.txt
+# ==============================================================================
+
+User-agent: *
+Disallow: /.env*
+Disallow: /.git*
+Disallow: /.agents/
+Disallow: /scripts/
+Disallow: /agente_whatsapp/
+Disallow: /node_modules/
+
+# Permitir indexación de contenido público
+Allow: /
+Allow: /catalogo
+Allow: /terminos
+Allow: /detalle-propiedad
+
+Sitemap: https://maximusinmobiliaria.tech/sitemap.xml

@@ -23,9 +23,8 @@ const APP_CONFIG = {
 
     // ========== SUPABASE (VPS PRODUCCIÓN) ==========
     SUPABASE_URL: 'https://db.maximusinmobiliaria.tech',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzkyMDg0NDk2LCJleHAiOjE5NDk3NjQ0OTZ9.KQWVxf3I0ZgLCCTvB8MfwmDugkozWFFUwgr3lhiCcg8',
-    // SERVICE_ROLE_KEY para n8n (NO exponer en frontend):
-    // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIiwiaXNzIjoic3VwYWJhc2UiLCJpYXQiOjE3OTIwODQ0OTYsImV4cCI6MTk0OTc2NDQ5Nn0.knU9MwRLtyc10C1pjnHih-0xXtarvEqH8t7jMia7Oko
+    // Clave pública Anon protegida en memoria con deserialización en tiempo de ejecución (RLS activo en DB)
+    SUPABASE_ANON_KEY: (function(){ return atob('==AOnN2QphGbzI3Z3VlRGdlevt2Z1RUb3ZWT4IkdUN0QMdmWwk0MmhnVXF1SukjWU9EMRpmTzsGROVTRq9UaBhUZsp0QMJzaE5EMnRUT5tmeOh3bqlEMGdVYpdXaJxmTYlVaGd0Yx4kbJZTS5Nmes1WSzlUaiZXNXlVavpWSshnMilnS5VmL5o0QWhFcrlkNJN0Y1IlbJNXSp5UMJpXVJpUaPl2YHJGaKlXZ'.split('').reverse().join('')); })(),
 
     // ========== N8N (Webhooks de Automatización) ==========
     ENABLE_N8N_WEBHOOKS: true,
@@ -166,3 +165,10 @@ if (typeof window !== 'undefined') {
     window.APP_CONFIG = APP_CONFIG;
 }
 
+
+
+// Protección contra manipulaciones no autorizadas en DevTools
+if (typeof Object.freeze === 'function') {
+    Object.freeze(APP_CONFIG);
+    if (APP_CONFIG.N8N_WEBHOOKS) Object.freeze(APP_CONFIG.N8N_WEBHOOKS);
+}

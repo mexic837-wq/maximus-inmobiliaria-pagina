@@ -1,0 +1,43 @@
+# ==============================================================================
+# MAXIMUS INMOBILIARIA - Configuración de Ciberseguridad Apache / LiteSpeed
+# ==============================================================================
+
+# 1. Deshabilitar listado de directorios (Directory Browsing)
+Options -Indexes
+
+# 2. Forzar HTTPS (SSL / TLS Cifrado)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# 3. Bloquear acceso a archivos sensibles y de configuración
+<FilesMatch "^\.(env|git|htaccess|htpasswd|ini|log|sh|sql|bak|config)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Bloquear acceso a carpetas internas
+RedirectMatch 403 ^/(\.git|\.agents|\.gemini|scripts|node_modules)/
+
+# 4. Cabeceras de Seguridad HTTP
+<IfModule mod_headers.c>
+    # HSTS: Fuerza HTTPS estricto por 1 año
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Previene que el navegador adivine tipos MIME (Anti-Sniffing)
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Previene Clickjacking (solo embebible desde el mismo dominio)
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Filtro Anti-XSS
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Referrer Policy estricto
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions Policy
+    Header always set Permissions-Policy "camera=(), microphone=(), payment=(self)"
+</IfModule>

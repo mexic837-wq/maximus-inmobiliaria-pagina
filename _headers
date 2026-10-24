@@ -1,0 +1,34 @@
+# ==============================================================================
+# MAXIMUS INMOBILIARIA - Cabeceras de Ciberseguridad (Cloudflare / Netlify)
+# ==============================================================================
+
+/*
+  # HSTS: Fuerza HTTPS y previene ataques Man-In-The-Middle
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # Previene MIME-Sniffing
+  X-Content-Type-Options: nosniff
+
+  # Anti-Clickjacking: Solo permite iframes desde el mismo origen
+  X-Frame-Options: SAMEORIGIN
+
+  # Filtro XSS del navegador
+  X-XSS-Protection: 1; mode=block
+
+  # Referrer Policy estricto
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Restricción de hardware no necesario
+  Permissions-Policy: camera=(), microphone=(), payment=(self), geolocation=(self)
+
+  # Content Security Policy (CSP) equilibrada para producción
+  Content-Security-Policy: default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://db.maximusinmobiliaria.tech https://*.supabase.co https://n8n.maximusinmobiliaria.tech https://images.unsplash.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com wss://db.maximusinmobiliaria.tech; img-src 'self' https: data: blob:; font-src 'self' https: data:; style-src 'self' https: 'unsafe-inline'; script-src 'self' https: 'unsafe-inline' 'unsafe-eval';
+
+# Bloquear acceso a archivos sensibles
+/.env*
+  X-Robots-Tag: noindex, nofollow, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/.git*
+  X-Robots-Tag: noindex, nofollow, nosnippet
+  Cache-Control: no-store, no-cache, must-revalidate

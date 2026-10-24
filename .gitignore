@@ -3,6 +3,22 @@ Thumbs.db
 node_modules/
 *.log
 
+# Certificados y llaves privadas sensibles
+*.pem
+*.key
+*.crt
+*.cer
+*.pfx
+*.p12
+*.pub
+secrets/
+credentials/
+
+# Variables de entorno y secretos locales
+.env
+.env.*
+!.env.example
+
 # Agente WhatsApp: Ignorar lotes de proyectos con cientos de fotos crudas, excepto las plantillas y READMEs
 agente_whatsapp/proyectos/*
 !agente_whatsapp/proyectos/00_plantilla_lote/
@@ -15,5 +31,3 @@ agente_whatsapp/proyectos/captaciones_maximus/*
 !agente_whatsapp/proyectos/captaciones_maximus/README.md
 __pycache__/
 *.pyc
-.env
-
