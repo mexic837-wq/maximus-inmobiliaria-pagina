@@ -910,10 +910,10 @@
                 <div class="text-center mb-5">
                     <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-maximus-accent text-[10px] font-black uppercase tracking-wider border border-emerald-200/60 mb-1">
                         <i class="fas fa-question-circle text-xs text-emerald-600"></i>
-                        <span>Dudas Frecuentes</span>
+                        <span id="landing-faq-tag">Dudas Frecuentes</span>
                     </div>
-                    <h4 class="text-base sm:text-lg font-black text-gray-900 tracking-tight">Preguntas Frecuentes</h4>
-                    <p class="text-[11px] text-gray-400 mt-0.5">Respuestas claras antes de activar tu membresía</p>
+                    <h4 id="landing-faq-titulo" class="text-base sm:text-lg font-black text-gray-900 tracking-tight">Preguntas Frecuentes</h4>
+                    <p id="landing-faq-subtitulo" class="text-[11px] text-gray-400 mt-0.5">Respuestas claras antes de activar tu membresía</p>
                 </div>
 
                 <div class="space-y-2.5" id="landing-faq-accordion">
@@ -1752,6 +1752,9 @@
             // Cargar reseñas dinámicas desde Supabase para el Marquee
             cargarResenasEnLanding();
 
+            // Cargar FAQs dinámicas desde FaqWebService (Supabase Live)
+            cargarFaqsLanding();
+
             // Actualizar total general en el Dock del Hero
             if (window.InmuebleService) {
                 InmuebleService.getAll({ estatus: 'disponible' }).then(res => {
@@ -1915,6 +1918,73 @@
             const dynamicResenasDuration = Math.max(140, Math.round(totalResenasWidth / 19));
             group1.style.animationDuration = `${dynamicResenasDuration}s`;
             group2.style.animationDuration = `${dynamicResenasDuration}s`;
+        }
+
+        // ==========================================
+        // CARGA DINÁMICA DE PREGUNTAS FRECUENTES (SUPABASE 100% EN TIEMPO REAL)
+        // ==========================================
+        async function cargarFaqsLanding() {
+            try {
+                if (!window.FaqWebService) return;
+
+                // 1. Cargar textos de cabecera
+                const cfg = FaqWebService.getConfig();
+                if (cfg) {
+                    const tagEl = document.getElementById('landing-faq-tag');
+                    const tituloEl = document.getElementById('landing-faq-titulo');
+                    const subtituloEl = document.getElementById('landing-faq-subtitulo');
+                    if (tagEl && cfg.etiqueta) tagEl.textContent = cfg.etiqueta;
+                    if (tituloEl && cfg.titulo) tituloEl.textContent = cfg.titulo;
+                    if (subtituloEl && cfg.subtitulo) subtituloEl.textContent = cfg.subtitulo;
+                }
+
+                // 2. Cargar preguntas visibles
+                const res = await FaqWebService.getAll({ mostrar_en_web: true });
+                const faqs = (res && res.data && res.data.length > 0) ? res.data : null;
+                const container = document.getElementById('landing-faq-accordion');
+
+                if (container && faqs && faqs.length > 0) {
+                    // Ordenar por orden ascendente
+                    faqs.sort((a, b) => (Number(a.orden) || 99) - (Number(b.orden) || 99));
+
+                    container.innerHTML = faqs.map(faq => {
+                        let iconoClass = faq.icono || 'ph-question';
+                        let iconHtml = '';
+                        if (iconoClass.startsWith('fa-') || iconoClass.startsWith('fas ') || iconoClass.startsWith('fab ') || iconoClass.startsWith('far ')) {
+                            iconHtml = `<i class="${iconoClass} text-xs"></i>`;
+                        } else if (iconoClass.startsWith('ph-') || iconoClass.startsWith('ph ')) {
+                            iconHtml = `<i class="${iconoClass.startsWith('ph ') ? iconoClass : ('ph-bold ' + iconoClass)} text-xs"></i>`;
+                        } else {
+                            iconHtml = `<i class="ph-bold ph-question text-xs"></i>`;
+                        }
+
+                        return `
+                            <div class="faq-landing-card rounded-2xl border border-gray-200/90 bg-white overflow-hidden shadow-2xs hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-400/50 transition-all duration-300 group">
+                                <div class="faq-landing-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                                <button type="button" onclick="toggleLandingFaq(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                                    <span class="flex items-center gap-2.5">
+                                        <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60">
+                                            ${iconHtml}
+                                        </span>
+                                        <span>${faq.pregunta || ''}</span>
+                                    </span>
+                                    <span class="faq-landing-chevron w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
+                                        <i class="fas fa-chevron-down text-[10px]"></i>
+                                    </span>
+                                </button>
+                                <div class="faq-landing-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                                    <div class="faq-landing-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 leading-relaxed border-t border-gray-100 opacity-0 -translate-y-2 transition-all duration-300">
+                                        ${faq.respuesta || ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.warn('Error al cargar FAQs dinámicas en landing:', err);
+            }
         }
 
         async function cargarEquipoLanding() {

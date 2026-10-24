@@ -3294,8 +3294,225 @@ const ResenasService = {
     }
 };
 
+// ============================================
+// SERVICIO DE PREGUNTAS FRECUENTES (FAQS WEB)
+// ============================================
+const FaqWebService = {
+    _storageKey: 'maximus_faqs_web',
+    _deletedKey: 'maximus_faqs_web_deleted_ids',
+
+    _getDeletedIds() {
+        try {
+            const raw = localStorage.getItem(this._deletedKey);
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+    },
+
+    _saveDeletedIds(ids) {
+        try {
+            localStorage.setItem(this._deletedKey, JSON.stringify(ids));
+        } catch (e) {}
+    },
+
+    _getLocal() {
+        const deletedIds = this._getDeletedIds();
+        try {
+            const raw = localStorage.getItem(this._storageKey);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    return parsed.filter(f => f && !deletedIds.includes(String(f.id)));
+                }
+            }
+        } catch (e) {}
+        const mock = (typeof MOCK_DATA !== 'undefined' && Array.isArray(MOCK_DATA.preguntas_frecuentes)) 
+            ? [...MOCK_DATA.preguntas_frecuentes] 
+            : [];
+        return mock.filter(f => f && !deletedIds.includes(String(f.id)));
+    },
+
+    _setLocal(data) {
+        const deletedIds = this._getDeletedIds();
+        const cleaned = Array.isArray(data) ? data.filter(f => f && !deletedIds.includes(String(f.id))) : [];
+        try {
+            localStorage.setItem(this._storageKey, JSON.stringify(cleaned));
+        } catch (e) {}
+        if (typeof MOCK_DATA !== 'undefined') {
+            MOCK_DATA.preguntas_frecuentes = cleaned;
+        }
+    },
+
+    /**
+     * Obtener todas las preguntas frecuentes (Supabase con fallback a caché local).
+     */
+    async getAll(filtros = {}) {
+        const deletedIds = this._getDeletedIds();
+        let items = null;
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES) ? APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES : 'preguntas_frecuentes';
+                    let query = sb.from(tabla).select('*');
+                    if (filtros.mostrar_en_web !== undefined) {
+                        query = query.eq('mostrar_en_web', filtros.mostrar_en_web);
+                    }
+                    if (filtros.categoria && filtros.categoria !== 'todas') {
+                        query = query.eq('categoria', filtros.categoria);
+                    }
+                    query = query.order('orden', { ascending: true });
+
+                    const res = await query;
+                    if (res && !res.error && Array.isArray(res.data)) {
+                        const remotos = res.data.filter(f => f && !deletedIds.includes(String(f.id)));
+                        this._setLocal(remotos);
+                        return { data: remotos, error: null, source: 'supabase' };
+                    }
+                    if (res && res.error) {
+                        console.warn('FaqWebService: Aviso Supabase (se usará local):', res.error.message);
+                    }
+                }
+            } catch (err) {
+                console.warn('FaqWebService: Error de conexión con Supabase:', err);
+            }
+        }
+
+        // Fallback local
+        items = this._getLocal();
+        if (filtros.mostrar_en_web !== undefined) {
+            items = items.filter(f => f.mostrar_en_web === filtros.mostrar_en_web);
+        }
+        if (filtros.categoria && filtros.categoria !== 'todas') {
+            items = items.filter(f => f.categoria === filtros.categoria);
+        }
+        items.sort((a, b) => (parseInt(a.orden) || 0) - (parseInt(b.orden) || 0));
+        return { data: items, error: null, source: 'local' };
+    },
+
+    /**
+     * Crear una nueva pregunta frecuente.
+     */
+    async create(faqData) {
+        const nuevo = {
+            id: 'faq-' + Date.now(),
+            pregunta: (faqData.pregunta || '').trim(),
+            respuesta: (faqData.respuesta || '').trim(),
+            categoria: (faqData.categoria || 'General').trim(),
+            icono: faqData.icono || 'ph-question',
+            orden: parseInt(faqData.orden) || 1,
+            mostrar_en_web: faqData.mostrar_en_web !== false,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const local = this._getLocal();
+        local.push(nuevo);
+        local.sort((a, b) => (parseInt(a.orden) || 0) - (parseInt(b.orden) || 0));
+        this._setLocal(local);
+
+        let res = { data: nuevo, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES) ? APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES : 'preguntas_frecuentes';
+                    const sbRes = await sb.from(tabla).insert(nuevo).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
+                }
+            } catch (err) {
+                console.warn('FaqWebService: Error al insertar en Supabase:', err);
+            }
+        }
+
+        return res;
+    },
+
+    /**
+     * Actualizar una pregunta existente.
+     */
+    async update(id, faqData) {
+        const local = this._getLocal();
+        const idx = local.findIndex(f => String(f.id) === String(id));
+        let updatedItem = null;
+
+        if (idx !== -1) {
+            updatedItem = {
+                ...local[idx],
+                ...faqData,
+                orden: faqData.orden !== undefined ? parseInt(faqData.orden) : local[idx].orden,
+                updated_at: new Date().toISOString()
+            };
+            local[idx] = updatedItem;
+            local.sort((a, b) => (parseInt(a.orden) || 0) - (parseInt(b.orden) || 0));
+            this._setLocal(local);
+        }
+
+        let res = { data: updatedItem || faqData, error: null };
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES) ? APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES : 'preguntas_frecuentes';
+                    const payload = { ...faqData, updated_at: new Date().toISOString() };
+                    delete payload.id;
+                    const sbRes = await sb.from(tabla).update(payload).eq('id', String(id)).select().single();
+                    if (sbRes && !sbRes.error && sbRes.data) {
+                        res = sbRes;
+                    }
+                }
+            } catch (err) {
+                console.warn('FaqWebService: Error al actualizar en Supabase:', err);
+            }
+        }
+
+        return res;
+    },
+
+    /**
+     * Alternar visibilidad de la pregunta en la web.
+     */
+    async toggleVisibilidad(id, mostrar_en_web) {
+        return await this.update(id, { mostrar_en_web });
+    },
+
+    /**
+     * Eliminar una pregunta frecuente.
+     */
+    async delete(id) {
+        const idStr = String(id);
+        const deleted = this._getDeletedIds();
+        if (!deleted.includes(idStr)) {
+            deleted.push(idStr);
+            this._saveDeletedIds(deleted);
+        }
+
+        const local = this._getLocal().filter(f => String(f.id) !== idStr);
+        this._setLocal(local);
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const tabla = (APP_CONFIG.TABLES && APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES) ? APP_CONFIG.TABLES.PREGUNTAS_FRECUENTES : 'preguntas_frecuentes';
+                    await sb.from(tabla).delete().eq('id', idStr);
+                }
+            } catch (err) {
+                console.warn('FaqWebService: Error al eliminar en Supabase:', err);
+            }
+        }
+
+        return { error: null };
+    }
+};
+
 // Exportar todos los servicios
 if (typeof window !== 'undefined') {
+    window.FaqWebService = FaqWebService;
     window.InmuebleService = InmuebleService;
     window.LeadService = LeadService;
     window.CitaService = CitaService;

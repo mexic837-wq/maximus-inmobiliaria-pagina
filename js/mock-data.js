@@ -1034,6 +1034,40 @@ const MOCK_DATA = {
         },
     ],
 
+    // ===== PREGUNTAS FRECUENTES (FAQS WEB LANDING Y PLANES) =====
+    preguntas_frecuentes: [
+        {
+            id: 'faq-001',
+            pregunta: '¿Cómo funciona el pago en Bolívares desde Venezuela?',
+            respuesta: 'Puedes pagar en Bolívares mediante Pago Móvil calculado a la tasa oficial del Banco Central de Venezuela (BCV) del día exacto, o en dólares vía Zelle, Binance Pay (USDT) y tarjetas internacionales Visa/Mastercard.',
+            categoria: 'Pagos & BCV',
+            icono: 'ph-currency-circle-dollar',
+            orden: 1,
+            mostrar_en_web: true,
+            created_at: '2026-01-15T10:00:00Z'
+        },
+        {
+            id: 'faq-002',
+            pregunta: '¿Mis clientes me contactan directamente a mí?',
+            respuesta: 'Totalmente y sin intermediación. En cada propiedad que publiques se muestra tu ficha con tu fotografía, nombre y un botón de WhatsApp que abre una conversación directa a tu número de teléfono personal.',
+            categoria: 'Asesoría & WhatsApp',
+            icono: 'ph-whatsapp-logo',
+            orden: 2,
+            mostrar_en_web: true,
+            created_at: '2026-01-15T10:05:00Z'
+        },
+        {
+            id: 'faq-003',
+            pregunta: '¿Puedo cancelar o cambiar de plan cuando quiera?',
+            respuesta: 'Sí, sin ataduras ni contratos forzosos. Puedes cancelar tu suscripción con un solo clic desde tu panel y disfrutar de todas las funciones hasta el vencimiento del periodo pagado, sin cargos adicionales.',
+            categoria: 'Cancelación & Membresía',
+            icono: 'ph-shield-check',
+            orden: 3,
+            mostrar_en_web: true,
+            created_at: '2026-01-15T10:10:00Z'
+        }
+    ],
+
     // ===== CONFIGURACIÓN Y MIEMBROS DE "NUESTRO EQUIPO" (LANDING PAGE) =====
     equipo_web_config: {
         etiqueta: 'NUESTRO EQUIPO',

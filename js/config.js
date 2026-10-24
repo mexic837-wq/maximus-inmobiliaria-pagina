@@ -153,6 +153,8 @@ const APP_CONFIG = {
         COLECCIONES_VIP: 'colecciones_vip',
         EQUIPO_WEB: 'equipo_web',
         SECCIONES_WEB: 'secciones_web',
+        PREGUNTAS_FRECUENTES: 'preguntas_frecuentes',
+        FAQS_WEB: 'preguntas_frecuentes',
         ASESORES_MAXIMUS: 'asesores_maximus',
         NOTIFICACIONES: 'notificaciones',
         MATERIAL_INFORMATIVO: 'material_informativo',

@@ -1175,6 +1175,12 @@
                     <span class="sidebar-tooltip">Equipo en Web</span>
                 </a>
 
+                <a href="#" id="nav-admin-faqs" data-target="view-admin-faqs" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Preguntas Frecuentes (Landing)">
+                    <i class="ph ph-chats-circle text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">FAQs en Web</span>
+                    <span class="sidebar-tooltip">Preguntas Frecuentes</span>
+                </a>
+
                 <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Material">
                     <i class="ph-fill ph-file-arrow-up text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Subir Material</span>
@@ -3773,6 +3779,201 @@
                             <button type="submit" class="px-6 py-2.5 rounded-xl bg-maximus-dark hover:bg-black text-white text-xs font-bold shadow-md transition-all flex items-center gap-2">
                                 <i class="ph-bold ph-check text-sm text-emerald-400"></i>
                                 <span>Guardar Miembro</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA: GESTIÓN DE PREGUNTAS FRECUENTES (LANDING PAGE) -->
+            <section id="view-admin-faqs" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
+                <!-- Cabecera Principal -->
+                <div class="pt-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-semibold text-gray-400 mb-1">
+                            <span>Panel Central</span>
+                            <i class="ph-bold ph-caret-right text-[10px]"></i>
+                            <span>Landing Page</span>
+                            <i class="ph-bold ph-caret-right text-[10px]"></i>
+                            <span class="text-maximus-accent font-bold">Preguntas Frecuentes</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-maximus-dark dark:text-white tracking-tight flex items-center gap-3">
+                            <i class="ph-fill ph-chats-circle text-maximus-accent"></i>
+                            Gestión de Preguntas Frecuentes (FAQs)
+                        </h2>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                            Configura las preguntas, respuestas y categorías del acordeón de planes en la Landing Page. Sincronizado en tiempo real con Supabase.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <a href="index.html#planes" target="_blank" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/40 text-gray-600 dark:text-gray-300 hover:border-maximus-accent hover:text-maximus-accent text-xs font-bold transition-all flex items-center gap-2 bg-white dark:bg-[#071F1A] shadow-xs">
+                            <i class="ph-bold ph-arrow-square-out text-sm"></i>
+                            Ver en Landing
+                        </a>
+                        <button onclick="inicializarGestionFaqsAdmin()" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/40 text-gray-600 dark:text-gray-300 hover:border-emerald-500 text-xs font-bold transition-all flex items-center gap-2 bg-white dark:bg-[#071F1A] shadow-xs cursor-pointer">
+                            <i class="ph-bold ph-arrows-clockwise text-sm text-emerald-600"></i>
+                            Recargar
+                        </button>
+                        <button onclick="abrirModalFaqWeb()" class="px-5 py-2.5 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer">
+                            <i class="ph-bold ph-plus text-sm"></i>
+                            Nueva Pregunta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-[#071F1A] rounded-2xl p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-maximus-accent flex items-center justify-center text-2xl font-bold shrink-0">
+                            <i class="ph-bold ph-question"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-black text-maximus-dark dark:text-white" id="kpi-faqs-total">0</div>
+                            <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Total Preguntas</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#071F1A] rounded-2xl p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 flex items-center justify-center text-2xl font-bold shrink-0">
+                            <i class="ph-bold ph-eye"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-black text-maximus-dark dark:text-white" id="kpi-faqs-visibles">0</div>
+                            <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Visibles en Landing</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#071F1A] rounded-2xl p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-2xl font-bold shrink-0">
+                            <i class="ph-bold ph-tag"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-black text-maximus-dark dark:text-white" id="kpi-faqs-categorias">0</div>
+                            <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Categorías Activas</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-[#071F1A] rounded-2xl p-5 border border-gray-100 dark:border-emerald-900/40 shadow-xs flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center text-2xl font-bold shrink-0">
+                            <i class="ph-bold ph-cloud-check"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-black text-emerald-600 flex items-center gap-1.5" id="kpi-faqs-estado">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sincronizado
+                            </div>
+                            <div class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Supabase Live</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración de Textos de la Sección en Landing -->
+                <div class="bg-white dark:bg-[#071F1A] rounded-2xl p-6 border border-gray-100 dark:border-emerald-900/40 shadow-xs">
+                    <h3 class="font-bold text-base text-maximus-dark dark:text-white flex items-center gap-2 mb-4">
+                        <i class="ph-bold ph-pencil-simple text-maximus-accent"></i> Textos del Encabezado de FAQs en la Landing
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Etiqueta Superior</label>
+                            <input type="text" id="config-faqs-etiqueta" placeholder="DUDAS FRECUENTES" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Título Principal</label>
+                            <input type="text" id="config-faqs-titulo" placeholder="Preguntas Frecuentes" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Subtítulo Descriptivo</label>
+                            <input type="text" id="config-faqs-subtitulo" placeholder="Respuestas claras antes de activar tu membresía" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent">
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button type="button" onclick="guardarTextosCabeceraFaqsWeb()" class="px-5 py-2.5 rounded-xl bg-maximus-dark hover:bg-black text-white text-xs font-bold shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="ph-bold ph-floppy-disk text-sm"></i> Guardar Textos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Preguntas Frecuentes -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-extrabold text-xl text-maximus-dark dark:text-white flex items-center gap-2">
+                            <i class="ph-fill ph-list-numbers text-maximus-accent"></i> Tarjetas de Preguntas en la Web
+                        </h3>
+                        <p class="text-xs text-gray-400">Ordena y activa las preguntas que se mostrarán en la página principal</p>
+                    </div>
+
+                    <!-- Contenedor dinámico de tarjetas -->
+                    <div id="contenedor-tarjetas-faqs-web" class="space-y-4">
+                        <!-- Se llena con renderGestionFaqsWeb() -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODAL: AÑADIR / EDITAR PREGUNTA FRECUENTE -->
+            <div id="modalFaqAdmin" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+                <div class="bg-white dark:bg-[#071714] rounded-3xl max-w-xl w-full shadow-2xl border border-gray-100 dark:border-emerald-900/40 transform transition-all my-auto flex flex-col max-h-[92vh] overflow-hidden">
+                    <div class="p-5 sm:p-6 border-b border-gray-100 dark:border-emerald-900/30 flex items-center justify-between bg-gray-50/70 dark:bg-emerald-950/20 shrink-0">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-maximus-accent dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                                <i class="ph-bold ph-question"></i>
+                            </div>
+                            <div>
+                                <h3 id="modal-faq-titulo" class="font-black text-base sm:text-lg text-maximus-dark dark:text-white">Nueva Pregunta Frecuente</h3>
+                                <p class="text-xs text-gray-400">Se reflejará en el acordeón de planes de la Landing Page</p>
+                            </div>
+                        </div>
+                        <button onclick="cerrarModalFaqWeb()" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-emerald-950/40 text-gray-500 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition-all cursor-pointer">
+                            <i class="ph-bold ph-x text-sm"></i>
+                        </button>
+                    </div>
+
+                    <form id="form-faq-admin" class="p-5 sm:p-6 space-y-4 overflow-y-auto" onsubmit="event.preventDefault(); guardarFaqWeb();">
+                        <input type="hidden" id="faq-admin-id">
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Pregunta / Título *</label>
+                            <input type="text" id="faq-admin-pregunta" required placeholder="¿Cuáles son los métodos de pago aceptados?" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-sm font-semibold text-gray-800 dark:text-white outline-none focus:border-maximus-accent">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Categoría</label>
+                                <select id="faq-admin-categoria" class="w-full px-3 py-2 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent">
+                                    <option value="Planes & Pagos">Planes & Pagos</option>
+                                    <option value="Directo Asesor">Directo Asesor</option>
+                                    <option value="Membresía & Cancelación">Membresía & Cancelación</option>
+                                    <option value="Seguridad & Garantía">Seguridad & Garantía</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Ícono Phosphor</label>
+                                <input type="text" id="faq-admin-icono" placeholder="ph-credit-card" class="w-full px-3 py-2 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Orden Visual</label>
+                                <input type="number" id="faq-admin-orden" value="1" min="1" max="99" class="w-full px-3 py-2 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-xs font-semibold text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent text-center">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Respuesta Detallada * (Admite texto y etiquetas &lt;strong&gt;)</label>
+                            <textarea id="faq-admin-respuesta" rows="4" required placeholder="Puedes pagar en Bolívares mediante Pago Móvil a la tasa oficial BCV, o en dólares vía Zelle, Binance Pay y tarjetas internacionales..." class="w-full px-4 py-3 bg-gray-50 dark:bg-[#041310] border border-gray-200 dark:border-emerald-900/40 rounded-xl text-xs font-medium text-gray-700 dark:text-gray-200 outline-none focus:border-maximus-accent resize-none leading-relaxed"></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-3 p-3 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                            <input type="checkbox" id="faq-admin-mostrar" checked class="w-4 h-4 rounded text-maximus-accent border-gray-300 focus:ring-maximus-accent">
+                            <label for="faq-admin-mostrar" class="text-xs font-bold text-gray-700 dark:text-gray-200 cursor-pointer select-none">
+                                Publicar inmediatamente en la Landing Page (Visible)
+                            </label>
+                        </div>
+
+                        <div class="pt-2 flex justify-end gap-3 shrink-0">
+                            <button type="button" onclick="cerrarModalFaqWeb()" class="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/40 text-gray-600 dark:text-gray-300 hover:bg-gray-50 text-xs font-bold transition-all cursor-pointer">
+                                Cancelar
+                            </button>
+                            <button type="submit" id="btn-guardar-faq" class="px-6 py-2.5 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white text-xs font-bold shadow-md transition-all flex items-center gap-2 cursor-pointer">
+                                <i class="ph-bold ph-floppy-disk text-sm"></i> Guardar Pregunta
                             </button>
                         </div>
                     </form>
@@ -7379,7 +7580,7 @@
                 'view-resumen', 'view-metricas', 'view-historico-asesores', 
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales',
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
                 'view-mis-clientes',
                 'view-admin-usuarios'
             ];
@@ -8244,14 +8445,14 @@
                 'view-resumen', 'view-metricas', 'view-historico-asesores', 
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-tutoriales', 'view-admin-tutoriales',
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
                 'view-mis-clientes',
                 'view-admin-usuarios'
             ];
 
             const vistasExclusivasAdmin = [
                 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-admin-tutoriales', 'view-admin-usuarios'
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-faqs', 'view-admin-tutoriales', 'view-admin-usuarios'
             ];
 
             if (targetId === 'view-metricas') {
@@ -8401,6 +8602,12 @@
             }
             if (targetId === 'view-admin-equipo-web') {
                 if (typeof inicializarGestionEquipoWeb === 'function') inicializarGestionEquipoWeb();
+            }
+            if (targetId === 'view-admin-faqs') {
+                if (typeof inicializarGestionFaqsAdmin === 'function') inicializarGestionFaqsAdmin();
+            }
+            if (targetId === 'view-planes') {
+                if (typeof cargarFaqsEnPlanesDashboard === 'function') cargarFaqsEnPlanesDashboard();
             }
             if (targetId === 'view-admin-config') {
                 if (typeof inicializarGestionAsesoresAdmin === 'function') inicializarGestionAsesoresAdmin();
@@ -15882,6 +16089,330 @@
         function editarAsesorWeb(id) {
             abrirModalAsesorWeb(id);
         }
+
+        // ========================================================
+        // GESTIÓN DE PREGUNTAS FRECUENTES (LANDING PAGE) - SUPABASE LIVE
+        // ========================================================
+        let listaFaqsWebAdmin = [];
+
+        async function inicializarGestionFaqsAdmin() {
+            try {
+                if (window.FaqWebService) {
+                    // 1. Cargar textos de cabecera
+                    const cfg = FaqWebService.getConfig();
+                    const inputEtiqueta = document.getElementById('config-faqs-etiqueta');
+                    const inputTitulo = document.getElementById('config-faqs-titulo');
+                    const inputSubtitulo = document.getElementById('config-faqs-subtitulo');
+                    if (inputEtiqueta && cfg.etiqueta) inputEtiqueta.value = cfg.etiqueta;
+                    if (inputTitulo && cfg.titulo) inputTitulo.value = cfg.titulo;
+                    if (inputSubtitulo && cfg.subtitulo) inputSubtitulo.value = cfg.subtitulo;
+
+                    // 2. Cargar lista de preguntas
+                    const res = await FaqWebService.getAll();
+                    listaFaqsWebAdmin = (res && res.data) ? res.data : [];
+                    renderGestionFaqsWeb(listaFaqsWebAdmin);
+                }
+            } catch (err) {
+                console.error('Error al inicializar gestión de FAQs:', err);
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('⚠️ Error al cargar las preguntas frecuentes');
+                }
+            }
+        }
+
+        function guardarTextosCabeceraFaqsWeb() {
+            const etiqueta = (document.getElementById('config-faqs-etiqueta')?.value || '').trim();
+            const titulo = (document.getElementById('config-faqs-titulo')?.value || '').trim();
+            const subtitulo = (document.getElementById('config-faqs-subtitulo')?.value || '').trim();
+
+            if (window.FaqWebService) {
+                FaqWebService.saveConfig({ etiqueta, titulo, subtitulo });
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('✨ Textos de FAQs en la Landing actualizados');
+                }
+            }
+        }
+
+        function renderGestionFaqsWeb(lista) {
+            const container = document.getElementById('contenedor-tarjetas-faqs-web');
+            const kpiTotal = document.getElementById('kpi-faqs-total');
+            const kpiVisibles = document.getElementById('kpi-faqs-visibles');
+            const kpiCategorias = document.getElementById('kpi-faqs-categorias');
+
+            if (!container) return;
+
+            const arr = Array.isArray(lista) ? [...lista] : [];
+            // Ordenar por orden numérico ascendente
+            arr.sort((a, b) => (Number(a.orden) || 99) - (Number(b.orden) || 99));
+
+            const visiblesCount = arr.filter(f => f.mostrar_en_web).length;
+            const categoriasSet = new Set(arr.map(f => f.categoria || 'General'));
+
+            if (kpiTotal) kpiTotal.textContent = arr.length;
+            if (kpiVisibles) kpiVisibles.textContent = visiblesCount;
+            if (kpiCategorias) kpiCategorias.textContent = categoriasSet.size;
+
+            if (arr.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white dark:bg-[#071F1A] rounded-2xl border border-dashed border-gray-200 dark:border-emerald-900/40 p-8">
+                        <div class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-maximus-accent flex items-center justify-center text-3xl mx-auto mb-3">
+                            <i class="ph-bold ph-chats-circle"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-800 dark:text-white text-base">No hay preguntas registradas</h4>
+                        <p class="text-gray-400 text-xs mt-1 mb-4">Comienza creando la primera pregunta frecuente para la Landing Page.</p>
+                        <button onclick="abrirModalFaqWeb()" class="px-5 py-2.5 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white text-xs font-bold transition-all inline-flex items-center gap-2 cursor-pointer">
+                            <i class="ph-bold ph-plus"></i> Crear Pregunta
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = arr.map((faq, idx) => {
+                const isVisible = faq.mostrar_en_web !== false;
+                const categoria = faq.categoria || 'General';
+                const orden = faq.orden || (idx + 1);
+                const icono = faq.icono || 'ph-question';
+                const idSafe = String(faq.id || '');
+                const preguntaSafe = (faq.pregunta || '').replace(/"/g, '&quot;');
+
+                return `
+                    <div class="bg-white dark:bg-[#071F1A] rounded-2xl p-5 border ${isVisible ? 'border-gray-200 dark:border-emerald-900/40' : 'border-dashed border-gray-300 dark:border-gray-700 opacity-60'} shadow-xs hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="flex items-start gap-4 flex-1 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-maximus-accent flex items-center justify-center text-xl shrink-0 border border-emerald-200/60 dark:border-emerald-800/40 mt-0.5">
+                                <i class="${icono.startsWith('fa') ? icono : ('ph-bold ' + icono)}"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap mb-1">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                                        #${orden}
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                                        ${categoria}
+                                    </span>
+                                    ${isVisible ? '<span class="text-[10px] font-bold text-emerald-600 flex items-center gap-1"><i class="ph-fill ph-check-circle"></i> Visible en Web</span>' : '<span class="text-[10px] font-bold text-amber-500 flex items-center gap-1"><i class="ph-fill ph-eye-slash"></i> Oculta</span>'}
+                                </div>
+                                <h4 class="font-extrabold text-sm sm:text-base text-gray-900 dark:text-white leading-snug">
+                                    ${faq.pregunta || 'Sin pregunta'}
+                                </h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 leading-relaxed">
+                                    ${faq.respuesta ? faq.respuesta.replace(/<[^>]*>/g, '') : ''}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 shrink-0 self-end md:self-center border-t md:border-t-0 pt-3 md:pt-0 w-full md:w-auto justify-between md:justify-end border-gray-100 dark:border-gray-800">
+                            <!-- Toggle Visibilidad -->
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <span class="text-[11px] font-bold text-gray-400 hidden sm:inline">${isVisible ? 'Pausar' : 'Activar'}</span>
+                                <input type="checkbox" ${isVisible ? 'checked' : ''} onchange="toggleVisibilidadFaqWeb('${idSafe}', this.checked)" class="w-4 h-4 rounded text-maximus-accent focus:ring-maximus-accent cursor-pointer">
+                            </label>
+
+                            <div class="flex items-center gap-2">
+                                <button onclick="editarFaqWeb('${idSafe}')" title="Editar Pregunta" class="px-3 py-1.5 rounded-xl border border-gray-200 dark:border-emerald-900/40 hover:border-emerald-500 text-xs font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1 transition-all cursor-pointer">
+                                    <i class="ph-bold ph-pencil-simple text-emerald-600"></i>
+                                    <span>Editar</span>
+                                </button>
+                                <button onclick="eliminarFaqWeb('${idSafe}', '${preguntaSafe}')" title="Eliminar Pregunta" class="w-8 h-8 rounded-xl border border-gray-200 dark:border-red-900/40 hover:border-red-500 text-gray-400 hover:text-red-500 flex items-center justify-center transition-all cursor-pointer">
+                                    <i class="ph-bold ph-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function abrirModalFaqWeb(id = null) {
+            const modal = document.getElementById('modalFaqAdmin');
+            const tituloModal = document.getElementById('modal-faq-titulo');
+            const inputId = document.getElementById('faq-admin-id');
+            const inputPregunta = document.getElementById('faq-admin-pregunta');
+            const selectCategoria = document.getElementById('faq-admin-categoria');
+            const inputIcono = document.getElementById('faq-admin-icono');
+            const inputOrden = document.getElementById('faq-admin-orden');
+            const textareaRespuesta = document.getElementById('faq-admin-respuesta');
+            const checkMostrar = document.getElementById('faq-admin-mostrar');
+
+            if (!modal) return;
+
+            if (id) {
+                const item = listaFaqsWebAdmin.find(f => String(f.id) === String(id));
+                if (item) {
+                    if (tituloModal) tituloModal.textContent = 'Editar Pregunta Frecuente';
+                    if (inputId) inputId.value = item.id;
+                    if (inputPregunta) inputPregunta.value = item.pregunta || '';
+                    if (selectCategoria) selectCategoria.value = item.categoria || 'General';
+                    if (inputIcono) inputIcono.value = item.icono || 'ph-question';
+                    if (inputOrden) inputOrden.value = item.orden || 1;
+                    if (textareaRespuesta) textareaRespuesta.value = item.respuesta || '';
+                    if (checkMostrar) checkMostrar.checked = item.mostrar_en_web !== false;
+                }
+            } else {
+                if (tituloModal) tituloModal.textContent = 'Nueva Pregunta Frecuente';
+                if (inputId) inputId.value = '';
+                if (inputPregunta) inputPregunta.value = '';
+                if (selectCategoria) selectCategoria.value = 'Planes & Pagos';
+                if (inputIcono) inputIcono.value = 'ph-question';
+                if (inputOrden) inputOrden.value = listaFaqsWebAdmin.length + 1;
+                if (textareaRespuesta) textareaRespuesta.value = '';
+                if (checkMostrar) checkMostrar.checked = true;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function cerrarModalFaqWeb() {
+            const modal = document.getElementById('modalFaqAdmin');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function guardarFaqWeb() {
+            const id = (document.getElementById('faq-admin-id')?.value || '').trim();
+            const pregunta = (document.getElementById('faq-admin-pregunta')?.value || '').trim();
+            const categoria = (document.getElementById('faq-admin-categoria')?.value || 'General').trim();
+            const icono = (document.getElementById('faq-admin-icono')?.value || 'ph-question').trim();
+            const orden = parseInt(document.getElementById('faq-admin-orden')?.value, 10) || 1;
+            const respuesta = (document.getElementById('faq-admin-respuesta')?.value || '').trim();
+            const mostrar_en_web = document.getElementById('faq-admin-mostrar')?.checked ?? true;
+
+            if (!pregunta || !respuesta) {
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('⚠️ Por favor completa la pregunta y la respuesta');
+                }
+                return;
+            }
+
+            const btn = document.getElementById('btn-guardar-faq');
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Guardando...';
+            }
+
+            try {
+                if (window.FaqWebService) {
+                    if (id) {
+                        await FaqWebService.update(id, { pregunta, categoria, icono, orden, respuesta, mostrar_en_web });
+                        const idx = listaFaqsWebAdmin.findIndex(f => String(f.id) === String(id));
+                        if (idx !== -1) {
+                            listaFaqsWebAdmin[idx] = { ...listaFaqsWebAdmin[idx], pregunta, categoria, icono, orden, respuesta, mostrar_en_web };
+                        }
+                        if (typeof mostrarToastNotificacion === 'function') {
+                            mostrarToastNotificacion('✨ Pregunta actualizada exitosamente');
+                        }
+                    } else {
+                        const nueva = await FaqWebService.create({ pregunta, categoria, icono, orden, respuesta, mostrar_en_web });
+                        if (nueva && nueva.data) {
+                            listaFaqsWebAdmin.push(nueva.data);
+                        }
+                        if (typeof mostrarToastNotificacion === 'function') {
+                            mostrarToastNotificacion('🎉 Nueva pregunta agregada y sincronizada');
+                        }
+                    }
+
+                    renderGestionFaqsWeb(listaFaqsWebAdmin);
+                    cerrarModalFaqWeb();
+                }
+            } catch (err) {
+                console.error('Error al guardar FAQ:', err);
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('⚠️ Error al guardar la pregunta en Supabase');
+                }
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        }
+
+        async function toggleVisibilidadFaqWeb(id, nuevoEstado) {
+            try {
+                if (window.FaqWebService) {
+                    await FaqWebService.toggleVisibilidad(id, nuevoEstado);
+                    const item = listaFaqsWebAdmin.find(f => String(f.id) === String(id));
+                    if (item) item.mostrar_en_web = nuevoEstado;
+                    renderGestionFaqsWeb(listaFaqsWebAdmin);
+                    if (typeof mostrarToastNotificacion === 'function') {
+                        mostrarToastNotificacion(nuevoEstado ? '👁️ Pregunta visible en la Landing Page' : '🔒 Pregunta ocultada de la Landing');
+                    }
+                }
+            } catch (err) {
+                console.error('Error al cambiar visibilidad de FAQ:', err);
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('⚠️ Error al actualizar visibilidad');
+                }
+            }
+        }
+
+        async function eliminarFaqWeb(id, pregunta) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar la pregunta "${pregunta}"?`)) {
+                return;
+            }
+
+            try {
+                if (window.FaqWebService) {
+                    await FaqWebService.delete(id);
+                    listaFaqsWebAdmin = listaFaqsWebAdmin.filter(f => String(f.id) !== String(id));
+                    renderGestionFaqsWeb(listaFaqsWebAdmin);
+                    if (typeof mostrarToastNotificacion === 'function') {
+                        mostrarToastNotificacion('🗑️ Pregunta eliminada con éxito');
+                    }
+                }
+            } catch (err) {
+                console.error('Error al eliminar FAQ:', err);
+                if (typeof mostrarToastNotificacion === 'function') {
+                    mostrarToastNotificacion('⚠️ Error al eliminar pregunta');
+                }
+            }
+        }
+
+        function editarFaqWeb(id) {
+            abrirModalFaqWeb(id);
+        }
+
+        async function cargarFaqsEnPlanesDashboard() {
+            try {
+                if (!window.FaqWebService) return;
+                const res = await FaqWebService.getAll({ mostrar_en_web: true });
+                const faqs = (res && res.data && res.data.length > 0) ? res.data : null;
+                const container = document.getElementById('faq-accordion-container');
+                if (container && faqs && faqs.length > 0) {
+                    faqs.sort((a, b) => (Number(a.orden) || 99) - (Number(b.orden) || 99));
+                    container.innerHTML = faqs.map(faq => {
+                        let icono = faq.icono || 'ph-question';
+                        let iconHtml = `<i class="${icono.startsWith('fa') ? icono : ('ph-bold ' + icono)}"></i>`;
+                        return `
+                            <div class="faq-accordion-card faq-motion-card rounded-2xl border border-gray-200/90 dark:border-emerald-950/70 bg-white/90 dark:bg-[#0B221C]/90 backdrop-blur-md overflow-hidden transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-500/40 group">
+                                <div class="faq-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 via-teal-400 to-emerald-600 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                                <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                    <span class="flex items-center gap-2.5">
+                                        <span class="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60 dark:border-emerald-800/50">
+                                            ${iconHtml}
+                                        </span>
+                                        <span>${faq.pregunta || ''}</span>
+                                    </span>
+                                    <span class="faq-chevron-pill w-7 h-7 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
+                                        <i class="ph-bold ph-caret-down"></i>
+                                    </span>
+                                </button>
+                                <div class="faq-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                                    <div class="faq-motion-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-emerald-950/60 opacity-0 -translate-y-2 transition-all duration-300">
+                                        ${faq.respuesta || ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.warn('Error al cargar FAQs en planes dashboard:', err);
+            }
+        }
+
+
 
         // ========================================================
         // MATERIAL INFORMATIVO & CAPACITACIÓN MAXIMUS
