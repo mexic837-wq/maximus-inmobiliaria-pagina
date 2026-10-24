@@ -283,7 +283,7 @@
                     <a href="#" class="text-gray-700 hover:text-maximus-accent font-medium transition">Inicio</a>
                     <a href="#propiedades" class="text-gray-700 hover:text-maximus-accent font-medium transition">Propiedades</a>
                     <a href="#nosotros" class="text-gray-700 hover:text-maximus-accent font-medium transition">Nosotros</a>
-                    <a href="/dashboard#view-planes" class="text-gray-700 hover:text-maximus-accent font-medium transition">Planes</a>
+                    <a href="#planes" class="text-gray-700 hover:text-maximus-accent font-medium transition">Planes</a>
                 </div>
                 <div class="hidden md:flex items-center gap-4">
                     <a href="/login#register" class="text-xs uppercase tracking-wider font-bold text-gray-700 hover:text-maximus-accent transition">Crear Cuenta</a>
@@ -327,7 +327,7 @@
             <a href="#equipo" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-users text-sm"></i></span> Nuestro Equipo
             </a>
-            <a href="/dashboard#view-planes" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+            <a href="#planes" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-tag text-sm"></i></span> Planes
             </a>
             <div class="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-gray-100">
@@ -709,35 +709,163 @@
         </div>
     </section>
 
-    <!-- Sección de Incentivo / Membresía Pro para Asesores Inmobiliarios y Alianzas -->
-    <section class="py-16 bg-gradient-to-br from-[#06241E] via-[#071F1A] to-[#04120F] text-white relative overflow-hidden">
-        <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="bg-gradient-to-r from-white/[0.07] to-white/[0.03] backdrop-blur-xl rounded-3xl p-8 sm:p-12 border border-emerald-500/30 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
-                <div class="max-w-2xl space-y-4 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold tracking-wider uppercase border border-emerald-400/30">
-                        <i class="fas fa-crown text-emerald-400"></i> Red de Asesores Aliados MAXIMUS
+    <!-- ==========================================
+         SECCIÓN: PLANES Y MEMBRESÍAS (MINIMALISTA)
+         ========================================== -->
+    <section id="planes" class="py-24 bg-white relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header minimalista -->
+            <div class="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+                <span class="text-xs font-bold uppercase tracking-widest text-maximus-accent">Planes y Membresías</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mt-2">
+                    Elige el plan ideal para tu objetivo
+                </h2>
+                <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                    Acceso gratuito para compradores o herramientas profesionales para asesores independientes e inmobiliarias.
+                </p>
+
+                <!-- Toggle Mensual / Anual -->
+                <div class="inline-flex items-center gap-1 mt-6 p-1 rounded-full bg-gray-100 border border-gray-200">
+                    <button type="button" id="toggleLandingMensual" onclick="togglePlanLanding('mensual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-900 shadow-sm cursor-pointer">
+                        Mensual
+                    </button>
+                    <button type="button" id="toggleLandingAnual" onclick="togglePlanLanding('anual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all text-gray-500 hover:text-gray-700 cursor-pointer">
+                        Anual <span class="text-maximus-accent font-black ml-1">−26%</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cards Grid: 2 Cards (Gratuito vs Asesor Pro) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch max-w-3xl mx-auto">
+                <!-- Card 1: Gratuito -->
+                <div class="rounded-3xl p-7 sm:p-8 bg-gray-50/70 border border-gray-200/90 flex flex-col justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Compradores e Inversionistas</p>
+                        <h3 class="text-lg font-black text-gray-900">Plan Gratuito</h3>
+                        <div class="flex items-baseline gap-1 mt-4">
+                            <span class="text-4xl font-black text-gray-900">$0</span>
+                            <span class="text-xs font-medium text-gray-400">/ de por vida</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Explora, guarda y agenda visitas a las mejores propiedades de San Cristóbal y Táchira.</p>
+
+                        <hr class="border-gray-200 my-6">
+
+                        <ul class="space-y-3 text-xs text-gray-600">
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-maximus-accent text-xs"></i>
+                                <span>Acceso total al catálogo de inmuebles</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-maximus-accent text-xs"></i>
+                                <span>Guardar propiedades favoritas sin límite</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-maximus-accent text-xs"></i>
+                                <span>Agendar visitas guiadas con asesores oficiales</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-maximus-accent text-xs"></i>
+                                <span>Calificar y publicar testimonios de compras</span>
+                            </li>
+                        </ul>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                        ¿Comercializas Inmuebles en Táchira?
-                    </h2>
-                    <p class="text-sm sm:text-base text-gray-300 font-light leading-relaxed">
-                        Expón tu inventario ante miles de compradores e inversionistas calificados. Accede al CRM de clientes, cotizador express de comisiones, colecciones VIP y comisiones directas.
-                    </p>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs font-semibold text-emerald-200">
-                        <div class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-400"></i> Tu WhatsApp Directo</div>
-                        <div class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-400"></i> CRM de Prospectos</div>
-                        <div class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-400"></i> Cotizador Express</div>
-                        <div class="flex items-center gap-1.5"><i class="fas fa-check-circle text-emerald-400"></i> Dossiers con tu Marca</div>
+
+                    <div class="pt-8">
+                        <a href="/login#register" class="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-gray-100 text-gray-800 font-bold text-xs tracking-wide border border-gray-200 transition-all text-center block shadow-xs">
+                            Crear Cuenta Gratis
+                        </a>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto text-center">
-                    <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-gray-950 font-black text-sm tracking-wide shadow-lg shadow-emerald-500/25 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fas fa-rocket text-sm"></i>
-                        <span>Conocer Planes & Activar</span>
-                    </button>
-                    <span class="text-[11px] text-gray-400">Pago Móvil (Bs BCV) · Zelle · Binance USDT · Tarjetas</span>
+                <!-- Card 2: Asesor Pro -->
+                <div class="rounded-3xl p-7 sm:p-8 bg-maximus-dark text-white border border-emerald-800/40 shadow-xl flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-5 right-5">
+                        <span class="px-3 py-1 rounded-full bg-maximus-accent text-white text-[10px] font-black uppercase tracking-wider">
+                            Más Popular
+                        </span>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-2">Asesores & Agencias Aliadas</p>
+                        <h3 class="text-lg font-black text-white">MAXIMUS Pro</h3>
+                        <div class="flex items-baseline gap-1 mt-4">
+                            <span id="precioLandingDisplay" class="text-4xl font-black text-white">$19</span>
+                            <span id="periodoLandingDisplay" class="text-xs font-medium text-gray-300">/ mes</span>
+                        </div>
+                        <p class="text-xs text-gray-300 mt-2">Herramientas profesionales para publicar tu inventario, captar clientes y cerrar más ventas.</p>
+
+                        <hr class="border-white/10 my-6">
+
+                        <ul class="space-y-3 text-xs text-gray-200">
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-emerald-400 text-xs"></i>
+                                <span><strong>Carga ilimitada</strong> de inmuebles en el catálogo oficial</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-emerald-400 text-xs"></i>
+                                <span><strong>Tu WhatsApp directo</strong> en cada una de tus propiedades</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-emerald-400 text-xs"></i>
+                                <span><strong>CRM Inmobiliario:</strong> seguimiento y notas de prospectos</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-emerald-400 text-xs"></i>
+                                <span><strong>Cotizador express:</strong> comisiones, impuestos y gastos</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-emerald-400 text-xs"></i>
+                                <span><strong>Colecciones VIP:</strong> dossiers digitales con tu nombre</span>
+                            </li>
+                            <li class="flex items-center gap-2.5">
+                                <i class="fas fa-check text-emerald-400 text-xs"></i>
+                                <span><strong>Comisiones directas:</strong> 100% tuyas, sin descuentos</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-8">
+                        <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="w-full py-3.5 px-6 rounded-2xl bg-maximus-accent hover:bg-emerald-400 text-maximus-dark font-black text-xs tracking-wide shadow-md transition-all text-center block cursor-pointer">
+                            Activar Membresía Pro
+                        </button>
+                        <p class="text-center text-[10.5px] text-gray-400 mt-2">
+                            Pago Móvil (Bs BCV) · Zelle · Binance USDT · Tarjetas
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preguntas frecuentes minimalistas -->
+            <div class="max-w-2xl mx-auto mt-16 pt-8 border-t border-gray-100">
+                <h4 class="text-center text-sm font-bold text-gray-800 mb-4">Preguntas Frecuentes</h4>
+                <div class="space-y-2.5">
+                    <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
+                        <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
+                            ¿Cómo funciona el pago en Bolívares desde Venezuela?
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
+                            Puedes pagar en Bolívares mediante Pago Móvil a la tasa oficial del Banco Central de Venezuela (BCV) del día, o en dólares vía Zelle, Binance Pay (USDT) y tarjetas internacionales.
+                        </p>
+                    </details>
+                    <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
+                        <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
+                            ¿Mis clientes me contactan directamente a mí?
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
+                            Totalmente. En cada propiedad que publiques se muestra tu ficha de asesor y un botón de WhatsApp que abre una conversación directa a tu número de teléfono personal.
+                        </p>
+                    </details>
+                    <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
+                        <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
+                            ¿Puedo cancelar o cambiar de plan cuando quiera?
+                            <i class="fas fa-chevron-down text-[10px] text-gray-400 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
+                            Sí, no hay contratos forzosos ni penalizaciones. Tu cuenta mantiene las funciones activas hasta el fin de tu ciclo facturado.
+                        </p>
+                    </details>
                 </div>
             </div>
         </div>
