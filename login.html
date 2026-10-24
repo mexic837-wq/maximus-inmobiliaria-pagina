@@ -714,8 +714,26 @@
         }
         window.cambiarTipoCuentaRegistro = cambiarTipoCuentaRegistro;
 
-        // 1. Detección Inteligente de Sesión Activa al Cargar la Página
+        // 1. Detección Inteligente de Sesión Activa al Cargar la Página (Compatible con Google OAuth)
         document.addEventListener('DOMContentLoaded', async () => {
+            const hasOAuthParam = window.location.hash.includes('access_token') || 
+                                   window.location.search.includes('code=');
+            if (hasOAuthParam) {
+                localStorage.removeItem('maximus_logged_out');
+                const banner = document.getElementById('sessionRedirectBanner');
+                if (banner) {
+                    banner.classList.remove('hidden');
+                    banner.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Autenticación exitosa con Google. Ingresando al panel...';
+                }
+                if (window.AuthService && typeof window.AuthService.handleOAuthCallback === 'function') {
+                    await window.AuthService.handleOAuthCallback();
+                }
+                setTimeout(() => {
+                    window.location.replace('/dashboard');
+                }, 300);
+                return;
+            }
+
             if (window.AuthService) {
                 // Si ya tiene sesión activa válida y no hizo logout explícito
                 const isAuth = await window.AuthService.checkSession();
@@ -727,6 +745,33 @@
                     }, 250);
                     return;
                 }
+        // Listener en tiempo real para eventos de Google OAuth con Supabase
+        if (typeof window !== 'undefined') {
+            window.addEventListener('load', () => {
+                try {
+                    const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+                    if (sb && sb.auth) {
+                        sb.auth.onAuthStateChange(async (event, session) => {
+                            if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+                                localStorage.removeItem('maximus_logged_out');
+                                if (window.AuthService) {
+                                    await window.AuthService.handleOAuthCallback();
+                                }
+                                const banner = document.getElementById('sessionRedirectBanner');
+                                if (banner) {
+                                    banner.classList.remove('hidden');
+                                    banner.innerHTML = '<i class="fas fa-check-circle text-emerald-400 mr-2"></i> Conectado con Google. Entrando al panel...';
+                                }
+                                setTimeout(() => {
+                                    window.location.replace('/dashboard');
+                                }, 250);
+                            }
+                        });
+                    }
+                } catch (_) {}
+            });
+        }
+
 
                 // Autocompletar correo recordado
                 const savedEmail = window.AuthService.getSavedEmail();

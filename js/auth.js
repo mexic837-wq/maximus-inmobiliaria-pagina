@@ -82,7 +82,7 @@ const AuthService = {
      * Compatible con Supabase Auth y fallback para modo demo.
      */
     async loginWithGoogle(redirectPath = '/dashboard') {
-        // 1. Si no estamos en MOCK_DATA, intentar OAuth real con Supabase
+        // Limpiar marca de cierre de sesión previo\n        localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);\n\n        // 1. Si no estamos en MOCK_DATA, intentar OAuth real con Supabase
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = typeof getSupabase === 'function' ? getSupabase() : null;
@@ -141,32 +141,46 @@ const AuthService = {
      * Listener para verificar si venimos de un redirect de Google OAuth en Supabase.
      */
     async handleOAuthCallback() {
-        if (APP_CONFIG.USE_MOCK_DATA) return;
+        if (APP_CONFIG.USE_MOCK_DATA) return null;
         try {
             const sb = typeof getSupabase === 'function' ? getSupabase() : null;
-            if (!sb || !sb.auth) return;
+            if (!sb || !sb.auth) return null;
             const { data: { session }, error } = await sb.auth.getSession();
             if (!error && session && session.user) {
+                localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
                 const authUser = session.user;
                 const meta = authUser.user_metadata || {};
                 const nombre = meta.full_name || meta.name || authUser.email.split('@')[0];
                 const avatar = meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=0B4A3F&color=fff`;
 
+                let perfil = null;
+                try {
+                    const { data } = await sb
+                        .from(APP_CONFIG.TABLES.USUARIOS)
+                        .select('*')
+                        .eq('auth_id', authUser.id)
+                        .maybeSingle();
+                    perfil = data;
+                } catch (_) {}
+
                 const appUser = {
                     id: authUser.id,
-                    name: nombre,
+                    name: perfil?.nombre_completo || nombre,
                     email: authUser.email,
-                    role: meta.rol || 'cliente',
-                    title: 'Usuario Verificado Google',
-                    avatar: avatar,
-                    plan: 'free',
+                    telefono: perfil?.telefono || meta.telefono || '',
+                    role: perfil?.rol || meta.rol || 'cliente',
+                    title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
+                    avatar: perfil?.avatar_url || avatar,
+                    plan: perfil?.plan || 'free',
                     auth_provider: 'google'
                 };
                 this._saveSession(appUser, authUser.email, true);
+                return appUser;
             }
         } catch (e) {
             console.warn('Aviso OAuth callback:', e);
         }
+        return null;
     },
 
     async validateCredentials(email, password) {
@@ -375,8 +389,17 @@ const AuthService = {
      * @returns {Promise<boolean>}
      */
     async checkSession() {
-        // Si el usuario presionó "Cerrar Sesión", no lo auto-logueamos
-        if (localStorage.getItem(this.KEYS.EXPLICIT_LOGOUT) === 'true') {
+        const hasOAuthParam = (typeof window !== 'undefined') && (
+            (window.location.hash && (window.location.hash.includes('access_token=') || window.location.hash.includes('type=recovery') || window.location.hash.includes('error='))) || 
+            (window.location.search && (window.location.search.includes('code=') || window.location.search.includes('token=')))
+        );
+
+        if (hasOAuthParam) {
+            localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
+        }
+
+        // Si el usuario presiono 'Cerrar Sesion', no lo auto-logueamos a menos que venga de OAuth
+        if (!hasOAuthParam && localStorage.getItem(this.KEYS.EXPLICIT_LOGOUT) === 'true') {
             return false;
         }
 
@@ -387,40 +410,51 @@ const AuthService = {
                 if (sb && sb.auth) {
                     const { data: { session }, error } = await sb.auth.getSession();
                     if (!error && session && session.user) {
-                        // Si no tenemos el perfil en cache local, lo sincronizamos
+                        localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
+                        // Si no tenemos el perfil en cache local o venimos de OAuth, lo sincronizamos
                         let user = this.getCurrentUser();
-                        if (!user) {
-                            const { data: perfil } = await sb
-                                .from(APP_CONFIG.TABLES.USUARIOS)
-                                .select('*')
-                                .eq('auth_id', session.user.id)
-                                .maybeSingle();
+                        if (!user || user.auth_provider === 'google' || hasOAuthParam) {
+                            let perfil = null;
+                            try {
+                                const { data } = await sb
+                                    .from(APP_CONFIG.TABLES.USUARIOS)
+                                    .select('*')
+                                    .eq('auth_id', session.user.id)
+                                    .maybeSingle();
+                                perfil = data;
+                            } catch (_) {}
+
+                            const meta = session.user.user_metadata || {};
+                            const nombre = perfil ? perfil.nombre_completo : (meta.full_name || meta.name || session.user.email.split('@')[0]);
+                            const avatar = perfil ? perfil.avatar_url : (meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`);
 
                             user = {
                                 id: session.user.id,
-                                name: perfil ? perfil.nombre_completo : (session.user.user_metadata?.nombre_completo || session.user.email.split('@')[0]),
+                                name: nombre,
                                 email: session.user.email,
-                                telefono: perfil ? perfil.telefono : (session.user.user_metadata?.telefono || ''),
-                                role: perfil ? perfil.rol : (session.user.user_metadata?.rol || 'cliente'),
+                                telefono: perfil ? perfil.telefono : (meta.telefono || ''),
+                                role: perfil ? perfil.rol : (meta.rol || 'cliente'),
                                 title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
-                                avatar: perfil ? perfil.avatar_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`
+                                plan: perfil?.plan || 'free',
+                                avatar: avatar,
+                                auth_provider: 'google'
                             };
-                            this._saveSession(user, session.user.email, this.shouldRemember());
+                            this._saveSession(user, session.user.email, true);
                         }
                         return true;
                     }
                 }
             } catch (err) {
-                console.warn('Aviso: Verificación de sesión Supabase fallback a local:', err);
+                console.warn('Aviso: Verificacion de sesion Supabase fallback a local:', err);
             }
         }
 
-        // En modo mock o como respaldo rápido
+        // En modo mock o como respaldo rapido
         return this.getCurrentUser() !== null;
     },
 
     /**
-     * Verifica si se marcó previamente "Recordar dispositivo".
+     * Verifica si se marco previamente "Recordar dispositivo".
      * @returns {boolean}
      */
     shouldRemember() {

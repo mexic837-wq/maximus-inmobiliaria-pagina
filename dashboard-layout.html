@@ -6942,13 +6942,28 @@
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             let user = null;
+            const hasOAuthParam = (window.location.hash && (window.location.hash.includes('access_token') || window.location.hash.includes('error='))) || 
+                                   (window.location.search && window.location.search.includes('code='));
+            if (hasOAuthParam) {
+                localStorage.removeItem('maximus_logged_out');
+            }
+
             if (window.AuthService) {
-                const isAuth = await window.AuthService.checkSession();
+                let isAuth = await window.AuthService.checkSession();
+                // Si venia de retorno OAuth de Google, dar un margen de espera a la resolución del token
+                if (!isAuth && hasOAuthParam) {
+                    await new Promise(r => setTimeout(r, 600));
+                    isAuth = await window.AuthService.checkSession();
+                }
+
                 if (!isAuth) {
                     window.location.replace('/login');
                     return;
                 }
                 user = window.AuthService.getCurrentUser();
+                if (window.location.hash && window.location.hash.includes('access_token')) {
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
             } else {
                 const userData = localStorage.getItem('maximus_user') || sessionStorage.getItem('maximus_user');
                 if (!userData) {
