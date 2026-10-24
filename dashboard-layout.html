@@ -1886,55 +1886,123 @@
                     </div>
                 </div>
 
-                <!-- FAQ Acordeón Animado y Fluido -->
+                <!-- FAQ Acordeón con Animaciones Motion Fluidas (Framer Motion Style) -->
+                <style>
+                @keyframes faqCardIn {
+                    0% {
+                        opacity: 0;
+                        transform: translateY(20px) scale(0.97);
+                    }
+                    100% {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                }
+                .faq-motion-card {
+                    animation: faqCardIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+                    position: relative;
+                    will-change: transform, box-shadow, border-color;
+                }
+                .faq-motion-card:nth-child(1) { animation-delay: 0.08s; }
+                .faq-motion-card:nth-child(2) { animation-delay: 0.16s; }
+                .faq-motion-card:nth-child(3) { animation-delay: 0.24s; }
+
+                .faq-motion-card.active {
+                    border-color: rgba(16, 185, 129, 0.6) !important;
+                    box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.12), 0 4px 10px -3px rgba(0, 0, 0, 0.04) !important;
+                }
+                .faq-motion-card.active .faq-indicator {
+                    opacity: 1;
+                    transform: scaleY(1);
+                }
+                .faq-motion-card.active .faq-chevron-pill {
+                    transform: rotate(180deg) scale(1.05);
+                    background-color: #10B981 !important;
+                    color: #FFFFFF !important;
+                    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+                }
+                .faq-motion-card.active .faq-motion-inner {
+                    opacity: 1 !important;
+                    transform: translateY(0) !important;
+                }
+                </style>
+
                 <div class="max-w-2xl mx-auto mt-10 sm:mt-12">
                     <div class="text-center mb-5">
-                        <h3 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Preguntas frecuentes</h3>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold tracking-wide uppercase mb-1 shadow-2xs">
+                            <i class="ph-fill ph-question text-emerald-500"></i>
+                            <span>Resolución de Dudas</span>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white tracking-tight">Preguntas frecuentes</h3>
                         <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Todo lo que necesitas saber antes de comenzar</p>
                     </div>
 
-                    <div class="space-y-2.5" id="faq-accordion-container">
+                    <div class="space-y-3" id="faq-accordion-container">
                         <!-- FAQ 1 -->
-                        <div class="faq-accordion-card rounded-xl border border-gray-200/90 dark:border-emerald-950/60 bg-white dark:bg-[#0B221C] overflow-hidden transition-all duration-200 hover:border-emerald-500/40">
-                            <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-semibold text-gray-800 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                                <span>¿Cómo puedo pagar desde Venezuela?</span>
-                                <span class="faq-chevron w-6 h-6 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-transform duration-300 shrink-0 ml-3">
+                        <div class="faq-accordion-card faq-motion-card rounded-2xl border border-gray-200/90 dark:border-emerald-950/70 bg-white/90 dark:bg-[#0B221C]/90 backdrop-blur-md overflow-hidden transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-500/40 group">
+                            <!-- Indicador de acento lateral motion -->
+                            <div class="faq-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 via-teal-400 to-emerald-600 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                            <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                <span class="flex items-center gap-2.5">
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60 dark:border-emerald-800/50">
+                                        <i class="ph-bold ph-currency-circle-dollar"></i>
+                                    </span>
+                                    <span>¿Cómo puedo pagar desde Venezuela?</span>
+                                </span>
+                                <span class="faq-chevron-pill w-7 h-7 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
                                     <i class="ph-bold ph-caret-down"></i>
                                 </span>
                             </button>
-                            <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
-                                <div class="px-4 sm:px-5 pb-3.5 pt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-emerald-950/40">
-                                    Aceptamos Pago Móvil en bolívares calculados a la tasa oficial del Banco Central de Venezuela (BCV) del día exacto, Zelle, USDT vía Binance Pay (BEP20/TRC20) y tarjetas internacionales Visa/Mastercard.
+                            <div class="faq-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                                <div class="faq-motion-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-emerald-950/60 opacity-0 -translate-y-2 transition-all duration-300">
+                                    Aceptamos <strong>Pago Móvil en bolívares</strong> calculados a la tasa oficial del <strong>Banco Central de Venezuela (BCV)</strong> del día exacto, <strong>Zelle</strong> directo sin intermediarios, <strong>Binance Pay (USDT)</strong> sin comisiones de red y tarjetas internacionales Visa/Mastercard.
                                 </div>
                             </div>
                         </div>
 
                         <!-- FAQ 2 -->
-                        <div class="faq-accordion-card rounded-xl border border-gray-200/90 dark:border-emerald-950/60 bg-white dark:bg-[#0B221C] overflow-hidden transition-all duration-200 hover:border-emerald-500/40">
-                            <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-semibold text-gray-800 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                                <span>¿Mis clientes me contactan directamente?</span>
-                                <span class="faq-chevron w-6 h-6 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-transform duration-300 shrink-0 ml-3">
+                        <div class="faq-accordion-card faq-motion-card rounded-2xl border border-gray-200/90 dark:border-emerald-950/70 bg-white/90 dark:bg-[#0B221C]/90 backdrop-blur-md overflow-hidden transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-500/40 group">
+                            <!-- Indicador de acento lateral motion -->
+                            <div class="faq-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 via-teal-400 to-emerald-600 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                            <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                <span class="flex items-center gap-2.5">
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60 dark:border-emerald-800/50">
+                                        <i class="ph-bold ph-whatsapp-logo"></i>
+                                    </span>
+                                    <span>¿Mis clientes me contactan directamente?</span>
+                                </span>
+                                <span class="faq-chevron-pill w-7 h-7 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
                                     <i class="ph-bold ph-caret-down"></i>
                                 </span>
                             </button>
-                            <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
-                                <div class="px-4 sm:px-5 pb-3.5 pt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-emerald-950/40">
-                                    Sí. Cada propiedad que publiques mostrará tu nombre, foto de perfil y un botón de WhatsApp directo a tu número personal, sin intermediación de terceros.
+                            <div class="faq-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                                <div class="faq-motion-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-emerald-950/60 opacity-0 -translate-y-2 transition-all duration-300">
+                                    <strong>Sí, 100% garantizado.</strong> Cada inmueble que publiques en el catálogo muestra tu nombre, tu fotografía de perfil y un botón de WhatsApp directo a tu número de teléfono personal. MAXIMUS no interviene en tus conversaciones comerciales.
                                 </div>
                             </div>
                         </div>
 
                         <!-- FAQ 3 -->
-                        <div class="faq-accordion-card rounded-xl border border-gray-200/90 dark:border-emerald-950/60 bg-white dark:bg-[#0B221C] overflow-hidden transition-all duration-200 hover:border-emerald-500/40">
-                            <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-semibold text-gray-800 dark:text-gray-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
-                                <span>¿Puedo cancelar en cualquier momento?</span>
-                                <span class="faq-chevron w-6 h-6 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-transform duration-300 shrink-0 ml-3">
+                        <div class="faq-accordion-card faq-motion-card rounded-2xl border border-gray-200/90 dark:border-emerald-950/70 bg-white/90 dark:bg-[#0B221C]/90 backdrop-blur-md overflow-hidden transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-500/40 group">
+                            <!-- Indicador de acento lateral motion -->
+                            <div class="faq-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 via-teal-400 to-emerald-600 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                            <button type="button" onclick="toggleFaqAccordion(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 dark:text-gray-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                <span class="flex items-center gap-2.5">
+                                    <span class="w-6 h-6 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60 dark:border-emerald-800/50">
+                                        <i class="ph-bold ph-shield-check"></i>
+                                    </span>
+                                    <span>¿Puedo cancelar en cualquier momento?</span>
+                                </span>
+                                <span class="faq-chevron-pill w-7 h-7 rounded-full bg-gray-100 dark:bg-emerald-900/40 flex items-center justify-center text-gray-500 dark:text-gray-300 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
                                     <i class="ph-bold ph-caret-down"></i>
                                 </span>
                             </button>
-                            <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
-                                <div class="px-4 sm:px-5 pb-3.5 pt-0.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-emerald-950/40">
-                                    Sí, puedes cancelar tu suscripción cuando quieras. Tu cuenta seguirá activa hasta el final del periodo pagado y luego volverá automáticamente al plan gratuito sin penalizaciones.
+                            <div class="faq-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                                <div class="faq-motion-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-emerald-950/60 opacity-0 -translate-y-2 transition-all duration-300">
+                                    <strong>Por supuesto, no hay cláusulas de permanencia.</strong> Puedes cancelar tu membresía con un solo clic. Tu cuenta permanecerá con privilegios Pro hasta el último día del ciclo facturado y luego regresará automáticamente al plan gratuito sin cargos adicionales.
                                 </div>
                             </div>
                         </div>
@@ -1989,43 +2057,37 @@
                     }
                 };
 
-                // Acordeón fluido con animaciones para FAQs
+                // Acordeón fluido con animaciones Motion para FAQs
                 window.toggleFaqAccordion = function(btn) {
                     const card = btn.closest('.faq-accordion-card');
                     if (!card) return;
                     const body = card.querySelector('.faq-body');
-                    const chevron = card.querySelector('.faq-chevron');
+                    const chevron = card.querySelector('.faq-chevron, .faq-chevron-pill');
                     const isOpen = card.classList.contains('active');
 
-                    // Cerrar los demás para mantener una vista limpia
+                    // Cerrar los demás suavemente para mantener el orden
                     document.querySelectorAll('.faq-accordion-card.active').forEach(other => {
                         if (other !== card) {
-                            other.classList.remove('active', 'border-emerald-500/40', 'dark:border-emerald-500/50');
+                            other.classList.remove('active');
                             const otherBody = other.querySelector('.faq-body');
-                            const otherChevron = other.querySelector('.faq-chevron');
+                            const otherChevron = other.querySelector('.faq-chevron, .faq-chevron-pill');
                             if (otherBody) {
                                 otherBody.style.maxHeight = '0px';
-                                otherBody.classList.remove('opacity-100');
-                                otherBody.classList.add('opacity-0');
                             }
                             if (otherChevron) otherChevron.classList.remove('rotate-180');
                         }
                     });
 
                     if (isOpen) {
-                        card.classList.remove('active', 'border-emerald-500/40', 'dark:border-emerald-500/50');
+                        card.classList.remove('active');
                         if (body) {
                             body.style.maxHeight = '0px';
-                            body.classList.remove('opacity-100');
-                            body.classList.add('opacity-0');
                         }
                         if (chevron) chevron.classList.remove('rotate-180');
                     } else {
-                        card.classList.add('active', 'border-emerald-500/40', 'dark:border-emerald-500/50');
+                        card.classList.add('active');
                         if (body) {
                             body.style.maxHeight = body.scrollHeight + 'px';
-                            body.classList.remove('opacity-0');
-                            body.classList.add('opacity-100');
                         }
                         if (chevron) chevron.classList.add('rotate-180');
                     }
