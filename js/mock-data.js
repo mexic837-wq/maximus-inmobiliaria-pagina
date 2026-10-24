@@ -1068,6 +1068,12 @@ const MOCK_DATA = {
         }
     ],
 
+    faqs_web_config: {
+        etiqueta: 'DUDAS FRECUENTES',
+        titulo: 'Preguntas Frecuentes',
+        subtitulo: 'Respuestas claras antes de activar tu membresía',
+    },
+
     // ===== CONFIGURACIÓN Y MIEMBROS DE "NUESTRO EQUIPO" (LANDING PAGE) =====
     equipo_web_config: {
         etiqueta: 'NUESTRO EQUIPO',

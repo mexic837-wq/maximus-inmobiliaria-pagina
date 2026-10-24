@@ -16099,7 +16099,9 @@
             try {
                 if (window.FaqWebService) {
                     // 1. Cargar textos de cabecera
-                    const cfg = FaqWebService.getConfig();
+                    const cfg = (typeof FaqWebService.getConfig === 'function') 
+                        ? FaqWebService.getConfig() 
+                        : { etiqueta: 'DUDAS FRECUENTES', titulo: 'Preguntas Frecuentes', subtitulo: 'Respuestas claras antes de activar tu membresía' };
                     const inputEtiqueta = document.getElementById('config-faqs-etiqueta');
                     const inputTitulo = document.getElementById('config-faqs-titulo');
                     const inputSubtitulo = document.getElementById('config-faqs-subtitulo');
@@ -16125,7 +16127,7 @@
             const titulo = (document.getElementById('config-faqs-titulo')?.value || '').trim();
             const subtitulo = (document.getElementById('config-faqs-subtitulo')?.value || '').trim();
 
-            if (window.FaqWebService) {
+            if (window.FaqWebService && typeof FaqWebService.saveConfig === 'function') {
                 FaqWebService.saveConfig({ etiqueta, titulo, subtitulo });
                 if (typeof mostrarToastNotificacion === 'function') {
                     mostrarToastNotificacion('✨ Textos de FAQs en la Landing actualizados');

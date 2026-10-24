@@ -3300,6 +3300,55 @@ const ResenasService = {
 const FaqWebService = {
     _storageKey: 'maximus_faqs_web',
     _deletedKey: 'maximus_faqs_web_deleted_ids',
+    _configKey: 'maximus_faqs_web_config',
+
+    /**
+     * Obtener textos de cabecera de la sección FAQs.
+     */
+    getConfig() {
+        try {
+            const stored = localStorage.getItem(this._configKey);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed && (parsed.titulo || parsed.etiqueta)) return parsed;
+            }
+        } catch(e) {}
+        return (typeof MOCK_DATA !== 'undefined' && MOCK_DATA.faqs_web_config) ? MOCK_DATA.faqs_web_config : {
+            etiqueta: 'DUDAS FRECUENTES',
+            titulo: 'Preguntas Frecuentes',
+            subtitulo: 'Respuestas claras antes de activar tu membresía'
+        };
+    },
+
+    /**
+     * Guardar textos de cabecera de la sección FAQs.
+     */
+    saveConfig(configData) {
+        const current = this.getConfig();
+        const updated = { ...current, ...configData };
+        try {
+            localStorage.setItem(this._configKey, JSON.stringify(updated));
+        } catch(e) {}
+        if (typeof MOCK_DATA !== 'undefined') {
+            MOCK_DATA.faqs_web_config = updated;
+        }
+
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    sb.from('secciones_web').upsert({
+                        clave: 'faqs_web',
+                        etiqueta: updated.etiqueta,
+                        titulo: updated.titulo,
+                        subtitulo: updated.subtitulo,
+                        updated_at: new Date().toISOString()
+                    }).then(() => {}).catch(() => {});
+                }
+            } catch(e) {}
+        }
+        return updated;
+    },
 
     _getDeletedIds() {
         try {

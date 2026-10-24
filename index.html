@@ -1928,7 +1928,7 @@
                 if (!window.FaqWebService) return;
 
                 // 1. Cargar textos de cabecera
-                const cfg = FaqWebService.getConfig();
+                const cfg = (typeof FaqWebService.getConfig === 'function') ? FaqWebService.getConfig() : null;
                 if (cfg) {
                     const tagEl = document.getElementById('landing-faq-tag');
                     const tituloEl = document.getElementById('landing-faq-titulo');
