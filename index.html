@@ -880,40 +880,146 @@
                 </div>
             </div>
 
-            <!-- Preguntas frecuentes minimalistas -->
-            <div class="planes-faq max-w-2xl mx-auto mt-14 pt-8 border-t border-gray-100">
-                <h4 class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Preguntas Frecuentes</h4>
-                <div class="space-y-2.5">
-                    <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
-                        <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
-                            ¿Cómo funciona el pago en Bolívares desde Venezuela?
-                            <i class="fas fa-chevron-down text-[10px] text-gray-400 group-open:rotate-180 transition-transform"></i>
-                        </summary>
-                        <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
-                            Puedes pagar en Bolívares mediante Pago Móvil a la tasa oficial del Banco Central de Venezuela (BCV) del día, o en dólares vía Zelle, Binance Pay (USDT) y tarjetas internacionales.
-                        </p>
-                    </details>
-                    <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
-                        <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
-                            ¿Mis clientes me contactan directamente a mí?
-                            <i class="fas fa-chevron-down text-[10px] text-gray-400 group-open:rotate-180 transition-transform"></i>
-                        </summary>
-                        <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
-                            Totalmente. En cada propiedad que publiques se muestra tu ficha de asesor y un botón de WhatsApp que abre una conversación directa a tu número de teléfono personal.
-                        </p>
-                    </details>
-                    <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
-                        <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
-                            ¿Puedo cancelar o cambiar de plan cuando quiera?
-                            <i class="fas fa-chevron-down text-[10px] text-gray-400 group-open:rotate-180 transition-transform"></i>
-                        </summary>
-                        <p class="text-xs text-gray-500 mt-2.5 leading-relaxed">
-                            Sí, no hay contratos forzosos ni penalizaciones. Tu cuenta mantiene las funciones activas hasta el fin de tu ciclo facturado.
-                        </p>
-                    </details>
+            <!-- Preguntas frecuentes con Animación Smooth Motion -->
+            <style>
+            .faq-landing-card {
+                position: relative;
+                transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .faq-landing-card.active {
+                border-color: rgba(16, 185, 129, 0.5) !important;
+                box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
+            }
+            .faq-landing-card.active .faq-landing-indicator {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+            .faq-landing-card.active .faq-landing-chevron {
+                transform: rotate(180deg) scale(1.05);
+                background-color: #10B981 !important;
+                color: #FFFFFF !important;
+                box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+            }
+            .faq-landing-card.active .faq-landing-inner {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+            </style>
+
+            <div class="planes-faq max-w-2xl mx-auto mt-10 pt-6 border-t border-gray-100">
+                <div class="text-center mb-5">
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-maximus-accent text-[10px] font-black uppercase tracking-wider border border-emerald-200/60 mb-1">
+                        <i class="fas fa-question-circle text-xs text-emerald-600"></i>
+                        <span>Dudas Frecuentes</span>
+                    </div>
+                    <h4 class="text-base sm:text-lg font-black text-gray-900 tracking-tight">Preguntas Frecuentes</h4>
+                    <p class="text-[11px] text-gray-400 mt-0.5">Respuestas claras antes de activar tu membresía</p>
+                </div>
+
+                <div class="space-y-2.5" id="landing-faq-accordion">
+                    <!-- Item 1 -->
+                    <div class="faq-landing-card rounded-2xl border border-gray-200/90 bg-white overflow-hidden shadow-2xs hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-400/50 transition-all duration-300 group">
+                        <!-- Indicador de acento lateral motion -->
+                        <div class="faq-landing-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                        <button type="button" onclick="toggleLandingFaq(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                            <span class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60">
+                                    <i class="fas fa-coins text-[11px]"></i>
+                                </span>
+                                <span>¿Cómo funciona el pago en Bolívares desde Venezuela?</span>
+                            </span>
+                            <span class="faq-landing-chevron w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
+                                <i class="fas fa-chevron-down text-[10px]"></i>
+                            </span>
+                        </button>
+                        <div class="faq-landing-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                            <div class="faq-landing-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 leading-relaxed border-t border-gray-100 opacity-0 -translate-y-2 transition-all duration-300">
+                                Puedes pagar en Bolívares mediante <strong>Pago Móvil</strong> calculado a la tasa oficial del <strong>Banco Central de Venezuela (BCV)</strong> del día exacto, o en dólares vía <strong>Zelle</strong>, <strong>Binance Pay (USDT)</strong> y tarjetas internacionales Visa/Mastercard.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="faq-landing-card rounded-2xl border border-gray-200/90 bg-white overflow-hidden shadow-2xs hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-400/50 transition-all duration-300 group">
+                        <!-- Indicador de acento lateral motion -->
+                        <div class="faq-landing-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                        <button type="button" onclick="toggleLandingFaq(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                            <span class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60">
+                                    <i class="fab fa-whatsapp text-xs"></i>
+                                </span>
+                                <span>¿Mis clientes me contactan directamente a mí?</span>
+                            </span>
+                            <span class="faq-landing-chevron w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
+                                <i class="fas fa-chevron-down text-[10px]"></i>
+                            </span>
+                        </button>
+                        <div class="faq-landing-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                            <div class="faq-landing-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 leading-relaxed border-t border-gray-100 opacity-0 -translate-y-2 transition-all duration-300">
+                                <strong>Totalmente y sin intermediación.</strong> En cada propiedad que publiques se muestra tu ficha con tu fotografía, nombre y un botón de WhatsApp que abre una conversación directa a tu número de teléfono personal.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="faq-landing-card rounded-2xl border border-gray-200/90 bg-white overflow-hidden shadow-2xs hover:-translate-y-0.5 hover:shadow-md hover:border-emerald-400/50 transition-all duration-300 group">
+                        <!-- Indicador de acento lateral motion -->
+                        <div class="faq-landing-indicator absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-emerald-400 to-teal-500 rounded-l-2xl opacity-0 scale-y-0 transition-all duration-300 origin-center pointer-events-none"></div>
+
+                        <button type="button" onclick="toggleLandingFaq(this)" class="w-full flex items-center justify-between px-4 sm:px-5 py-3.5 cursor-pointer text-left text-xs sm:text-[13px] font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                            <span class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs shrink-0 border border-emerald-200/60">
+                                    <i class="fas fa-shield-alt text-xs"></i>
+                                </span>
+                                <span>¿Puedo cancelar o cambiar de plan cuando quiera?</span>
+                            </span>
+                            <span class="faq-landing-chevron w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs transition-all duration-300 shrink-0 ml-3 group-hover:scale-105">
+                                <i class="fas fa-chevron-down text-[10px]"></i>
+                            </span>
+                        </button>
+                        <div class="faq-landing-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                            <div class="faq-landing-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 leading-relaxed border-t border-gray-100 opacity-0 -translate-y-2 transition-all duration-300">
+                                <strong>Sí, sin ataduras ni contratos forzosos.</strong> Puedes cancelar tu suscripción con un solo clic desde tu panel y disfrutar de todas las funciones hasta el vencimiento del periodo pagado, sin cargos adicionales.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <script>
+            // Acordeón fluido con animación smooth para la landing page
+            window.toggleLandingFaq = function(btn) {
+                const card = btn.closest('.faq-landing-card');
+                if (!card) return;
+                const body = card.querySelector('.faq-landing-body');
+                const chevron = card.querySelector('.faq-landing-chevron');
+                const isOpen = card.classList.contains('active');
+
+                // Cerrar las otras preguntas abiertas suavemente
+                document.querySelectorAll('.faq-landing-card.active').forEach(other => {
+                    if (other !== card) {
+                        other.classList.remove('active');
+                        const otherBody = other.querySelector('.faq-landing-body');
+                        const otherChevron = other.querySelector('.faq-landing-chevron');
+                        if (otherBody) otherBody.style.maxHeight = '0px';
+                        if (otherChevron) otherChevron.classList.remove('rotate-180');
+                    }
+                });
+
+                if (isOpen) {
+                    card.classList.remove('active');
+                    if (body) body.style.maxHeight = '0px';
+                    if (chevron) chevron.classList.remove('rotate-180');
+                } else {
+                    card.classList.add('active');
+                    if (body) body.style.maxHeight = body.scrollHeight + 'px';
+                    if (chevron) chevron.classList.add('rotate-180');
+                }
+            };
+            </script>
+</div>
     </section>
 
     <!-- Equipo de Agentes -->
