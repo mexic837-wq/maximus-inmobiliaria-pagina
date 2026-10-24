@@ -487,7 +487,14 @@ if (typeof window !== 'undefined') {
 
     window.loginConGoogleDesdeModal = async function() {
         if (typeof AuthService !== 'undefined' && typeof AuthService.loginWithGoogle === 'function') {
-            await AuthService.loginWithGoogle();
+            const res = await AuthService.loginWithGoogle();
+            if (res && !res.success && res.providerNotConfigured) {
+                // Fallback de demostración en modal si Google Cloud aún no está activo en Supabase
+                usuarioDatos.nombre = 'Usuario Google';
+                usuarioDatos.email = 'usuario.google@gmail.com';
+                usuarioDatos.telefono = '+58 414 1234567';
+                irAlPasoModal(2);
+            }
         } else {
             usuarioDatos.nombre = 'Usuario Google';
             usuarioDatos.email = 'usuario.google@gmail.com';

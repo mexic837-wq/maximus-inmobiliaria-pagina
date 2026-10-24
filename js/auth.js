@@ -95,6 +95,22 @@ const AuthService = {
                         }
                     });
                     if (!error && data?.url) {
+                        try {
+                            const probe = await fetch(data.url, { method: 'GET' });
+                            if (!probe.ok) {
+                                const errData = await probe.json().catch(() => ({}));
+                                if (errData?.error_code === 'validation_failed' || (errData?.msg && errData.msg.includes('not enabled'))) {
+                                    return {
+                                        success: false,
+                                        providerNotConfigured: true,
+                                        error: 'Para activar "Continuar con Google", es necesario habilitar el proveedor Google en el panel de Supabase con las credenciales de Google Cloud Console. Mientras tanto, puedes ingresar con correo y contraseña o perfiles demo.'
+                                    };
+                                }
+                            }
+                        } catch (probeErr) {
+                            // Si el probe falla por CORS o red, continuar con la navegación
+                        }
+
                         window.location.href = data.url;
                         return { success: true, redirecting: true };
                     }

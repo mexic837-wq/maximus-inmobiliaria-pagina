@@ -1099,20 +1099,31 @@
             showAlert('Servicio no disponible temporalmente.');
         });
     
-        async function handleGoogleSignIn() {
+        async function handleGoogleSignIn(event) {
+            const btn = event?.currentTarget || document.activeElement;
+            const originalContent = btn ? btn.innerHTML : '';
+            if (btn && btn.tagName === 'BUTTON') {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-sm text-gray-600"></i> <span class="ml-2 text-xs">Conectando con Google...</span>';
+            }
+
             if (window.AuthService && typeof window.AuthService.loginWithGoogle === 'function') {
-                const btn = event?.currentTarget;
-                if (btn) {
-                    btn.disabled = true;
-                    btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-sm text-gray-600"></i> <span class="ml-2">Conectando con Google...</span>';
-                }
                 const res = await window.AuthService.loginWithGoogle('/dashboard');
                 if (res && res.success && !res.redirecting) {
                     window.location.href = '/dashboard';
+                } else if (res && !res.success) {
+                    if (btn && btn.tagName === 'BUTTON') {
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                    }
+                    showAlert(res.error || 'No se pudo iniciar sesión con Google.', 'error');
                 }
             } else {
-                alert('Iniciando sesión con Google...');
-                window.location.href = '/dashboard';
+                if (btn && btn.tagName === 'BUTTON') {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                }
+                showAlert('Servicio de autenticación no disponible temporalmente.', 'error');
             }
         }
 
