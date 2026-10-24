@@ -1195,11 +1195,11 @@
                 <p class="sidebar-category text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Cuenta & Seguridad</p>
                 <div class="sidebar-collapsed-divider"></div>
 
-                <!-- Planes & Precios (Canva Style) -->
-                <a href="#" data-target="view-planes" class="nav-link text-gray-500 hover:bg-amber-50 hover:text-amber-700 dark:hover:bg-amber-950/30 dark:hover:text-amber-300 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Planes & Precios">
-                    <i class="ph-fill ph-crown text-xl text-amber-500 flex-shrink-0"></i>
-                    <span class="sidebar-label">Planes & Precios</span>
-                    <span class="sidebar-tooltip">Planes & Precios</span>
+                <!-- Planes & Precios -->
+                <a href="#" data-target="view-planes" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Planes">
+                    <i class="ph ph-tag text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Planes</span>
+                    <span class="sidebar-tooltip">Planes</span>
                 </a>
 
                 <a href="#" id="nav-mi-perfil" data-target="view-perfil" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Mi Perfil & Seguridad">
@@ -1285,9 +1285,9 @@
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
                         <span>Mi Perfil</span>
                     </a>
-                    <a href="#" data-target="view-planes" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-amber-600 hover:text-amber-800 hover:bg-amber-50 dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-amber-950/40 cursor-pointer" title="Ver Planes & Precios (Canva Style)">
-                        <i class="ph-fill ph-crown text-base text-amber-500"></i>
-                        <span>Planes Pro</span>
+                    <a href="#" data-target="view-planes" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]" title="Planes">
+                        <i class="ph ph-tag text-base"></i>
+                        <span>Planes</span>
                     </a>
                     <a href="javascript:void(0)" onclick="abrirModalDejarResena()" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822] cursor-pointer" title="Subir reseña a la página principal">
                         <i class="ph ph-star text-base text-amber-500"></i>
@@ -1713,176 +1713,164 @@
             </section>
 
             <!-- ==========================================
-                 VISTA DEDICADA: PLANES & PRECIOS (CANVA PRO STYLE)
+                 VISTA: PLANES & PRECIOS (MINIMALISTA)
                  ========================================== -->
-            <section id="view-planes" class="view-section max-w-5xl mx-auto space-y-8 pb-24 sm:pb-16">
-                <!-- Hero Header -->
-                <div class="text-center max-w-2xl mx-auto pt-2 sm:pt-4">
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 text-xs font-black uppercase tracking-wider mb-3 shadow-xs">
-                        <i class="ph-fill ph-crown text-amber-500"></i> Membresías & Herramientas MAXIMUS
-                    </div>
-                    <h1 class="text-2xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
-                        Elige el plan ideal para tu objetivo
+            <section id="view-planes" class="view-section max-w-5xl mx-auto pb-24 sm:pb-16">
+
+                <!-- Header minimalista -->
+                <div class="text-center max-w-xl mx-auto pt-6 sm:pt-10 mb-10 sm:mb-14">
+                    <h1 class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                        Planes y precios
                     </h1>
-                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
-                        Desde explorar el catálogo de propiedades hasta comercializar tu propio inventario con CRM profesional y cotizador de comisiones.
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
+                        Explora propiedades gratis o activa herramientas profesionales para gestionar tu inventario.
+                    </p>
+
+                    <!-- Toggle Mensual / Anual -->
+                    <div class="inline-flex items-center gap-1 mt-6 p-1 rounded-full bg-gray-100 dark:bg-[#0E251F] border border-gray-200/80 dark:border-emerald-900/40">
+                        <button id="toggleMensual" onclick="togglePlanPeriodo('mensual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all bg-white dark:bg-emerald-900/60 text-gray-900 dark:text-white shadow-sm">
+                            Mensual
+                        </button>
+                        <button id="toggleAnual" onclick="togglePlanPeriodo('anual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                            Anual <span class="text-maximus-accent font-black ml-1">−26%</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 items-start max-w-3xl mx-auto">
+
+                    <!-- Plan Gratuito -->
+                    <div class="rounded-2xl p-6 sm:p-7 bg-white dark:bg-[#0B221C] border border-gray-200 dark:border-emerald-950/50 flex flex-col">
+                        <div class="mb-5">
+                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Gratuito</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-3xl font-black text-gray-900 dark:text-white">$0</span>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Para explorar el catálogo de propiedades en Táchira.</p>
+                        </div>
+
+                        <hr class="border-gray-100 dark:border-emerald-950/40 mb-5">
+
+                        <ul class="space-y-3 text-[13px] text-gray-600 dark:text-gray-300 flex-1">
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-maximus-accent text-sm mt-0.5 shrink-0"></i>
+                                <span>Catálogo completo de propiedades</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-maximus-accent text-sm mt-0.5 shrink-0"></i>
+                                <span>Guardar favoritos sin límite</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-maximus-accent text-sm mt-0.5 shrink-0"></i>
+                                <span>Agendar visitas guiadas</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-maximus-accent text-sm mt-0.5 shrink-0"></i>
+                                <span>Publicar testimonios</span>
+                            </li>
+                        </ul>
+
+                        <div class="mt-6">
+                            <div class="w-full py-3 rounded-xl bg-gray-100 dark:bg-[#132B22] text-gray-500 dark:text-gray-400 text-center text-xs font-bold">
+                                Tu plan actual
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plan Asesor Pro -->
+                    <div class="rounded-2xl p-6 sm:p-7 bg-maximus-dark dark:bg-[#071F1A] border border-emerald-800/40 dark:border-emerald-700/30 text-white flex flex-col relative">
+                        <!-- Badge "Popular" -->
+                        <div class="absolute -top-3 left-6">
+                            <span class="px-3 py-1 rounded-full bg-maximus-accent text-white text-[10px] font-black uppercase tracking-wider shadow-sm">
+                                Más popular
+                            </span>
+                        </div>
+
+                        <div class="mb-5 pt-1">
+                            <p class="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-2">Asesor Pro</p>
+                            <div class="flex items-baseline gap-1">
+                                <span id="precioProDisplay" class="text-3xl font-black text-white">$19</span>
+                                <span id="periodoProDisplay" class="text-xs font-medium text-gray-300">/mes</span>
+                            </div>
+                            <p class="text-xs text-gray-300/80 mt-2">Todo lo que necesitas para comercializar propiedades de forma profesional.</p>
+                        </div>
+
+                        <hr class="border-white/10 mb-5">
+
+                        <ul class="space-y-3 text-[13px] text-gray-200 flex-1">
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <span>Todo lo del plan gratuito</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <span>Carga ilimitada de inmuebles al catálogo</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <span>CRM de gestión comercial de clientes</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <span>Cotizador express de comisiones</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <span>WhatsApp directo en cada propiedad</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <i class="ph-bold ph-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <span>Red de alianzas y comisiones compartidas</span>
+                            </li>
+                        </ul>
+
+                        <div class="mt-6">
+                            <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="w-full py-3 rounded-xl bg-maximus-accent hover:bg-emerald-400 text-maximus-dark font-bold text-sm shadow-sm hover:shadow-md active:scale-[0.98] transition-all cursor-pointer">
+                                Comenzar ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Métodos de pago (sutil) -->
+                <div class="text-center mt-8">
+                    <p class="text-[11px] text-gray-400 dark:text-gray-500">
+                        Pago Móvil (BCV) · Zelle · Binance USDT · Tarjetas internacionales
                     </p>
                 </div>
 
-                <!-- Comparativa Canva-Style: 2 Cards (Gratuito vs MAXIMUS Pro) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-                    
-                    <!-- Card 1: Cuenta Estándar (Plan Gratuito) -->
-                    <div class="rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-950/60 shadow-sm flex flex-col justify-between">
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-wider">
-                                    Cuenta Gratuita
-                                </span>
-                                <span class="text-xs font-bold text-gray-400">Para Compradores</span>
+                <!-- FAQ minimalista -->
+                <div class="max-w-2xl mx-auto mt-12 sm:mt-16">
+                    <h3 class="text-base font-bold text-gray-900 dark:text-white text-center mb-6">Preguntas frecuentes</h3>
+                    <div class="space-y-3">
+                        <details class="group rounded-xl border border-gray-200 dark:border-emerald-950/40 bg-white dark:bg-[#0B221C] overflow-hidden">
+                            <summary class="flex items-center justify-between px-5 py-4 cursor-pointer text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#0E291F] transition-colors">
+                                ¿Cómo puedo pagar desde Venezuela?
+                                <i class="ph ph-caret-down text-sm text-gray-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="px-5 pb-4 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Aceptamos Pago Móvil en bolívares a tasa oficial BCV, Zelle, USDT vía Binance Pay (BEP20/TRC20) y tarjetas internacionales Visa/Mastercard.
                             </div>
-                            <div>
-                                <div class="flex items-baseline gap-1">
-                                    <span class="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white">$0</span>
-                                    <span class="text-xs font-bold text-gray-400">/ de por vida</span>
-                                </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ideal para personas buscando comprar, alquilar o valorar una propiedad en Táchira.</p>
+                        </details>
+                        <details class="group rounded-xl border border-gray-200 dark:border-emerald-950/40 bg-white dark:bg-[#0B221C] overflow-hidden">
+                            <summary class="flex items-center justify-between px-5 py-4 cursor-pointer text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#0E291F] transition-colors">
+                                ¿Mis clientes me contactan directamente?
+                                <i class="ph ph-caret-down text-sm text-gray-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="px-5 pb-4 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Sí. Cada propiedad publicada muestra tu nombre y un botón de WhatsApp directo a tu número personal, sin intermediación.
                             </div>
-
-                            <hr class="border-gray-100 dark:border-emerald-950/60 my-4">
-
-                            <!-- Beneficios incluidos -->
-                            <div class="space-y-3 text-xs">
-                                <p class="font-bold text-gray-900 dark:text-white uppercase text-[11px] tracking-wider">Lo que incluye:</p>
-                                <div class="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
-                                    <i class="ph-bold ph-check text-emerald-600 text-sm shrink-0"></i>
-                                    <span>Acceso al catálogo completo de propiedades</span>
-                                </div>
-                                <div class="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
-                                    <i class="ph-bold ph-check text-emerald-600 text-sm shrink-0"></i>
-                                    <span>Guardar propiedades favoritas sin límite</span>
-                                </div>
-                                <div class="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
-                                    <i class="ph-bold ph-check text-emerald-600 text-sm shrink-0"></i>
-                                    <span>Agendamiento directo de visitas guiadas</span>
-                                </div>
-                                <div class="flex items-center gap-2.5 text-gray-600 dark:text-gray-300">
-                                    <i class="ph-bold ph-check text-emerald-600 text-sm shrink-0"></i>
-                                    <span>Calificar y publicar testimonios sobre compras</span>
-                                </div>
-                                <div class="flex items-center gap-2.5 text-gray-400 dark:text-gray-500">
-                                    <i class="ph-bold ph-x text-gray-300 dark:text-gray-600 text-sm shrink-0"></i>
-                                    <span class="line-through">Publicación de inmuebles al público</span>
-                                </div>
-                                <div class="flex items-center gap-2.5 text-gray-400 dark:text-gray-500">
-                                    <i class="ph-bold ph-x text-gray-300 dark:text-gray-600 text-sm shrink-0"></i>
-                                    <span class="line-through">CRM de gestión comercial de clientes</span>
-                                </div>
+                        </details>
+                        <details class="group rounded-xl border border-gray-200 dark:border-emerald-950/40 bg-white dark:bg-[#0B221C] overflow-hidden">
+                            <summary class="flex items-center justify-between px-5 py-4 cursor-pointer text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#0E291F] transition-colors">
+                                ¿Puedo cancelar en cualquier momento?
+                                <i class="ph ph-caret-down text-sm text-gray-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="px-5 pb-4 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Sí, puedes cancelar tu suscripción cuando quieras. Tu cuenta seguirá activa hasta el final del periodo pagado y luego volverá al plan gratuito.
                             </div>
-                        </div>
-
-                        <div class="pt-6">
-                            <div class="w-full py-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-center text-xs font-black uppercase tracking-wider">
-                                Tu Plan Base
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 2: MAXIMUS Pro (Asesor Aliado) -->
-                    <div class="relative rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-[#06241E] via-[#071F1A] to-[#04120F] text-white border-2 border-emerald-500/50 shadow-2xl flex flex-col justify-between overflow-hidden">
-                        <div class="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-                        <div class="space-y-4 relative z-10">
-                            <div class="flex items-center justify-between">
-                                <span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-gray-950 text-xs font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5">
-                                    <i class="ph-fill ph-crown"></i> MAXIMUS Pro
-                                </span>
-                                <span class="text-xs font-bold text-emerald-300">Asesores & Inmobiliarias</span>
-                            </div>
-
-                            <div>
-                                <div class="flex items-baseline gap-1">
-                                    <span class="text-3xl sm:text-4xl font-black text-white">$19</span>
-                                    <span class="text-xs font-bold text-gray-300">USD / mes</span>
-                                    <span class="text-[11px] font-bold text-emerald-400 ml-2">(o $169/año · 2 meses gratis)</span>
-                                </div>
-                                <p class="text-xs text-gray-300 mt-1 font-light">Diseñado para asesores independientes, captadores y agencias aliadas que buscan maximizar ventas.</p>
-                            </div>
-
-                            <hr class="border-white/10 my-4">
-
-                            <!-- Beneficios Pro -->
-                            <div class="space-y-3 text-xs">
-                                <p class="font-bold text-emerald-300 uppercase text-[11px] tracking-wider">Todo lo que incluye el Plan Pro:</p>
-                                
-                                <div class="flex items-center gap-2.5 text-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </div>
-                                    <span><strong>Carga Ilimitada de Inmuebles:</strong> En el catálogo oficial con tu WhatsApp directo.</span>
-                                </div>
-
-                                <div class="flex items-center gap-2.5 text-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </div>
-                                    <span><strong>Mis Clientes (CRM Inmobiliario):</strong> Seguimiento de prospectos, notas y estados de negociación.</span>
-                                </div>
-
-                                <div class="flex items-center gap-2.5 text-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </div>
-                                    <span><strong>Cotizador Express:</strong> Cálculos de comisiones, impuestos y gastos de registro en Táchira en 3 clics.</span>
-                                </div>
-
-                                <div class="flex items-center gap-2.5 text-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </div>
-                                    <span><strong>Colecciones VIP:</strong> Crea dossiers digitales con tu nombre y foto listos para compartir.</span>
-                                </div>
-
-                                <div class="flex items-center gap-2.5 text-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </div>
-                                    <span><strong>Red de Alianzas Compartidas:</strong> Acceso a compartir comisiones 50/50 con el equipo.</span>
-                                </div>
-
-                                <div class="flex items-center gap-2.5 text-gray-100">
-                                    <div class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
-                                        <i class="ph-bold ph-check text-xs"></i>
-                                    </div>
-                                    <span><strong>Cero comisiones ocultas:</strong> Tus comisiones directas son 100% tuyas.</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-6 relative z-10">
-                            <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-gray-950 font-black text-sm tracking-wide shadow-xl shadow-emerald-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                                <i class="ph-fill ph-crown text-base"></i>
-                                <span>Activar Membresía Asesor Pro</span>
-                            </button>
-                            <p class="text-center text-[11px] text-gray-400 mt-2">
-                                Pago Móvil (Bs BCV) · Zelle · Binance USDT · Tarjetas
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Preguntas Frecuentes estilo Canva -->
-                <div class="pt-4 space-y-4 max-w-3xl mx-auto">
-                    <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white text-center">Preguntas Frecuentes</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                        <div class="p-4 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 shadow-xs">
-                            <strong class="text-gray-900 dark:text-white block mb-1">¿Cómo puedo pagar en Venezuela?</strong>
-                            <p class="text-gray-500 dark:text-gray-400">Aceptamos Pago Móvil en Bolívares a tasa oficial BCV, Zelle directo, USDT vía Binance Pay y tarjetas internacionales.</p>
-                        </div>
-                        <div class="p-4 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 shadow-xs">
-                            <strong class="text-gray-900 dark:text-white block mb-1">¿Mis clientes me contactan directamente a mí?</strong>
-                            <p class="text-gray-500 dark:text-gray-400">Sí. Tus propiedades muestran tu nombre y un botón de WhatsApp directo a tu número sin intermediación.</p>
-                        </div>
+                        </details>
                     </div>
                 </div>
             </section>
