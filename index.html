@@ -772,7 +772,7 @@
             </div>
 
             <!-- Cards Grid: 2 Cards (Gratuito vs Asesor Pro) con Motion Hover -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch max-w-3xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch max-w-3xl mx-auto pt-4">
                 <!-- Card 1: Gratuito -->
                 <div id="card-plan-gratis" class="pricing-card rounded-3xl p-7 sm:p-8 bg-gray-50/70 border border-gray-200/90 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-gray-300">
                     <div>
@@ -814,20 +814,22 @@
                 </div>
 
                 <!-- Card 2: Asesor Pro (Highlight con Aura Motion y Hover 3D) -->
-                <div id="card-plan-pro" class="pricing-card rounded-3xl p-7 sm:p-8 bg-maximus-dark text-white border border-emerald-800/50 shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-950/50 hover:border-emerald-500">
-                    <div class="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div id="card-plan-pro" class="pricing-card rounded-3xl p-7 sm:p-8 bg-maximus-dark text-white border border-emerald-800/60 shadow-xl flex flex-col justify-between relative transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-950/50 hover:border-emerald-500">
+                    
+                    <!-- Fondo lumínico contenido sin overflow-hidden en el contenedor principal -->
+                    <div class="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+                        <div class="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/15 rounded-full blur-3xl"></div>
+                    </div>
 
-                    <div class="absolute top-5 right-5 z-10">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-black uppercase tracking-wider shadow-sm">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                            </span>
+                    <!-- Badge Flotante Superior: Blanco Minimalista de Alto Contraste (No obstruye títulos) -->
+                    <div class="absolute -top-3.5 right-6 z-20 pointer-events-none">
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-gray-950 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-black/20 border border-gray-100">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             Más Popular
                         </span>
                     </div>
 
-                    <div class="relative z-10">
+                    <div class="relative z-10 pt-1">
                         <p class="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-2">Asesores & Agencias Aliadas</p>
                         <h3 class="text-lg font-black text-white">MAXIMUS Pro</h3>
                         <div class="flex items-baseline gap-1 mt-4">
