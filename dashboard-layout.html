@@ -1438,14 +1438,19 @@
                                 <i class="ph-fill ph-user-circle text-lg text-emerald-600"></i> Mi Perfil
                             </button>
 
-                            <!-- Opción Upgrade a Asesor Pro (Visible para Clientes) -->
-                            <button onclick="abrirModalSuscripcionPro('mensual'); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200/80 dark:border-amber-800/60 transition-colors flex items-center gap-3 cursor-pointer">
-                                <i class="ph-fill ph-crown text-lg text-amber-500"></i> Activar Cuenta Asesor Pro
+                            <!-- Opción Upgrade a Cuenta Pro (Visible para Clientes) -->
+                            <button onclick="abrirModalSuscripcionPro('mensual'); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-maximus-accent transition-colors flex items-center justify-between group cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <i class="ph-fill ph-crown text-lg text-amber-500 group-hover:scale-110 transition-transform"></i>
+                                    <span>Activar Cuenta Pro</span>
+                                </div>
+                                <span class="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 text-[10px] font-bold">Pro</span>
                             </button>
 
                             <!-- Subir Reseña (Usuarios Normales) -->
-                            <button onclick="abrirModalDejarResena(); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-amber-700 dark:text-amber-400 bg-amber-50/70 dark:bg-amber-950/40 hover:bg-amber-100/70 transition-colors flex items-center gap-3 cursor-pointer">
-                                <i class="ph-fill ph-star text-lg text-amber-500"></i> Subir Reseña
+                            <button onclick="abrirModalDejarResena(); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-maximus-accent transition-colors flex items-center gap-3 cursor-pointer">
+                                <i class="ph-fill ph-star text-lg text-amber-500"></i>
+                                <span>Subir Reseña</span>
                             </button>
 
                             <!-- Opción exclusiva para Asesores MAXIMUS y Dirección -->
