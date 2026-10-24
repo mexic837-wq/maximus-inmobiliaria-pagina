@@ -45,11 +45,11 @@
     </div>
 
     <!-- Contenedor Centrado de Login -->
-    <div class="relative z-10 w-full max-w-3xl mx-auto flex flex-col my-auto py-2 sm:py-4">
+    <div class="relative z-10 w-full max-w-4xl mx-auto flex flex-col my-auto py-3 sm:py-6">
         
-        <!-- Barra Superior / Acciones Rápidas (Encima de la tarjeta en móvil y desktop sin superposiciones) -->
-        <div class="w-full flex justify-between items-center mb-2.5 sm:mb-4 px-1">
-            <a href="/" class="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-bold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5 active:scale-95">
+        <!-- Barra Superior / Acciones Rápidas -->
+        <div class="w-full flex justify-between items-center mb-3 sm:mb-4 px-1">
+            <a href="/" class="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/95 hover:bg-white text-maximus-dark font-bold text-xs transition-all shadow-md hover:shadow-lg hover:-translate-x-0.5 active:scale-95">
                 <i class="fas fa-arrow-left text-maximus-accent"></i>
                 <span>Volver a la Web</span>
             </a>
@@ -61,425 +61,452 @@
             </div>
         </div>
 
-        <!-- Tarjeta Principal: Minimalista, Equilibrada y Fiel a la Identidad MAXIMUS -->
-        <div class="w-full bg-white rounded-2xl sm:rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-gray-100/80">
+        <!-- Tarjeta Principal: Minimalista, Moderna y Fiel a la Identidad MAXIMUS -->
+        <div class="w-full bg-white rounded-2xl sm:rounded-3xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.45)] overflow-hidden grid grid-cols-1 md:grid-cols-12 border border-gray-100">
         
-        <!-- Columna Izquierda: Showcase Interactivo de Alto Nivel (Estilo CapCut / Canva) -->
-        <div class="md:col-span-5 relative p-5 sm:p-7 md:p-8 flex flex-col justify-between bg-gradient-to-b from-[#082E26] via-[#0B4A3F] to-[#041713] text-white overflow-hidden">
-            <!-- Destellos y ambient lighting -->
-            <div class="absolute -right-20 -top-20 w-56 h-56 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -left-16 -bottom-16 w-56 h-56 bg-teal-400/15 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- Columna Izquierda: Showcase Editorial de Alto Nivel (Minimalista y Moderno) -->
+            <div class="md:col-span-5 relative p-6 sm:p-8 md:p-9 flex flex-col justify-between bg-gradient-to-b from-[#06241D] via-[#0B4A3F] to-[#041B15] text-white overflow-hidden">
+                <!-- Luces ambientales sutiles de fondo -->
+                <div class="absolute -right-20 -top-20 w-60 h-60 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -bottom-16 w-60 h-60 bg-teal-400/15 rounded-full blur-3xl pointer-events-none"></div>
 
-            <!-- Top Brand -->
-            <div class="relative z-10 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-emerald-300 shadow-inner">
-                        <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="7.4" y="6" width="2.4" height="6.5" rx="0.5" fill="#FFFFFF"/>
-                            <path d="M6 17.5V26.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
-                            <path d="M24.5 17.5V26.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
-                            <path d="M3.5 17.5L15 7.5L26.5 17.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M10.5 15.5L15 21L24.2 9.2" stroke="#10B981" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-black tracking-tight text-white leading-none">MAXIMUS<span class="text-emerald-400">.</span></h1>
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-300/80">Inmobiliaria</span>
-                    </div>
-                </div>
-
-                <span class="hidden md:inline-flex px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold text-emerald-200">
-                    Portal Oficial
-                </span>
-            </div>
-
-            <!-- Tarjeta Showcase Central (CapCut Style) -->
-            <div class="relative z-10 my-4 md:my-auto">
-                <div class="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-4 sm:p-5 shadow-2xl transition-all duration-300" id="showcaseCard">
-                    <!-- Badge de categoría -->
-                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider mb-2.5" id="showcaseBadge">
-                        <i class="fas fa-gem text-xs"></i> Catálogo VIP
-                    </div>
-                    <h3 class="text-lg sm:text-xl font-black text-white tracking-tight" id="showcaseTitle">
-                        Propiedades Exclusivas
-                    </h3>
-                    <p class="text-xs text-gray-200/90 mt-1.5 leading-relaxed font-light" id="showcaseDesc">
-                        Accede al inventario más selecto de San Cristóbal y Táchira con verificación legal garantizada.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Bottom: Selector de pestañas interactivas estilo CapCut -->
-            <div class="relative z-10 pt-2 border-t border-white/15">
-                <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-                    <button type="button" onclick="setLoginShowcase(0)" id="scTab0" class="px-3 py-1 rounded-full text-[10px] font-bold transition-all bg-white text-gray-900 shadow-xs cursor-pointer">
-                        Catálogo VIP
-                    </button>
-                    <button type="button" onclick="setLoginShowcase(1)" id="scTab1" class="px-3 py-1 rounded-full text-[10px] font-bold transition-all text-gray-300 hover:text-white bg-white/10 cursor-pointer">
-                        Asesores Pro
-                    </button>
-                    <button type="button" onclick="setLoginShowcase(2)" id="scTab2" class="px-3 py-1 rounded-full text-[10px] font-bold transition-all text-gray-300 hover:text-white bg-white/10 cursor-pointer">
-                        Cotizador
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Columna Derecha: Formulario Limpio, Espacioso y Comercial (7 columnas) -->
-        <div class="md:col-span-7 p-4 sm:p-7 md:p-10 flex flex-col justify-center bg-white">
-            <div class="w-full">
-                
-                <!-- Selector de Pestañas: Iniciar Sesión vs Crear Cuenta -->
-                <div class="flex items-center p-1 bg-gray-100 rounded-xl sm:rounded-2xl mb-3.5 sm:mb-6">
-                    <button type="button" id="tabLoginBtn" onclick="switchAuthTab('login')"
-                            class="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-dark shadow-sm">
-                        <i class="fas fa-sign-in-alt mr-1.5 text-maximus-accent"></i> Iniciar Sesión
-                    </button>
-                    <button type="button" id="tabRegisterBtn" onclick="switchAuthTab('register')"
-                            class="flex-1 py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark">
-                        <i class="fas fa-user-plus mr-1.5"></i> Crear Cuenta
-                    </button>
-                </div>
-
-                <!-- Notificación de auto-redirección si la sesión ya existe -->
-                <div id="sessionRedirectBanner" class="hidden mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2.5 animate-pulse">
-                    <i class="fas fa-circle-notch fa-spin text-emerald-600"></i>
-                    <span class="font-bold">Sesión activa detectada. Ingresando automáticamente al panel...</span>
-                </div>
-
-                <!-- Feedback de Mensajes (Alertas visuales) -->
-                <div id="authAlert" class="hidden mb-4 p-3.5 rounded-2xl text-xs font-medium flex items-start gap-2.5 transition-all">
-                    <i id="authAlertIcon" class="fas fa-info-circle text-sm mt-0.5"></i>
-                    <span id="authAlertMsg" class="flex-1"></span>
-                </div>
-
-                <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
-                <div id="loginView">
-                    <div class="mb-3.5 sm:mb-5">
-                        <h2 class="text-xl sm:text-2xl font-bold text-maximus-black">Bienvenido</h2>
-                        <p class="text-gray-500 text-xs mt-0.5 sm:mt-1">Ingresa tus credenciales para acceder a la plataforma.</p>
-                    </div>
-
-                    <!-- Banner de feedback para recuperación de contraseña -->
-                    <div id="forgotPasswordBanner" class="hidden mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all">
-                        <i class="fas fa-check-circle text-emerald-600 mt-0.5 text-sm"></i>
-                        <div class="flex-1">
-                            <span id="forgotPasswordText" class="font-semibold block">Enlace de recuperación enviado a tu correo electrónico.</span>
+                <!-- Encabezado de Marca -->
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-emerald-300 shadow-inner">
+                            <svg class="w-5 h-5" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="7.4" y="6" width="2.4" height="6.5" rx="0.5" fill="#FFFFFF"/>
+                                <path d="M6 17.5V26.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+                                <path d="M24.5 17.5V26.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+                                <path d="M3.5 17.5L15 7.5L26.5 17.5" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10.5 15.5L15 21L24.2 9.2" stroke="#10B981" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-black tracking-tight text-white leading-none">MAXIMUS<span class="text-emerald-400">.</span></h1>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-300/80">Inmobiliaria</span>
                         </div>
                     </div>
 
-                    <!-- Formulario Login -->
-                                        <!-- Botón Oficial "Continuar con Google" (Estilo CapCut / Google Guidelines) -->
-                    <button type="button" onclick="handleGoogleSignIn()"
-                            class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs sm:text-sm transition-all shadow-xs hover:shadow active:scale-[0.99] cursor-pointer mb-3.5">
-                        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-                        </svg>
-                        <span>Continuar con Google</span>
-                    </button>
+                    <span class="hidden md:inline-flex px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-bold text-emerald-200">
+                        San Cristóbal
+                    </span>
+                </div>
 
-                    <div class="relative flex my-3.5 items-center">
-                        <div class="flex-grow border-t border-gray-200"></div>
-                        <span class="flex-shrink mx-3 text-gray-400 text-[11px] uppercase font-semibold">o con tu correo</span>
-                        <div class="flex-grow border-t border-gray-200"></div>
+                <!-- Showcase Central Minimalista con Glassmorphism -->
+                <div class="relative z-10 my-6 md:my-auto">
+                    <div class="rounded-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 p-5 sm:p-6 shadow-2xl transition-all duration-300" id="showcaseCard">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/25 border border-emerald-400/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider mb-3" id="showcaseBadge">
+                            <i class="fas fa-gem text-xs mr-1"></i> Catálogo VIP
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug" id="showcaseTitle">
+                            Propiedades Exclusivas
+                        </h3>
+                        <p class="text-xs text-gray-200/90 mt-2 leading-relaxed font-light" id="showcaseDesc">
+                            Accede al inventario más selecto de San Cristóbal y Táchira con verificación legal garantizada.
+                        </p>
+
+                        <!-- Micro-badges de valor -->
+                        <div class="mt-4 pt-4 border-t border-white/10 space-y-2">
+                            <div class="flex items-center gap-2 text-xs text-emerald-200/90 font-medium">
+                                <i class="fas fa-check-circle text-emerald-400 text-xs shrink-0"></i>
+                                <span>Inmuebles 100% auditados legalmente</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-emerald-200/90 font-medium">
+                                <i class="fas fa-check-circle text-emerald-400 text-xs shrink-0"></i>
+                                <span>Tasa oficial BCV sincronizada en vivo</span>
+                            </div>
+                        </div>
                     </div>
-                    <form id="loginForm" class="space-y-3 sm:space-y-4">
-                        <!-- Campo Correo -->
-                        <div>
-                            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Correo Electrónico</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                    <i class="fas fa-envelope text-sm"></i>
-                                </div>
-                                <input type="email" id="email" required
-                                       class="block w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                       placeholder="tu@correo.com">
+                </div>
+
+                <!-- Barra Inferior: Indicadores de Rotación Minimalistas (Estilo Apple / Stripe) -->
+                <div class="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="setLoginShowcase(0)" id="scTab0" class="h-1.5 rounded-full transition-all duration-300 w-7 bg-emerald-400 cursor-pointer" title="Ver Catálogo VIP"></button>
+                        <button type="button" onclick="setLoginShowcase(1)" id="scTab1" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60 cursor-pointer" title="Ver Asesores Pro"></button>
+                        <button type="button" onclick="setLoginShowcase(2)" id="scTab2" class="h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60 cursor-pointer" title="Ver Cotizador"></button>
+                    </div>
+                    <span class="text-[10px] font-semibold text-emerald-300/80 uppercase tracking-widest">
+                        Portal Inmobiliario
+                    </span>
+                </div>
+            </div>
+
+            <!-- Columna Derecha: Formulario Limpio, Espacioso y Minimalista (7 columnas) -->
+            <div class="md:col-span-7 p-6 sm:p-8 md:p-10 flex flex-col justify-center bg-white">
+                <div class="w-full">
+                    
+                    <!-- Barra de Navegación Superior Interna (Separada y Natural) -->
+                    <div class="flex items-center justify-between mb-5 sm:mb-6 pb-1">
+                        <!-- Identificador Móvil -->
+                        <div class="flex items-center gap-2 md:hidden">
+                            <div class="w-7 h-7 rounded-lg bg-[#0B4A3F] flex items-center justify-center text-white text-xs font-black">
+                                M
+                            </div>
+                            <span class="font-extrabold text-gray-900 text-xs tracking-tight">MAXIMUS</span>
+                        </div>
+                        
+                        <div class="hidden md:block">
+                            <span class="text-[10.5px] font-bold uppercase tracking-widest text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                                Acceso Seguro
+                            </span>
+                        </div>
+
+                        <!-- Switcher Contextual Elegante: Separado, sin pestañas pegadas arriba -->
+                        <div class="flex items-center gap-1.5 text-xs text-gray-500 ml-auto">
+                            <span id="authSwitchPromptText">¿No tienes cuenta?</span>
+                            <button type="button" id="authSwitchBtn" onclick="toggleAuthMode()"
+                                    class="font-bold text-[#0B4A3F] hover:text-emerald-600 transition px-2 py-1 rounded-lg hover:bg-emerald-50 cursor-pointer underline-offset-4 hover:underline">
+                                Crear cuenta
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notificación de auto-redirección si la sesión ya existe -->
+                    <div id="sessionRedirectBanner" class="hidden mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2.5 animate-pulse">
+                        <i class="fas fa-circle-notch fa-spin text-emerald-600"></i>
+                        <span class="font-bold">Sesión activa detectada. Ingresando automáticamente al panel...</span>
+                    </div>
+
+                    <!-- Feedback de Mensajes (Alertas visuales) -->
+                    <div id="authAlert" class="hidden mb-4 p-3.5 rounded-2xl text-xs font-medium flex items-start gap-2.5 transition-all">
+                        <i id="authAlertIcon" class="fas fa-info-circle text-sm mt-0.5"></i>
+                        <span id="authAlertMsg" class="flex-1"></span>
+                    </div>
+
+                    <!-- ================= VISTA 1: INICIAR SESIÓN ================= -->
+                    <div id="loginView">
+                        <div class="mb-4 sm:mb-5">
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Bienvenido de nuevo</h2>
+                            <p class="text-gray-500 text-xs sm:text-sm mt-1">Ingresa a tu cuenta para continuar en MAXIMUS.</p>
+                        </div>
+
+                        <!-- Banner de feedback para recuperación de contraseña -->
+                        <div id="forgotPasswordBanner" class="hidden mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-start gap-2.5 transition-all">
+                            <i class="fas fa-check-circle text-emerald-600 mt-0.5 text-sm"></i>
+                            <div class="flex-1">
+                                <span id="forgotPasswordText" class="font-semibold block">Enlace de recuperación enviado a tu correo electrónico.</span>
                             </div>
                         </div>
 
-                        <!-- Campo Contraseña -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">Contraseña</label>
-                                <button type="button" onclick="handleForgotPassword(event)" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition cursor-pointer">¿Olvidaste tu clave?</button>
-                            </div>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                    <i class="fas fa-lock text-sm"></i>
+                        <!-- Botón Oficial "Continuar con Google" (Hero Button) -->
+                        <button type="button" onclick="handleGoogleSignIn()"
+                                class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50/80 text-gray-700 font-semibold text-xs sm:text-sm transition-all shadow-xs hover:shadow active:scale-[0.99] cursor-pointer mb-3.5">
+                            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                            </svg>
+                            <span>Continuar con Google</span>
+                        </button>
+
+                        <div class="relative flex my-3.5 items-center">
+                            <div class="flex-grow border-t border-gray-200"></div>
+                            <span class="flex-shrink mx-3 text-gray-400 text-[11px] uppercase tracking-wider font-semibold">o con tu correo</span>
+                            <div class="flex-grow border-t border-gray-200"></div>
+                        </div>
+
+                        <form id="loginForm" class="space-y-3.5">
+                            <!-- Campo Correo -->
+                            <div>
+                                <label for="email" class="block text-xs font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fas fa-envelope text-sm"></i>
+                                    </div>
+                                    <input type="email" id="email" required
+                                           class="block w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-gray-50/60 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-4 focus:ring-maximus-accent/10 outline-none transition"
+                                           placeholder="tu@correo.com">
                                 </div>
-                                <input type="password" id="password" required
-                                       class="block w-full pl-10 pr-10 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                       placeholder="••••••••••••">
-                                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
-                                    <i class="fas fa-eye text-sm" id="eyeIcon"></i>
+                            </div>
+
+                            <!-- Campo Contraseña -->
+                            <div>
+                                <div class="flex items-center justify-between mb-1">
+                                    <label for="password" class="block text-xs font-semibold text-gray-700">Contraseña</label>
+                                    <button type="button" onclick="handleForgotPassword(event)" class="text-xs text-maximus-dark hover:text-maximus-accent font-semibold transition cursor-pointer">¿Olvidaste tu contraseña?</button>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fas fa-lock text-sm"></i>
+                                    </div>
+                                    <input type="password" id="password" required
+                                           class="block w-full pl-10 pr-10 py-2.5 sm:py-3 rounded-xl border border-gray-200 bg-gray-50/60 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-4 focus:ring-maximus-accent/10 outline-none transition"
+                                           placeholder="••••••••••••">
+                                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition cursor-pointer">
+                                        <i class="fas fa-eye text-sm" id="eyeIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Recordar credenciales -->
+                            <div class="flex items-center pt-0.5">
+                                <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
+                                <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
+                                    Recordar mis datos en este equipo
+                                </label>
+                            </div>
+
+                            <!-- Botón Principal -->
+                            <div class="pt-1.5 sm:pt-2">
+                                <button type="submit" id="loginSubmitBtn"
+                                        class="w-full py-3 sm:py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                    <span>Ingresar al Portal Inmobiliario</span>
+                                    <i class="fas fa-arrow-right text-xs"></i>
                                 </button>
                             </div>
-                        </div>
+                        </form>
 
-                        <!-- Recordar credenciales -->
-                        <div class="flex items-center pt-0.5">
-                            <input id="remember" type="checkbox" class="h-4 w-4 text-maximus-accent focus:ring-maximus-accent border-gray-300 rounded cursor-pointer">
-                            <label for="remember" class="ml-2 block text-xs text-gray-600 cursor-pointer select-none">
-                                Recordar mis datos en este equipo
-                            </label>
-                        </div>
-
-                        <!-- Botón Principal (Producción Listo) -->
-                        <div class="pt-1.5 sm:pt-2">
-                            <button type="submit" id="loginSubmitBtn"
-                                    class="w-full py-3 sm:py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-                                <span>Ingresar al Portal Inmobiliario</span>
-                                <i class="fas fa-arrow-right text-xs"></i>
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="mt-4 text-center">
-                        <p class="text-xs text-gray-500">
-                            ¿Aún no tienes cuenta?
-                            <button type="button" onclick="switchAuthTab('register')" class="text-maximus-accent hover:underline font-bold ml-1 cursor-pointer">
-                                Regístrate como cliente o asesor
-                            </button>
-                        </p>
-                    </div>
-
-                    <!-- Accesos Rápidos Demo para Evaluación Directa -->
-                    <div class="mt-4 pt-3.5 border-t border-dashed border-gray-200 text-center">
-                        <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">Perfiles Demo de Acceso Inmediato</p>
-                        <div class="flex items-center justify-center gap-1.5 flex-wrap">
-                            <button type="button" onclick="selectDemoAccount('admin')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-[10.5px] font-bold transition">Admin</button>
-                            <button type="button" onclick="selectDemoAccount('asesor_maximus')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-[10.5px] font-bold transition">Asesor MAXIMUS</button>
-                            <button type="button" onclick="selectDemoAccount('asesor_externo')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-[10.5px] font-bold transition">Asesor Externo (Pro)</button>
-                            <button type="button" onclick="selectDemoAccount('cliente')" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10.5px] font-bold transition">Cliente</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ================= VISTA 3: VERIFICACIÓN 2FA AL INICIAR SESIÓN ================= -->
-                <div id="twoFactorView" class="hidden">
-                    <div class="mb-5 text-center">
-                        <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl shadow-sm border border-emerald-200">
-                            <i class="fas fa-shield-alt text-emerald-700"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-maximus-black">Verificación en Dos Pasos (2FA)</h2>
-                        <p class="text-gray-500 text-xs sm:text-sm mt-1.5">
-                            Hemos enviado un código OTP de 6 dígitos a tu correo registrado:
-                        </p>
-                        <p id="twoFactorEmailDisplay" class="font-bold text-xs sm:text-sm text-emerald-800 bg-emerald-50 py-1.5 px-3 rounded-lg inline-block mt-1.5 border border-emerald-200"></p>
-                    </div>
-
-                    <form id="twoFactorForm" class="space-y-4">
-                        <div>
-                            <label for="twoFactorCodeInput" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5 text-center">
-                                Código de 6 Dígitos
-                            </label>
-                            <input type="text" id="twoFactorCodeInput" maxlength="6" autocomplete="one-time-code"
-                                   class="block w-full py-3.5 px-4 rounded-xl border-2 border-emerald-500 bg-white text-gray-900 placeholder-gray-300 text-center font-mono font-black text-2xl tracking-[0.5em] focus:ring-4 focus:ring-emerald-500/20 outline-none transition"
-                                   placeholder="••••••">
-                            <p class="text-[11px] text-gray-400 text-center mt-2">
-                                <i class="fas fa-clock mr-1 text-emerald-600"></i> Válido por 10 minutos. Revisa tu bandeja de entrada o spam.
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">
+                                ¿Aún no tienes cuenta?
+                                <button type="button" onclick="switchAuthTab('register')" class="text-maximus-accent hover:underline font-bold ml-1 cursor-pointer">
+                                    Regístrate gratis
+                                </button>
                             </p>
                         </div>
 
-                        <div class="pt-2 space-y-2">
-                            <button type="submit" id="twoFactorSubmitBtn"
-                                    class="w-full py-3.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-700/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                                <span>Verificar e Iniciar Sesión</span>
-                                <i class="fas fa-check-circle text-xs"></i>
-                            </button>
-
-                            <button type="button" id="twoFactorResendBtn" onclick="reenviarCodigo2FALogin()"
-                                    class="w-full py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="fas fa-redo text-[11px] text-emerald-600"></i>
-                                <span>Reenviar Código por Correo</span>
-                            </button>
+                        <!-- Accesos Rápidos Demo (Discreto y Elegante para Evaluación) -->
+                        <div class="mt-4 pt-3.5 border-t border-gray-100 text-center">
+                            <details class="group">
+                                <summary class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 hover:text-gray-600 cursor-pointer list-none select-none transition">
+                                    <i class="fas fa-key text-emerald-600 text-[10px]"></i>
+                                    <span>Probar con cuentas demo de evaluación</span>
+                                    <i class="fas fa-chevron-down text-[9px] text-gray-400 group-open:rotate-180 transition-transform"></i>
+                                </summary>
+                                <div class="flex items-center justify-center gap-1.5 flex-wrap mt-2.5">
+                                    <button type="button" onclick="selectDemoAccount('admin')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-[10.5px] font-bold transition cursor-pointer">Admin</button>
+                                    <button type="button" onclick="selectDemoAccount('asesor_maximus')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-[10.5px] font-bold transition cursor-pointer">Asesor MAXIMUS</button>
+                                    <button type="button" onclick="selectDemoAccount('asesor_externo')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-[10.5px] font-bold transition cursor-pointer">Asesor Pro</button>
+                                    <button type="button" onclick="selectDemoAccount('cliente')" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10.5px] font-bold transition cursor-pointer">Cliente</button>
+                                </div>
+                            </details>
                         </div>
-
-                        <div class="text-center pt-2">
-                            <button type="button" onclick="cancelar2FALogin()" class="text-xs text-gray-500 hover:text-gray-800 transition cursor-pointer">
-                                ← Volver a ingresar con otra cuenta
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- ================= VISTA 4: RESTABLECER CONTRASEÑA ================= -->
-                <div id="resetPasswordView" class="hidden">
-                    <div class="mb-5">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl shadow-sm border border-emerald-200 mb-3">
-                            <i class="fas fa-key text-emerald-700"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-maximus-black">Restablecer Contraseña</h2>
-                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Crea una nueva contraseña segura para tu cuenta en MAXIMUS.</p>
                     </div>
 
-                    <form id="resetPasswordForm" class="space-y-4">
-                        <div>
-                            <label for="resetNewPass" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Nueva Contraseña</label>
-                            <input type="password" id="resetNewPass" required minlength="6"
-                                   class="block w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                   placeholder="Mínimo 6 caracteres">
-                        </div>
-                        <div>
-                            <label for="resetNewPassConfirm" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Confirmar Nueva Contraseña</label>
-                            <input type="password" id="resetNewPassConfirm" required minlength="6"
-                                   class="block w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                   placeholder="Repite la nueva contraseña">
-                        </div>
-
-                        <div class="pt-2">
-                            <button type="submit" id="resetPassSubmitBtn"
-                                    class="w-full py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
-                                <span>Actualizar mi Contraseña</span>
-                                <i class="fas fa-check text-xs"></i>
-                            </button>
-                        </div>
-
-                        <div class="text-center pt-2">
-                            <button type="button" onclick="switchAuthTab('login')" class="text-xs text-maximus-accent font-bold hover:underline cursor-pointer">
-                                Volver a Iniciar Sesión
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- ================= VISTA 2: CREAR CUENTA GRATUITA (CANVA-STYLE) ================= -->
-                <div id="registerView" class="hidden">
-                    <div class="mb-5">
-                        <h2 class="text-2xl font-bold text-maximus-black">Crear mi Cuenta en MAXIMUS</h2>
-                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Crea tu cuenta en segundos para explorar propiedades, agendar visitas y gestionar tu panel.</p>
-                    </div>
-
-                    <!-- Formulario Registro Limpio y Unificado -->
-                                        <!-- Botón Oficial "Continuar con Google" (Estilo CapCut / Google Guidelines) -->
-                    <button type="button" onclick="handleGoogleSignIn()"
-                            class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs sm:text-sm transition-all shadow-xs hover:shadow active:scale-[0.99] cursor-pointer mb-3.5">
-                        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
-                        </svg>
-                        <span>Continuar con Google</span>
-                    </button>
-
-                    <div class="relative flex my-3.5 items-center">
-                        <div class="flex-grow border-t border-gray-200"></div>
-                        <span class="flex-shrink mx-3 text-gray-400 text-[11px] uppercase font-semibold">o con tu correo</span>
-                        <div class="flex-grow border-t border-gray-200"></div>
-                    </div>
-                    <form id="registerForm" class="space-y-3.5">
-                        <!-- Campo Nombre Completo -->
-                        <div>
-                            <label for="regNombre" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Nombre Completo</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                    <i class="fas fa-user text-sm"></i>
-                                </div>
-                                <input type="text" id="regNombre" required
-                                       class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                       placeholder="Ej: Alejandro Sánchez">
+                    <!-- ================= VISTA 3: VERIFICACIÓN 2FA AL INICIAR SESIÓN ================= -->
+                    <div id="twoFactorView" class="hidden">
+                        <div class="mb-5 text-center">
+                            <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-2xl shadow-sm border border-emerald-200">
+                                <i class="fas fa-shield-alt text-emerald-700"></i>
                             </div>
+                            <h2 class="text-2xl font-bold text-maximus-black">Verificación en Dos Pasos (2FA)</h2>
+                            <p class="text-gray-500 text-xs sm:text-sm mt-1.5">
+                                Hemos enviado un código OTP de 6 dígitos a tu correo registrado:
+                            </p>
+                            <p id="twoFactorEmailDisplay" class="font-bold text-xs sm:text-sm text-emerald-800 bg-emerald-50 py-1.5 px-3 rounded-lg inline-block mt-1.5 border border-emerald-200"></p>
                         </div>
 
-                        <!-- Campo Correo -->
-                        <div>
-                            <label for="regEmail" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Correo Electrónico</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                    <i class="fas fa-envelope text-sm"></i>
-                                </div>
-                                <input type="email" id="regEmail" required
-                                       class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                       placeholder="tunombre@gmail.com">
-                            </div>
-                        </div>
-
-                        <!-- Campo Teléfono / WhatsApp con Prefijo Internacional para n8n (+58 predeterminado / +57) -->
-                        <div>
-                            <label for="regTelefono" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">
-                                <span>Teléfono / WhatsApp <span class="text-gray-400 font-normal lowercase">(opcional)</span></span>
-                            </label>
-                            <div class="flex rounded-xl border border-gray-200 bg-gray-50 focus-within:bg-white focus-within:border-maximus-accent focus-within:ring-2 focus-within:ring-maximus-accent/20 transition overflow-hidden shadow-sm">
-                                <!-- Selector de Prefijo Internacional (+58 Venezuela predeterminado / +57 Colombia) -->
-                                <div class="relative flex items-center bg-gray-100/90 border-r border-gray-200 px-2.5 py-1 shrink-0">
-                                    <i class="fab fa-whatsapp text-sm text-emerald-600 mr-1.5"></i>
-                                    <select id="regPrefijo" class="bg-transparent text-gray-900 font-bold text-xs sm:text-sm outline-none cursor-pointer pr-1 py-1.5" title="Seleccionar código de país">
-                                        <option value="+58" selected>🇻🇪 +58</option>
-                                        <option value="+57">🇨🇴 +57</option>
-                                    </select>
-                                </div>
-                                <input type="tel" id="regTelefono"
-                                       class="block w-full px-3.5 py-2.5 bg-transparent text-gray-900 placeholder-gray-400 text-sm outline-none"
-                                       placeholder="414 1234567"
-                                       autocomplete="tel">
-                            </div>
-                        </div>
-
-                        <!-- Campo Contraseña -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <form id="twoFactorForm" class="space-y-4">
                             <div>
-                                <label for="regPassword" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Contraseña</label>
-                                <div class="relative">
-                                    <input type="password" id="regPassword" required minlength="6"
-                                           class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                           placeholder="Mínimo 6 caracteres">
-                                </div>
+                                <label for="twoFactorCodeInput" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5 text-center">
+                                    Código de 6 Dígitos
+                                </label>
+                                <input type="text" id="twoFactorCodeInput" maxlength="6" autocomplete="one-time-code"
+                                       class="block w-full py-3.5 px-4 rounded-xl border-2 border-emerald-500 bg-white text-gray-900 placeholder-gray-300 text-center font-mono font-black text-2xl tracking-[0.5em] focus:ring-4 focus:ring-emerald-500/20 outline-none transition"
+                                       placeholder="••••••">
+                                <p class="text-[11px] text-gray-400 text-center mt-2">
+                                    <i class="fas fa-clock mr-1 text-emerald-600"></i> Válido por 10 minutos. Revisa tu bandeja de entrada o spam.
+                                </p>
+                            </div>
+
+                            <div class="pt-2 space-y-2">
+                                <button type="submit" id="twoFactorSubmitBtn"
+                                        class="w-full py-3.5 px-6 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-700/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                    <span>Verificar e Iniciar Sesión</span>
+                                    <i class="fas fa-check-circle text-xs"></i>
+                                </button>
+
+                                <button type="button" id="twoFactorResendBtn" onclick="reenviarCodigo2FALogin()"
+                                        class="w-full py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <i class="fas fa-redo text-[11px] text-emerald-600"></i>
+                                    <span>Reenviar Código por Correo</span>
+                                </button>
+                            </div>
+
+                            <div class="text-center pt-2">
+                                <button type="button" onclick="cancelar2FALogin()" class="text-xs text-gray-500 hover:text-gray-800 transition cursor-pointer">
+                                    ← Volver a ingresar con otra cuenta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ================= VISTA 4: RESTABLECER CONTRASEÑA ================= -->
+                    <div id="resetPasswordView" class="hidden">
+                        <div class="mb-5">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl shadow-sm border border-emerald-200 mb-3">
+                                <i class="fas fa-key text-emerald-700"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-maximus-black">Restablecer Contraseña</h2>
+                            <p class="text-gray-500 text-xs sm:text-sm mt-1">Crea una nueva contraseña segura para tu cuenta en MAXIMUS.</p>
+                        </div>
+
+                        <form id="resetPasswordForm" class="space-y-4">
+                            <div>
+                                <label for="resetNewPass" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Nueva Contraseña</label>
+                                <input type="password" id="resetNewPass" required minlength="6"
+                                       class="block w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="Mínimo 6 caracteres">
                             </div>
                             <div>
-                                <label for="regPasswordConfirm" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Confirmar Clave</label>
+                                <label for="resetNewPassConfirm" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Confirmar Nueva Contraseña</label>
+                                <input type="password" id="resetNewPassConfirm" required minlength="6"
+                                       class="block w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
+                                       placeholder="Repite la nueva contraseña">
+                            </div>
+
+                            <div class="pt-2">
+                                <button type="submit" id="resetPassSubmitBtn"
+                                        class="w-full py-3.5 px-6 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-bold text-sm tracking-wide shadow-md shadow-maximus-dark/30 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                    <span>Actualizar mi Contraseña</span>
+                                    <i class="fas fa-check text-xs"></i>
+                                </button>
+                            </div>
+
+                            <div class="text-center pt-2">
+                                <button type="button" onclick="switchAuthTab('login')" class="text-xs text-maximus-accent font-bold hover:underline cursor-pointer">
+                                    Volver a Iniciar Sesión
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ================= VISTA 2: CREAR CUENTA GRATUITA ================= -->
+                    <div id="registerView" class="hidden">
+                        <div class="mb-4 sm:mb-5">
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Crea tu cuenta gratis</h2>
+                            <p class="text-gray-500 text-xs sm:text-sm mt-1">Únete a la plataforma inmobiliaria más selecta de San Cristóbal.</p>
+                        </div>
+
+                        <!-- Botón Oficial "Continuar con Google" (Hero Button) -->
+                        <button type="button" onclick="handleGoogleSignIn()"
+                                class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50/80 text-gray-700 font-semibold text-xs sm:text-sm transition-all shadow-xs hover:shadow active:scale-[0.99] cursor-pointer mb-3.5">
+                            <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                            </svg>
+                            <span>Continuar con Google</span>
+                        </button>
+
+                        <div class="relative flex my-3.5 items-center">
+                            <div class="flex-grow border-t border-gray-200"></div>
+                            <span class="flex-shrink mx-3 text-gray-400 text-[11px] uppercase tracking-wider font-semibold">o con tu correo</span>
+                            <div class="flex-grow border-t border-gray-200"></div>
+                        </div>
+
+                        <form id="registerForm" class="space-y-3 sm:space-y-3.5">
+                            <!-- Campo Nombre Completo -->
+                            <div>
+                                <label for="regNombre" class="block text-xs font-semibold text-gray-700 mb-1">Nombre Completo</label>
                                 <div class="relative">
-                                    <input type="password" id="regPasswordConfirm" required minlength="6"
-                                           class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition"
-                                           placeholder="Repite la clave">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fas fa-user text-sm"></i>
+                                    </div>
+                                    <input type="text" id="regNombre" required
+                                           class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/60 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-4 focus:ring-maximus-accent/10 outline-none transition"
+                                           placeholder="Ej: Alejandro Sánchez">
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Badge Informativo Canva-Style -->
-                        <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-[11px] flex items-center justify-between gap-2.5">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-shield-alt text-emerald-600 text-sm shrink-0"></i>
-                                <span>Tu cuenta inicial es gratuita de por vida. Podrás activar herramientas Pro de asesor cuando lo desees.</span>
+                            <!-- Campo Correo -->
+                            <div>
+                                <label for="regEmail" class="block text-xs font-semibold text-gray-700 mb-1">Correo Electrónico</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                        <i class="fas fa-envelope text-sm"></i>
+                                    </div>
+                                    <input type="email" id="regEmail" required
+                                           class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50/60 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-4 focus:ring-maximus-accent/10 outline-none transition"
+                                           placeholder="tunombre@gmail.com">
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Botón Crear Cuenta -->
-                        <div class="pt-1.5">
-                            <button type="submit" id="registerSubmitBtn"
-                                    class="w-full py-3.5 px-6 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-600/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
-                                <span>Crear mi Cuenta Gratis</span>
-                                <i class="fas fa-check text-xs"></i>
-                            </button>
-                        </div>
-                    </form>
+                            <!-- Campo Teléfono / WhatsApp -->
+                            <div>
+                                <label for="regTelefono" class="block text-xs font-semibold text-gray-700 mb-1">
+                                    <span>Teléfono / WhatsApp <span class="text-gray-400 font-normal lowercase">(opcional)</span></span>
+                                </label>
+                                <div class="flex rounded-xl border border-gray-200 bg-gray-50/60 focus-within:bg-white focus-within:border-maximus-accent focus-within:ring-4 focus-within:ring-maximus-accent/10 transition overflow-hidden">
+                                    <div class="relative flex items-center bg-gray-100/90 border-r border-gray-200 px-2.5 py-1 shrink-0">
+                                        <i class="fab fa-whatsapp text-sm text-emerald-600 mr-1.5"></i>
+                                        <select id="regPrefijo" class="bg-transparent text-gray-900 font-bold text-xs sm:text-sm outline-none cursor-pointer pr-1 py-1.5" title="Seleccionar código de país">
+                                            <option value="+58" selected>🇻🇪 +58</option>
+                                            <option value="+57">🇨🇴 +57</option>
+                                        </select>
+                                    </div>
+                                    <input type="tel" id="regTelefono"
+                                           class="block w-full px-3.5 py-2.5 bg-transparent text-gray-900 placeholder-gray-400 text-sm outline-none"
+                                           placeholder="414 1234567"
+                                           autocomplete="tel">
+                                </div>
+                            </div>
 
-                    <div class="mt-4 text-center">
-                        <p class="text-xs text-gray-500">
-                            ¿Ya tienes una cuenta registrada?
-                            <button type="button" onclick="switchAuthTab('login')" class="text-maximus-dark hover:text-maximus-accent font-bold ml-1 cursor-pointer">
-                                Iniciar Sesión aquí
-                            </button>
+                            <!-- Campo Contraseña -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label for="regPassword" class="block text-xs font-semibold text-gray-700 mb-1">Contraseña</label>
+                                    <div class="relative">
+                                        <input type="password" id="regPassword" required minlength="6"
+                                               class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50/60 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-4 focus:ring-maximus-accent/10 outline-none transition"
+                                               placeholder="Mínimo 6 caracteres">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="regPasswordConfirm" class="block text-xs font-semibold text-gray-700 mb-1">Confirmar Clave</label>
+                                    <div class="relative">
+                                        <input type="password" id="regPasswordConfirm" required minlength="6"
+                                               class="block w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50/60 focus:bg-white text-gray-900 placeholder-gray-400 text-sm focus:border-maximus-accent focus:ring-4 focus:ring-maximus-accent/10 outline-none transition"
+                                               placeholder="Repite la clave">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Badge Informativo Canva-Style -->
+                            <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-[11px] flex items-center justify-between gap-2.5">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-shield-alt text-emerald-600 text-sm shrink-0"></i>
+                                    <span>Tu cuenta inicial es gratuita de por vida. Podrás activar herramientas Pro de asesor cuando lo desees.</span>
+                                </div>
+                            </div>
+
+                            <!-- Botón Crear Cuenta -->
+                            <div class="pt-1.5">
+                                <button type="submit" id="registerSubmitBtn"
+                                        class="w-full py-3.5 px-6 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-600/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                                    <span>Crear mi Cuenta Gratis</span>
+                                    <i class="fas fa-check text-xs"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">
+                                ¿Ya tienes una cuenta registrada?
+                                <button type="button" onclick="switchAuthTab('login')" class="text-maximus-dark hover:text-maximus-accent font-bold ml-1 cursor-pointer">
+                                    Iniciar Sesión aquí
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Pie de contacto directo con Dirección MAXIMUS -->
+                    <div class="mt-4 sm:mt-6 pt-3.5 sm:pt-4 border-t border-gray-100 text-center">
+                        <p class="text-[11px] sm:text-xs text-gray-500">
+                            ¿Requieres acceso como asesor o alianzas?
+                            <a href="https://wa.me/584247835697" target="_blank" class="text-maximus-dark hover:text-maximus-accent font-semibold inline-flex items-center gap-1 ml-1 transition">
+                                <i class="fab fa-whatsapp text-maximus-accent"></i> Contactar a Dirección
+                            </a>
                         </p>
                     </div>
-                </div>
 
-                <!-- Pie de contacto directo con Lic. Eva Camargo & Abg. José Guerrero -->
-                <div class="mt-4 sm:mt-6 pt-3.5 sm:pt-5 border-t border-gray-100 text-center">
-                    <p class="text-[11px] sm:text-xs text-gray-500">
-                        ¿Requieres acceso como asesor o alianzas?
-                        <a href="https://wa.me/584247835697" target="_blank" class="text-maximus-dark hover:text-maximus-accent font-semibold inline-flex items-center gap-1 ml-1 transition">
-                            <i class="fab fa-whatsapp text-maximus-accent"></i> Contactar a Dirección
-                        </a>
-                    </p>
                 </div>
-
             </div>
         </div>
-    </div>
     </div>
 
     <!-- Scripts de Configuración, Supabase, Mock Data, Services y AuthService -->
@@ -587,21 +614,31 @@
             }
         }
 
-        // Alternar Pestañas de Auth
+        // Alternar Vista de Auth (Login vs Registro)
+        function toggleAuthMode() {
+            const isLogin = loginView && !loginView.classList.contains('hidden');
+            switchAuthTab(isLogin ? 'register' : 'login');
+        }
+        window.toggleAuthMode = toggleAuthMode;
+
         function switchAuthTab(tab) {
             hideAlert();
+            const promptText = document.getElementById('authSwitchPromptText');
+            const switchBtn = document.getElementById('authSwitchBtn');
+
             if (tab === 'login') {
-                loginView.classList.remove('hidden');
-                registerView.classList.add('hidden');
-                tabLoginBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-dark shadow-sm';
-                tabRegisterBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark';
+                if (loginView) loginView.classList.remove('hidden');
+                if (registerView) registerView.classList.add('hidden');
+                if (promptText) promptText.textContent = '¿No tienes cuenta?';
+                if (switchBtn) switchBtn.textContent = 'Crear cuenta';
             } else {
-                loginView.classList.add('hidden');
-                registerView.classList.remove('hidden');
-                tabRegisterBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 bg-white text-maximus-accent shadow-sm';
-                tabLoginBtn.className = 'flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 text-gray-500 hover:text-maximus-dark';
+                if (loginView) loginView.classList.add('hidden');
+                if (registerView) registerView.classList.remove('hidden');
+                if (promptText) promptText.textContent = '¿Ya tienes cuenta?';
+                if (switchBtn) switchBtn.textContent = 'Iniciar sesión';
             }
         }
+        window.switchAuthTab = switchAuthTab;
 
         // Mostrar / Ocultar Contraseña
         if (toggleBtn && passInput && eyeIcon) {
@@ -1114,9 +1151,9 @@
                 const tab = document.getElementById('scTab' + i);
                 if (tab) {
                     if (i === idx) {
-                        tab.className = 'px-3 py-1 rounded-full text-[10px] font-bold transition-all bg-white text-gray-900 shadow-xs cursor-pointer';
+                        tab.className = 'h-1.5 rounded-full transition-all duration-300 w-7 bg-emerald-400 cursor-pointer';
                     } else {
-                        tab.className = 'px-3 py-1 rounded-full text-[10px] font-bold transition-all text-gray-300 hover:text-white bg-white/10 cursor-pointer';
+                        tab.className = 'h-1.5 rounded-full transition-all duration-300 w-2 bg-white/30 hover:bg-white/60 cursor-pointer';
                     }
                 }
             }
