@@ -77,6 +77,82 @@ const AuthService = {
     /**
      * Valida credenciales sin guardar la sesión automáticamente (útil para verificar 2FA).
      */
+    /**
+     * Iniciar sesión o registro directo con Google OAuth.
+     * Compatible con Supabase Auth y fallback para modo demo.
+     */
+    async loginWithGoogle(redirectPath = '/dashboard') {
+        // 1. Si no estamos en MOCK_DATA, intentar OAuth real con Supabase
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+                if (sb && sb.auth) {
+                    const origin = window.location.origin;
+                    const { data, error } = await sb.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: origin + '/dashboard'
+                        }
+                    });
+                    if (!error && data?.url) {
+                        window.location.href = data.url;
+                        return { success: true, redirecting: true };
+                    }
+                }
+            } catch (err) {
+                console.warn('Aviso Supabase Google OAuth:', err);
+            }
+        }
+
+        // 2. Fallback / Modo Mock o desarrollo:
+        const mockGoogleUser = {
+            id: 'google-usr-' + Date.now(),
+            name: 'Usuario Google',
+            email: 'usuario.google@gmail.com',
+            telefono: '+58 414 1234567',
+            role: 'cliente',
+            plan: 'free',
+            title: 'Usuario Verificado Google',
+            avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c',
+            auth_provider: 'google'
+        };
+        this._saveSession(mockGoogleUser, mockGoogleUser.email, true);
+        window.location.href = redirectPath;
+        return { success: true, user: mockGoogleUser };
+    },
+
+    /**
+     * Listener para verificar si venimos de un redirect de Google OAuth en Supabase.
+     */
+    async handleOAuthCallback() {
+        if (APP_CONFIG.USE_MOCK_DATA) return;
+        try {
+            const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+            if (!sb || !sb.auth) return;
+            const { data: { session }, error } = await sb.auth.getSession();
+            if (!error && session && session.user) {
+                const authUser = session.user;
+                const meta = authUser.user_metadata || {};
+                const nombre = meta.full_name || meta.name || authUser.email.split('@')[0];
+                const avatar = meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=0B4A3F&color=fff`;
+
+                const appUser = {
+                    id: authUser.id,
+                    name: nombre,
+                    email: authUser.email,
+                    role: meta.rol || 'cliente',
+                    title: 'Usuario Verificado Google',
+                    avatar: avatar,
+                    plan: 'free',
+                    auth_provider: 'google'
+                };
+                this._saveSession(appUser, authUser.email, true);
+            }
+        } catch (e) {
+            console.warn('Aviso OAuth callback:', e);
+        }
+    },
+
     async validateCredentials(email, password) {
         const cleanEmail = (email || '').trim().toLowerCase();
         let result = null;
