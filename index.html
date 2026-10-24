@@ -641,7 +641,7 @@
     </section>
 
     <!-- Beneficios / Confianza -->
-    <section id="nosotros" class="py-24 bg-white relative overflow-hidden">
+    <section id="nosotros" class="pt-20 pb-8 bg-white relative overflow-hidden">
         <!-- Marca de Agua Difuminada MAXIMUS Nosotros -->
         <div class="absolute -right-20 top-1/4 w-[360px] md:w-[500px] h-[360px] md:h-[500px] pointer-events-none select-none opacity-[0.038] rotate-6 z-0">
             <img src="assest/maximus-logo-icon.svg" alt="" class="w-full h-full object-contain" />
@@ -710,35 +710,71 @@
     </section>
 
     <!-- ==========================================
-         SECCIÓN: PLANES Y MEMBRESÍAS (MINIMALISTA)
+         SECCIÓN: PLANES Y MEMBRESÍAS (MINIMALISTA CON MOTION)
          ========================================== -->
-    <section id="planes" class="py-24 bg-white relative overflow-hidden">
+    <section id="planes" class="pt-4 pb-20 bg-white relative overflow-hidden">
+        <!-- Script inline prioritario para disponibilidad instantánea de togglePlanLanding -->
+        <script>
+            window.togglePlanLanding = function(periodo) {
+                const btnM = document.getElementById('toggleLandingMensual');
+                const btnA = document.getElementById('toggleLandingAnual');
+                const preEl = document.getElementById('precioLandingDisplay');
+                const perEl = document.getElementById('periodoLandingDisplay');
+                const ctaBtn = document.getElementById('btnCtaProLanding');
+                if (!btnM || !btnA) return;
+
+                if (periodo === 'mensual') {
+                    btnM.className = 'px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-900 shadow-sm cursor-pointer';
+                    btnA.className = 'px-5 py-2 rounded-full text-xs font-bold transition-all text-gray-500 hover:text-gray-700 cursor-pointer';
+                    if (typeof gsap !== 'undefined' && preEl) {
+                        gsap.fromTo(preEl, { scale: 0.85, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2)' });
+                    }
+                    if (preEl) preEl.textContent = '$19';
+                    if (perEl) perEl.textContent = '/ mes';
+                    if (ctaBtn) ctaBtn.setAttribute('onclick', "abrirModalSuscripcionPro('mensual')");
+                } else {
+                    btnA.className = 'px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-900 shadow-sm cursor-pointer';
+                    btnM.className = 'px-5 py-2 rounded-full text-xs font-bold transition-all text-gray-500 hover:text-gray-700 cursor-pointer';
+                    if (typeof gsap !== 'undefined' && preEl) {
+                        gsap.fromTo(preEl, { scale: 0.85, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2)' });
+                    }
+                    if (preEl) preEl.textContent = '$169';
+                    if (perEl) perEl.textContent = '/ año · 2 meses gratis';
+                    if (ctaBtn) ctaBtn.setAttribute('onclick', "abrirModalSuscripcionPro('anual')");
+                }
+            };
+        </script>
+
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header minimalista -->
-            <div class="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-                <span class="text-xs font-bold uppercase tracking-widest text-maximus-accent">Planes y Membresías</span>
-                <h2 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight mt-2">
+            <!-- Header minimalista sin espacio en blanco excesivo -->
+            <div class="text-center max-w-xl mx-auto mb-10 sm:mb-12">
+                <div id="planes-tag" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-maximus-accent text-[11px] font-black uppercase tracking-wider border border-emerald-200/60 mb-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    Membresías & Herramientas
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
                     Elige el plan ideal para tu objetivo
                 </h2>
-                <p class="text-sm text-gray-500 mt-3 leading-relaxed">
+                <p class="planes-desc text-xs sm:text-sm text-gray-500 mt-2.5 leading-relaxed">
                     Acceso gratuito para compradores o herramientas profesionales para asesores independientes e inmobiliarias.
                 </p>
 
-                <!-- Toggle Mensual / Anual -->
-                <div class="inline-flex items-center gap-1 mt-6 p-1 rounded-full bg-gray-100 border border-gray-200">
-                    <button type="button" id="toggleLandingMensual" onclick="togglePlanLanding('mensual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-900 shadow-sm cursor-pointer">
+                <!-- Toggle Mensual / Anual Interactivo con Motion -->
+                <div class="planes-toggle-container inline-flex items-center gap-1 mt-6 p-1 rounded-full bg-gray-100 border border-gray-200 shadow-inner">
+                    <button type="button" id="toggleLandingMensual" onclick="window.togglePlanLanding('mensual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-900 shadow-sm cursor-pointer">
                         Mensual
                     </button>
-                    <button type="button" id="toggleLandingAnual" onclick="togglePlanLanding('anual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all text-gray-500 hover:text-gray-700 cursor-pointer">
-                        Anual <span class="text-maximus-accent font-black ml-1">−26%</span>
+                    <button type="button" id="toggleLandingAnual" onclick="window.togglePlanLanding('anual')" class="px-5 py-2 rounded-full text-xs font-bold transition-all text-gray-500 hover:text-gray-700 cursor-pointer flex items-center gap-1.5">
+                        <span>Anual</span>
+                        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">−26% OFF</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Cards Grid: 2 Cards (Gratuito vs Asesor Pro) -->
+            <!-- Cards Grid: 2 Cards (Gratuito vs Asesor Pro) con Motion Hover -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-stretch max-w-3xl mx-auto">
                 <!-- Card 1: Gratuito -->
-                <div class="rounded-3xl p-7 sm:p-8 bg-gray-50/70 border border-gray-200/90 flex flex-col justify-between">
+                <div id="card-plan-gratis" class="pricing-card rounded-3xl p-7 sm:p-8 bg-gray-50/70 border border-gray-200/90 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-gray-300">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Compradores e Inversionistas</p>
                         <h3 class="text-lg font-black text-gray-900">Plan Gratuito</h3>
@@ -771,25 +807,31 @@
                     </div>
 
                     <div class="pt-8">
-                        <a href="/login#register" class="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-gray-100 text-gray-800 font-bold text-xs tracking-wide border border-gray-200 transition-all text-center block shadow-xs">
+                        <a href="/login#register" class="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-gray-100 text-gray-800 font-bold text-xs tracking-wide border border-gray-200 transition-all text-center block shadow-xs hover:scale-[1.01] active:scale-95">
                             Crear Cuenta Gratis
                         </a>
                     </div>
                 </div>
 
-                <!-- Card 2: Asesor Pro -->
-                <div class="rounded-3xl p-7 sm:p-8 bg-maximus-dark text-white border border-emerald-800/40 shadow-xl flex flex-col justify-between relative overflow-hidden">
-                    <div class="absolute top-5 right-5">
-                        <span class="px-3 py-1 rounded-full bg-maximus-accent text-white text-[10px] font-black uppercase tracking-wider">
+                <!-- Card 2: Asesor Pro (Highlight con Aura Motion y Hover 3D) -->
+                <div id="card-plan-pro" class="pricing-card rounded-3xl p-7 sm:p-8 bg-maximus-dark text-white border border-emerald-800/50 shadow-xl flex flex-col justify-between relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-950/50 hover:border-emerald-500">
+                    <div class="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="absolute top-5 right-5 z-10">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-black uppercase tracking-wider shadow-sm">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                            </span>
                             Más Popular
                         </span>
                     </div>
 
-                    <div>
+                    <div class="relative z-10">
                         <p class="text-xs font-bold uppercase tracking-wider text-emerald-300/80 mb-2">Asesores & Agencias Aliadas</p>
                         <h3 class="text-lg font-black text-white">MAXIMUS Pro</h3>
                         <div class="flex items-baseline gap-1 mt-4">
-                            <span id="precioLandingDisplay" class="text-4xl font-black text-white">$19</span>
+                            <span id="precioLandingDisplay" class="text-4xl font-black text-white tracking-tight">$19</span>
                             <span id="periodoLandingDisplay" class="text-xs font-medium text-gray-300">/ mes</span>
                         </div>
                         <p class="text-xs text-gray-300 mt-2">Herramientas profesionales para publicar tu inventario, captar clientes y cerrar más ventas.</p>
@@ -824,8 +866,8 @@
                         </ul>
                     </div>
 
-                    <div class="pt-8">
-                        <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="w-full py-3.5 px-6 rounded-2xl bg-maximus-accent hover:bg-emerald-400 text-maximus-dark font-black text-xs tracking-wide shadow-md transition-all text-center block cursor-pointer">
+                    <div class="pt-8 relative z-10">
+                        <button type="button" id="btnCtaProLanding" onclick="abrirModalSuscripcionPro('mensual')" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-gray-950 font-black text-xs tracking-wide shadow-lg shadow-emerald-500/25 transition-all text-center block cursor-pointer hover:scale-[1.02] active:scale-95">
                             Activar Membresía Pro
                         </button>
                         <p class="text-center text-[10.5px] text-gray-400 mt-2">
@@ -836,8 +878,8 @@
             </div>
 
             <!-- Preguntas frecuentes minimalistas -->
-            <div class="max-w-2xl mx-auto mt-16 pt-8 border-t border-gray-100">
-                <h4 class="text-center text-sm font-bold text-gray-800 mb-4">Preguntas Frecuentes</h4>
+            <div class="planes-faq max-w-2xl mx-auto mt-14 pt-8 border-t border-gray-100">
+                <h4 class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Preguntas Frecuentes</h4>
                 <div class="space-y-2.5">
                     <details class="group rounded-2xl border border-gray-200/80 bg-gray-50/50 p-4 transition-all">
                         <summary class="flex items-center justify-between cursor-pointer text-xs font-bold text-gray-800 list-none">
@@ -1144,6 +1186,12 @@
                     ['#nosotros p', 'up', 60],
                     ['.chrome-tilt-card', 'zoom', 0],
                     ['#nosotros .benefit-card', 'up', 140],
+                    ['#planes #planes-tag', 'down', 0],
+                    ['#planes h2', 'up', 0],
+                    ['#planes .planes-desc', 'up', 60],
+                    ['#planes .planes-toggle-container', 'zoom', 80],
+                    ['#planes .pricing-card', 'up', 140],
+                    ['#planes .planes-faq', 'up', 80],
                     ['#equipo #equipo-tag', 'down', 0],
                     ['#equipo h2', 'up', 0],
                     ['#equipo-subtitulo', 'up', 60],
