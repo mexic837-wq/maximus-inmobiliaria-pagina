@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Términos y Condiciones de Uso | MAXIMUS Inmobiliaria</title>
+    <!-- Favicon Oficial MAXIMUS -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                        'maximus-bg': '#F4F7F6',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fuentes y Fuentes de Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Supabase & Scripts de Soporte -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/auth.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+        body { -webkit-tap-highlight-color: transparent; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @media print {
+            nav, footer, .no-print, #indice-lateral { display: none !important; }
+            body { background: white !important; color: black !important; font-size: 11pt !important; }
+            .print-full { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            .card-legal { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
+
+        /* Indicador de sección activa en índice lateral */
+        .toc-link.active {
+            color: #0B4A3F;
+            font-weight: 700;
+            border-left-color: #10B981;
+            background-color: #ECFDF5;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-900 antialiased bg-[#F8FAFA] selection:bg-maximus-accent selection:text-white flex flex-col min-h-screen">
+
+    <!-- Barra de Navegación Principal -->
+    <nav class="sticky top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <a href="/" class="flex items-center gap-2.5 sm:gap-3 group">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#0B4A3F] via-[#072B24] to-[#041713] p-1.5 flex items-center justify-center shadow-md shadow-emerald-950/20 border border-emerald-500/40 group-hover:border-emerald-300 transition-all">
+                        <img src="assest/logo_maximus_chrome_icono.svg" alt="MAXIMUS Logo" class="w-full h-full object-contain filter drop-shadow transition-transform duration-300 group-hover:scale-105" />
+                    </div>
+                    <span class="text-xl md:text-2xl font-black text-maximus-dark tracking-tighter flex items-center">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                </a>
+
+                <!-- Enlaces de navegación desktop -->
+                <div class="hidden md:flex items-center space-x-7 text-sm font-semibold text-gray-600">
+                    <a href="/" class="hover:text-maximus-dark transition">Inicio</a>
+                    <a href="/catalogo" class="hover:text-maximus-dark transition">Propiedades</a>
+                    <a href="/#nosotros" class="hover:text-maximus-dark transition">Nosotros</a>
+                    <a href="/#planes" class="hover:text-maximus-dark transition">Planes Pro</a>
+                    <a href="#contacto" class="hover:text-maximus-dark transition">Contacto</a>
+                </div>
+
+                <!-- CTA Acceso -->
+                <div class="flex items-center gap-3">
+                    <a href="/login" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-gray-700 hover:text-maximus-dark hover:bg-gray-100 transition">
+                        <i class="fas fa-sign-in-alt text-emerald-600"></i>
+                        <span>Ingresar</span>
+                    </a>
+                    <a href="/login#register" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#0B4A3F] hover:bg-[#07362e] text-white shadow-sm hover:shadow transition">
+                        <span>Crear Cuenta</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Hero: Marco Legal y Regulatorio -->
+    <header class="relative bg-gradient-to-b from-[#051F19] via-[#0B4A3F] to-[#041913] text-white py-12 sm:py-16 overflow-hidden">
+        <!-- Luces ambientales de fondo -->
+        <div class="absolute -right-24 -top-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 bottom-0 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <!-- Breadcrumb -->
+            <div class="flex items-center gap-2 text-xs text-emerald-200/80 mb-4">
+                <a href="/" class="hover:text-white transition flex items-center gap-1">
+                    <i class="fas fa-home text-[11px]"></i> Inicio
+                </a>
+                <span>/</span>
+                <span class="text-white font-medium">Marco Jurídico</span>
+                <span>/</span>
+                <span class="text-emerald-300 font-bold">Términos y Condiciones</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3">
+                        <i class="fas fa-shield-alt text-xs"></i> Respaldo Jurídico Integral · San Cristóbal, Táchira
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+                        Términos y Condiciones Generales de Uso
+                    </h1>
+                    <p class="text-gray-200 text-sm sm:text-base leading-relaxed max-w-3xl font-light">
+                        El presente instrumento legal establece las normas de uso del portal digital, los servicios profesionales de corretaje inmobiliario, la política de comisiones compartidas (50/50) y los compromisos de transparencia de <strong>MAXIMUS Inmobiliaria, C.A.</strong> en la República Bolivariana de Venezuela.
+                    </p>
+
+                    <!-- Badges de dirección -->
+                    <div class="flex items-center gap-4 flex-wrap mt-6 pt-6 border-t border-white/15 text-xs text-gray-200">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-gavel text-emerald-400"></i>
+                            <span>Dirección Legal: <strong>Abg. José Guerrero</strong></span>
+                        </div>
+                        <div class="hidden sm:inline text-white/30">•</div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-user-tie text-emerald-400"></i>
+                            <span>Dirección Comercial: <strong>Lic. Eva Camargo</strong></span>
+                        </div>
+                        <div class="hidden sm:inline text-white/30">•</div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-calendar-check text-emerald-400"></i>
+                            <span>Actualizado: <strong>Octubre 2026</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Acción Rápida: Imprimir / Consultar -->
+                <div class="lg:col-span-4 no-print">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 text-white shadow-2xl">
+                        <h3 class="text-base font-bold mb-2 flex items-center gap-2">
+                            <i class="fas fa-file-contract text-emerald-300"></i> Validez y Consulta Legal
+                        </h3>
+                        <p class="text-xs text-gray-200 leading-relaxed mb-4">
+                            Documento redactado de conformidad con la legislación civil, mercantil y tributaria venezolana vigente.
+                        </p>
+                        <div class="space-y-2">
+                            <button type="button" onclick="window.print()" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-gray-100 text-gray-900 font-bold text-xs flex items-center justify-center gap-2 transition shadow cursor-pointer">
+                                <i class="fas fa-print text-emerald-600"></i>
+                                <span>Imprimir o Guardar en PDF</span>
+                            </button>
+                            <a href="https://wa.me/584247114483?text=Hola%20MAXIMUS,%20tengo%20una%20consulta%20sobre%20los%20T%C3%A9rminos%20y%20Condiciones." target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Consultar a Dirección Legal</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de Búsqueda Rápida de Términos (Interactiva) -->
+    <div class="bg-white border-b border-gray-200 sticky top-16 md:top-20 z-40 shadow-xs no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="relative w-full sm:w-96">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <i class="fas fa-search text-xs"></i>
+                    </div>
+                    <input type="text" id="legalSearchInput" oninput="filtrarContenidoLegal()" 
+                           placeholder="Buscar término (ej: comisión, BCV, garantía, Zelle)..." 
+                           class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white text-xs sm:text-sm text-gray-900 focus:border-maximus-accent focus:ring-2 focus:ring-maximus-accent/20 outline-none transition">
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-500 overflow-x-auto no-scrollbar w-full sm:w-auto">
+                    <span class="font-bold text-gray-700 flex-shrink-0">Acceso directo:</span>
+                    <a href="#precios-bcv" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-medium transition flex-shrink-0">Tasa BCV</a>
+                    <a href="#comisiones-50-50" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-medium transition flex-shrink-0">Comisión 50/50</a>
+                    <a href="#privacidad" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-medium transition flex-shrink-0">Privacidad</a>
+                    <a href="#jurisdiccion" class="px-2.5 py-1 rounded-lg bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-medium transition flex-shrink-0">Tribunales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal: Layout Split con Índice Lateral Fijo -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 flex-1">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+            
+            <!-- Columna Izquierda: Índice de Navegación Fijo (Desktop) -->
+            <aside id="indice-lateral" class="hidden lg:block lg:col-span-4">
+                <div class="sticky top-36 bg-white rounded-2xl border border-gray-200/90 p-5 shadow-xs">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-2">
+                        <i class="fas fa-list-ol text-emerald-600"></i> Tabla de Contenido
+                    </h3>
+                    <nav class="space-y-1 text-xs">
+                        <a href="#identificacion" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            1. Identificación y Objeto Social
+                        </a>
+                        <a href="#definiciones" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            2. Definiciones Oficiales
+                        </a>
+                        <a href="#uso-portal" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            3. Uso del Portal y Catálogo
+                        </a>
+                        <a href="#precios-bcv" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            4. Monedas, Precios y Tasa Oficial BCV
+                        </a>
+                        <a href="#comisiones-50-50" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            5. Alianzas y Comisión Compartida (50/50)
+                        </a>
+                        <a href="#membresias-pro" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            6. Membresías Pro de Asesores
+                        </a>
+                        <a href="#verificacion-legal" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            7. Verificación Jurídica y Responsabilidad
+                        </a>
+                        <a href="#privacidad" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            8. Privacidad y Protección de Datos
+                        </a>
+                        <a href="#propiedad-intelectual" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            9. Propiedad Intelectual y Multimedia
+                        </a>
+                        <a href="#jurisdiccion" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
+                            10. Jurisdicción y Ley Aplicable
+                        </a>
+                    </nav>
+
+                    <!-- Caja de Asistencia Legal -->
+                    <div class="mt-6 pt-5 border-t border-gray-100">
+                        <div class="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-100 text-xs">
+                            <div class="flex items-center gap-2 text-emerald-900 font-bold mb-1">
+                                <i class="fas fa-balance-scale text-emerald-600"></i>
+                                <span>Garantía Notarial y Registral</span>
+                            </div>
+                            <p class="text-emerald-800 text-[11px] leading-relaxed">
+                                Todas las operaciones inmobiliarias tramitadas a través de MAXIMUS son visadas y revisadas por profesionales del derecho colegiados.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Columna Derecha: Cláusulas y Contenido Legal Exhaustivo -->
+            <div class="lg:col-span-8 space-y-8" id="contenedorClausulas">
+
+                <!-- 1. Identificación y Objeto Social -->
+                <section id="identificacion" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            01
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Identificación de la Empresa y Objeto Social
+                        </h2>
+                    </div>
+                    <div class="prose text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3 font-normal">
+                        <p>
+                            El presente sitio web y portal digital <a href="https://maximusinmobiliaria.tech" class="text-maximus-accent font-bold hover:underline">maximusinmobiliaria.tech</a> es propiedad y operado formalmente por <strong>MAXIMUS INMOBILIARIA, C.A.</strong> (en adelante denominada "MAXIMUS" o "La Inmobiliaria"), sociedad mercantil domiciliada en San Cristóbal, Estado Táchira, República Bolivariana de Venezuela.
+                        </p>
+                        <p>
+                            MAXIMUS tiene por objeto principal la prestación de servicios profesionales de <strong>corretaje, intermediación, comercialización, consultoría jurídica inmobiliaria, avalúos referenciales y promoción de bienes inmuebles residenciales, comerciales e industriales</strong> en el Estado Táchira y en todo el territorio nacional.
+                        </p>
+                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 text-xs space-y-1">
+                            <p><strong>Razón Social:</strong> MAXIMUS INMOBILIARIA, C.A.</p>
+                            <p><strong>Domicilio Legal:</strong> San Cristóbal, Estado Táchira, Venezuela.</p>
+                            <p><strong>Dirección Legal:</strong> Abg. José Guerrero (Director Legal & Notarial).</p>
+                            <p><strong>Dirección Comercial:</strong> Lic. Eva Camargo (Directora Comercial & Captación).</p>
+                            <p><strong>Contacto Oficial:</strong> contacto@maximus.com | +58 424-7114483</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Definiciones Oficiales -->
+                <section id="definiciones" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            02
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Definiciones
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>A los efectos de la interpretación de este documento, los siguientes términos tendrán el significado que a continuación se indica:</p>
+                        <ul class="space-y-2.5 pl-2">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-600 text-xs mt-1 shrink-0"></i>
+                                <span><strong>Usuario / Visitante:</strong> Cualquier persona natural o jurídica que navegue por el portal web o consulte el catálogo de propiedades.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-600 text-xs mt-1 shrink-0"></i>
+                                <span><strong>Cliente Comprador / Arrendatario:</strong> Persona interesada en adquirir o tomar en alquiler un inmueble publicado en MAXIMUS.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-600 text-xs mt-1 shrink-0"></i>
+                                <span><strong>Propietario / Vendedor / Arrendador:</strong> Titular legítimo de los derechos de propiedad o con mandato legal expreso que autoriza a MAXIMUS a comercializar un bien inmueble.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-600 text-xs mt-1 shrink-0"></i>
+                                <span><strong>Asesor Oficial MAXIMUS:</strong> Agente inmobiliario acreditado contractualmente por MAXIMUS que representa directamente a la firma.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-emerald-600 text-xs mt-1 shrink-0"></i>
+                                <span><strong>Asesor Externo (Membresía Pro):</strong> Profesional inmobiliario independiente que suscribe la plataforma para acceder a herramientas CRM, cotizador y alianzas comerciales bajo el esquema de comisión compartida 50/50.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 3. Uso del Portal y Catálogo -->
+                <section id="uso-portal" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            03
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Uso del Portal y Catálogo Digital de Inmuebles
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            El acceso al portal web es de carácter libre y gratuito para la consulta del inventario público. El usuario se compromete a hacer un uso diligente, lícito y conforme a la moral y buenas costumbres de todos los servicios ofrecidos.
+                        </p>
+                        <p>
+                            Queda expresamente prohibido:
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-100 text-rose-900 text-xs">
+                                <i class="fas fa-ban text-rose-600 mr-1.5"></i>
+                                <strong>Extracción no autorizada (Scraping):</strong> Prohibido el uso de bots, rastreadores o robots para copiar el catálogo sin consentimiento por escrito.
+                            </div>
+                            <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-100 text-rose-900 text-xs">
+                                <i class="fas fa-clone text-rose-600 mr-1.5"></i>
+                                <strong>Re-publicación fraudulenta:</strong> Suplantar la titularidad de los inmuebles o modificar los precios con fines especulativos.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. Monedas, Precios y Tasa Oficial BCV -->
+                <section id="precios-bcv" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            04
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Régimen Monetario, Precios y Tasa Oficial BCV
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            De estricta conformidad con el ordenamiento jurídico de la República Bolivariana de Venezuela (Ley del Banco Central de Venezuela y Convenio Cambiario N° 1):
+                        </p>
+                        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 text-xs sm:text-sm space-y-2">
+                            <div class="flex items-center gap-2 font-bold text-emerald-900">
+                                <i class="fas fa-landmark text-emerald-700"></i>
+                                <span>Cumplimiento Estricto de la Tasa Oficial del BCV</span>
+                            </div>
+                            <p>
+                                Todos los precios exhibidos en dólares estadounidenses (USD) tienen carácter referencial conforme al mercado inmobiliario. Cuando el pago se realice en moneda de curso legal (Bolívares - VES), la conversión se efectuará de forma obligatoria a la <strong>Tasa Oficial del Banco Central de Venezuela (BCV)</strong> vigente al momento exacto de la operación o pago.
+                            </p>
+                        </div>
+                        <p>
+                            <strong>Métodos de Pago Aceptados:</strong> Los pagos por concepto de reserva, comisiones o membresías podrán liquidarse mediante:
+                        </p>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <li class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-2">
+                                <i class="fas fa-mobile-alt text-emerald-600"></i>
+                                <span><strong>Pago Móvil Interbancario (VES):</strong> Tasa oficial BCV.</span>
+                            </li>
+                            <li class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-2">
+                                <i class="fas fa-university text-emerald-600"></i>
+                                <span><strong>Transferencia Bancaria Nacional (VES):</strong> Banesco / Mercantil.</span>
+                            </li>
+                            <li class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-2">
+                                <i class="fas fa-dollar-sign text-emerald-600"></i>
+                                <span><strong>Zelle (USD):</strong> Conforme a convenios privados lícitos.</span>
+                            </li>
+                            <li class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-2">
+                                <i class="fab fa-bitcoin text-emerald-600"></i>
+                                <span><strong>Binance Pay (USDT):</strong> Transferencia digital directa.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 5. Alianzas y Comisión Compartida (50/50) -->
+                <section id="comisiones-50-50" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            05
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Política de Alianzas y Comisión Compartida (Punta 50 / 50)
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            MAXIMUS fomenta una cultura de profesionalismo, honestidad y colaboración entre todos los agentes inmobiliarios independientes y oficinas aliadas en San Cristóbal y el Estado Táchira.
+                        </p>
+                        <div class="p-4 rounded-xl bg-blue-50/80 border border-blue-200 text-blue-950 text-xs sm:text-sm space-y-2">
+                            <div class="flex items-center gap-2 font-bold text-blue-900">
+                                <i class="fas fa-handshake text-blue-600"></i>
+                                <span>Regla de Oro: División 50% / 50% entre Agentes</span>
+                            </div>
+                            <p>
+                                En cualquier operación cerrada en alianza donde una parte represente la captación del inmueble (Punta Captadora) y la otra parte represente al comprador o arrendatario (Punta Compradora), los honorarios netos de corretaje pactados se dividirán formalmente en <strong>partes exactamente iguales: cincuenta por ciento (50%) para cada una de las partes</strong>.
+                            </p>
+                        </div>
+                        <ul class="space-y-2 text-xs">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-emerald-600 text-xs mt-0.5 shrink-0"></i>
+                                <span><strong>Respeto irrestricto al cliente captado:</strong> Ningún asesor podrá contactar de forma directa o unilateral al propietario presentado por un colega sin la debida intermediación del captador.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-emerald-600 text-xs mt-0.5 shrink-0"></i>
+                                <span><strong>Transparencia en el cierre:</strong> Toda oferta formal debe ser comunicada por escrito, manteniendo informadas a ambas puntas hasta la firma notariada o registrada.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 6. Membresías Pro de Asesores -->
+                <section id="membresias-pro" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            06
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Membresías Pro y Plataforma Tecnológica
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            Los Asesores Externos que deseen utilizar la suite tecnológica de MAXIMUS (panel CRM, publicación en catálogo con branding personal, cotizador express y notificaciones automáticas por WhatsApp) pueden optar por las membresías <strong>Asesor Pro Mensual</strong> ($19/mes) o <strong>Asesor Pro Anual</strong> ($169/año).
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 rounded-xl border border-gray-200 bg-gray-50">
+                                <strong class="text-gray-900 block mb-1">Activación Inmediata</strong>
+                                <span>El acceso a las funciones pro se habilita en cuanto el comprobante de pago sea verificado por el equipo de administración de MAXIMUS.</span>
+                            </div>
+                            <div class="p-3 rounded-xl border border-gray-200 bg-gray-50">
+                                <strong class="text-gray-900 block mb-1">Política de Cancelación</strong>
+                                <span>El usuario puede suspender o no renovar su membresía en cualquier momento. Los pagos por períodos ya devengados o en curso no son reembolsables.</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. Verificación Jurídica y Responsabilidad -->
+                <section id="verificacion-legal" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            07
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Debida Diligencia Jurídica y Deslinde de Responsabilidad
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            MAXIMUS, bajo la conducción de su <strong>Director Legal Abg. José Guerrero</strong>, aplica un estricto protocolo de debida diligencia (*Due Diligence*) solicitando a los propietarios:
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold">Cédula y RIF vigentes</span>
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold">Título de Propiedad Registrado</span>
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold">Cédula o Ficha Catastral</span>
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold">Solvencia Municipal / Aseo</span>
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-900 font-semibold">Liberación de Hipoteca (si aplica)</span>
+                        </div>
+                        <p class="text-xs text-gray-500 italic mt-2">
+                            *MAXIMUS actúa como facilitador e intermediario inmobiliario. El perfeccionamiento y transmisión definitiva de la propiedad se consuma de manera formal mediante el otorgamiento del respectivo documento público ante la Oficina de Registro Público Inmobiliario correspondiente.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 8. Privacidad y Protección de Datos -->
+                <section id="privacidad" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            08
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Política de Privacidad y Protección de Datos Personales
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            La confidencialidad y custodia de la información de nuestros clientes es un pilar fundamental en MAXIMUS:
+                        </p>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-2.5">
+                                <i class="fas fa-lock text-emerald-600 mt-0.5"></i>
+                                <div>
+                                    <strong class="text-gray-900 block">Uso Exclusivo para la Gestión Inmobiliaria</strong>
+                                    <span>Sus datos de contacto (nombre, teléfono, correo) son utilizados únicamente para agendar visitas, enviar dossiers técnicos y formalizar los acuerdos de corretaje.</span>
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-2.5">
+                                <i class="fas fa-shield-virus text-emerald-600 mt-0.5"></i>
+                                <div>
+                                    <strong class="text-gray-900 block">No Comercialización con Terceros</strong>
+                                    <span>MAXIMUS bajo ninguna circunstancia vende, cede ni comercializa bases de datos o números telefónicos a terceros para fines de publicidad no solicitada.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. Propiedad Intelectual y Multimedia -->
+                <section id="propiedad-intelectual" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            09
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Propiedad Intelectual y Material Fotográfico
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            Todo el contenido gráfico, logotipos, diseño cromado MAXIMUS, fotografías profesionales, recorridos virtuales, código fuente y fichas técnicas contenidas en el portal son propiedad exclusiva de <strong>MAXIMUS INMOBILIARIA, C.A.</strong> o de sus legítimos autores licenciantes.
+                        </p>
+                        <p>
+                            Queda terminantemente prohibido a otras agencias o terceros recortar o suprimir marcas de agua oficiales o reproducir las fotografías de nuestro catálogo para publicaciones no autorizadas en portales externos o redes sociales.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- 10. Jurisdicción y Ley Aplicable -->
+                <section id="jurisdiccion" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
+                            10
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                            Jurisdicción, Ley Aplicable y Solución de Controversias
+                        </h2>
+                    </div>
+                    <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                        <p>
+                            Para todos los efectos derivados de la interpretación, validez y cumplimiento de estos Términos y Condiciones, las partes se someten a la legislación vigente de la <strong>República Bolivariana de Venezuela</strong>.
+                        </p>
+                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-xs sm:text-sm">
+                            <p class="font-semibold text-gray-900 mb-1">
+                                <i class="fas fa-balance-scale mr-1.5 text-maximus-dark"></i>
+                                Competencia Judicial Exclusiva:
+                            </p>
+                            <p>
+                                Cualquier controversia o reclamación que no pueda ser resuelta de mutuo acuerdo mediante negociación directa entre las partes, será sometida a la jurisdicción exclusiva de los <strong>Tribunales Competentes de la Circunscripción Judicial del Estado Táchira</strong>, con sede en la ciudad de San Cristóbal, con renuncia expresa a cualquier otro fuero que pudiere corresponderles por razón de sus domicilios presentes o futuros.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tarjeta de Contacto Directo con el Equipo Legal -->
+                <div class="bg-gradient-to-br from-[#0B4A3F] to-[#041B15] rounded-2xl p-6 sm:p-8 text-white shadow-xl no-print">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div class="space-y-2 text-center sm:text-left">
+                            <span class="inline-block px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-wider">
+                                ¿Dudas sobre una operación o contrato?
+                            </span>
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                                Asesoría Legal Inmobiliaria Directa
+                            </h3>
+                            <p class="text-gray-200 text-xs sm:text-sm font-light max-w-xl">
+                                Comunícate directamente con nuestra Dirección Legal para coordinar la revisión de documentos de propiedad o la redacción de contratos de compraventa y arrendamiento.
+                            </p>
+                        </div>
+                        <a href="https://wa.me/584247114483?text=Hola%20Abg.%20Jos%C3%A9%20Guerrero,%20deseo%20asesor%C3%ADa%20legal%20inmobiliaria." target="_blank" rel="noopener noreferrer" class="px-6 py-3.5 rounded-xl bg-white hover:bg-emerald-50 text-gray-900 font-bold text-xs sm:text-sm transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex-shrink-0 flex items-center gap-2 cursor-pointer">
+                            <i class="fab fa-whatsapp text-emerald-600 text-base"></i>
+                            <span>Hablar con Dirección Legal</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Oficial Unificado MAXIMUS -->
+    <footer id="contacto" class="bg-maximus-black text-white pt-14 pb-8 border-t-4 border-maximus-accent relative overflow-hidden mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+                
+                <!-- Columna 1: Marca y Redes -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#0B4A3F] via-[#072B24] to-[#041713] p-1.5 flex items-center justify-center shadow-lg border border-emerald-500/30">
+                            <img src="assest/logo_maximus_chrome_icono.svg" alt="MAXIMUS Logo" class="w-full h-full object-contain" />
+                        </div>
+                        <span class="text-2xl font-black text-white tracking-tighter">MAXIMUS<span class="text-maximus-accent">.</span></span>
+                    </div>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">
+                        Tu aliado estratégico en inversiones inmobiliarias. Confianza, respaldo jurídico y exclusividad en San Cristóbal y Táchira.
+                    </p>
+                    <div class="flex space-x-3">
+                        <a href="https://www.instagram.com/maximusinmobiliaria_ve" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-maximus-accent text-xs transition"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/1EynqA9tCf/" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-maximus-accent text-xs transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://wa.me/584247114483" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-maximus-accent text-xs transition"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Enlaces Rápidos -->
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider mb-4 text-emerald-400">Navegación</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><a href="/" class="hover:text-white transition">Inicio</a></li>
+                        <li><a href="/catalogo" class="hover:text-white transition">Catálogo de Inmuebles</a></li>
+                        <li><a href="/#nosotros" class="hover:text-white transition">Sobre Nosotros</a></li>
+                        <li><a href="/#planes" class="hover:text-white transition">Planes para Asesores</a></li>
+                        <li><a href="/login" class="hover:text-white transition">Acceso al Portal</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 3: Marco Legal -->
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider mb-4 text-emerald-400">Marco Legal</h4>
+                    <ul class="space-y-2 text-xs text-gray-400">
+                        <li><a href="/terminos" class="text-emerald-300 font-semibold hover:underline">Términos y Condiciones</a></li>
+                        <li><a href="/terminos#privacidad" class="hover:text-white transition">Política de Privacidad</a></li>
+                        <li><a href="/terminos#comisiones-50-50" class="hover:text-white transition">Reglamento Alianzas 50/50</a></li>
+                        <li><a href="/terminos#precios-bcv" class="hover:text-white transition">Régimen Monetario BCV</a></li>
+                        <li><a href="/terminos#jurisdiccion" class="hover:text-white transition">Jurisdicción Táchira</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 4: Contacto de Dirección -->
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wider mb-4 text-emerald-400">Contacto de Dirección</h4>
+                    <div class="space-y-3 text-xs text-gray-400">
+                        <div>
+                            <p class="font-bold text-white">Lic. Eva Camargo</p>
+                            <p class="text-[11px] text-gray-400">Directora Comercial</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white">Abg. José Guerrero</p>
+                            <p class="text-[11px] text-gray-400">Director Legal</p>
+                        </div>
+                        <div class="pt-1 space-y-1">
+                            <p><i class="fas fa-envelope mr-1.5 text-emerald-400"></i> contacto@maximus.com</p>
+                            <p><i class="fab fa-whatsapp mr-1.5 text-emerald-400"></i> <a href="https://wa.me/584247114483" target="_blank" class="hover:text-white transition">+58 424-7114483</a></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Barra Inferior de Copyright -->
+            <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 text-center sm:text-left">
+                <p>&copy; 2026 MAXIMUS Inmobiliaria, C.A. Todos los derechos reservados.</p>
+                <div class="flex items-center gap-4 text-gray-400">
+                    <a href="/terminos" class="hover:text-emerald-400 transition">Términos y Condiciones</a>
+                    <span>•</span>
+                    <a href="/terminos#privacidad" class="hover:text-emerald-400 transition">Privacidad</a>
+                    <span>•</span>
+                    <a href="https://wa.me/584247114483" target="_blank" class="hover:text-emerald-400 transition">Atención Legal</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script para Interacción y Filtro de Búsqueda -->
+    <script>
+        // Filtrar contenido legal en tiempo real
+        function filtrarContenidoLegal() {
+            const input = document.getElementById('legalSearchInput');
+            const q = (input ? input.value : '').toLowerCase().trim();
+            const secciones = document.querySelectorAll('.legal-section');
+
+            secciones.forEach(sec => {
+                if (!q) {
+                    sec.style.display = 'block';
+                    return;
+                }
+                const texto = sec.innerText.toLowerCase();
+                if (texto.includes(q)) {
+                    sec.style.display = 'block';
+                } else {
+                    sec.style.display = 'none';
+                }
+            });
+        }
+
+        // Active State en el Índice Lateral según Scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.legal-section');
+            const navLinks = document.querySelectorAll('.toc-link');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 160;
+                    if (window.pageYOffset >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
