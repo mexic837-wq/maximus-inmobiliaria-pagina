@@ -326,44 +326,15 @@
                     </form>
                 </div>
 
-                <!-- ================= VISTA 2: CREAR CUENTA (CLIENTE / ASESOR EXTERNO) ================= -->
+                <!-- ================= VISTA 2: CREAR CUENTA GRATUITA (CANVA-STYLE) ================= -->
                 <div id="registerView" class="hidden">
-                    <div class="mb-4">
-                        <h2 id="registerHeadingTitle" class="text-2xl font-bold text-maximus-black">Crear mi Cuenta</h2>
-                        <p id="registerHeadingSubtitle" class="text-gray-500 text-xs sm:text-sm mt-1">Selecciona el tipo de cuenta para comenzar en la plataforma inmobiliaria.</p>
+                    <div class="mb-5">
+                        <h2 class="text-2xl font-bold text-maximus-black">Crear mi Cuenta en MAXIMUS</h2>
+                        <p class="text-gray-500 text-xs sm:text-sm mt-1">Crea tu cuenta en segundos para explorar propiedades, agendar visitas y gestionar tu panel.</p>
                     </div>
 
-                    <!-- Formulario Registro -->
+                    <!-- Formulario Registro Limpio y Unificado -->
                     <form id="registerForm" class="space-y-3.5">
-                        <!-- Selector Tipo de Cuenta (Cliente vs Asesor Externo de Paga) -->
-                        <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1.5">Tipo de Cuenta</label>
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <label id="lblAccountCliente" class="relative cursor-pointer rounded-xl border-2 border-emerald-500 bg-emerald-50/70 p-2.5 sm:p-3 flex flex-col transition-all shadow-xs">
-                                    <input type="radio" name="accountType" value="cliente" checked onchange="cambiarTipoCuentaRegistro('cliente')" class="sr-only">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <span class="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                                            <i class="fas fa-user text-emerald-600"></i> Cliente
-                                        </span>
-                                        <span class="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Gratis</span>
-                                    </div>
-                                    <p class="text-[10.5px] text-gray-500 leading-tight">Para compradores y alquileres</p>
-                                </label>
-
-                                <label id="lblAccountAsesorExt" class="relative cursor-pointer rounded-xl border-2 border-gray-200 bg-white hover:border-blue-300 p-2.5 sm:p-3 flex flex-col transition-all">
-                                    <input type="radio" name="accountType" value="asesor_externo" onchange="cambiarTipoCuentaRegistro('asesor_externo')" class="sr-only">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <span class="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                                            <i class="fas fa-briefcase text-blue-600"></i> Asesor Externo
-                                        </span>
-                                        <span class="text-[9.5px] font-black uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">Plan Pro</span>
-                                    </div>
-                                    <p class="text-[10.5px] text-gray-500 leading-tight">Dashboard CRM y carga de inmuebles</p>
-<button type="button" onclick="event.stopPropagation(); abrirModalSuscripcionPro('mensual');" class="text-[10px] text-blue-600 hover:text-blue-800 font-bold underline mt-1 text-left cursor-pointer">Ver pasarelas (Pago Móvil, Zelle, USDT)</button>
-                                </label>
-                            </div>
-                        </div>
-
                         <!-- Campo Nombre Completo -->
                         <div>
                             <label for="regNombre" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 mb-1">Nombre Completo</label>
@@ -431,17 +402,19 @@
                             </div>
                         </div>
 
-                        <!-- Badge Informativo Rol de Cuenta Dinámico -->
-                        <div id="registerRoleBadgeContainer" class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200 text-emerald-900 text-[11px] flex items-center gap-2.5 transition-all">
-                            <i id="registerRoleBadgeIcon" class="fas fa-check-shield text-emerald-600 text-base shrink-0"></i>
-                            <span id="registerRoleBadgeText">Cuenta gratuita para explorar inmuebles, guardar tus favoritos y agendar citas directas con nuestros asesores en Táchira.</span>
+                        <!-- Badge Informativo Canva-Style -->
+                        <div class="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 text-[11px] flex items-center justify-between gap-2.5">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-shield-alt text-emerald-600 text-sm shrink-0"></i>
+                                <span>Tu cuenta inicial es gratuita de por vida. Podrás activar herramientas Pro de asesor cuando lo desees.</span>
+                            </div>
                         </div>
 
                         <!-- Botón Crear Cuenta -->
-                        <div class="pt-2">
+                        <div class="pt-1.5">
                             <button type="submit" id="registerSubmitBtn"
                                     class="w-full py-3.5 px-6 rounded-xl bg-maximus-accent hover:bg-emerald-600 text-white font-bold text-sm tracking-wide shadow-md shadow-emerald-600/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
-                                <span id="registerSubmitBtnText">Crear mi Cuenta Gratis</span>
+                                <span>Crear mi Cuenta Gratis</span>
                                 <i class="fas fa-check text-xs"></i>
                             </button>
                         </div>
@@ -983,9 +956,6 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Creando tu cuenta...';
 
-            const accountTypeInput = document.querySelector('input[name="accountType"]:checked');
-            const selectedAccountType = accountTypeInput ? accountTypeInput.value : 'cliente';
-
             if (window.AuthService) {
                 const res = await window.AuthService.register({ 
                     nombre, 
@@ -994,7 +964,7 @@
                     telefono, 
                     telefono_e164: telefonoE164, 
                     prefijo, 
-                    rol: selectedAccountType,
+                    rol: 'cliente',
                     rememberDevice: true 
                 });
 
@@ -1003,17 +973,17 @@
                     try {
                         if (window.N8nService && typeof window.N8nService.trigger === 'function') {
                             window.N8nService.trigger('NUEVO_LEAD', {
-                                evento: selectedAccountType === 'asesor_externo' ? 'NUEVO_ASESOR_EXTERNO_REGISTRO' : 'NUEVO_USUARIO_REGISTRO',
+                                evento: 'NUEVO_USUARIO_REGISTRO',
                                 nombre,
                                 email,
                                 telefono,
                                 telefono_e164: telefonoE164,
                                 prefijo,
-                                rol: selectedAccountType,
-                                plan: selectedAccountType === 'asesor_externo' ? 'pro' : 'gratis',
+                                rol: 'cliente',
+                                plan: 'gratis',
                                 origen: 'portal_web_registro',
                                 whatsapp_listo: Boolean(telefonoE164),
-                                mensaje: selectedAccountType === 'asesor_externo' ? 'Nuevo asesor externo registrado (Plan Pro)' : 'Nuevo cliente registrado en MAXIMUS Inmobiliaria'
+                                mensaje: 'Nuevo cliente registrado en MAXIMUS Inmobiliaria'
                             }).catch(err => console.warn('Aviso webhook registro n8n:', err));
                         }
                         if (window.LeadService && typeof window.LeadService.create === 'function') {
