@@ -13184,6 +13184,36 @@
                         };
                         localStorage.setItem('maximus_registered_users', JSON.stringify(regUsers));
                     } catch(e) {}
+
+                    // Aprovisionar automáticamente la cuenta en Supabase Auth si estamos en producción
+                    if (password && typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA) {
+                        try {
+                            const signupUrl = (APP_CONFIG.SUPABASE_URL || 'https://db.maximusinmobiliaria.tech') + '/auth/v1/signup';
+                            const apiKey = APP_CONFIG.SUPABASE_ANON_KEY;
+                            await fetch(signupUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'apikey': apiKey,
+                                    'Authorization': 'Bearer ' + apiKey,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    email: cleanCorreo,
+                                    password: password,
+                                    data: {
+                                        nombre_completo: nombre,
+                                        telefono: telefono,
+                                        rol: 'asesor_maximus',
+                                        tipo_asesor: tipoCuenta,
+                                        cargo: cargo,
+                                        especialidad: especialidad
+                                    }
+                                })
+                            });
+                        } catch (errAuth) {
+                            console.warn('Aviso aprovisionamiento Supabase Auth para asesor:', errAuth);
+                        }
+                    }
                 }
 
                 if (typeof AsesorMaximusService !== 'undefined') {
