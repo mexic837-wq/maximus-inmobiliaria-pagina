@@ -7401,6 +7401,19 @@
             let userRole = 'asesor_maximus';
             if (user) {
                 userRole = user.role || 'asesor_maximus';
+                const emailNorm = (user.email || '').toLowerCase().trim();
+                const cargoNorm = (user.cargo || user.title || '').toLowerCase();
+                if (emailNorm === 'guerreroja87@gmail.com' || emailNorm === 'admin@maximus.com' || cargoNorm.includes('director') || cargoNorm.includes('ceo') || cargoNorm.includes('administrador')) {
+                    userRole = 'admin';
+                    user.role = 'admin';
+                    user.title = user.title || 'Director / Administrador';
+                    try {
+                        localStorage.setItem('maximus_user', JSON.stringify(user));
+                        sessionStorage.setItem('maximus_user', JSON.stringify(user));
+                        localStorage.setItem('auth_user', JSON.stringify(user));
+                        sessionStorage.setItem('auth_user', JSON.stringify(user));
+                    } catch(e) {}
+                }
                 if (userRole === 'agente') userRole = 'asesor_maximus';
                 if (userRole === 'usuario') userRole = 'cliente';
 
@@ -8436,8 +8449,25 @@
             // Verificar restricciones para usuarios normales
             let currentUserRole = 'asesor_maximus';
             try {
-                const u = JSON.parse(localStorage.getItem('maximus_user'));
-                if (u && u.role) currentUserRole = u.role;
+                let u = null;
+                if (window.AuthService && typeof window.AuthService.getCurrentUser === 'function') {
+                    u = window.AuthService.getCurrentUser();
+                }
+                if (!u) {
+                    const raw = localStorage.getItem('maximus_user') || 
+                                sessionStorage.getItem('maximus_user') || 
+                                localStorage.getItem('auth_user') || 
+                                sessionStorage.getItem('auth_user');
+                    if (raw) u = JSON.parse(raw);
+                }
+                if (u) {
+                    if (u.role) currentUserRole = u.role;
+                    const emailNorm = (u.email || '').toLowerCase().trim();
+                    const cargoNorm = (u.cargo || u.title || '').toLowerCase();
+                    if (emailNorm === 'guerreroja87@gmail.com' || emailNorm === 'admin@maximus.com' || cargoNorm.includes('director') || cargoNorm.includes('ceo') || cargoNorm.includes('administrador')) {
+                        currentUserRole = 'admin';
+                    }
+                }
                 if (currentUserRole === 'usuario') currentUserRole = 'cliente';
             } catch(e) {}
 
@@ -13169,6 +13199,7 @@
                 if (cleanCorreo) {
                     try {
                         let regUsers = JSON.parse(localStorage.getItem('maximus_registered_users')) || {};
+                        const esAdminOProp = cleanCorreo === 'guerreroja87@gmail.com' || cleanCorreo === 'admin@maximus.com' || /director|ceo|admin/i.test(cargo);
                         regUsers[cleanCorreo] = {
                             password: password,
                             user: {
@@ -13176,9 +13207,9 @@
                                 name: nombre,
                                 email: cleanCorreo,
                                 telefono: telefono,
-                                role: 'asesor_maximus',
+                                role: esAdminOProp ? 'admin' : 'asesor_maximus',
                                 tipo_asesor: tipoCuenta,
-                                title: cargo || 'Asesor MAXIMUS',
+                                title: cargo || (esAdminOProp ? 'Director / Administrador' : 'Asesor MAXIMUS'),
                                 avatar: avatar
                             }
                         };
@@ -13188,6 +13219,7 @@
                     // Aprovisionar automáticamente la cuenta en Supabase Auth si estamos en producción
                     if (password && typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA) {
                         try {
+                            const esAdminOProp = cleanCorreo === 'guerreroja87@gmail.com' || cleanCorreo === 'admin@maximus.com' || /director|ceo|admin/i.test(cargo);
                             const signupUrl = (APP_CONFIG.SUPABASE_URL || 'https://db.maximusinmobiliaria.tech') + '/auth/v1/signup';
                             const apiKey = APP_CONFIG.SUPABASE_ANON_KEY;
                             await fetch(signupUrl, {
@@ -13203,7 +13235,7 @@
                                     data: {
                                         nombre_completo: nombre,
                                         telefono: telefono,
-                                        rol: 'asesor_maximus',
+                                        rol: esAdminOProp ? 'admin' : 'asesor_maximus',
                                         tipo_asesor: tipoCuenta,
                                         cargo: cargo,
                                         especialidad: especialidad
