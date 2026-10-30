@@ -164,7 +164,6 @@ const AuthService = {
                 } catch (_) {}
 
                 const emailClean = (authUser.email || '').toLowerCase().trim();
-                const meta = authUser.user_metadata || {};
                 const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
                 const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
