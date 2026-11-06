@@ -235,7 +235,7 @@ def open_chat_by_name(page, group_name):
     # Paso 2: Usar barra de búsqueda de WhatsApp
     print(f"    Buscando en la barra de búsqueda con: '{group_name}'...")
     try:
-        search_box = page.locator("div[contenteditable='true'][data-tab='3'], div#side div[role='textbox']").first
+        search_box = page.locator("#side input, #side [role='textbox'], #side div[contenteditable='true']").first
         if search_box.is_visible():
             search_box.click()
             search_box.fill("")
@@ -243,13 +243,21 @@ def open_chat_by_name(page, group_name):
             search_box.fill(group_name)
             time.sleep(2.5)
 
-            results = page.locator("#side div[role='listitem'] span[title]").all()
+            results = page.locator("#side span[title]").all()
             for r in results:
                 t = normalize_str(r.get_attribute("title") or "")
                 if norm_target in t or (target_words and any(w in t for w in target_words)):
-                    print(f"    [OK] Coincidencia encontrada en resultados: '{r.get_attribute('title')}', abriendo...")
-                    r.click()
-                    page.wait_for_selector("#main", timeout=8000)
+                    raw_title = r.get_attribute('title') or ""
+                    print(f"    [OK] Coincidencia encontrada en resultados: '{raw_title}', abriendo...")
+                    try:
+                        box = r.bounding_box()
+                        if box:
+                            page.mouse.click(box['x'] + box['width'] / 2, box['y'] + box['height'] / 2)
+                        else:
+                            r.click(force=True)
+                    except Exception:
+                        r.click(force=True)
+                    page.wait_for_selector("#main", timeout=15000)
                     time.sleep(3)
                     try:
                         page.locator("button[aria-label*='Cancelar'], button[aria-label*='Cerrar']").first.click()
