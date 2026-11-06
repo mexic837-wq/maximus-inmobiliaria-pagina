@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Política de Privacidad | MAXIMUS Inmobiliaria</title>
+
+    <!-- Favicon Oficial MAXIMUS -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                        'maximus-bg': '#F4F7F6',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fuentes y Fuentes de Íconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Arquitectura de Soporte -->
+    <script src="js/security.js"></script>
+    <script src="js/native-bridge.js"></script>
+    <script src="js/config.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+        body { -webkit-tap-highlight-color: transparent; }
+        .legal-card {
+            border: 1px solid rgba(209, 213, 219, 0.6);
+            transition: all 0.2s ease-in-out;
+        }
+        .legal-card:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(11, 74, 63, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-maximus-bg text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Barra de Navegación Superior -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs" style="padding-top: env(safe-area-inset-top);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2.5 sm:gap-3 group">
+                <img src="assets/logo_maximus_llamativo_icono.png" alt="MAXIMUS" class="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105">
+                <div class="flex flex-col">
+                    <span class="font-black text-lg sm:text-xl tracking-tight text-maximus-dark">MAXIMUS</span>
+                    <span class="text-[9px] sm:text-[10px] tracking-widest uppercase font-bold text-maximus-accent -mt-1">Inmobiliaria</span>
+                </div>
+            </a>
+            <div class="flex items-center gap-3 text-xs sm:text-sm font-bold">
+                <a href="catalog.html" class="text-gray-600 hover:text-maximus-dark transition-colors">Propiedades</a>
+                <a href="terminos.html" class="text-gray-600 hover:text-maximus-dark transition-colors hidden sm:inline">Términos</a>
+                <a href="login.html" class="px-4 py-2 rounded-xl bg-maximus-dark text-white hover:bg-black transition-colors shadow-xs">Acceso</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-1">
+        <!-- Encabezado de la Política -->
+        <div class="mb-8 sm:mb-12 text-center sm:text-left">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-maximus-dark text-xs font-bold uppercase tracking-wider mb-3">
+                <i class="ph-bold ph-shield-check text-emerald-600"></i>
+                Privacidad & Protección de Datos
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-black text-gray-900 tracking-tight mb-3">
+                Política de Privacidad
+            </h1>
+            <p class="text-sm sm:text-base text-gray-600 leading-relaxed max-w-2xl">
+                En <strong>MAXIMUS Inmobiliaria</strong> nos tomamos con la máxima seriedad la confidencialidad, integridad y seguridad de la información de nuestros usuarios, asesores y clientes tanto en nuestra plataforma web como en nuestras aplicaciones móviles para <strong>iOS (App Store)</strong> y <strong>Android (Google Play)</strong>.
+            </p>
+            <div class="mt-4 flex flex-wrap items-center gap-3 text-xs text-gray-500 font-medium">
+                <span><i class="ph-bold ph-calendar-blank mr-1"></i>Última actualización: Noviembre 2026</span>
+                <span>•</span>
+                <span><i class="ph-bold ph-map-pin mr-1"></i>San Cristóbal, Estado Táchira, Venezuela</span>
+            </div>
+        </div>
+
+        <!-- Secciones de la Política -->
+        <div class="space-y-6">
+
+            <!-- 1. Responsable -->
+            <section class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">01</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Identidad del Responsable del Tratamiento</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-3 leading-relaxed">
+                    <p>
+                        El responsable del tratamiento de los datos personales recopilados a través de la web <code>https://maximusinmobiliaria.tech</code> y las aplicaciones móviles oficiales es <strong>MAXIMUS Inmobiliaria</strong>, con domicilio principal en el Estado Táchira, República Bolivariana de Venezuela.
+                    </p>
+                    <p>
+                        Para cualquier consulta, aclaración, ejercicio de derechos de privacidad o inquietud técnica, puedes comunicarte directamente con nuestro equipo de privacidad al correo electrónico: <a href="mailto:contacto@maximusinmobiliaria.com" class="text-emerald-700 font-bold hover:underline">contacto@maximusinmobiliaria.com</a>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. Datos recopilados -->
+            <section class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">02</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Datos Personales que Recopilamos</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-3 leading-relaxed">
+                    <p>Solo recopilamos la información estrictamente necesaria para brindar nuestros servicios inmobiliarios y de gestión:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Datos de Identidad y Contacto:</strong> Nombre completo, correo electrónico, número de teléfono o WhatsApp cuando te registras, solicitas información de una propiedad o agendas una cita.</li>
+                        <li><strong>Datos de Cuenta y Perfil:</strong> Credenciales cifradas de acceso, rol dentro de la plataforma (cliente, asesor o staff), foto de perfil y biografía profesional en caso de asesores.</li>
+                        <li><strong>Datos de Búsqueda y Preferencias:</strong> Filtros de inmuebles de interés, zonas geográficas de preferencia, presupuesto estimado y lista de propiedades favoritas.</li>
+                        <li><strong>Datos Técnicos del Dispositivo:</strong> Identificador de instalación para notificaciones push (token de Firebase Cloud Messaging / Apple Push Notification Service), versión del sistema operativo, registros de seguridad y dirección IP para prevención de accesos sospechosos y auditoría de ciberseguridad.</li>
+                        <li><strong>Fotografías y Archivos:</strong> Únicamente cuando un asesor o usuario autorizado carga imágenes de propiedades o fotos de perfil mediante la interfaz de carga voluntaria. La app nunca accede a tus fotos o cámara sin tu autorización previa del sistema.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 3. Finalidades -->
+            <section class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">03</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Finalidad y Uso de la Información</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-2 leading-relaxed">
+                    <p>Tus datos son utilizados con los siguientes propósitos exclusivos:</p>
+                    <ul class="list-disc pl-5 space-y-1.5">
+                        <li>Conectar de manera ágil y directa a clientes con los asesores inmobiliarios responsables de cada inmueble vía WhatsApp o llamada.</li>
+                        <li>Permitir el acceso seguro a tu área de usuario y panel de asesor.</li>
+                        <li>Enviar notificaciones operativas relevantes: estado de captaciones, citas agendadas y nuevos inmuebles coincidentes con tus criterios (siempre revocables desde los ajustes de tu teléfono).</li>
+                        <li>Garantizar la integridad, ciberseguridad y funcionamiento técnico óptimo de la plataforma, evitando spam, fraudes o accesos indebidos.</li>
+                    </ul>
+                    <div class="mt-3 p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100 text-emerald-900 font-semibold text-xs flex items-center gap-2">
+                        <i class="ph-fill ph-check-circle text-emerald-600 text-base shrink-0"></i>
+                        <span>MAXIMUS Inmobiliaria <strong>NO comercializa ni vende datos personales</strong> a agencias de publicidad ni a redes de monetización externas.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Proveedores de Infraestructura -->
+            <section class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">04</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Infraestructura Tecnológica y Proveedores de Servicio</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-3 leading-relaxed">
+                    <p>Para garantizar alta disponibilidad y altos estándares de ciberseguridad, utilizamos servicios de primer nivel bajo acuerdos estrictos de privacidad:</p>
+                    <ul class="list-disc pl-5 space-y-1.5">
+                        <li><strong>Supabase:</strong> Motor de base de datos Postgres y autenticación, protegido mediante Row Level Security (RLS) y cifrado TLS 1.3.</li>
+                        <li><strong>Apple Inc. & Google LLC:</strong> Proveedores de servicios del sistema operativo, autenticación federada opcional ("Continuar con Apple" / "Continuar con Google") y distribución de notificaciones push (APNs y FCM).</li>
+                        <li><strong>Vercel & CDN:</strong> Distribución geográfica segura de archivos estáticos con certificados SSL certificados.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 5. Permisos de la App Móvil -->
+            <section class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">05</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Permisos del Sistema en iOS y Android</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-3 leading-relaxed">
+                    <p>En las aplicaciones para iPhone/iPad y Android, se solicitan únicamente los siguientes permisos nativos bajo demanda explícita:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                        <div class="p-3.5 rounded-xl border border-gray-100 bg-gray-50/80">
+                            <strong class="text-gray-900 block text-xs mb-1 flex items-center gap-1.5"><i class="ph-bold ph-bell text-emerald-600"></i> Notificaciones Push</strong>
+                            <p class="text-[11.5px] text-gray-500">Para avisarte de respuestas a tus solicitudes o nuevos inmuebles. Puedes desactivarlas en cualquier momento en los ajustes de tu teléfono.</p>
+                        </div>
+                        <div class="p-3.5 rounded-xl border border-gray-100 bg-gray-50/80">
+                            <strong class="text-gray-900 block text-xs mb-1 flex items-center gap-1.5"><i class="ph-bold ph-camera text-emerald-600"></i> Cámara y Fotos</strong>
+                            <p class="text-[11.5px] text-gray-500">Solo se activa si eres asesor o usuario y decides subir fotos de una propiedad o cambiar tu avatar. Nunca leemos fotos sin tu acción manual.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Eliminación de Cuenta y Retención de Datos (REQUISITO TIENDAS) -->
+            <section id="eliminacion" class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs border-emerald-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-red-50 text-red-700 flex items-center justify-center font-black text-xs">06</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Eliminación de Cuenta y Supresión de Datos</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-3 leading-relaxed">
+                    <p>
+                        En cumplimiento de los lineamientos oficiales de <strong>Apple App Store (Guideline 5.1.1(v))</strong> y <strong>Google Play ("Account Deletion Requirement")</strong>, garantizamos que cualquier usuario registrado puede solicitar la eliminación total y permanente de su cuenta y sus datos personales asociados de manera directa e inmediata:
+                    </p>
+                    <div class="space-y-2 mt-2">
+                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+                            <strong class="text-gray-900 block text-xs mb-1">Opción A: Directamente desde la aplicación móvil</strong>
+                            <p class="text-xs text-gray-600">
+                                Inicia sesión, ingresa a la sección <strong>Mi Perfil</strong> &gt; pestaña <strong>Seguridad & Clave</strong> &gt; sección <strong>Zona de Peligro</strong> y presiona el botón <strong>Eliminar Cuenta</strong>. Tu cuenta y registros personales se eliminarán de inmediato.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+                            <strong class="text-gray-900 block text-xs mb-1">Opción B: Vía web pública (incluso si desinstalaste la app)</strong>
+                            <p class="text-xs text-gray-600">
+                                Puedes ingresar a nuestra página oficial de gestión de eliminación de cuenta en:
+                                <a href="eliminar-cuenta.html" class="text-emerald-700 font-bold hover:underline inline-flex items-center gap-1 ml-1">
+                                    maximusinmobiliaria.tech/eliminar-cuenta.html
+                                    <i class="ph-bold ph-arrow-up-right text-xs"></i>
+                                </a>
+                                o enviar un correo con tu solicitud a <code>contacto@maximusinmobiliaria.com</code> indicando tu correo registrado.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Derechos y Contacto -->
+            <section class="legal-card bg-white rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xs">07</span>
+                    <h2 class="text-lg sm:text-xl font-black text-gray-900">Derechos del Usuario y Contacto</h2>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-600 space-y-3 leading-relaxed">
+                    <p>
+                        Tienes derecho a acceder a tus datos personales, solicitar su corrección si son inexactos o desactualizados, limitar su tratamiento y oponerte al envío de cualquier comunicación operativa o informativa.
+                    </p>
+                    <p>
+                        Para ejercer cualquiera de tus derechos o reportar cualquier anomalía técnica de seguridad:
+                    </p>
+                    <div class="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="block font-bold text-gray-900 text-xs sm:text-sm">Oficina de Privacidad y Soporte MAXIMUS</span>
+                            <span class="text-xs text-gray-500">contacto@maximusinmobiliaria.com • San Cristóbal, Táchira</span>
+                        </div>
+                        <a href="mailto:contacto@maximusinmobiliaria.com" class="shrink-0 px-4 py-2 rounded-xl bg-maximus-dark text-white font-bold text-xs hover:bg-black transition-colors text-center">
+                            Enviar Solicitud
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="bg-white border-t border-gray-200/80 py-8 px-4 sm:px-6 mt-12">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+            <p>© 2026 MAXIMUS Inmobiliaria. Todos los derechos reservados.</p>
+            <div class="flex items-center gap-4 font-semibold">
+                <a href="terminos.html" class="hover:text-maximus-dark transition-colors">Términos y Condiciones</a>
+                <a href="eliminar-cuenta.html" class="hover:text-red-600 transition-colors">Eliminar Cuenta</a>
+                <a href="index.html" class="hover:text-maximus-dark transition-colors">Inicio</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

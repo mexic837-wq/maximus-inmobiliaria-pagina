@@ -125,7 +125,7 @@ UBICACIONES_TACHIRA_REGLAS = [
     ("barrio-obrero", "Barrio Obrero", "San Cristóbal", r"\b(barrio\s+obrero|b\.?o\.?|pasaje\s+acueducto|plaza\s+los\s+mangos|av\.?\s+carabobo|edificio\s+alc[aá]zar|residencias\s+el\s+parque|carrera\s+1[89]|calle\s+1[0-6])\b"),
     ("quinimari", "Quinimarí", "San Cristóbal", r"\b(quinimar[ií]|urb\.?\s+quinimar[ií]|urb\.?\s+torbes)\b"),
     ("las-lomas", "Las Lomas", "San Cristóbal", r"\b(las\s+lomas|av\.?\s+libertador|barrio\s+libertador)\b"),
-    ("la-concordia", "La Concordia", "San Cristóbal", r"\b(la\s+concordia|al\s+lado\s+de\s+trt|marginal\s+del\s+torbes|urb\.?\s+coromoto|residencias\s+la\s+hacienda|la\s+castra)\b"),
+    ("la-concordia", "La Concordia", "San Cristóbal", r"\b(la\s+concordia|al\s+lado\s+de\s+trt|marginal\s+del\s+torbes|urb\.?\s+coromoto|residencias\s+la\s+hacienda|la\s+hacienda|la\s+castra)\b"),
     ("la-romera", "La Romera", "San Cristóbal", r"\b(la\s+romera)\b"),
     ("el-lobo", "El Lobo", "San Cristóbal", r"\b(el\s+lobo)\b"),
     ("la-popita", "La Popita", "San Cristóbal", r"\b(la\s+popita)\b"),
@@ -478,9 +478,10 @@ def group_messages_by_sender_window(messages: List[Dict[str, Any]], window_minut
 
                 is_album_followup_photos = (len(prev_text) >= 45 and not msg_has_text and msg_att_count > 0)
                 is_consecutive_uncaptioned_photos = (not prev_has_text and prev_att_count > 0 and not msg_has_text and msg_att_count > 0)
-                is_caption_after_multi_photo_album = (not prev_has_text and prev_att_count >= 2 and msg_has_text)
+                # Si el mensaje anterior era una o más fotos solas y el actual es el texto explicativo de ese mismo asesor:
+                is_caption_after_photos = (not prev_has_text and prev_att_count >= 1 and msg_has_text)
 
-                if is_album_followup_photos or is_consecutive_uncaptioned_photos or is_caption_after_multi_photo_album:
+                if is_album_followup_photos or is_consecutive_uncaptioned_photos or is_caption_after_photos:
                     if msg_has_text:
                         prev["text"] = f"{prev_text}\n{clean_msg_text}".strip() if prev_text else clean_msg_text
                     for att in msg["attachments"]:
@@ -628,7 +629,7 @@ def extraer_ocr_imagenes(image_paths: List[Path]) -> str:
 def clasificar_operacion(texto: str) -> Optional[str]:
     t = texto.lower()
     es_alquiler = bool(re.search(r"\b(alquiler|alquila|alquilo|arriendo|arrendamiento|canon\s+mensual|canon\b|cano\b|meses\s+de\s+dep[oó]sito|mes\s+adelantado)\b", t))
-    es_venta = bool(re.search(r"\b(en\s+venta|se\s+vende|vendo|venta\s+de|inversi[oó]n|se\s+traspasa|oportunidad\s+de\s+compra|listo\s+para\s+firmar)\b", t))
+    es_venta = bool(re.search(r"\b(en\s+venta|se\s+vende|vendo|venta\s+de|inversi[oó]n|se\s+traspasa|oportunidad\s+de\s+compra|listo\s+para\s+firmar|negociable|financiamiento)\b", t))
     if es_alquiler and not es_venta:
         return "alquiler"
     if es_venta and not es_alquiler:
@@ -641,6 +642,20 @@ def clasificar_operacion(texto: str) -> Optional[str]:
         if idx_a and idx_v:
             return "alquiler" if idx_a.start() < idx_v.start() else "venta"
         return "venta"
+
+    # En el contexto inmobiliario venezolano de WhatsApp:
+    # Si tiene "precio: XX.000$" (con monto >= $10.000) y NO menciona canon ni meses de depósito,
+    # es intrínsecamente una VENTA (precio patrimonial, no canon).
+    m_precio = re.search(r"(?:precio|valor|inversi[oó]n)?\s*[:=\-]?\s*\$?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{4,7})\s*(?:\$|usd|d[oó]lares)?", t)
+    if m_precio and not es_alquiler:
+        raw_val = m_precio.group(1).replace(".", "").replace(",", "")
+        try:
+            val_num = float(raw_val)
+            if val_num >= 8000:
+                return "venta"
+        except ValueError:
+            pass
+
     return None
 
 
@@ -648,7 +663,7 @@ def clasificar_tipo_inmueble(texto: str) -> Tuple[Optional[str], Optional[str], 
     t = texto.lower()
     if re.search(r"\b(galp[oó]n|galpones|complejo\s+industrial|nave\s+industrial)\b", t):
         return "Galpones", "galpones", "galpon"
-    if re.search(r"\b(local\s+comercial|local\b|oficina|consultorio|punto\s+comercial|nivel\s+feria|tienda\s+de\s+ropa|lavander[ií]a|fondo\s+de\s+comercio)\b", t):
+    if re.search(r"\b(local\s+comercial|local\b|oficina|oficinas|consultorio|punto\s+comercial|nivel\s+feria|tienda\s+de\s+ropa|lavander[ií]a|fondo\s+de\s+comercio|coworking|centro\s+de\s+negocios)\b", t):
         return "Local Comercial", "local_comercial", "local"
     if re.search(r"\b(finca|hacienda|agropecuaria|hect[aá]reas)\b", t):
         return "Fincas", "fincas", "terreno"
@@ -656,7 +671,7 @@ def clasificar_tipo_inmueble(texto: str) -> Tuple[Optional[str], Optional[str], 
         return "Casa de campo", "casa_de_campo", "casa"
     if re.search(r"\b(apartamento|apto\.?|departamento|penthouse|p\.?h\.?|apartaestudio|anexo|habitaciones\s+estudiantiles|habitaci[oó]n\s+en\s+alquiler|alquiler\s+de\s+habitaci[oó]n)\b", t):
         return "Departamento", "departamento", "apartamento"
-    if re.search(r"\b(casa|quinta|townhouse|town\s+house|t\.?h\.?|chalet|residencia\s+unifamiliar|terrazas\s+de\s+la\s+castellana)\b", t):
+    if re.search(r"\b(casa|quinta|townhouse|town\s+house|t\.?h\.?|chalet|residencia\s+unifamiliar|terrazas\s+de\s+la\s+castellana|inmueble\b)\b", t):
         return "Casa", "casa", "casa"
     if re.search(r"\b(terreno|parcela|lote\s+de\s+terreno|solar)\b", t):
         return "Fincas", "fincas", "terreno"
@@ -667,7 +682,7 @@ def extraer_precio(texto: str, operacion: Optional[str]) -> Optional[float]:
     t_clean = re.sub(r"\d+[\.,]?\d*\s*(?:litros|lts|l\b|m2|mts2|mtrs2|mts|metros|m²|mts²|hab|ba[ñn]os)", " ", texto, flags=re.IGNORECASE)
     t_clean = re.sub(r"(?:\+?58|0414|0424|0412|0416|0426|0422)[\d\s\-\.]{7,12}", " ", t_clean)
     patrones = [
-        r"(?:precio|inversi[oó]n|canon|cano|valor|costo|oferta|monto)[\s:\*]*?(?:de\s*)?(?:usd|us\$|\$|ref\.?)?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})(?:\s*(?:usd|us\$|\$|💲|🇺🇸|d[oó]lares|mensual))?",
+        r"(?:precio|inversi[oó]n|canon|cano|valor|costo|oferta|monto)[\s:\*\.]*?(?:de\s*)?(?:usd|us\$|\$|ref\.?)?\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})(?:\s*(?:usd|us\$|\$|💲|🇺🇸|d[oó]lares|mensual))?",
         r"(?:usd|us\$|\$)\s*(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\b",
         r"\b(\d{1,3}(?:[\.,]\d{3})+|\d{2,6})\s*(?:\$|💲|🇺🇸|usd|us\$|d[oó]lares)",
         r"(?:precio|inversi[oó]n|\$)\s*(\d{1,4}(?:[\.,]\d)?)\s*(?:[kK]|mil)\b",

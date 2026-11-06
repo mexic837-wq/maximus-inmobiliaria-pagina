@@ -57,6 +57,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/security.js"></script>
+    <script src="js/native-bridge.js"></script>
     <script src="js/config.js?v=3.0"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
@@ -5818,6 +5820,20 @@
                                     </div>
                                 </div>
                                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">En uso</span>
+                            </div>
+                        </div>
+                        <!-- Zona de Peligro: Eliminar Cuenta (requisito App Store / Google Play) -->
+                        <div id="perfil-zona-eliminar-cuenta" class="pt-6 border-t border-gray-100 dark:border-emerald-950">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-red-600 mb-3">Zona de Peligro</h4>
+                            <div class="p-4 sm:p-5 rounded-2xl bg-red-50/70 dark:bg-red-950/20 border border-red-200/80 dark:border-red-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <span class="font-bold text-gray-900 dark:text-white block text-sm">Eliminar mi cuenta</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">Borra permanentemente tu cuenta y tus datos personales. Esta acción no se puede deshacer.</span>
+                                </div>
+                                <button type="button" onclick="solicitarEliminacionCuenta(this)" class="shrink-0 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                    <i class="ph-bold ph-trash text-base"></i>
+                                    <span>Eliminar Cuenta</span>
+                                </button>
                             </div>
                         </div>
                     </div>

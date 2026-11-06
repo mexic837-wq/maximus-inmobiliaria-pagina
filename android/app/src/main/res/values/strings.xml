@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MAXIMUS Inmobiliaria</string>
+    <string name="title_activity_main">MAXIMUS Inmobiliaria</string>
+    <string name="package_name">com.maximus.inmobiliaria</string>
+    <string name="custom_url_scheme">com.maximus.inmobiliaria</string>
+</resources>

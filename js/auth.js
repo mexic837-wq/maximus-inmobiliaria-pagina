@@ -82,7 +82,20 @@ const AuthService = {
      * Compatible con Supabase Auth y fallback para modo demo.
      */
     async loginWithGoogle(redirectPath = '/dashboard') {
-        // Limpiar marca de cierre de sesión previo\n        localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);\n\n        // 1. Si no estamos en MOCK_DATA, intentar OAuth real con Supabase
+        // Limpiar marca de cierre de sesión previo
+        localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
+
+        // 0. App nativa (App Store / Play Store): Google bloquea OAuth dentro de WebViews,
+        //    se abre el navegador del sistema y se vuelve por deep link (ver js/native-bridge.js)
+        if (!APP_CONFIG.USE_MOCK_DATA && window.MAXIMUS_NATIVE && window.MaximusNative && typeof window.MaximusNative.signInWithOAuth === 'function') {
+            try {
+                return await window.MaximusNative.signInWithOAuth('google');
+            } catch (err) {
+                return { success: false, error: 'No se pudo abrir el inicio de sesión con Google: ' + (err?.message || '') };
+            }
+        }
+
+        // 1. Si no estamos en MOCK_DATA, intentar OAuth real con Supabase
         if (!APP_CONFIG.USE_MOCK_DATA) {
             try {
                 const sb = typeof getSupabase === 'function' ? getSupabase() : null;
@@ -181,6 +194,62 @@ const AuthService = {
             console.warn('Aviso OAuth callback:', e);
         }
         return null;
+    },
+
+    /**
+     * Iniciar sesión con Apple (obligatorio en iOS cuando se ofrece Google: regla 4.8 App Store).
+     * Requiere habilitar el proveedor Apple en Supabase Auth.
+     */
+    async loginWithApple() {
+        localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            return { success: false, error: 'Iniciar sesión con Apple no está disponible en modo demo.' };
+        }
+        try {
+            if (window.MAXIMUS_NATIVE && window.MaximusNative && typeof window.MaximusNative.signInWithOAuth === 'function') {
+                return await window.MaximusNative.signInWithOAuth('apple');
+            }
+            const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+            if (!sb || !sb.auth) return { success: false, error: 'Servicio de autenticación no disponible.' };
+            const { error } = await sb.auth.signInWithOAuth({
+                provider: 'apple',
+                options: { redirectTo: window.location.origin + '/dashboard' }
+            });
+            if (error) return { success: false, error: error.message };
+            return { success: true, redirecting: true };
+        } catch (err) {
+            return { success: false, error: 'No se pudo iniciar sesión con Apple: ' + (err?.message || '') };
+        }
+    },
+
+    /**
+     * Eliminar definitivamente la cuenta del usuario autenticado
+     * (requisito obligatorio de Apple App Store y Google Play).
+     * Llama a la función SQL public.eliminar_mi_cuenta() (ver sql/migration-app-movil.sql).
+     */
+    async deleteAccount() {
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            return { success: false, error: 'Las cuentas demo no se pueden eliminar.' };
+        }
+        try {
+            const sb = typeof getSupabase === 'function' ? getSupabase() : null;
+            if (!sb || !sb.auth) return { success: false, error: 'Servicio de autenticación no disponible.' };
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                return { success: false, error: 'Tu sesión expiró. Inicia sesión nuevamente para eliminar tu cuenta.' };
+            }
+            const { error } = await sb.rpc('eliminar_mi_cuenta');
+            if (error) return { success: false, error: error.message || 'No se pudo eliminar la cuenta.' };
+
+            await sb.auth.signOut().catch(() => {});
+            Object.values(this.KEYS).forEach(k => localStorage.removeItem(k));
+            localStorage.removeItem('maximus_user');
+            localStorage.removeItem('maximus_session');
+            sessionStorage.clear();
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: 'Error al eliminar la cuenta: ' + (err?.message || '') };
+        }
     },
 
     async validateCredentials(email, password) {
@@ -1008,4 +1077,44 @@ const AuthService = {
 // Exportar globalmente
 if (typeof window !== 'undefined') {
     window.AuthService = AuthService;
+
+    /**
+     * Flujo de UI para eliminar la cuenta (botón en Perfil > Seguridad & Clave).
+     * Pide escribir "ELIMINAR" como confirmación explícita.
+     */
+    window.solicitarEliminacionCuenta = async function (btn) {
+        const confirmacion = window.prompt(
+            'Esta acción eliminará tu cuenta MAXIMUS y tus datos personales de forma permanente. ' +
+            'No se puede deshacer.\n\nEscribe ELIMINAR para confirmar:'
+        );
+        if (confirmacion === null) return;
+        if (confirmacion.trim().toUpperCase() !== 'ELIMINAR') {
+            window.alert('Confirmación incorrecta. Tu cuenta NO fue eliminada.');
+            return;
+        }
+        const original = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.innerHTML = 'Eliminando cuenta...'; }
+        const res = await AuthService.deleteAccount();
+        if (res.success) {
+            window.alert('Tu cuenta fue eliminada correctamente. Lamentamos verte partir.');
+            window.location.href = 'index.html';
+        } else {
+            if (btn) { btn.disabled = false; btn.innerHTML = original; }
+            window.alert(res.error || 'No se pudo eliminar la cuenta. Escríbenos a contacto@maximusinmobiliaria.com');
+        }
+    };
+
+    /**
+     * Botón "Continuar con Apple" (visible solo en la app de iOS vía [data-ios-only]).
+     */
+    window.handleAppleSignIn = async function (event) {
+        const btn = event?.currentTarget || null;
+        const original = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.innerHTML = '<span class="text-xs">Conectando con Apple...</span>'; }
+        const res = await AuthService.loginWithApple();
+        if (!res.success || !res.redirecting) {
+            if (btn) { btn.disabled = false; btn.innerHTML = original; }
+            if (!res.success) window.alert(res.error || 'No se pudo iniciar sesión con Apple.');
+        }
+    };
 }

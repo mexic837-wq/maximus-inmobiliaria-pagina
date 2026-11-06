@@ -42,7 +42,9 @@
                 auth: {
                     persistSession: true,
                     autoRefreshToken: true,
-                    detectSessionInUrl: true
+                    detectSessionInUrl: true,
+                    // En la app nativa (Capacitor) el login OAuth vuelve por deep link con ?code= (PKCE)
+                    flowType: window.MAXIMUS_NATIVE ? 'pkce' : 'implicit'
                 }
             });
             console.log('✅ MAXIMUS: Supabase conectado correctamente.');

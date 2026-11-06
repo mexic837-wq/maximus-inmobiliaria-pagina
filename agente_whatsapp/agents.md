@@ -8,7 +8,8 @@ Bienvenido al centro de control del **Agente Captador de Inmuebles de WhatsApp p
 
 El **Agente Captador MAXIMUS** es un sistema de inteligencia inmobiliaria regional para el **Estado Táchira, Venezuela**, conectado directamente con `.agents/skills/` y **Supabase** (`https://db.maximusinmobiliaria.tech`).
 
-Sus 5 skills operativas residen en `.agents/skills/` y están vinculadas en `agente_whatsapp/skills/`:
+Sus 6 skills operativas residen en `.agents/skills/` y están vinculadas en `agente_whatsapp/skills/`:
+0. **`whatsapp-web-sync`** (`.agents/skills/whatsapp-web-sync/`): Capturador en vivo directo desde WhatsApp Web con sesión persistente en Chrome.
 1. **`whatsapp-property-parser`** (`.agents/skills/whatsapp-property-parser/`)
 2. **`supabase-property-deduplicator`** (`.agents/skills/supabase-property-deduplicator/`)
 3. **`property-image-cleaner`** (`.agents/skills/property-image-cleaner/`)
@@ -50,9 +51,14 @@ El directorio `agente_whatsapp/proyectos/` cuenta con **dos bandejas principales
 
 ---
 
-## 4. Lógica Multi-Formato para Emparejar Texto + Imágenes (3 Modos Automáticos en Skill 1)
+## 4. Lógica Multi-Formato para Emparejar Texto + Imágenes (4 Modos de Captura)
 
-Dentro de cualquier lote (ya sea en `captaciones_externas/` o `captaciones_maximus/`), la Skill 1 (`whatsapp-property-parser`) detecta y procesa automáticamente estos **3 modos de entrada**:
+Dentro de cualquier lote (ya sea en `captaciones_externas/` o `captaciones_maximus/`), el sistema soporta **4 modos de entrada**:
+
+0. **Modo 0 — Extracción Directa en Vivo desde WhatsApp Web (`whatsapp-web-sync`):**
+   - El agente abre una sesión persistente en Google Chrome (donde el usuario escaneó el código QR solo 1 vez).
+   - Accede a los grupos especificados (ej. *SOLO VENTAS - TACHIRA*, *Maximus captaciónes*), extrae los mensajes y descarga las fotografías en máxima resolución desencriptadas de memoria.
+   - Crea automáticamente la carpeta del lote con `_chat.txt` + `IMG-*.jpg` y, con `--auto-pipeline`, ejecuta de punta a punta las Skills 1, 2, 3 y 4 subiendo todo directamente a Supabase sin intervención manual.
 
 1. **Modo 1 — Exportación Nativa de WhatsApp (`.zip` o carpeta descomprimida con `_chat.txt` + fotos):**
    - Si detecta un archivo `.zip`, lo descomprime automáticamente dentro del lote.

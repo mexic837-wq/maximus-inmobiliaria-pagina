@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Solicitud de Eliminación de Cuenta | MAXIMUS Inmobiliaria</title>
+
+    <!-- Favicon Oficial MAXIMUS -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'maximus-dark': '#0B4A3F',
+                        'maximus-accent': '#10B981',
+                        'maximus-silver': '#D1D5DB',
+                        'maximus-black': '#111827',
+                        'maximus-bg': '#F4F7F6',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fuentes y Fuentes de Íconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Supabase & Scripts de Soporte -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/security.js"></script>
+    <script src="js/native-bridge.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+</head>
+<body class="bg-maximus-bg text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Barra de Navegación Superior -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs" style="padding-top: env(safe-area-inset-top);">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2.5">
+                <img src="assets/logo_maximus_llamativo_icono.png" alt="MAXIMUS" class="h-9 w-auto object-contain">
+                <span class="font-black text-lg tracking-tight text-maximus-dark">MAXIMUS</span>
+            </a>
+            <a href="login.html" class="text-xs font-bold text-gray-600 hover:text-maximus-dark">Volver al Portal</a>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-2xl mx-auto px-4 py-10 sm:py-16 flex-1">
+        <div class="bg-white rounded-3xl border border-gray-200 p-6 sm:p-10 shadow-sm space-y-6">
+
+            <div class="text-center sm:text-left space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider">
+                    <i class="ph-bold ph-warning-octagon text-sm"></i>
+                    Eliminación de Cuenta & Datos
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+                    Solicitud de Eliminación de Cuenta
+                </h1>
+                <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    De acuerdo con las políticas oficiales de Google Play y Apple App Store, tienes el derecho de solicitar la eliminación total de tu cuenta y los datos personales asociados en MAXIMUS Inmobiliaria en cualquier momento.
+                </p>
+            </div>
+
+            <!-- Información sobre datos que se eliminan -->
+            <div class="p-4 rounded-2xl bg-gray-50 border border-gray-200 text-xs text-gray-600 space-y-2">
+                <h3 class="font-bold text-gray-900 text-xs uppercase tracking-wider">¿Qué datos se eliminan permanentemente?</h3>
+                <ul class="list-disc pl-4 space-y-1">
+                    <li>Tu perfil de usuario (nombre, teléfono, correo electrónico, biografía y foto).</li>
+                    <li>Tus credenciales de acceso e identidades vinculadas (Google / Apple).</li>
+                    <li>Tokens de notificaciones push de todos tus dispositivos registrados.</li>
+                    <li>Sesiones activas e historial de búsquedas guardadas.</li>
+                </ul>
+                <p class="text-[11px] text-gray-500 pt-1">
+                    <em>Nota:</em> Cierres o contratos legales inmobiliarios formalizados en el pasado podrán ser retenidos por el tiempo exigido por la legislación fiscal y mercantil venezolana.
+                </p>
+            </div>
+
+            <!-- Caso 1: Usuario con Sesión Activa (Auto-servicio inmediato) -->
+            <div id="caja-sesion-activa" class="hidden p-5 rounded-2xl bg-red-50/70 border border-red-200 space-y-3">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center font-bold text-lg shrink-0">
+                        <i class="ph-bold ph-user-circle"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Sesión Activa Detectada</span>
+                        <h4 id="user-display-email" class="font-black text-sm text-gray-900">cargando...</h4>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-700">
+                    Puedes eliminar tu cuenta inmediatamente con un solo clic. Esta acción es irreversible.
+                </p>
+                <button type="button" onclick="ejecutarEliminacionWeb(this)"
+                        class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="ph-bold ph-trash text-base"></i>
+                    <span>Eliminar Mi Cuenta Permanentemente</span>
+                </button>
+            </div>
+
+            <!-- Caso 2: Formulario para usuarios sin sesión activa (ej. app desinstalada) -->
+            <div id="caja-formulario-externo" class="space-y-4">
+                <h3 class="font-black text-sm text-gray-900">
+                    Si no tienes la aplicación instalada o no recuerdas tu clave:
+                </h3>
+                <form id="form-solicitar-baja" onsubmit="enviarSolicitudBaja(event)" class="space-y-3">
+                    <div>
+                        <label for="input-email-baja" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                            Correo Electrónico Registrado
+                        </label>
+                        <input type="email" id="input-email-baja" required placeholder="tu-correo@ejemplo.com"
+                               class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs sm:text-sm bg-gray-50 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label for="input-motivo-baja" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                            Motivo (Opcional)
+                        </label>
+                        <select id="input-motivo-baja" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm bg-gray-50">
+                            <option value="ya_no_uso_app">Ya no utilizo la aplicación</option>
+                            <option value="inmueble_encontrado">Ya compré / alquilé mi inmueble</option>
+                            <option value="privacidad">Preocupaciones de privacidad</option>
+                            <option value="otro">Otro motivo</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="btn-enviar-baja"
+                            class="w-full py-3 rounded-xl bg-maximus-dark hover:bg-black text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="ph-bold ph-paper-plane-tilt text-base"></i>
+                        <span>Enviar Solicitud de Eliminación</span>
+                    </button>
+                </form>
+
+                <div id="mensaje-exito" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs space-y-1">
+                    <p class="font-bold flex items-center gap-1.5">
+                        <i class="ph-fill ph-check-circle text-emerald-600 text-base"></i>
+                        Solicitud recibida correctamente
+                    </p>
+                    <p>Hemos procesado la petición. Si el correo coincide con una cuenta activa, procederemos con la baja en un plazo máximo de 24 a 48 horas laborales.</p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                <a href="privacidad.html" class="hover:text-maximus-dark underline">Política de Privacidad</a>
+                <a href="mailto:contacto@maximusinmobiliaria.com" class="hover:text-maximus-dark underline">contacto@maximusinmobiliaria.com</a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="py-6 text-center text-xs text-gray-400">
+        © 2026 MAXIMUS Inmobiliaria. San Cristóbal, Táchira, Venezuela.
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                if (window.AuthService && typeof window.AuthService.getCurrentUser === 'function') {
+                    const user = window.AuthService.getCurrentUser();
+                    if (user && user.email) {
+                        const cajaActiva = document.getElementById('caja-sesion-activa');
+                        const emailDisplay = document.getElementById('user-display-email');
+                        if (cajaActiva && emailDisplay) {
+                            emailDisplay.textContent = user.name ? `${user.name} (${user.email})` : user.email;
+                            cajaActiva.classList.remove('hidden');
+                        }
+                    }
+                }
+            } catch (_) {}
+        });
+
+        async function ejecutarEliminacionWeb(btn) {
+            if (window.solicitarEliminacionCuenta) {
+                await window.solicitarEliminacionCuenta(btn);
+            }
+        }
+
+        async function enviarSolicitudBaja(ev) {
+            ev.preventDefault();
+            const email = (document.getElementById('input-email-baja')?.value || '').trim();
+            const motivo = document.getElementById('input-motivo-baja')?.value || 'no_especificado';
+            const btn = document.getElementById('btn-enviar-baja');
+
+            if (!email) return;
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin"></i> Procesando...';
+            }
+
+            try {
+                // Registrar solicitud vía Supabase o Webhook de n8n
+                if (window.APP_CONFIG && window.APP_CONFIG.ENABLE_N8N_WEBHOOKS) {
+                    const url = (window.APP_CONFIG.N8N_BASE_URL || 'https://n8n.maximusinmobiliaria.tech') + '/webhook/solicitud-baja-cuenta';
+                    await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, motivo, fecha: new Date().toISOString(), origen: 'web_eliminar_cuenta' })
+                    }).catch(() => {});
+                }
+            } catch (_) {}
+
+            document.getElementById('form-solicitar-baja').classList.add('hidden');
+            document.getElementById('mensaje-exito').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -31,3 +31,24 @@ agente_whatsapp/proyectos/captaciones_maximus/*
 !agente_whatsapp/proyectos/captaciones_maximus/README.md
 __pycache__/
 *.pyc
+
+# Sesión y caché de WhatsApp Web Browser
+agente_whatsapp/.wweb_session/
+.agents/agente_whatsapp/
+.wweb_session/
+
+# Capacitor & Mobile builds
+www/
+android/.gradle/
+android/build/
+android/app/build/
+ios/App/Pods/
+ios/App/.build/
+*.aab
+*.apk
+*.ipa
+*.keystore
+*.jks
+
+# Carpeta anidada accidental de descompresión
+maximus-inmobiliaria-pagina-main/

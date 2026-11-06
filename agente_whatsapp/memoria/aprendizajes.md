@@ -149,3 +149,7 @@ Esta sección registra casos reales aprendidos durante la ejecución de lotes pa
     - **[Regla de Portada Heroica - 2026-10-22]:**
       - **Preferencia por el Collage Completo:** Cuando una propiedad proviene de un collage/flyer, se selecciona prioritariamente `_collage.jpg` como `foto_principal` (y `fotos[0]`). Esto evita que un recorte vertical angosto (como una cerca con letras cortadas o un camino) desfavorezca la tarjeta en el inicio de la web.
       - **Penalización a Formatos Verticales:** Fotografías con relación de aspecto < 0.85 reciben -75 puntos para que jamás queden como foto de portada en tarjetas apaisadas (16:9 / 4:3).
+    - **[Módulo de Captura en Vivo desde WhatsApp Web - 2026-10-22]:**
+      - **Sesión Persistente:** Se configuró Playwright con Google Chrome del sistema y almacenamiento en `agente_whatsapp/.wweb_session/`. El usuario solo requiere escanear el código QR una única vez.
+      - **Extracción de Medios en Memoria:** Las fotografías se extraen directamente desde los blobs desencriptados de WhatsApp Web en el navegador y se guardan como archivos `IMG-*.jpg` junto con un `_chat.txt` estructurado estándar.
+      - **Pipeline 100% Automático:** El comando `python agente_whatsapp/sincronizar_whatsapp.py --grupos "..." --auto-pipeline` ejecuta secuencialmente captura en vivo -> parseo (Skill 1) -> deduplicación (Skill 2) -> separación de collages y portadas (Skill 3) -> subida a Supabase (Skill 4).
