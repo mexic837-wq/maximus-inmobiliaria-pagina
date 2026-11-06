@@ -103,11 +103,39 @@ DECLARE
     tel_val TEXT;
     pref_val TEXT;
     e164_val TEXT;
+    rol_val TEXT;
+    tipo_asesor_val TEXT;
+    titulo_val TEXT;
+    avatar_val TEXT;
 BEGIN
-    nombre_val := COALESCE(NEW.raw_user_meta_data->>'nombre_completo', split_part(NEW.email, '@', 1));
+    nombre_val := COALESCE(
+        NEW.raw_user_meta_data->>'nombre_completo',
+        NEW.raw_user_meta_data->>'full_name',
+        NEW.raw_user_meta_data->>'name',
+        split_part(NEW.email, '@', 1)
+    );
     tel_val := NEW.raw_user_meta_data->>'telefono';
     pref_val := COALESCE(NEW.raw_user_meta_data->>'prefijo', '+58');
     e164_val := COALESCE(NEW.raw_user_meta_data->>'telefono_e164', tel_val);
+    
+    rol_val := COALESCE(NEW.raw_user_meta_data->>'rol', 'cliente');
+    tipo_asesor_val := NEW.raw_user_meta_data->>'tipo_asesor';
+    
+    titulo_val := COALESCE(
+        NEW.raw_user_meta_data->>'titulo',
+        CASE 
+            WHEN rol_val = 'admin' THEN 'Director'
+            WHEN rol_val = 'asesor_maximus' THEN COALESCE(NEW.raw_user_meta_data->>'cargo', 'Asesor MAXIMUS')
+            WHEN rol_val = 'asesor_externo' THEN 'Asesor Inmobiliario Externo'
+            ELSE 'Usuario Registrado'
+        END
+    );
+    
+    avatar_val := COALESCE(
+        NEW.raw_user_meta_data->>'avatar_url',
+        NEW.raw_user_meta_data->>'picture',
+        'https://ui-avatars.com/api/?name=' || encode(convert_to(nombre_val, 'UTF-8'), 'escape') || '&background=0B4A3F&color=fff&bold=true'
+    );
 
     INSERT INTO public.usuarios (
         auth_id,
@@ -134,15 +162,15 @@ BEGIN
         tel_val,
         e164_val,
         pref_val,
-        COALESCE(NEW.raw_user_meta_data->>'rol', 'cliente'),
-        NULL,
-        'Usuario Registrado',
-        'https://ui-avatars.com/api/?name=' || encode(convert_to(nombre_val, 'UTF-8'), 'escape') || '&background=0B4A3F&color=fff&bold=true',
-        'Portal Web (Crear Cuenta)',
+        rol_val,
+        tipo_asesor_val,
+        titulo_val,
+        avatar_val,
+        COALESCE(NEW.raw_user_meta_data->>'origen', 'Portal Web (Crear Cuenta)'),
         70,
         'activo',
         'Sin Asignar',
-        '{}'::text[],
+        ARRAY[]::text[],
         jsonb_build_array(
             jsonb_build_object(
                 'id', 'int-' || extract(epoch from now())::bigint::text,
@@ -159,6 +187,9 @@ BEGIN
         telefono = COALESCE(EXCLUDED.telefono, public.usuarios.telefono),
         telefono_e164 = COALESCE(EXCLUDED.telefono_e164, public.usuarios.telefono_e164),
         prefijo = COALESCE(EXCLUDED.prefijo, public.usuarios.prefijo),
+        rol = CASE WHEN EXCLUDED.rol <> 'cliente' THEN EXCLUDED.rol ELSE public.usuarios.rol END,
+        titulo = CASE WHEN EXCLUDED.rol <> 'cliente' THEN EXCLUDED.titulo ELSE public.usuarios.titulo END,
+        avatar_url = COALESCE(EXCLUDED.avatar_url, public.usuarios.avatar_url),
         updated_at = now();
 
     -- Registrar evento en la tabla de auditoría

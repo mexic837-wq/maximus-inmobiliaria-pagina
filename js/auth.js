@@ -176,13 +176,19 @@ const AuthService = {
                     perfil = data;
                 } catch (_) {}
 
+                const emailClean = (authUser.email || '').toLowerCase().trim();
+                const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
+
+                const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
+                const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : (perfil?.titulo || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))));
+
                 const appUser = {
                     id: authUser.id,
                     name: perfil?.nombre_completo || nombre,
                     email: authUser.email,
                     telefono: perfil?.telefono || meta.telefono || '',
-                    role: perfil?.rol || meta.rol || 'cliente',
-                    title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
+                    role: rolFinal,
+                    title: tituloFinal,
                     avatar: perfil?.avatar_url || avatar,
                     plan: perfil?.plan || 'free',
                     auth_provider: 'google'
@@ -482,34 +488,38 @@ const AuthService = {
                         localStorage.removeItem(this.KEYS.EXPLICIT_LOGOUT);
                         // Si no tenemos el perfil en cache local o venimos de OAuth, lo sincronizamos
                         let user = this.getCurrentUser();
-                        if (!user || user.auth_provider === 'google' || hasOAuthParam) {
-                            let perfil = null;
-                            try {
-                                const { data } = await sb
-                                    .from(APP_CONFIG.TABLES.USUARIOS)
-                                    .select('*')
-                                    .eq('auth_id', session.user.id)
-                                    .maybeSingle();
-                                perfil = data;
-                            } catch (_) {}
+                        // Sincronizar o refrescar datos del perfil con la base de datos
+                        let perfil = null;
+                        try {
+                            const { data } = await sb
+                                .from(APP_CONFIG.TABLES.USUARIOS)
+                                .select('*')
+                                .eq('auth_id', session.user.id)
+                                .maybeSingle();
+                            perfil = data;
+                        } catch (_) {}
 
-                            const meta = session.user.user_metadata || {};
-                            const nombre = perfil ? perfil.nombre_completo : (meta.full_name || meta.name || session.user.email.split('@')[0]);
-                            const avatar = perfil ? perfil.avatar_url : (meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`);
+                        const meta = session.user.user_metadata || {};
+                        const emailClean = (session.user.email || '').toLowerCase().trim();
+                        const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
-                            user = {
-                                id: session.user.id,
-                                name: nombre,
-                                email: session.user.email,
-                                telefono: perfil ? perfil.telefono : (meta.telefono || ''),
-                                role: perfil ? perfil.rol : (meta.rol || 'cliente'),
-                                title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
-                                plan: perfil?.plan || 'free',
-                                avatar: avatar,
-                                auth_provider: 'google'
-                            };
-                            this._saveSession(user, session.user.email, true);
-                        }
+                        const rolFinal = esDirectorOAdmin ? 'admin' : (perfil ? perfil.rol : (meta.rol || 'cliente'));
+                        const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : (perfil?.titulo || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))));
+                        const nombre = perfil ? perfil.nombre_completo : (meta.full_name || meta.name || session.user.email.split('@')[0]);
+                        const avatar = perfil ? perfil.avatar_url : (meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`);
+
+                        user = {
+                            id: session.user.id,
+                            name: nombre,
+                            email: session.user.email,
+                            telefono: perfil ? perfil.telefono : (meta.telefono || ''),
+                            role: rolFinal,
+                            title: tituloFinal,
+                            plan: perfil?.plan || 'free',
+                            avatar: avatar,
+                            auth_provider: (meta.provider === 'google' || session.user.app_metadata?.provider === 'google') ? 'google' : 'email'
+                        };
+                        this._saveSession(user, session.user.email, true);
                         return true;
                     }
                 }
@@ -939,13 +949,20 @@ const AuthService = {
                 .eq('auth_id', data.user.id)
                 .maybeSingle();
 
+            const emailClean = (data.user.email || '').toLowerCase().trim();
+            const meta = data.user.user_metadata || {};
+            const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
+
+            const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
+            const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : (perfil?.titulo || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))));
+
             const user = {
                 id: data.user.id,
-                name: perfil?.nombre_completo || data.user.user_metadata?.nombre_completo || data.user.email.split('@')[0],
+                name: perfil?.nombre_completo || meta.nombre_completo || data.user.email.split('@')[0],
                 email: data.user.email,
-                telefono: perfil?.telefono || data.user.user_metadata?.telefono || '',
-                role: perfil?.rol || data.user.user_metadata?.rol || 'cliente',
-                title: perfil?.titulo || (perfil?.rol === 'admin' ? 'Director' : (perfil?.rol === 'asesor_maximus' ? 'Asesor MAXIMUS' : (perfil?.rol === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))),
+                telefono: perfil?.telefono || meta.telefono || '',
+                role: rolFinal,
+                title: tituloFinal,
                 avatar: perfil?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(perfil?.nombre_completo || data.user.email)}&background=0B4A3F&color=fff&bold=true`,
             };
 
