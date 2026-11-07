@@ -1,0 +1,41 @@
+{
+  "_descripcion": "Configuración de las plantillas de collage MAXIMUS para la portada (foto_principal) de cada inmueble. Mientras 'habilitado' sea false, el pipeline NO genera collages (solo se usan con --collage-portada o MAXIMUS_COLLAGE_PORTADA=1).",
+  "habilitado": false,
+  "version_plantillas": "v2-diseno-unificado",
+  "diseno_base": "Editorial MAXIMUS (mismo layout para alquiler y venta; solo cambian los acentos)",
+  "lienzo": { "ancho": 1600, "alto": 1000, "jpeg_quality": 92 },
+  "max_fotos": 3,
+  "excluir_flyers_de_terceros": true,
+  "umbral_duplicado_hash": 6,
+  "paleta": {
+    "verde_profundo": "#041713",
+    "verde_noche": "#06241E",
+    "verde_maximus": "#0B4A3F",
+    "esmeralda": "#10B981",
+    "esmeralda_claro": "#6EE7B7",
+    "plata": "#D1D5DB",
+    "plata_oscura": "#94A3B8",
+    "blanco": "#FFFFFF"
+  },
+  "plantillas": {
+    "alquiler": {
+      "nombre": "Editorial MAXIMUS — Alquiler (acento esmeralda)",
+      "etiqueta": "EN ALQUILER",
+      "etiqueta_precio": "CANON MENSUAL",
+      "sufijo_precio": "USD / mes",
+      "pastilla_desde": "esmeralda",
+      "pastilla_hasta": "esmeralda_claro",
+      "acento_texto": "esmeralda_claro"
+    },
+    "venta": {
+      "nombre": "Editorial MAXIMUS — Venta (acento plata)",
+      "etiqueta": "EN VENTA",
+      "etiqueta_precio": "PRECIO DE VENTA",
+      "sufijo_precio": "USD",
+      "pastilla_desde": "blanco",
+      "pastilla_hasta": "plata_oscura",
+      "acento_texto": "plata"
+    }
+  },
+  "nombre_archivo_salida": "portada_maximus.jpg"
+}

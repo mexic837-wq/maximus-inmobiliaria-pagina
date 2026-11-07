@@ -46,6 +46,22 @@ try:
 except ImportError:
     HAS_CV2 = False
 
+# Plantillas de collage de portada MAXIMUS (alquiler / venta). Desactivadas por defecto:
+# se activan con --collage-portada, MAXIMUS_COLLAGE_PORTADA=1 o "habilitado": true en
+# references/plantillas_collage.json.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from collage_maximus import (
+        collage_habilitado,
+        generar_portada,
+        seleccionar_fotos_collage,
+        cargar_config as cargar_config_collage,
+    )
+    HAS_COLLAGE = True
+except Exception as _e_collage:  # el pipeline nunca debe caerse por las plantillas
+    HAS_COLLAGE = False
+    print(f"[WARN] Plantillas de collage no disponibles: {_e_collage}")
+
 
 PERFILES_MARCA_AGUA = {
     "remax": {"top_crop": 0.02, "bottom_crop": 0.09},
@@ -479,7 +495,9 @@ def procesar_imagenes_lote(
     extra_top_crop: float = 0.0,
     extra_bottom_crop: float = 0.0,
     skip_upload: bool = False,
+    collage_portada: Optional[bool] = None,
 ) -> Dict[str, Any]:
+    usar_collage = HAS_COLLAGE and collage_habilitado(collage_portada)
     if not lote_dir.exists():
         alt1 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_externas" / lote_dir.name
         alt2 = repo_root / "agente_whatsapp" / "proyectos" / "captaciones_maximus" / lote_dir.name
@@ -519,6 +537,8 @@ def procesar_imagenes_lote(
         "total_imagenes_individuales_generadas": 0,
         "total_marcas_agua_recortadas": 0,
         "total_subidas_supabase_storage": 0,
+        "collage_portada_activo": usar_collage,
+        "total_portadas_collage_generadas": 0,
         "detalle_por_inmueble": [],
     }
 
@@ -646,6 +666,40 @@ def procesar_imagenes_lote(
         else:
             inm["foto_principal"] = urls_publicas[0] if urls_publicas else ""
 
+        # Portada Collage MAXIMUS (plantilla ALQUILER o VENTA según `operacion`).
+        # Usa las mejores fotos ya ordenadas por score, sin flyers de terceros ni duplicados.
+        inm["portada_collage"] = None
+        if usar_collage and rutas_limpias_locales:
+            try:
+                fotos_collage = seleccionar_fotos_collage(rutas_limpias_locales)
+                if fotos_collage:
+                    cfg_col = cargar_config_collage()
+                    portada_img = generar_portada(fotos_collage, inm)
+                    portada_name = cfg_col.get("nombre_archivo_salida", "portada_maximus.jpg")
+                    portada_path = inm_clean_dir / portada_name
+                    portada_img.save(portada_path, format="JPEG",
+                                     quality=int(cfg_col["lienzo"].get("jpeg_quality", 92)), optimize=True)
+                    carpeta_flujo = "maximus" if inm_is_maximus else "externas"
+                    storage_rel_p = f"whatsapp/{carpeta_flujo}/{lote_folder_clean}/{temp_id}/{portada_name}"
+                    portada_url = f"{sb_url}/storage/v1/object/public/{bucket}/{storage_rel_p}"
+                    if not skip_upload:
+                        up_url, up_err = upload_to_supabase_storage(portada_path, storage_rel_p, sb_url, sb_key, bucket)
+                        if up_url:
+                            estadisticas_imagenes["total_subidas_supabase_storage"] += 1
+                        else:
+                            print(f"[WARN] Falló subida de portada collage {temp_id}: {up_err}")
+                    rutas_limpias_locales = [str(portada_path)] + rutas_limpias_locales
+                    urls_publicas = [portada_url] + urls_publicas
+                    inm["foto_principal"] = portada_url
+                    inm["portada_collage"] = {
+                        "plantilla": "alquiler" if "alquil" in str(inm.get("operacion", "")).lower() else "venta",
+                        "version": cfg_col.get("version_plantillas"),
+                        "fotos_origen": [str(p) for p in fotos_collage],
+                    }
+                    estadisticas_imagenes["total_portadas_collage_generadas"] += 1
+            except Exception as e_col:
+                print(f"[WARN] No se pudo generar la portada collage de {temp_id}: {e_col}")
+
         inm["imagenes_limpias_locales"] = rutas_limpias_locales
         inm["fotos"] = urls_publicas
         inm["fotos_coma_str"] = ", ".join(urls_publicas)
@@ -676,6 +730,11 @@ def main():
     parser.add_argument("--extra-top-crop", type=float, default=0.0, help="Porcentaje adicional de recorte superior (solo externas)")
     parser.add_argument("--extra-bottom-crop", type=float, default=0.0, help="Porcentaje adicional de recorte inferior (solo externas)")
     parser.add_argument("--skip-upload", action="store_true", help="Procesar localmente sin subir a Supabase Storage")
+    grp = parser.add_mutually_exclusive_group()
+    grp.add_argument("--collage-portada", dest="collage_portada", action="store_true", default=None,
+                     help="Genera la portada collage MAXIMUS (alquiler/venta) como foto_principal")
+    grp.add_argument("--sin-collage-portada", dest="collage_portada", action="store_false",
+                     help="Fuerza desactivar la portada collage aunque esté habilitada en el JSON/entorno")
     args = parser.parse_args()
 
     lote_dir = Path(args.lote).resolve()
@@ -686,6 +745,7 @@ def main():
         extra_top_crop=args.extra_top_crop,
         extra_bottom_crop=args.extra_bottom_crop,
         skip_upload=args.skip_upload,
+        collage_portada=args.collage_portada,
     )
     print(
         f"[OK] Limpieza de imágenes completada ({stats['flujo_carpeta']} | SmartCrop={stats['smart_crop_marcas_agua_activo']}):\n"
@@ -694,7 +754,9 @@ def main():
         f"  - Collages detectados y divididos: {stats['total_collages_divididos']}\n"
         f"  - Fotografías individuales generadas: {stats['total_imagenes_individuales_generadas']}\n"
         f"  - Marcas de agua recortadas: {stats['total_marcas_agua_recortadas']}\n"
-        f"  - Imágenes subidas a Supabase Storage: {stats['total_subidas_supabase_storage']}"
+        f"  - Imágenes subidas a Supabase Storage: {stats['total_subidas_supabase_storage']}\n"
+        f"  - Portadas collage MAXIMUS ({'ON' if stats['collage_portada_activo'] else 'OFF'}): "
+        f"{stats['total_portadas_collage_generadas']}"
     )
 
 

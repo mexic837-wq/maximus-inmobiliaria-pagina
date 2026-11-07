@@ -8,6 +8,9 @@ description: >-
   3) Comportamiento diferenciado por carpeta: en captaciones_externas/ aplica SIEMPRE Smart Crop para recortar
   marcas de agua y logos de otras inmobiliarias; en captaciones_maximus/ NO recorta bordes de marcas de agua
   (Smart Crop = OFF), subiendo las fotos originales en máxima calidad a Supabase Storage.
+  4) (Opcional, flag) Genera la PORTADA COLLAGE MAXIMUS (diseño único "Editorial MAXIMUS" con
+  variante ALQUILER acento esmeralda y VENTA acento plata, 1600x1000, logo + paleta MAXIMUS)
+  y la asigna como foto_principal.
 ---
 
 # Skill 3: Limpiador de Imágenes, Extractor de Capturas, Separador de Collages y Upload (`property-image-cleaner`)
@@ -51,7 +54,34 @@ Para evitar que una tarjeta en el portal o dashboard muestre una foto que desfav
 
 ---
 
-## 3. Cómo Ejecutar el Script
+## 3. Portada Collage MAXIMUS (Plantillas Alquiler / Venta) — `EN PRUEBA`
+
+Estado: **propuesta v1, desactivada por defecto** (`"habilitado": false` en `references/plantillas_collage.json`). Mientras esté apagada, la skill funciona exactamente igual que antes (secciones 1 y 2).
+
+Cuando se activa, después de limpiar y puntuar las fotos (sección 2) la skill:
+1. **Selecciona hasta 3 fotos** (`seleccionar_fotos_collage`): toma las de mayor score, **excluye flyers de terceros** (`_collage.jpg`, traen texto/logos ajenos), descarta **fotos casi idénticas** (hash perceptual, típico de reenvíos de WhatsApp) y recortes < 300 px.
+2. **Aplica el diseño único "Editorial MAXIMUS"** (misma línea gráfica para ambas operaciones): panel lateral verde MAXIMUS con logo, pastilla de operación, título, ubicación, rejilla 2x2 de características y precio; a la derecha foto héroe + 2 miniaturas. Solo cambian los acentos según `operacion`:
+   - `alquiler` → pastilla **esmeralda** `EN ALQUILER`, etiqueta **CANON MENSUAL**, sufijo `USD / mes`.
+   - `venta` (y cualquier otra) → pastilla **plata** `EN VENTA`, etiqueta **PRECIO DE VENTA**, sufijo `USD`.
+   - Los acentos se cambian en `plantillas.<operacion>` del JSON sin tocar código.
+   - Ambas se adaptan a 1, 2 o 3 fotos; omiten características en cero (p. ej. terrenos solo muestran m²); el título se reduce/recorta a 2–3 líneas y el precio se ajusta al ancho.
+3. Guarda `portada_maximus.jpg` (1600x1000, 16:10 = proporción de la tarjeta del catálogo), la sube a `whatsapp/<flujo>/<lote>/<temp_id>/portada_maximus.jpg`, la pone como `foto_principal` y `fotos[0]`, y deja la traza en `inm["portada_collage"]` (`plantilla`, `version`, `fotos_origen`).
+4. Si algo falla al generar el collage, se registra un `[WARN]` y el inmueble conserva la portada normal (nunca rompe el lote).
+
+**Activación (prioridad):** `--collage-portada` / `--sin-collage-portada` (CLI) › variable de entorno `MAXIMUS_COLLAGE_PORTADA=1|0` › `"habilitado"` en el JSON.
+
+**Archivos:**
+- `scripts/collage_maximus.py` — motor de plantillas (Pillow). También CLI para generar una portada suelta.
+- `scripts/preview_plantillas.py` — genera las muestras para el equipo en `plantillas_collage_preview/`.
+- `references/plantillas_collage.json` — flag, paleta, textos de etiquetas, tamaño del lienzo, nº de fotos.
+- `assets/logo_maximus_icono_collage.png` — logo cromado rasterizado desde `assets/logo_maximus_chrome_icono.svg`.
+- `assets/fonts/Montserrat-Variable.ttf` — tipografía de la marca (licencia OFL, `OFL.txt`).
+
+> Nota: el precio queda "impreso" en la imagen. Si cambia el precio o la operación de un inmueble, hay que regenerar su portada.
+
+---
+
+## 4. Cómo Ejecutar el Script
 
 ```bash
 # Con Python (Pillow + OpenCV + NumPy)
@@ -59,4 +89,16 @@ python .agents/skills/property-image-cleaner/scripts/clean_images.py --lote "age
 
 # O con Node.js
 node .agents/skills/property-image-cleaner/scripts/clean_images.js --lote "agente_whatsapp/proyectos/captaciones_maximus/lote_2026_10_21"
+
+# Probar la portada collage en un lote (sin activarla globalmente, y sin subir a Storage)
+python .agents/skills/property-image-cleaner/scripts/clean_images.py --lote "<lote>" --collage-portada --skip-upload
+
+# Regenerar las muestras de las plantillas para el equipo
+python .agents/skills/property-image-cleaner/scripts/preview_plantillas.py
+
+# Generar una portada suelta con fotos propias
+python .agents/skills/property-image-cleaner/scripts/collage_maximus.py --operacion alquiler \
+  --fotos f1.jpg f2.jpg f3.jpg --titulo "Local Comercial en Barrio Obrero" \
+  --ubicacion "Barrio Obrero, San Cristóbal" --precio 2000 --tipo local --habitaciones 3 \
+  --banos 6 --m2 160 --puestos 2 --codigo "#MAX-251" --out portada.jpg
 ```
