@@ -246,7 +246,7 @@
        ========================================== -->
   <g id="emerald-arrow-3d" filter="url(#arrow-glow)">
     <!-- Sombra proyectada por la flecha -->
-    <path d="M264 196 L348 290 L490 86 L510 96 L558 38 L490 60 L348 254 L278 178 Z" fill="#000000" opacity="0.4" filter="url(#luxury-glow)" />
+    <path d="M264 196 L348 290 L517 91 L530 3 L451 46 L348 254 L278 178 Z" fill="#000000" opacity="0.4" filter="url(#luxury-glow)" />
 
     <!-- 1. Faceta Inferior / Extrusión 3D de la flecha (Sombra jade profundo) -->
     <path d="M254 180 L348 286 L476 76 L486 86 L354 298 L260 192 Z" fill="url(#emerald-arrow-shade)" />
@@ -260,24 +260,19 @@
     <!-- Línea de brillo de alta intensidad en la cresta -->
     <polyline points="268,152 348,234 480,42" stroke="#D1FAE5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
 
-    <!-- 4. Punta de Flecha 3D (Arrowhead ascendente ~45°) -->
-    <!-- Sombra base punta -->
-    <polygon points="560,18 468,40 514,118" fill="#064E3B" />
-    <!-- Cara principal punta -->
-    <polygon points="554,12 472,34 514,108" fill="url(#emerald-arrow-body)" />
-    <!-- Faceta superior brillante punta -->
-    <polygon points="554,12 472,34 524,40" fill="url(#emerald-arrow-ridge)" />
-
-    <!-- Líneas de filo de la punta -->
-    <line x1="472" y1="34" x2="554" y2="12" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
-    <line x1="554" y1="12" x2="514" y2="108" stroke="#A7F3D0" stroke-width="1.8" stroke-linecap="round" />
+    <!-- 4. Punta de Flecha 3D — isósceles y alineada al eje del cuerpo (55.2°) -->
+    <polygon points="532.0,2.7 453.5,45.6 519.2,91.3" fill="#064E3B" />
+    <polygon points="526.0,-3.3 447.5,39.6 513.2,85.3" fill="url(#emerald-arrow-body)" />
+    <polygon points="526.0,-3.3 447.5,39.6 488.5,50.6" fill="url(#emerald-arrow-ridge)" />
+    <line x1="447.5" y1="39.6" x2="526.0" y2="-3.3" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="526.0" y1="-3.3" x2="513.2" y2="85.3" stroke="#A7F3D0" stroke-width="1.8" stroke-linecap="round" />
   </g>
 
   <!-- ==========================================
        GRUPO 3: DESTELLOS DIAMANTINOS CROMO (SPARKLES)
        ========================================== -->
   <!-- Destello 1: En la punta de la flecha -->
-  <g transform="translate(556, 12)">
+  <g transform="translate(526.0, -3.3)">
     <path d="M0 -16 Q0 0 16 0 Q0 0 0 16 Q0 0 -16 0 Q0 0 0 -16 Z" fill="#FFFFFF" opacity="0.95" />
     <circle cx="0" cy="0" r="3" fill="#A7F3D0" />
   </g>

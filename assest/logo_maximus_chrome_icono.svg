@@ -101,7 +101,7 @@
   <!-- Flecha Dinámica Verde Esmeralda 3D — más compacta horizontalmente -->
   <g filter="url(#icon-luxury-glow)">
     <!-- Sombra proyectada -->
-    <path d="M156 158 L230 240 L348 68 L366 76 L406 26 L348 44 L230 206 L168 142 Z" fill="#000000" opacity="0.35" />
+    <path d="M156 158 L230 240 L370 73 L380 -0 L316 35 L230 206 L168 142 Z" fill="#000000" opacity="0.35" />
 
     <!-- Faceta inferior sombra -->
     <path d="M146 146 L230 234 L336 58 L346 66 L236 244 L152 156 Z" fill="url(#icon-emerald-shade)" />
@@ -114,15 +114,15 @@
     <polyline points="158,118 230,190 340,30" stroke="#D1FAE5" stroke-width="2" stroke-linecap="round" opacity="0.95" />
 
     <!-- Punta de Flecha 3D -->
-    <polygon points="408,8 334,28 372,92" fill="#064E3B" />
-    <polygon points="402,4 338,22 372,84" fill="url(#icon-emerald-body)" />
-    <polygon points="402,4 338,22 378,28" fill="url(#icon-emerald-ridge)" />
-    <line x1="338" y1="22" x2="402" y2="4" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
-    <line x1="402" y1="4" x2="372" y2="84" stroke="#A7F3D0" stroke-width="1.5" stroke-linecap="round" />
+    <polygon points="382.4,-0.5 317.7,35.2 372.1,72.6" fill="#064E3B" />
+    <polygon points="376.4,-6.5 311.7,29.2 366.1,66.6" fill="url(#icon-emerald-body)" />
+    <polygon points="376.4,-6.5 311.7,29.2 345.7,38.1" fill="url(#icon-emerald-ridge)" />
+    <line x1="311.7" y1="29.2" x2="376.4" y2="-6.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
+    <line x1="376.4" y1="-6.5" x2="366.1" y2="66.6" stroke="#A7F3D0" stroke-width="1.5" stroke-linecap="round" />
   </g>
 
   <!-- Destellos diamantinos -->
-  <g transform="translate(404, 4)">
+  <g transform="translate(376.4, -6.5)">
     <path d="M0 -14 Q0 0 14 0 Q0 0 0 14 Q0 0 -14 0 Q0 0 0 -14 Z" fill="#FFFFFF" opacity="0.95" />
     <circle cx="0" cy="0" r="2.5" fill="#A7F3D0" />
   </g>
