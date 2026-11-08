@@ -69,22 +69,32 @@
 
   <!-- Estructura Arquitectónica 3D Cromo — PROPORCIONES MÁS ALTAS -->
   <g filter="url(#icon-drop-shadow)">
+    <g id="mx-chimney">
     <!-- Chimenea 3D -->
     <rect x="132" y="28" width="22" height="95" rx="3" fill="url(#icon-pillar-grad)" />
     <polygon points="130,28 140,20 160,20 154,28" fill="#FFFFFF" />
     <line x1="133" y1="28" x2="133" y2="123" stroke="#FFFFFF" stroke-width="1.8" opacity="0.85" />
     <rect x="140" y="32" width="4" height="86" rx="2" fill="#FFFFFF" opacity="0.3" />
 
+    </g>
+
+    <g id="mx-pillar-l">
     <!-- Pilar Izquierdo 3D (más alto) -->
     <rect x="94" y="168" width="28" height="130" rx="4" fill="url(#icon-pillar-grad)" />
     <line x1="96" y1="170" x2="96" y2="296" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
     <rect x="104" y="174" width="4" height="118" rx="2" fill="#FFFFFF" opacity="0.25" />
 
+    </g>
+
+    <g id="mx-pillar-r">
     <!-- Pilar Derecho 3D (más alto) -->
     <rect x="338" y="168" width="28" height="130" rx="4" fill="url(#icon-pillar-grad)" />
     <line x1="340" y1="170" x2="340" y2="296" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
     <rect x="348" y="174" width="4" height="118" rx="2" fill="#FFFFFF" opacity="0.2" />
 
+    </g>
+
+    <g id="mx-roof">
     <!-- Techo a Dos Aguas 3D — MÁS EMPINADO -->
     <path d="M54 172 L230 8 L406 172 L382 200 L230 56 L78 200 Z" fill="url(#icon-chrome-main)" />
     <!-- Bisel Superior Brillante -->
@@ -97,9 +107,10 @@
     <!-- Franja de brillo diagonal derecha -->
     <path d="M292 132 L360 192 L354 198 L286 138 Z" fill="#FFFFFF" opacity="0.25" />
   </g>
+  </g>
 
   <!-- Flecha Dinámica Verde Esmeralda 3D — más compacta horizontalmente -->
-  <g filter="url(#icon-luxury-glow)">
+  <g id="mx-arrow" filter="url(#icon-luxury-glow)">
     <!-- Sombra proyectada -->
     <path d="M156 158 L230 240 L370 73 L380 -0 L316 35 L230 206 L168 142 Z" fill="#000000" opacity="0.35" />
 
@@ -113,24 +124,25 @@
     <path d="M158 118 L230 190 L340 30 L348 38 L234 198 L164 126 Z" fill="url(#icon-emerald-ridge)" />
     <polyline points="158,118 230,190 340,30" stroke="#D1FAE5" stroke-width="2" stroke-linecap="round" opacity="0.95" />
 
-    <!-- Punta de Flecha 3D -->
+    <g id="mx-arrow-head">
     <polygon points="382.4,-0.5 317.7,35.2 372.1,72.6" fill="#064E3B" />
     <polygon points="376.4,-6.5 311.7,29.2 366.1,66.6" fill="url(#icon-emerald-body)" />
     <polygon points="376.4,-6.5 311.7,29.2 345.7,38.1" fill="url(#icon-emerald-ridge)" />
     <line x1="311.7" y1="29.2" x2="376.4" y2="-6.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
     <line x1="376.4" y1="-6.5" x2="366.1" y2="66.6" stroke="#A7F3D0" stroke-width="1.5" stroke-linecap="round" />
   </g>
+  </g>
 
   <!-- Destellos diamantinos -->
-  <g transform="translate(376.4, -6.5)">
+  <g class="mx-spark" transform="translate(376.4, -6.5)">
     <path d="M0 -14 Q0 0 14 0 Q0 0 0 14 Q0 0 -14 0 Q0 0 0 -14 Z" fill="#FFFFFF" opacity="0.95" />
     <circle cx="0" cy="0" r="2.5" fill="#A7F3D0" />
   </g>
-  <g transform="translate(230, 8)">
+  <g class="mx-spark" transform="translate(230, 8)">
     <path d="M0 -10 Q0 0 10 0 Q0 0 0 10 Q0 0 -10 0 Q0 0 0 -10 Z" fill="#FFFFFF" opacity="0.9" />
     <circle cx="0" cy="0" r="2" fill="#E2E8F0" />
   </g>
-  <g transform="translate(54, 172)">
+  <g class="mx-spark" transform="translate(54, 172)">
     <path d="M0 -8 Q0 0 8 0 Q0 0 0 8 Q0 0 -8 0 Q0 0 0 -8 Z" fill="#FFFFFF" opacity="0.8" />
     <circle cx="0" cy="0" r="1.8" fill="#FFFFFF" />
   </g>
