@@ -60,7 +60,7 @@ INSERT INTO public.preguntas_frecuentes (id, pregunta, respuesta, categoria, ico
 SELECT 
     'faq-01',
     '¿Cómo funciona el pago en Bolívares desde Venezuela?',
-    'Puedes pagar en Bolívares mediante <strong>Pago Móvil</strong> calculado a la tasa oficial del <strong>Banco Central de Venezuela (BCV)</strong> del día exacto, o en dólares vía <strong>Zelle</strong>, <strong>Binance Pay (USDT)</strong> y tarjetas internacionales Visa/Mastercard.',
+    'Puedes pagar en Bolívares mediante <strong>Pago Móvil</strong> calculado a la tasa oficial del <strong>Banco Central de Venezuela (BCV)</strong> del día exacto, o en dólares vía <strong>Binance Pay (USDT)</strong> y tarjetas internacionales Visa/Mastercard (Stripe).',
     'Planes & Pagos',
     'fas fa-coins',
     1,

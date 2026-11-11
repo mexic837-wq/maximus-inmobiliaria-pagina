@@ -1039,7 +1039,7 @@ const MOCK_DATA = {
         {
             id: 'faq-001',
             pregunta: '¿Cómo funciona el pago en Bolívares desde Venezuela?',
-            respuesta: 'Puedes pagar en Bolívares mediante Pago Móvil calculado a la tasa oficial del Banco Central de Venezuela (BCV) del día exacto, o en dólares vía Zelle, Binance Pay (USDT) y tarjetas internacionales Visa/Mastercard.',
+            respuesta: 'Puedes pagar en Bolívares mediante Pago Móvil calculado a la tasa oficial del Banco Central de Venezuela (BCV) del día exacto, o en dólares vía Binance Pay (USDT) y tarjetas internacionales Visa/Mastercard (Stripe).',
             categoria: 'Pagos & BCV',
             icono: 'ph-currency-circle-dollar',
             orden: 1,
