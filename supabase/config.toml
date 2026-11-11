@@ -1,0 +1,13 @@
+# Cada función valida su propia autenticación (JWT de usuario, secreto compartido o firma de Stripe),
+# por eso se desactiva la verificación automática de JWT del gateway.
+[functions.pagos]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.confirmar-pago]
+verify_jwt = false
+
+[functions.binance-sync]
+verify_jwt = false

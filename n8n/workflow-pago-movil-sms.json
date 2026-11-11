@@ -1,0 +1,236 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 10. Pago Móvil: SMS del banco → confirmación automática",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. **Credencial del webhook** (nodo *Webhook SMS Banco*): Header Auth\n   · Name: `x-sms-secret` · Value: un secreto nuevo (`openssl rand -hex 32`)\n2. **Credencial hacia Supabase** (nodo *Confirmar pago*): Header Auth\n   · Name: `x-webhook-secret` · Value: el `PAGOS_WEBHOOK_SECRET` del `.env` del VPS\n3. **App reenviadora de SMS** en el celular que recibe los SMS del banco:\n   · POST a la *Production URL* de este webhook\n   · Cabecera `x-sms-secret` = el secreto del paso 1\n   · Cuerpo JSON: `{\"texto\":\"%body%\",\"from\":\"%from%\"}` (la variable depende de la app)\n4. Opcional: en *Interpretar SMS* llena `REMITENTES_PERMITIDOS` con el remitente de tu banco.\n5. Envía 2-3 pagos reales pequeños y revisa *Executions*: el campo `motivo` dice por qué se rechazó un SMS.\n6. **Activa** el workflow (interruptor arriba a la derecha).",
+        "width": 480,
+        "height": 560,
+        "color": 4
+      },
+      "id": "setup",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pago-movil-sms",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "pm-webhook",
+      "name": "Webhook SMS Banco",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ],
+      "webhookId": "maximus-pago-movil-sms",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS SMS Banco (x-sms-secret)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== CONFIGURA AQUÍ =====\n// Remitentes permitidos (como aparecen en el campo \"from\" del reenviador). Vacío = acepta todos.\n// Ej: ['BDV', 'Banesco', '2662', '88232']\nconst REMITENTES_PERMITIDOS = [];\n// ==========================\n\nfunction interpretarSMS(texto, remitente) {\n  const t = String(texto || '').replace(/\\s+/g, ' ').trim();\n  const r = { parseado: false, motivo: '', texto: t };\n  if (!t) { r.motivo = 'sms_vacio'; return r; }\n\n  if (REMITENTES_PERMITIDOS.length && !REMITENTES_PERMITIDOS.some(x => String(remitente || '').toLowerCase().includes(String(x).toLowerCase()))) {\n    r.motivo = 'remitente_no_permitido'; return r;\n  }\n\n  // SOLO dinero que ENTRA. Se descartan pagos que tú envías, débitos, compras, etc.\n  const SALIDA = /(realizaste|enviaste|has enviado|pagaste|transferiste|debito|débito|cargo|compra|retiro|consumo|cobro de comisi)/i;\n  const ENTRADA = /(recibiste|has recibido|te (?:envi[oó]|pag[oó]|transfiri[oó])|abono|acreditad|cr[eé]dito|pago m[oó]vil recibido|recibido)/i;\n  if (SALIDA.test(t)) { r.motivo = 'movimiento_de_salida'; return r; }\n  if (!ENTRADA.test(t)) { r.motivo = 'no_es_ingreso'; return r; }\n\n  // Monto: 'Bs. 1.234,56' | 'Bs.374,25' | 'Bs 374.25' | 'VES 374,25' | '374,25 Bs'\n  const mMonto = t.match(/(?:Bs\\.?\\s?S?\\.?|VES|VEF)\\s*:?\\s*(\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{1,2})?|\\d+(?:[.,]\\d{1,2})?)/i)\n              || t.match(/(\\d{1,3}(?:[.,]\\d{3})*(?:[.,]\\d{1,2})?|\\d+(?:[.,]\\d{1,2})?)\\s*(?:Bs\\.?|VES)/i);\n  // Referencia: 'Ref: 001234567890' | 'Ref.12345678' | 'Referencia 123456' | 'Nro. 987654321' | 'Operacion 123456'\n  const mRef = t.match(/(?:ref(?:erencia)?|n(?:ro|[uú]mero)|operaci[oó]n|comprobante)\\.?\\s*(?:de\\s+)?(?:operaci[oó]n\\s*)?[:#]?\\s*(\\d{6,20})/i);\n  if (!mMonto) { r.motivo = 'sin_monto'; return r; }\n  if (!mRef) { r.motivo = 'sin_referencia'; return r; }\n\n  const monto = normalizarMonto(mMonto[1]);\n  if (!(monto > 0)) { r.motivo = 'monto_invalido'; return r; }\n\n  const mTel = t.match(/\\b(0?4(?:12|14|16|24|26|22)[-\\s]?\\d{3}[-\\s]?\\d{4})\\b/);\n  return {\n    parseado: true,\n    metodo: 'pago_movil',\n    referencia: mRef[1],\n    monto,\n    pagador: mTel ? mTel[1].replace(/\\D/g, '') : null,\n    raw: t.slice(0, 1000)\n  };\n}\n\n// '1.234,56' -> 1234.56 | '1,234.56' -> 1234.56 | '374,25' -> 374.25 | '374.25' -> 374.25 | '1.234' -> 1234\nfunction normalizarMonto(s) {\n  s = String(s);\n  const ultPunto = s.lastIndexOf('.'), ultComa = s.lastIndexOf(',');\n  const sep = Math.max(ultPunto, ultComa);\n  if (sep === -1) return Number(s);\n  const decimales = s.length - sep - 1;\n  if (decimales === 3 && (ultPunto === -1 || ultComa === -1)) return Number(s.replace(/[.,]/g, '')); // solo miles\n  return Number(s.slice(0, sep).replace(/[.,]/g, '') + '.' + s.slice(sep + 1));\n}\n\n// ===== Entrada del webhook =====\n// Acepta los formatos de las apps reenviadoras más comunes (JSON o formulario).\nconst item = $input.first().json;\nconst b = item.body && typeof item.body === 'object' ? item.body : item;\nconst texto = b.texto ?? b.message ?? b.text ?? b.msg ?? b.sms ?? b.content ?? b.body ?? '';\nconst remitente = b.remitente ?? b.from ?? b.sender ?? b.number ?? '';\nconst res = interpretarSMS(typeof texto === 'string' ? texto : JSON.stringify(texto), remitente);\n// Hora de recepción del servidor (no la del celular, que puede venir desfasada o en otro formato)\nif (res.parseado) res.ocurrido_at = new Date().toISOString();\nreturn [{ json: res }];"
+      },
+      "id": "pm-parse",
+      "name": "Interpretar SMS",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "pm-if-1",
+              "leftValue": "={{ $json.parseado }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "pm-if",
+      "name": "¿Es un ingreso válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/functions/v1/confirmar-pago",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ metodo: $json.metodo, referencia: $json.referencia, monto: $json.monto, pagador: $json.pagador, ocurrido_at: $json.ocurrido_at, raw: $json.raw }) }}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "pm-http",
+      "name": "Confirmar pago en Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        200
+      ],
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS Pagos → Supabase (x-webhook-secret)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, conciliados: $json.conciliados ?? 0 } }}",
+        "options": {}
+      },
+      "id": "pm-ok",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: false, error: 'supabase_no_disponible' } }}",
+        "options": {
+          "responseCode": 502
+        }
+      },
+      "id": "pm-err",
+      "name": "Responder error (reintentar)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, ignorado: true, motivo: $json.motivo } }}",
+        "options": {}
+      },
+      "id": "pm-ign",
+      "name": "Responder ignorado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        980,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook SMS Banco": {
+      "main": [
+        [
+          {
+            "node": "Interpretar SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interpretar SMS": {
+      "main": [
+        [
+          {
+            "node": "¿Es un ingreso válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es un ingreso válido?": {
+      "main": [
+        [
+          {
+            "node": "Confirmar pago en Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder ignorado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirmar pago en Supabase": {
+      "main": [
+        [
+          {
+            "node": "Responder OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder error (reintentar)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false
+}

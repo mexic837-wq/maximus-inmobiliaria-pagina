@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Casa minimalista (techo + dos pilares) con flecha ascendente en esmeralda.
+       La flecha "corta" el blanco donde se cruza, igual que en el logo original. -->
+  <defs>
+    <mask id="corte" maskUnits="userSpaceOnUse" x="0" y="0" width="120" height="100">
+      <rect width="120" height="100" fill="#fff"/>
+      <path d="M52 72L100 18M84 16H101V33" stroke="#000" stroke-width="19"/>
+    </mask>
+  </defs>
+  <g stroke="#F8FAFC" stroke-width="8" mask="url(#corte)">
+    <path d="M10 54L46 20L68 41"/>
+    <path d="M24 42V88"/>
+    <path d="M74 64V88"/>
+  </g>
+  <g stroke="#10B981" stroke-width="8">
+    <path d="M24 52L52 72L100 18"/>
+    <path d="M84 16H101V33"/>
+  </g>
+</svg>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light only">
+  <title>Nueva membresía Pro activada</title>
+</head>
+<body style="margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;">
+  <div style="display:none; max-height:0; overflow:hidden; opacity:0; font-size:1px; line-height:1px; color:#F4F7F6;">
+    {{ $('Preparar datos').item.json.nombre }} activó MAXIMUS Pro · US$ {{ $('Preparar datos').item.json.monto }} · {{ $('Preparar datos').item.json.metodo }}
+  </div>
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F4F7F6; padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11,74,63,0.10); border:1px solid #E2E8F0;">
+
+          <tr>
+            <td style="height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);"></td>
+          </tr>
+
+          <!-- Cabecera compacta con logo -->
+          <tr>
+            <td style="background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:22px 28px; border-bottom:2px solid #10B981;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td width="56" valign="middle">
+                    <img src="{{ $('Preparar datos').item.json.logo_url }}" width="44" alt="MAXIMUS" style="display:block; width:44px; height:auto; border:0; font-size:11px; font-weight:800; color:#F8FAFC;">
+                  </td>
+                  <td valign="middle" style="padding-left:4px;">
+                    <p style="margin:0; font-size:16px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;">MAXIMUS<span style="color:#10B981;">.</span></p>
+                    <p style="margin:2px 0 0 0; font-size:10px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;">Aviso interno</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:30px 32px 26px 32px;">
+              <span style="display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">
+                💰 Nueva membresía Pro
+              </span>
+
+              <h2 style="margin:16px 0 8px 0; font-size:20px; font-weight:800; color:#0F172A; line-height:1.3;">
+                {{ $('Preparar datos').item.json.nombre }} activó su plan
+              </h2>
+              <p style="margin:0 0 22px 0; font-size:14px; line-height:1.6; color:#475569;">
+                El pago se confirmó automáticamente y el rol de <strong style="color:#0B4A3F;">Asesor Pro</strong> ya quedó aplicado. No necesitas hacer nada.
+              </p>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:22px;">
+                <tr>
+                  <td style="padding:18px 22px;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td style="padding:7px 0; font-size:13px; color:#64748B; width:34%; border-bottom:1px solid #E2E8F0;">Asesor</td>
+                        <td style="padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;">{{ $('Preparar datos').item.json.nombre }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Correo</td>
+                        <td style="padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;">{{ $('Preparar datos').item.json.email || 'N/D' }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Teléfono</td>
+                        <td style="padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;">{{ $('Preparar datos').item.json.telefono }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Código</td>
+                        <td style="padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; font-family:monospace; border-bottom:1px solid #E2E8F0;">{{ $('Preparar datos').item.json.codigo }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Método</td>
+                        <td style="padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;">{{ $('Preparar datos').item.json.metodo }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;">Vigente hasta</td>
+                        <td style="padding:7px 0; font-size:13px; font-weight:600; color:#475569; border-bottom:1px solid #E2E8F0;">{{ $('Preparar datos').item.json.vence }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:9px 0 2px 0; font-size:13px; color:#64748B;">Monto</td>
+                        <td style="padding:9px 0 2px 0; font-size:18px; font-weight:800; color:#059669;">US$ {{ $('Preparar datos').item.json.monto }}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0 auto;">
+                <tr>
+                  <td align="center">
+                    <a href="{{ $('Preparar datos').item.json.wa_asesor }}" style="display:inline-block; background-color:#0B4A3F; color:#FFFFFF; text-decoration:none; padding:12px 26px; border-radius:12px; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">
+                      Escribirle por WhatsApp →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background-color:#111827; padding:20px 28px; border-top:3px solid #10B981; text-align:center;">
+              <p style="margin:0; font-size:11px; color:#94A3B8; line-height:1.5;">
+                {{ $('Preparar datos').item.json.fecha }} · Generado automáticamente por el sistema de pagos MAXIMUS
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

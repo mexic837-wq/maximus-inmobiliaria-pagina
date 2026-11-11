@@ -67,73 +67,43 @@ const APP_CONFIG = {
     },
 
     // ========== PLANES DE SUSCRIPCIÓN (ASESORES EXTERNOS) ==========
+    // ⚠️ El precio REAL lo fija el servidor (supabase/functions/_shared/pagos.ts → PLANES).
+    // Este valor es solo para mostrarlo en pantalla: si lo cambias, cámbialo también allá.
     PLANES_SUSCRIPCION: {
         MENSUAL: {
             id: 'mensual',
             nombre: 'Plan Mensual Pro',
-            precio_usd: 19,
+            precio_usd: 4.99,
             periodo_label: '/mes',
             descripcion: 'Acceso completo al CRM, cotizador, colecciones y carga de inmuebles.',
             badge: null
-        },
-        TRIMESTRAL: {
-            id: 'trimestral',
-            nombre: 'Plan Trimestral Pro',
-            precio_usd: 49,
-            periodo_label: '/trimestre',
-            descripcion: 'Equivalente a $16.33/mes. Ahorra 15% con facturación trimestral.',
-            badge: 'Ahorra 15%'
-        },
-        ANUAL: {
-            id: 'anual',
-            nombre: 'Plan Anual Pro',
-            precio_usd: 169,
-            periodo_label: '/año',
-            descripcion: 'Equivalente a $14.08/mes. Recibe 2 meses completamente gratis.',
-            badge: '2 Meses Gratis · Mejor Valor'
         }
     },
 
-    // ========== CONFIGURACIÓN DE PASARELAS DE PAGO VENEZUELA ==========
+    // ========== MÉTODOS DE PAGO: Pago Móvil · Binance · Stripe ==========
+    // La verificación y activación ocurren en el servidor (Edge Functions + n8n).
+    // Aquí solo van los datos que se MUESTRAN al cliente para pagar.
     DATOS_PAGO_VENEZUELA: {
-        TASA_BCV_USD: 75.00, // Tasa referencial oficial actualizable automáticamente o vía admin
+        TASA_BCV_USD: 75.00, // Solo referencia visual; el monto exacto en Bs lo calcula el servidor con la tasa del día
         WHATSAPP_CONCILIACION: '584247835697',
         METODOS: {
             PAGO_MOVIL: {
                 activo: true,
                 nombre: 'Pago Móvil (Bolívares)',
-                banco: '0102 - Banco de Venezuela / 0134 - Banesco',
-                telefono: '04247835697',
-                ci_rif: 'V-20123456',
-                titular: 'MAXIMUS Inmobiliaria C.A.',
-                instrucciones: 'Realiza el pago móvil al cambio oficial BCV del día. Al finalizar, ingresa el número de referencia y envía el comprobante.'
+                banco: '0102 - Banco de Venezuela / 0134 - Banesco',   // TODO: banco real que recibe
+                telefono: '04247835697',                                // TODO: teléfono afiliado a Pago Móvil
+                ci_rif: 'V-20123456',                                   // TODO: cédula/RIF real
+                titular: 'MAXIMUS Inmobiliaria C.A.'
             },
-            ZELLE: {
-                activo: true,
-                nombre: 'Zelle (Dólares USD)',
-                correo: 'pagos@maximusinmobiliaria.com',
-                titular: 'MAXIMUS Real Estate Services LLC',
-                instrucciones: 'Envía el monto exacto vía Zelle colocando tu nombre y correo en la nota de transferencia.'
-            },
-            BINANCE_PAY: {
+            BINANCE: {
                 activo: true,
                 nombre: 'Binance Pay / USDT',
-                pay_id: '849201938',
-                red: 'USDT (Red BNB Smart Chain BEP20 / TRC20)',
-                wallet: '0x71C949e29088523A3521b444bB47385203A90001',
-                instrucciones: 'Paga de forma instantánea y sin comisiones con Binance Pay ID o transfiere USDT a la wallet institucional.'
+                pay_id: '849201938',                                    // TODO: tu Binance Pay ID real
+                red: 'Binance Pay (USDT) · transferencia interna sin comisión'
             },
-            ZINLI: {
+            STRIPE: {
                 activo: true,
-                nombre: 'Zinli / Wally Tech',
-                correo: 'pagos@maximusinmobiliaria.com',
-                instrucciones: 'Envía de billetera a billetera Zinli o Wally usando nuestro correo oficial.'
-            },
-            TARJETA_INTERNACIONAL: {
-                activo: true,
-                nombre: 'Tarjeta de Crédito / Débito Internacional (Stripe / Link)',
-                modo: 'stripe_ready', // Preparado para conectar llave pública Stripe cuando esté lista
-                instrucciones: 'Procesamiento seguro con cifrado TLS 256-bit compatible con Visa, Mastercard y American Express.'
+                nombre: 'Tarjeta de Crédito / Débito (Stripe)'
             }
         }
     },
