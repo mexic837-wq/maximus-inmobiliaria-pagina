@@ -13,6 +13,18 @@ description: >-
   y la asigna como foto_principal.
 ---
 
+> [!IMPORTANT]
+> **Separación de collages en Node (vigente desde 10/11/2026): `scripts/collage_split.js`.** Python no está instalado,
+> así que `clean_images.py`/`clean_images.js` no se ejecutan. `insertar_inmuebles.js` llama a `separarCollage` en cada foto:
+> - Detecta franjas divisorias y costuras sin margen (mitades/tercios) y completa cuadrículas donde una fila tiene la costura menos marcada.
+> - Externas: recorta los rótulos de texto pegados a las costuras (filas con muchos tramos cortos de blanco = letras).
+> - **No parte flyers diseñados** (plantillas RE/MAX, etc.): si en promedio las piezas son gráficas/planas (> 50 %), se deja entero.
+> - Galería: piezas `foto_NN_MM.jpg` primero y el flyer completo al final (`foto_NN_collage.jpg`, nunca se usa en la portada).
+> - Portada: se eligen las piezas sin rótulos y la más grande va como foto principal.
+> - Prueba: `node .agents/skills/property-image-cleaner/scripts/collage_split.js foto.jpg --out carpeta`. Desactivar: `--sin-collage` en el insertador.
+> - Limitación conocida: flyers con un rótulo gris sobre cada foto pueden salir con costuras sin separar o con texto.
+> - El Smart Crop de marcas de agua del `.py` (bordes con logos de otras inmobiliarias) aún no está portado.
+
 # Skill 3: Limpiador de Imágenes, Extractor de Capturas, Separador de Collages y Upload (`property-image-cleaner`)
 
 Esta skill adapta automáticamente el procesamiento visual según la bandeja de entrada (`captaciones_externas/` vs `captaciones_maximus/`) y el modo de captura de WhatsApp.
@@ -54,9 +66,17 @@ Para evitar que una tarjeta en el portal o dashboard muestre una foto que desfav
 
 ---
 
-## 3. Portada Collage MAXIMUS (Plantillas Alquiler / Venta) — `EN PRUEBA`
+## 3. Portada Collage MAXIMUS (Plantillas Alquiler / Venta) — `EN PRODUCCIÓN`
 
-Estado: **propuesta v1, desactivada por defecto** (`"habilitado": false` en `references/plantillas_collage.json`). Mientras esté apagada, la skill funciona exactamente igual que antes (secciones 1 y 2).
+> [!IMPORTANT]
+> **Estado (09/11/2026): aplicada a todos los inmuebles del sistema.** Motor vigente en Node: `scripts/collage_maximus.js`
+> (port fiel del `.py`, usa `@napi-rs/canvas` ≥ 1.0 para los pesos reales de Montserrat).
+> - Nuevos inmuebles: `whatsapp-browser-agent/scripts/insertar_inmuebles.js` genera la portada automáticamente.
+> - Todos / uno: `node .agents/skills/property-image-cleaner/scripts/aplicar_portadas_todos.js --muestra 6 | --todos-local | --aplicar [--codigo "#MAX-123"]`
+>   (guarda respaldo en `portadas_maximus_out/respaldo_*.json`; nunca usa fotos de stock).
+> - Las tarjetas de `index.html` y `catalog.html` detectan `portada_maximus` y la muestran completa en 16:10 sin badges duplicados.
+>
+> Lo de abajo describe el flag del pipeline Python (`habilitado` en el JSON), que ya no es el camino principal.
 
 Cuando se activa, después de limpiar y puntuar las fotos (sección 2) la skill:
 1. **Selecciona hasta 3 fotos** (`seleccionar_fotos_collage`): toma las de mayor score, **excluye flyers de terceros** (`_collage.jpg`, traen texto/logos ajenos), descarta **fotos casi idénticas** (hash perceptual, típico de reenvíos de WhatsApp) y recortes < 300 px.

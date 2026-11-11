@@ -13,6 +13,18 @@ description: Agente Captador Inteligente MAXIMUS. Lee los grupos de WhatsApp Web
 
 Lee antes: `agente_whatsapp/memoria/aprendizajes.md` (Regla de Oro 2).
 
+> [!IMPORTANT]
+> **Versión vigente: Node.** Captura con `whatsapp-web-sync/scripts/captura_whatsapp.js` y luego inserta con:
+> ```bash
+> node .agents/skills/whatsapp-browser-agent/scripts/insertar_inmuebles.js --json "<lote>/inmuebles_agente.json" --dry-run
+> node .agents/skills/whatsapp-browser-agent/scripts/insertar_inmuebles.js --json "<lote>/inmuebles_agente.json"
+> ```
+> - **Sin fotos no se inserta nada** (falla del 06/11/2026: 47 inmuebles quedaron con foto de stock).
+> - Las rutas de `fotos` pueden ser relativas al lote (`IMG-20261109-WA0003_1.jpg`).
+> - Genera automáticamente la **portada Editorial MAXIMUS** (alquiler esmeralda / venta plata) como `foto_principal`.
+> - Si el inmueble ya existe pero sin fotos reales, **le completa las fotos** en vez de marcarlo duplicado.
+> - Los pasos 1–4 de abajo en Python quedan como referencia; el flujo completo está en `.claude/agents/captador-whatsapp.md`.
+
 ---
 
 ## Flujo de trabajo (sigue estos pasos en orden)
@@ -74,7 +86,7 @@ Indica: mensajes leídos, inmuebles detectados, insertados, duplicados y pendien
 `la-popita`, `las-pilas`, `barrio-sucre`, `unidad-vecinal`, `madre-juana`, `santa-ines`, `quinimari`,
 `tariba`, `palmira`, `palo-gordo`, `san-josecito`, `palmira-centro`, `la-grita`, `rubio`,
 `capacho-nuevo`, `capacho-viejo`, `san-antonio`, `lobatera`, `michelena`, `santa-ana`, `tucape`,
-`coloncito`, `la-fria`, `el-piñal`, `pregonero`.
+`coloncito`, `la-fria`, `el-piñal`, `pregonero`, `cordero`, `chorro-del-indio` (41 zonas desde el 11/11/2026).
 
 Referencias de barrios → clave: ver tabla 1.2 de `agente_whatsapp/memoria/aprendizajes.md`.
 Si un sector frecuente no tiene clave clara (ej. Cordero, Agua Clara), pregunta al usuario una sola vez

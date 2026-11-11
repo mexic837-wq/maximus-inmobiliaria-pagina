@@ -539,7 +539,7 @@
         </div>
 
         <!-- Indicador de desplazamiento horizontal -->
-        <div class="flex items-center justify-center mt-3 text-center select-none">
+        <div class="md:hidden flex items-center justify-center mt-3 text-center select-none">
             <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 text-gray-500 text-xs font-semibold border border-gray-200/90 shadow-2xs">
                 <i class="fas fa-arrows-left-right text-emerald-600 text-xs animate-pulse"></i>
                 <span>Desliza para ver más inmuebles</span>
@@ -1184,7 +1184,7 @@
             </div>
 
             <!-- Indicador de desplazamiento horizontal -->
-            <div class="flex items-center justify-center mt-3 text-center select-none">
+            <div class="md:hidden flex items-center justify-center mt-3 text-center select-none">
                 <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 text-gray-500 text-xs font-semibold border border-gray-200/90 shadow-2xs">
                     <i class="fas fa-arrows-left-right text-amber-500 text-xs animate-pulse"></i>
                     <span>Desliza para ver más reseñas</span>
@@ -1924,13 +1924,15 @@
                         const tipoLabel = (item.tipo || 'INMUEBLE').toUpperCase();
                         const precioFormateado = formatUSD(item.precio) + (esAlquiler ? ' <span class="text-xs font-medium text-gray-400">/ mes</span>' : '');
                         const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
-                        const codigo = item.id ? ('#MAX-' + item.id.replace('inm-', '').slice(0, 4).toUpperCase()) : '#MAX';
+                        const codigo = item.codigo || (item.id ? ('#MAX-' + item.id.replace('inm-', '').slice(0, 4).toUpperCase()) : '#MAX');
+                        // Portada "Editorial MAXIMUS": ya trae operación, código y precio impresos -> se muestra completa (16:10) y sin badges duplicados
+                        const esPortada = /portada_maximus/i.test(foto);
 
                         return `
                             <a href="/detalle-propiedad?id=${encodeURIComponent(item.id)}" class="w-[320px] sm:w-[360px] flex-shrink-0 bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 group block">
-                                <div class="relative h-60 overflow-hidden bg-gray-100">
-                                    <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="relative ${esPortada ? 'aspect-[16/10]' : 'h-60'} overflow-hidden bg-gray-100">
+                                    <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover ${esPortada ? 'group-hover:scale-[1.03]' : 'group-hover:scale-110'} transition-transform duration-700 ease-out" loading="lazy" decoding="async" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
+                                    ${esPortada ? '' : `<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                     <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
                                         <span class="${badgeColor} text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg shadow-md tracking-wider">
                                             ${badgeLabel}
@@ -1941,7 +1943,7 @@
                                     </div>
                                     <div class="absolute top-3 right-3 bg-white text-gray-800 text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm">
                                         ${codigo}
-                                    </div>
+                                    </div>`}
                                 </div>
                                 <div class="p-6">
                                     <div class="text-2xl font-bold text-maximus-dark mb-1">${precioFormateado}</div>
