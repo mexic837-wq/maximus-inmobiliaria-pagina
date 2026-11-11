@@ -70,7 +70,9 @@
 | `coloncito` | `Coloncito` | `Coloncito, Panamericano, Táchira` | `"Coloncito"` |
 | `la-fria` | `La Fría` | `La Fría, García de Hevia, Táchira` | `"La Fría"` |
 | `el-piñal` | `El Piñal` | `El Piñal, Fernández Feo, Táchira` | `"El Piñal"` |
-| `pregonero` | `Pregonero` | `Pregonero, Uribante, Táchira` | `"Pregonero"`, `"Cordero"` |
+| `pregonero` | `Pregonero` | `Pregonero, Uribante, Táchira` | `"Pregonero"`, `"Uribante"`, `"Lomas Blancas"` |
+| `chorro-del-indio` | `Chorro del Indio` | `Chorro del Indio, San Cristóbal, Táchira` | `"Chorro del Indio"`, `"vía Chorro del Indio"` (zona nueva 11/11/2026) |
+| `cordero` | `Cordero` | `Cordero, Andrés Bello, Táchira` | `"Cordero"`, `"San Rafael de Cordero"`, `"Vía Cordero"` (zona nueva 10/11/2026; Cordero NO es Pregonero) |
 
 ---
 
@@ -153,3 +155,11 @@ Esta sección registra casos reales aprendidos durante la ejecución de lotes pa
       - **Sesión Persistente:** Se configuró Playwright con Google Chrome del sistema y almacenamiento en `agente_whatsapp/.wweb_session/`. El usuario solo requiere escanear el código QR una única vez.
       - **Extracción de Medios en Memoria:** Las fotografías se extraen directamente desde los blobs desencriptados de WhatsApp Web en el navegador y se guardan como archivos `IMG-*.jpg` junto con un `_chat.txt` estructurado estándar.
       - **Pipeline 100% Automático:** El comando `python agente_whatsapp/sincronizar_whatsapp.py --grupos "..." --auto-pipeline` ejecuta secuencialmente captura en vivo -> parseo (Skill 1) -> deduplicación (Skill 2) -> separación de collages y portadas (Skill 3) -> subida a Supabase (Skill 4).
+
+---
+
+## SECCIÓN: Fallas corregidas (09/11/2026)
+- **Inmuebles sin foto:** el 06/11/2026 el modo navegador insertó 47 inmuebles sin fotos (quedaron con foto de stock de Unsplash). Regla nueva: **nada se publica sin al menos 1 foto real**. Respaldo de esos 47: `agente_whatsapp/proyectos/respaldo_inmuebles_sin_foto_2026-11-09.json`. Al recapturarlos, `insertar_inmuebles.js` les completa las fotos.
+- **Captura:** los mensajes solo-foto del mismo remitente se fusionaban (clave vacía) y se guardaban miniaturas. Ahora la clave es el `data-id` del mensaje y las fotos se bajan del visor en HD.
+- **Origen de los grupos:** los grupos de inmuebles del Táchira están en la carpeta **Archivados** de WhatsApp.
+- **Portada:** todo inmueble lleva la portada "Editorial MAXIMUS" como `foto_principal` (alquiler esmeralda / venta plata).

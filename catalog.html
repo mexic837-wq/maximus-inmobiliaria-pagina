@@ -983,6 +983,7 @@
                 const foto = item.foto_principal || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
                 const codigo = item.codigo || (item.id ? ('#MAX-' + item.id.replace('inm-', '').slice(0, 4).toUpperCase()) : '#MAX');
                 const esFavorito = favoritosUsuario.includes(item.id);
+                const esPortada = /portada_maximus/i.test(foto);
 
                 // Mensaje para WhatsApp del asesor
                 const mensajeWa = encodeURIComponent(`Hola MAXIMUS, deseo consultar por la propiedad "${item.titulo}" (${codigo}) por ${precioFmt}. ¿Sigue disponible?`);
@@ -992,12 +993,12 @@
                     <div class="bg-white rounded-3xl overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 border border-gray-200/70 flex flex-col group">
                         
                         <!-- Contenedor Imagen y Badges -->
-                        <div class="relative h-60 overflow-hidden bg-gray-100">
-                            <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="relative ${esPortada ? 'aspect-[16/10]' : 'h-60'} overflow-hidden bg-gray-100">
+                            <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover ${esPortada ? 'group-hover:scale-[1.03]' : 'group-hover:scale-105'} transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
+                            ${esPortada ? '' : `<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>`}
 
-                            <!-- Badges Superiores Izquierda -->
-                            <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                            <!-- Badges Superiores Izquierda (la portada MAXIMUS ya los trae impresos) -->
+                            <div class="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap ${esPortada ? 'hidden' : ''}">
                                 <span class="${badgeColor} text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-lg shadow-sm tracking-wider">
                                     ${badgeLabel}
                                 </span>
@@ -1008,7 +1009,7 @@
 
                             <!-- Código Superior Derecha -->
                             <div class="absolute top-3 right-3 flex items-center gap-2">
-                                <span class="bg-white/95 backdrop-blur-md text-maximus-dark text-[10px] font-black px-2.5 py-1 rounded-lg shadow-xs">
+                                <span class="bg-white/95 backdrop-blur-md text-maximus-dark text-[10px] font-black px-2.5 py-1 rounded-lg shadow-xs ${esPortada ? 'hidden' : ''}">
                                     ${codigo}
                                 </span>
                                 <!-- Botón Favorito (Dispara Modal VIP si no hay sesión) -->

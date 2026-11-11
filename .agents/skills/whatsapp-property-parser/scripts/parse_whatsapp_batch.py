@@ -148,7 +148,9 @@ UBICACIONES_TACHIRA_REGLAS = [
     ("coloncito", "Coloncito", "Panamericano", r"\b(coloncito|panamericano)\b"),
     ("la-fria", "La Fría", "García de Hevia", r"\b(la\s+fr[ií]a|garc[ií]a\s+de\s+hevia)\b"),
     ("el-piñal", "El Piñal", "Fernández Feo", r"\b(el\s+pi[ñn]al|fern[aá]ndez\s+feo)\b"),
-    ("pregonero", "Pregonero", "Uribante", r"\b(pregonero|uribante|cordero|lomas\s+blancas)\b"),
+    ("chorro-del-indio", "Chorro del Indio", "San Cristóbal", r"\bchorro\s+del\s+indio\b"),
+    ("cordero", "Cordero", "Andrés Bello", r"\b(cordero|san\s+rafael\s+de\s+cordero)\b"),
+    ("pregonero", "Pregonero", "Uribante", r"\b(pregonero|uribante|lomas\s+blancas)\b"),
 ]
 
 REGLAS_ASPECTOS_DESTACADOS = [

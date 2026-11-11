@@ -52,3 +52,7 @@ ios/App/.build/
 
 # Carpeta anidada accidental de descompresión
 maximus-inmobiliaria-pagina-main/
+
+# Contactos con asesores (teléfonos de terceros) y salidas locales de portadas/respaldos
+agente_whatsapp/contactos/
+portadas_maximus_out/

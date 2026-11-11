@@ -5,6 +5,22 @@ description: Sincroniza y extrae en vivo inmuebles y fotografías directamente d
 
 # Skill: WhatsApp Web Live Sync & Capture (`whatsapp-web-sync`)
 
+> [!IMPORTANT]
+> **Versión vigente: Node (`scripts/captura_whatsapp.js`).** Python no está instalado en el equipo; los `.py` quedan como referencia.
+> ```bash
+> node .agents/skills/whatsapp-web-sync/scripts/captura_whatsapp.js login        # QR una sola vez
+> node .agents/skills/whatsapp-web-sync/scripts/captura_whatsapp.js listar       # grupos en "Archivados"
+> node .agents/skills/whatsapp-web-sync/scripts/captura_whatsapp.js capturar --dias 7 [--grupos "a,b"] [--max-msgs 600] [--headless] [--sin-hd]
+> ```
+> - Recorre **todos los grupos de la carpeta Archivados** (ahí están los grupos de inmuebles del Táchira).
+> - Salida por grupo: `mensajes.json` (`id, remitente_id, remitente, telefono, fecha, hora, texto, imagenes[]`) + `IMG-*.jpg` en alta resolución.
+> - Corrige fallas de la versión Python: mensajes solo-foto que se fusionaban (clave vacía), remitente/fecha perdidos en fotos,
+>   miniaturas borrosas en lugar de fotos HD, álbumes incompletos, límite de 40 mensajes, sin acceso a Archivados.
+> - **Contacto con asesores** (`scripts/contactar_asesores.js`): `preparar` arma un borrador para los asesores de inmuebles
+>   con 1 sola foto; `enviar --confirmo` envía solo lo aprobado (tope 15/día, pausas); `respuestas` guarda lo que responden.
+>   Nunca se envía sin aprobación del usuario. Si preguntan quién es: "asistente virtual de José Guerrero".
+> - La interpretación la hace el agente `captador-whatsapp` (`.claude/agents/captador-whatsapp.md`), no el regex.
+
 Permite al Agente MAXIMUS acceder directamente a WhatsApp Web a través del navegador Google Chrome local, navegar por los grupos inmobiliarios de San Cristóbal / Táchira (como *SOLO VENTAS - TACHIRA*, *Maximus captaciónes*, etc.), extraer los mensajes descriptivos junto con sus fotografías adjuntas en máxima resolución, y volcarlos automáticamente en las bandejas `captaciones_externas/` o `captaciones_maximus/`.
 
 ---

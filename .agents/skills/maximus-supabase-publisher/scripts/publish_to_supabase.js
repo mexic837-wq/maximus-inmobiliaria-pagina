@@ -261,3 +261,5 @@ if (require.main === module) {
         console.log(`\n✨ [OK] Publicación completada (${res.flujo} | dryRun=${dryRun}): ${res.creados} inmuebles en Supabase.`);
     });
 }
+
+module.exports = { loadSupabaseConfig, getNextCorrelativo, buildPayload };

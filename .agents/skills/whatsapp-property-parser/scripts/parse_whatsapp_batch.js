@@ -75,7 +75,9 @@ const UBICACIONES_TACHIRA_REGLAS = [
     { key: 'coloncito', label: 'Coloncito', municipio: 'Panamericano', regex: /\b(coloncito|panamericano)\b/i },
     { key: 'la-fria', label: 'La Fría', municipio: 'García de Hevia', regex: /\b(la\s+fr[ií]a|garc[ií]a\s+de\s+hevia)\b/i },
     { key: 'el-piñal', label: 'El Piñal', municipio: 'Fernández Feo', regex: /\b(el\s+pi[ñn]al|fern[aá]ndez\s+feo)\b/i },
-    { key: 'pregonero', label: 'Pregonero', municipio: 'Uribante', regex: /\b(pregonero|uribante|cordero|lomas\s+blancas)\b/i }
+    { key: 'chorro-del-indio', label: 'Chorro del Indio', municipio: 'San Cristóbal', regex: /\bchorro\s+del\s+indio\b/i },
+    { key: 'cordero', label: 'Cordero', municipio: 'Andrés Bello', regex: /\b(cordero|san\s+rafael\s+de\s+cordero)\b/i },
+    { key: 'pregonero', label: 'Pregonero', municipio: 'Uribante', regex: /\b(pregonero|uribante|lomas\s+blancas)\b/i }
 ];
 
 const REGLAS_ASPECTOS = [
@@ -773,3 +775,5 @@ if (require.main === module) {
         console.log(`[OK] Lote '${res.lote}' (${res.flujo_carpeta}) procesado: ${res.total_extraidos_completos} completos, ${res.total_pendientes_revision} en pendientes_revision.md, ${res.total_descartados_basura_o_busqueda} descartados.`);
     });
 }
+
+module.exports = { UBICACIONES_TACHIRA_REGLAS, resolverUbicacionOficialTachira, normalizarTelefonoVE, esRequerimientoOBasura };

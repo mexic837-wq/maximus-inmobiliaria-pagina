@@ -16,6 +16,12 @@ Sus 6 skills operativas residen en `.agents/skills/` y están vinculadas en `age
 4. **`maximus-supabase-publisher`** (`.agents/skills/maximus-supabase-publisher/`)
 5. **`agent-continuous-trainer`** (`.agents/skills/agent-continuous-trainer/`)
 
+> [!IMPORTANT]
+> **Actualización 09/11/2026 — todo corre en Node** (Python no está instalado). Orquestador: subagente
+> **`captador-whatsapp`** (`.claude/agents/captador-whatsapp.md`). Flujo: `captura_whatsapp.js capturar` (grupos en
+> **Archivados**, fotos HD) → el agente interpreta `mensajes.json` → `insertar_inmuebles.js` (exige fotos, dedupe,
+> completa inmuebles sin foto, portada Editorial MAXIMUS).
+
 ---
 
 ## 2. Las 3 Reglas de Oro Inquebrantables
