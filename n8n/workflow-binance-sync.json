@@ -1,0 +1,89 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 11. Binance Pay: sincronización de pagos cada minuto",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. En el `.env` del VPS deben estar `BINANCE_API_KEY` y `BINANCE_API_SECRET`.\n   La API key de Binance: **solo lectura** (Enable Reading), restringida a la IP del VPS, **sin** retiros ni trading.\n2. **Credencial** (nodo *Sincronizar Binance*): Header Auth\n   · Name: `x-webhook-secret` · Value: el `PAGOS_WEBHOOK_SECRET` del `.env` (misma credencial que el flujo 10)\n3. Prueba con *Execute workflow*: la respuesta debe traer `ok: true` y `leidos`.\n   Si dice `Binance no configurado`, faltan las variables del paso 1.\n4. **Activa** el workflow.\n\nLas ejecuciones exitosas no se guardan (serían 1.440 al día). Los errores sí: revísalos en *Executions*.",
+        "width": 480,
+        "height": 420,
+        "color": 4
+      },
+      "id": "setup",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "bn-schedule",
+      "name": "Cada minuto",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/functions/v1/binance-sync",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {
+          "timeout": 25000
+        }
+      },
+      "id": "bn-http",
+      "name": "Sincronizar Binance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        520,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS Pagos → Supabase (x-webhook-secret)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cada minuto": {
+      "main": [
+        [
+          {
+            "node": "Sincronizar Binance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "all",
+    "saveManualExecutions": true
+  },
+  "active": false
+}

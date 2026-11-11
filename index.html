@@ -788,7 +788,7 @@
                     if (typeof gsap !== 'undefined' && preEl) {
                         gsap.fromTo(preEl, { scale: 0.85, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2)' });
                     }
-                    if (preEl) preEl.textContent = '$19';
+                    if (preEl) preEl.textContent = '$4.99';
                     if (perEl) perEl.textContent = '/ mes';
                     if (ctaBtn) ctaBtn.setAttribute('onclick', "abrirModalSuscripcionPro('mensual')");
                 } else {
@@ -797,8 +797,8 @@
                     if (typeof gsap !== 'undefined' && preEl) {
                         gsap.fromTo(preEl, { scale: 0.85, opacity: 0.4 }, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(2)' });
                     }
-                    if (preEl) preEl.textContent = '$14';
-                    if (perEl) perEl.textContent = '/ mes · facturado anual';
+                    if (preEl) preEl.textContent = '$4.99';
+                    if (perEl) perEl.textContent = '/ mes';
                     if (ctaBtn) ctaBtn.setAttribute('onclick', "abrirModalSuscripcionPro('anual')");
                 }
             };
@@ -819,7 +819,7 @@
                 </p>
 
                 <!-- Toggle Mensual / Anual Interactivo Compacto -->
-                <div class="planes-toggle-container inline-flex items-center gap-1 mt-3 p-0.5 rounded-full bg-gray-100 border border-gray-200 shadow-inner">
+                <div class="planes-toggle-container hidden items-center gap-1 mt-3 p-0.5 rounded-full bg-gray-100 border border-gray-200 shadow-inner">
                     <button type="button" id="toggleLandingMensual" onclick="window.togglePlanLanding('mensual')" class="px-4 py-1.5 rounded-full text-[11px] font-bold transition-all bg-white text-gray-900 shadow-sm cursor-pointer">
                         Mensual
                     </button>
@@ -892,7 +892,7 @@
                         <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-300/80 mb-1">Asesores & Agencias Aliadas</p>
                         <h3 class="text-base font-black text-white">MAXIMUS Pro</h3>
                         <div class="flex items-baseline gap-1 mt-1">
-                            <span id="precioLandingDisplay" class="text-2xl sm:text-3xl font-black text-white tracking-tight">$19</span>
+                            <span id="precioLandingDisplay" class="text-2xl sm:text-3xl font-black text-white tracking-tight">$4.99</span>
                             <span id="periodoLandingDisplay" class="text-xs font-medium text-gray-300">/ mes</span>
                         </div>
                         <p class="text-[11px] text-gray-300/90 mt-1 leading-relaxed">Herramientas profesionales para publicar tu inventario, captar clientes y cerrar más ventas.</p>
@@ -932,7 +932,7 @@
                             Activar Membresía Pro
                         </button>
                         <p class="text-center text-[10px] text-gray-400 mt-1.5">
-                            Pago Móvil (Bs BCV) · Zelle · Binance USDT · Tarjetas
+                            Pago Móvil (Bs BCV) · Binance USDT · Tarjetas
                         </p>
                     </div>
                 </div>
@@ -993,7 +993,7 @@
                         </button>
                         <div class="faq-landing-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
                             <div class="faq-landing-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 leading-relaxed border-t border-gray-100 opacity-0 -translate-y-2 transition-all duration-300">
-                                Puedes pagar en Bolívares mediante <strong>Pago Móvil</strong> calculado a la tasa oficial del <strong>Banco Central de Venezuela (BCV)</strong> del día exacto, o en dólares vía <strong>Zelle</strong>, <strong>Binance Pay (USDT)</strong> y tarjetas internacionales Visa/Mastercard.
+                                Puedes pagar en Bolívares mediante <strong>Pago Móvil</strong> calculado a la tasa oficial del <strong>Banco Central de Venezuela (BCV)</strong> del día exacto, o en dólares vía <strong>Binance Pay (USDT)</strong> y tarjetas internacionales Visa/Mastercard (Stripe).
                             </div>
                         </div>
                     </div>

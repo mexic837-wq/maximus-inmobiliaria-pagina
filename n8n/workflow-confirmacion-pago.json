@@ -1,0 +1,216 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 12. Confirmación de pago de membresía Pro",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. **Credencial del webhook** (nodo *Webhook Confirmación Pago*): Header Auth\n   · Name: `x-webhook-secret` · Value: un secreto nuevo (`openssl rand -hex 32`)\n   · Pon ese MISMO valor en `N8N_WEBHOOK_SECRET` del `.env` del VPS y reinicia: `docker compose up -d functions`\n2. **Gmail**: en los 2 nodos de correo elige tu credencial *Gmail OAuth2* (la misma de tus otros flujos).\n   Gmail envía desde la cuenta conectada; el nombre que ve el cliente es \"MAXIMUS Inmobiliaria\".\n3. Revisa las constantes de *Preparar datos* (correo admin, URL del panel, logo, WhatsApp).\n4. El logo debe estar publicado en el sitio: `/assets/email/logo-maximus-email.png`.\n5. **Publica** el workflow.\n\nResponde al instante a Supabase y luego envía los correos, así un fallo de Gmail nunca afecta la activación del plan.\nSi falla un correo, el otro se envía igual: revisa *Executions*.",
+        "width": 480,
+        "height": 480,
+        "color": 4
+      },
+      "id": "setup",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "confirmacion-pago",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "cp-webhook",
+      "name": "Webhook Confirmación Pago",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ],
+      "webhookId": "maximus-confirmacion-pago",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS Supabase → n8n (x-webhook-secret)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lo envía la Edge Function (supabase/functions/_shared/pagos.ts) cuando un pago queda APROBADO.\n// ===== CONFIGURA AQUÍ =====\nconst CORREO_ADMIN = 'maximusinmobiliariars@gmail.com';\nconst URL_DASHBOARD = 'https://maximusinmobiliaria.tech/dashboard';\nconst URL_LOGO = 'https://maximusinmobiliaria.tech/assets/email/logo-maximus-email.png';\nconst WHATSAPP_SOPORTE = '584247835697';\n// ==========================\nconst b = $input.first().json.body || $input.first().json;\nconst esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst metodos = { pago_movil: 'Pago Móvil (Bs)', binance: 'Binance Pay (USDT)', stripe: 'Tarjeta (Stripe)' };\nconst fmt = (d, o) => new Date(d).toLocaleDateString('es-VE', { timeZone: 'America/Caracas', ...o });\nconst email = String(b.user_email || '').trim();\nconst telDigitos = String(b.user_telefono || '').replace(/\\D/g, '');\n// 0414xxxxxxx -> 58414xxxxxxx\nconst telWa = telDigitos.startsWith('58') ? telDigitos : telDigitos.replace(/^0/, '58');\nconst vence = b.plan_vence_at ? fmt(b.plan_vence_at, { day: 'numeric', month: 'long', year: 'numeric' }) : 'un mes desde hoy';\nreturn [{ json: {\n  codigo: esc(b.codigo_transaccion || 'N/D'),\n  plan: esc(b.plan_nombre || 'Plan Mensual Pro'),\n  monto: Number(b.monto_usd || 0).toFixed(2),\n  metodo: esc(metodos[b.metodo_pago] || b.metodo_pago || 'N/D'),\n  email,\n  nombre: esc(b.user_nombre || 'Asesor'),\n  telefono: esc(b.user_telefono || 'N/D'),\n  tiene_email: /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email),\n  correo_admin: CORREO_ADMIN,\n  url_dashboard: URL_DASHBOARD,\n  logo_url: URL_LOGO,\n  url_whatsapp: 'https://wa.me/' + WHATSAPP_SOPORTE,\n  wa_asesor: telWa.length >= 11 ? 'https://wa.me/' + telWa : 'https://wa.me/' + WHATSAPP_SOPORTE,\n  vence,\n  fecha: fmt(new Date(), { day: 'numeric', month: 'short', year: 'numeric' }) + ' · ' +\n         new Date().toLocaleTimeString('es-VE', { timeZone: 'America/Caracas', hour: '2-digit', minute: '2-digit' }),\n} }];"
+      },
+      "id": "cp-preparar",
+      "name": "Preparar datos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cp-if-1",
+              "leftValue": "={{ $json.tiene_email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cp-if",
+      "name": "¿Tiene correo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "=✅ Tu membresía MAXIMUS Pro está activa · {{ $json.codigo }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta name=\"color-scheme\" content=\"light only\">\n  <title>Tu membresía MAXIMUS Pro está activa</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <!-- Pre-header (texto de vista previa en la bandeja de entrada) -->\n  <div style=\"display:none; max-height:0; overflow:hidden; opacity:0; font-size:1px; line-height:1px; color:#F4F7F6;\">\n    Pago confirmado · {{ $json.plan }} activo hasta el {{ $json.vence }}\n  </div>\n\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11,74,63,0.10); border:1px solid #E2E8F0;\">\n\n          <!-- Barra superior cromo & esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con logo -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:34px 32px 28px 32px; border-bottom:2px solid #10B981;\">\n              <img src=\"{{ $json.logo_url }}\" width=\"72\" alt=\"MAXIMUS\" style=\"display:block; width:72px; height:auto; margin:0 auto 16px auto; border:0; outline:none; text-decoration:none; font-size:14px; font-weight:800; color:#F8FAFC;\">\n              <h1 style=\"margin:0; font-size:24px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo -->\n          <tr>\n            <td style=\"padding:38px 36px 30px 36px;\">\n              <div style=\"margin-bottom:18px;\">\n                <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  ✓ Pago confirmado\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                ¡Bienvenido a MAXIMUS Pro, {{ $json.nombre }}!\n              </h2>\n\n              <p style=\"margin:0 0 26px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Recibimos tu pago y tu cuenta ya cuenta con permisos de <strong style=\"color:#0B4A3F;\">Asesor Pro</strong>. Tu membresía está vigente hasta el <strong style=\"color:#0F172A;\">{{ $json.vence }}</strong>.\n              </p>\n\n              <!-- Comprobante -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:20px 24px;\">\n                    <p style=\"margin:0 0 12px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Comprobante de pago\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:38%; border-bottom:1px solid #E2E8F0;\">Código</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; font-family:monospace; border-bottom:1px solid #E2E8F0;\">{{ $json.codigo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Plan</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.plan }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Método</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.metodo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Fecha</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569; border-bottom:1px solid #E2E8F0;\">{{ $json.fecha }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:9px 0 2px 0; font-size:13px; color:#64748B;\">Total</td>\n                        <td style=\"padding:9px 0 2px 0; font-size:18px; font-weight:800; color:#059669;\">US$ {{ $json.monto }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <!-- Qué incluye -->\n              <p style=\"margin:0 0 10px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                Ya puedes usar\n              </p>\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:28px;\">\n                <tr>\n                  <td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">✓</span>&nbsp; Carga ilimitada de inmuebles al catálogo</td>\n                </tr>\n                <tr>\n                  <td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">✓</span>&nbsp; CRM de prospectos y seguimiento</td>\n                </tr>\n                <tr>\n                  <td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">✓</span>&nbsp; Cotizador express de comisiones</td>\n                </tr>\n                <tr>\n                  <td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">✓</span>&nbsp; Colecciones VIP y WhatsApp directo en tus propiedades</td>\n                </tr>\n              </table>\n\n              <!-- CTA -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_dashboard }}\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); background-color:#0B4A3F; color:#FFFFFF; text-decoration:none; padding:15px 34px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16,185,129,0.25);\">\n                      Ir a mi panel →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <p style=\"margin:24px 0 0 0; font-size:12px; line-height:1.6; color:#64748B; text-align:center;\">\n                Si ya tenías la sesión abierta, ciérrala y vuelve a entrar para ver los cambios.<br>\n                ¿Dudas con tu pago? <a href=\"{{ $json.url_whatsapp }}\" style=\"color:#059669; font-weight:700; text-decoration:none;\">Escríbenos por WhatsApp</a>.\n              </p>\n            </td>\n          </tr>\n\n          <!-- Footer -->\n          <tr>\n            <td style=\"background-color:#111827; padding:26px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 12px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Conserva este correo como comprobante.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "cp-email-cliente",
+      "name": "Email al asesor",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        980,
+        200
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Preparar datos').item.json.correo_admin }}",
+        "subject": "=💰 Nueva membresía Pro · {{ $('Preparar datos').item.json.nombre }} · US$ {{ $('Preparar datos').item.json.monto }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta name=\"color-scheme\" content=\"light only\">\n  <title>Nueva membresía Pro activada</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <div style=\"display:none; max-height:0; overflow:hidden; opacity:0; font-size:1px; line-height:1px; color:#F4F7F6;\">\n    {{ $('Preparar datos').item.json.nombre }} activó MAXIMUS Pro · US$ {{ $('Preparar datos').item.json.monto }} · {{ $('Preparar datos').item.json.metodo }}\n  </div>\n\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11,74,63,0.10); border:1px solid #E2E8F0;\">\n\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera compacta con logo -->\n          <tr>\n            <td style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:22px 28px; border-bottom:2px solid #10B981;\">\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td width=\"56\" valign=\"middle\">\n                    <img src=\"{{ $('Preparar datos').item.json.logo_url }}\" width=\"44\" alt=\"MAXIMUS\" style=\"display:block; width:44px; height:auto; border:0; font-size:11px; font-weight:800; color:#F8FAFC;\">\n                  </td>\n                  <td valign=\"middle\" style=\"padding-left:4px;\">\n                    <p style=\"margin:0; font-size:16px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">MAXIMUS<span style=\"color:#10B981;\">.</span></p>\n                    <p style=\"margin:2px 0 0 0; font-size:10px; font-weight:700; letter-spacing:3px; color:#CBD5E1; text-transform:uppercase;\">Aviso interno</p>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"padding:30px 32px 26px 32px;\">\n              <span style=\"display:inline-block; background-color:#ECFDF5; border:1px solid #A7F3D0; color:#059669; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                💰 Nueva membresía Pro\n              </span>\n\n              <h2 style=\"margin:16px 0 8px 0; font-size:20px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                {{ $('Preparar datos').item.json.nombre }} activó su plan\n              </h2>\n              <p style=\"margin:0 0 22px 0; font-size:14px; line-height:1.6; color:#475569;\">\n                El pago se confirmó automáticamente y el rol de <strong style=\"color:#0B4A3F;\">Asesor Pro</strong> ya quedó aplicado. No necesitas hacer nada.\n              </p>\n\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #10B981; border-radius:14px; margin-bottom:22px;\">\n                <tr>\n                  <td style=\"padding:18px 22px;\">\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:34%; border-bottom:1px solid #E2E8F0;\">Asesor</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $('Preparar datos').item.json.nombre }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Correo</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $('Preparar datos').item.json.email || 'N/D' }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Teléfono</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#334155; border-bottom:1px solid #E2E8F0;\">{{ $('Preparar datos').item.json.telefono }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Código</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; font-family:monospace; border-bottom:1px solid #E2E8F0;\">{{ $('Preparar datos').item.json.codigo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Método</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $('Preparar datos').item.json.metodo }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">Vigente hasta</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:600; color:#475569; border-bottom:1px solid #E2E8F0;\">{{ $('Preparar datos').item.json.vence }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:9px 0 2px 0; font-size:13px; color:#64748B;\">Monto</td>\n                        <td style=\"padding:9px 0 2px 0; font-size:18px; font-weight:800; color:#059669;\">US$ {{ $('Preparar datos').item.json.monto }}</td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin:0 auto;\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $('Preparar datos').item.json.wa_asesor }}\" style=\"display:inline-block; background-color:#0B4A3F; color:#FFFFFF; text-decoration:none; padding:12px 26px; border-radius:12px; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;\">\n                      Escribirle por WhatsApp →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n            </td>\n          </tr>\n\n          <tr>\n            <td style=\"background-color:#111827; padding:20px 28px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0; font-size:11px; color:#94A3B8; line-height:1.5;\">\n                {{ $('Preparar datos').item.json.fecha }} · Generado automáticamente por el sistema de pagos MAXIMUS\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "cp-email-interno",
+      "name": "Aviso interno a administración",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1220,
+        300
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Confirmación Pago": {
+      "main": [
+        [
+          {
+            "node": "Preparar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar datos": {
+      "main": [
+        [
+          {
+            "node": "¿Tiene correo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Tiene correo?": {
+      "main": [
+        [
+          {
+            "node": "Email al asesor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aviso interno a administración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email al asesor": {
+      "main": [
+        [
+          {
+            "node": "Aviso interno a administración",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false
+}
