@@ -49,6 +49,7 @@ ios/App/.build/
 *.ipa
 *.keystore
 *.jks
+android/keystore.properties
 
 # Carpeta anidada accidental de descompresión
 maximus-inmobiliaria-pagina-main/

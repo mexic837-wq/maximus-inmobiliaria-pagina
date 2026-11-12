@@ -532,6 +532,17 @@ const LeadService = {
 // SERVICIO DE CITAS / AGENDA
 // ============================================
 const CitaService = {
+    // Respaldo local: si la base de datos rechaza la cita (esquema distinto, sin red...) no se pierde;
+    // la agenda la muestra igual y queda marcada como _local.
+    _localKey: 'maximus_citas_local',
+
+    _getLocal() {
+        try { const r = JSON.parse(localStorage.getItem(this._localKey) || '[]'); return Array.isArray(r) ? r : []; } catch (_) { return []; }
+    },
+
+    _saveLocal(list) {
+        try { localStorage.setItem(this._localKey, JSON.stringify(list.slice(0, 300))); } catch (_) {}
+    },
 
     async getAll(filtros = {}) {
         if (APP_CONFIG.USE_MOCK_DATA) {
@@ -539,11 +550,20 @@ const CitaService = {
             if (filtros.fecha) data = data.filter(c => c.fecha === filtros.fecha);
             return { data, error: null };
         }
-        const sb = getSupabase();
-        let query = sb.from(APP_CONFIG.TABLES.CITAS).select('*');
-        if (filtros.fecha) query = query.eq('fecha', filtros.fecha);
-        query = query.order('hora', { ascending: true });
-        return await query;
+        let remotas = [];
+        try {
+            const sb = getSupabase();
+            let query = sb.from(APP_CONFIG.TABLES.CITAS).select('*');
+            if (filtros.fecha) query = query.eq('fecha', filtros.fecha);
+            query = query.order('hora', { ascending: true });
+            const res = await query;
+            if (res && !res.error && Array.isArray(res.data)) remotas = res.data;
+        } catch (_) {}
+        // Une las del servidor con las que solo existen en este equipo (sin duplicar)
+        const ids = new Set(remotas.map(c => String(c.id)));
+        let locales = this._getLocal().filter(c => !ids.has(String(c.id)));
+        if (filtros.fecha) locales = locales.filter(c => c.fecha === filtros.fecha);
+        return { data: [...remotas, ...locales], error: null };
     },
 
     async create(citaData) {
@@ -555,14 +575,18 @@ const CitaService = {
             }
             res = { data: nueva, error: null };
         } else {
+            const guardarLocal = (motivo) => {
+                const nueva = { id: 'cita-' + Date.now(), ...citaData, _local: true };
+                this._saveLocal([nueva, ...this._getLocal()]);
+                if (motivo) console.warn('MAXIMUS CitaService: cita guardada solo en este equipo (' + motivo + ').');
+                return { data: nueva, error: null };
+            };
             try {
                 const sb = getSupabase();
                 res = await sb.from(APP_CONFIG.TABLES.CITAS).insert(citaData).select().single();
-                if (res && res.error) {
-                    res = { data: { id: 'cita-' + Date.now(), ...citaData }, error: null };
-                }
+                if (res && res.error) res = guardarLocal(res.error.message || res.error.code);
             } catch (err) {
-                res = { data: { id: 'cita-' + Date.now(), ...citaData }, error: null };
+                res = guardarLocal(err && err.message);
             }
         }
 
@@ -573,10 +597,13 @@ const CitaService = {
     },
 
     async delete(id) {
+        // Siempre limpiar la copia local
+        this._saveLocal(this._getLocal().filter(c => String(c.id) !== String(id)));
         if (APP_CONFIG.USE_MOCK_DATA) {
             MOCK_DATA.citas = MOCK_DATA.citas.filter(c => c.id !== id);
             return { error: null };
         }
+        if (String(id).startsWith('cita-')) return { error: null }; // solo existía en este equipo
         const sb = getSupabase();
         return await sb.from(APP_CONFIG.TABLES.CITAS).delete().eq('id', id);
     },

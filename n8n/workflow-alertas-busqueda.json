@@ -1,0 +1,171 @@
+{
+  "name": "MAXIMUS - Alertas de Búsqueda (Clientes)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "a1f0c001-0000-4000-8000-000000000001",
+      "name": "Cada hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/rest/v1/rpc/procesar_alertas_busqueda",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"p_max_por_alerta\": 6 }",
+        "options": {}
+      },
+      "id": "a1f0c001-0000-4000-8000-000000000002",
+      "name": "Buscar coincidencias (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ],
+      "notes": "Usa la credencial 'Supabase API' con la service_role key. La función marca lo enviado, así que nunca repite un inmueble."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c0000001-0000-4000-8000-000000000001",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1f0c001-0000-4000-8000-000000000003",
+      "name": "¿Tiene correo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Construye el correo HTML con las propiedades que coinciden con la alerta\nconst a = $json;\nconst esc = (s) => String(s ?? '').replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst fmt = (n, m) => n ? '$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' ' + (m || 'USD') : 'Consultar';\nconst lista = Array.isArray(a.inmuebles) ? a.inmuebles : [];\n\nconst tarjetas = lista.map(i => `\n  <tr><td style=\"padding:0 0 16px 0\">\n    <a href=\"${esc(i.url)}\" style=\"text-decoration:none;color:inherit;display:block;border:1px solid #E5E7EB;border-radius:16px;overflow:hidden\">\n      ${i.foto ? `<img src=\"${esc(i.foto)}\" alt=\"\" width=\"536\" style=\"display:block;width:100%;height:220px;object-fit:cover\">` : ''}\n      <div style=\"padding:16px 18px\">\n        <div style=\"font-size:22px;font-weight:800;color:#0B4A3F\">${esc(fmt(i.precio, i.moneda))}</div>\n        <div style=\"font-size:15px;font-weight:700;color:#111827;margin-top:4px\">${esc(i.titulo)}</div>\n        <div style=\"font-size:13px;color:#6B7280;margin-top:6px\">📍 ${esc(i.zona)}${i.habitaciones ? ' · 🛏 ' + esc(i.habitaciones) : ''}${i.banos ? ' · 🛁 ' + esc(i.banos) : ''}${i.m2 ? ' · 📐 ' + esc(i.m2) : ''}</div>\n        <div style=\"margin-top:12px;font-size:13px;font-weight:700;color:#10B981\">Ver inmueble →</div>\n      </div>\n    </a>\n  </td></tr>`).join('');\n\nconst nombre = (a.nombre || '').split(' ')[0];\nconst titulo = a.total === 1 ? 'Encontramos un inmueble para ti' : `Encontramos ${a.total} inmuebles para ti`;\n\nconst html = `<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head>\n<body style=\"margin:0;background:#F3F4F6;font-family:Montserrat,Arial,sans-serif\">\n<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#F3F4F6;padding:24px 12px\"><tr><td align=\"center\">\n<table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:600px;width:100%;background:#FFFFFF;border-radius:20px;overflow:hidden\">\n  <tr><td style=\"background:#0B4A3F;padding:22px 32px;color:#FFFFFF;font-size:18px;font-weight:800\">MAXIMUS<span style=\"color:#10B981\">.</span> <span style=\"font-size:11px;font-weight:600;letter-spacing:2px;color:#A7F3D0\">INMOBILIARIA</span></td></tr>\n  <tr><td style=\"padding:28px 32px 8px 32px\">\n    <div style=\"font-size:12px;font-weight:700;letter-spacing:1.5px;color:#10B981;text-transform:uppercase\">🔔 Tu alerta de búsqueda</div>\n    <h1 style=\"margin:8px 0 6px 0;font-size:24px;color:#111827\">${nombre ? esc(nombre) + ', ' : ''}${titulo.charAt(0).toLowerCase() + titulo.slice(1)}</h1>\n    <p style=\"margin:0 0 20px 0;font-size:14px;color:#6B7280\">Coinciden con lo que buscas: <strong style=\"color:#111827\">${esc(a.resumen)}</strong></p>\n  </td></tr>\n  <tr><td style=\"padding:0 32px\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">${tarjetas}</table></td></tr>\n  <tr><td style=\"padding:8px 32px 28px 32px\" align=\"center\">\n    <a href=\"https://wa.me/584247835697?text=${encodeURIComponent('Hola MAXIMUS, me llegó una alerta de búsqueda y quiero más información.')}\" style=\"display:inline-block;background:#0B4A3F;color:#FFFFFF;text-decoration:none;font-weight:700;font-size:14px;padding:13px 26px;border-radius:12px\">Hablar con un asesor</a>\n  </td></tr>\n  <tr><td style=\"padding:18px 32px;background:#F9FAFB;font-size:11px;color:#9CA3AF;text-align:center\">Recibes este correo porque creaste una alerta en MAXIMUS. Puedes pausarla o borrarla desde <a href=\"https://maximusinmobiliaria.tech/dashboard#view-inmuebles\" style=\"color:#0B4A3F\">Mis alertas</a> en tu panel.</td></tr>\n</table></td></tr></table></body></html>`;\n\nreturn {\n  json: {\n    ...a,\n    asunto: `🏠 ${titulo}: ${a.resumen}`,\n    html\n  }\n};"
+      },
+      "id": "a1f0c001-0000-4000-8000-000000000004",
+      "name": "Armar correo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.asunto }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "a1f0c001-0000-4000-8000-000000000005",
+      "name": "Enviar correo al cliente",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        280
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      },
+      "notes": "Usa la misma credencial Gmail OAuth2 (Gmail MAXIMUS) de los demas workflows."
+    }
+  ],
+  "connections": {
+    "Cada hora": {
+      "main": [
+        [
+          {
+            "node": "Buscar coincidencias (Supabase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar coincidencias (Supabase)": {
+      "main": [
+        [
+          {
+            "node": "¿Tiene correo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Tiene correo?": {
+      "main": [
+        [
+          {
+            "node": "Armar correo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Armar correo": {
+      "main": [
+        [
+          {
+            "node": "Enviar correo al cliente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
