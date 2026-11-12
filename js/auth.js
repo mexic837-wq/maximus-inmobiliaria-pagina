@@ -25,6 +25,18 @@ const AuthService = {
      * @param {boolean} rememberDevice - Si es true, la sesión se mantiene en este dispositivo indefinidamente.
      * @returns {Promise<{success: boolean, user?: object, error?: string}>}
      */
+    /**
+     * ¿Se permiten cuentas demo / contraseñas de prueba locales?
+     * SOLO en desarrollo (localhost o modo mock). Nunca en la app nativa ni en el sitio publicado:
+     * esas cuentas viven en el código del navegador y cualquiera podría usarlas.
+     */
+    isDemoAllowed() {
+        if (typeof window !== 'undefined' && window.MAXIMUS_NATIVE) return false;
+        if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.USE_MOCK_DATA) return true;
+        const host = (typeof location !== 'undefined' && location.hostname) || '';
+        return host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+    },
+
     async login(email, password, rememberDevice = false) {
         const cleanEmail = (email || '').trim().toLowerCase();
         let result = null;
@@ -38,9 +50,10 @@ const AuthService = {
             'cliente@maximus.com',
             'usuario@maximus.com'
         ];
-        if (demoAccounts.includes(cleanEmail)) {
+        if (this.isDemoAllowed() && demoAccounts.includes(cleanEmail)) {
             const demoRes = this._mockLogin(cleanEmail, password);
             if (demoRes.success) {
+                demoRes.user._demo = true;
                 this._saveSession(demoRes.user, cleanEmail, rememberDevice);
                 return demoRes;
             }
@@ -59,9 +72,12 @@ const AuthService = {
             }
         }
 
-        // 3. Fallback a cuentas mock configuradas o registradas localmente / asesores
-        const fallbackRes = this._mockLogin(cleanEmail, password);
+        // 3. Fallback a cuentas mock configuradas o registradas localmente / asesores (solo desarrollo)
+        const fallbackRes = this.isDemoAllowed()
+            ? this._mockLogin(cleanEmail, password)
+            : { success: false, error: (result && result.error) || 'Credenciales inválidas. Verifique su correo y contraseña.' };
         if (fallbackRes.success) {
+            fallbackRes.user._demo = true;
             this._saveSession(fallbackRes.user, cleanEmail, rememberDevice);
             return fallbackRes;
         }
@@ -133,7 +149,10 @@ const AuthService = {
             }
         }
 
-        // 2. Fallback / Modo Mock o desarrollo:
+        // 2. Fallback / Modo Mock o desarrollo (en producción y en la app nativa se informa el error)
+        if (!this.isDemoAllowed()) {
+            return { success: false, error: 'No se pudo conectar con Google. Revisa tu conexión e inténtalo de nuevo, o ingresa con correo y contraseña.' };
+        }
         const mockGoogleUser = {
             id: 'google-usr-' + Date.now(),
             name: 'Usuario Google',
@@ -143,7 +162,8 @@ const AuthService = {
             plan: 'free',
             title: 'Usuario Verificado Google',
             avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c',
-            auth_provider: 'google'
+            auth_provider: 'google',
+            _demo: true
         };
         this._saveSession(mockGoogleUser, mockGoogleUser.email, true);
         window.location.href = redirectPath;
@@ -270,9 +290,10 @@ const AuthService = {
             'cliente@maximus.com',
             'usuario@maximus.com'
         ];
-        if (demoAccounts.includes(cleanEmail)) {
+        if (this.isDemoAllowed() && demoAccounts.includes(cleanEmail)) {
             const demoRes = this._mockLogin(cleanEmail, password);
             if (demoRes.success) {
+                demoRes.user._demo = true;
                 return demoRes;
             }
         }
@@ -288,9 +309,10 @@ const AuthService = {
             }
         }
 
-        if (!result || !result.success) {
+        if ((!result || !result.success) && this.isDemoAllowed()) {
             const fallbackRes = this._mockLogin(cleanEmail, password);
             if (fallbackRes.success) {
+                fallbackRes.user._demo = true;
                 return fallbackRes;
             }
         }
@@ -442,7 +464,15 @@ const AuthService = {
         if (!raw) return null;
 
         try {
-            return JSON.parse(raw);
+            const user = JSON.parse(raw);
+            // Una sesión local de demostración no es válida fuera de desarrollo (incluye las creadas antes de este cambio)
+            const esDemo = !!(user && (user._demo || /^(mock-|google-usr-)/.test(String(user.id || '')) || user.id === 'asesor-miguel-durantt'));
+            if (esDemo && !this.isDemoAllowed()) {
+                ['USER', 'REMEMBER', 'SAVED_EMAIL', 'SESSION_TIMESTAMP'].forEach(k => { try { localStorage.removeItem(this.KEYS[k]); sessionStorage.removeItem(this.KEYS[k]); } catch (_) {} });
+                try { localStorage.removeItem('maximus_user'); } catch (_) {}
+                return null;
+            }
+            return user;
         } catch (e) {
             return null;
         }
