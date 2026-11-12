@@ -1,0 +1,203 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 13. Recordatorios de renovación de membresía Pro",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. Antes: ejecuta `sql/migration-recordatorios-membresia.sql` en Supabase y sube la función `renovaciones` al VPS (carpeta `supabase/functions/renovaciones`).\n2. **Credencial** (nodo *Consultar vencimientos* y *Marcar como enviado*): la misma `MAXIMUS Pagos → Supabase` (Header Auth `x-webhook-secret` = `PAGOS_WEBHOOK_SECRET`).\n3. **Gmail** (nodo *Enviar recordatorio*): tu credencial Gmail OAuth2 (la misma del flujo 12).\n4. Revisa las constantes de *Preparar correos* (URL de renovación, logo y WhatsApp).\n5. Prueba con *Execute workflow*: si nadie vence en 5 días, termina sin enviar nada (es lo normal).\n6. **Publica**. Corre todos los días a las 9:00 a. m. (hora de Venezuela).\n\nAvisa 2 veces por vencimiento: cuando faltan 5 días o menos, y el último día. Solo marca como enviado lo que Gmail envió de verdad; si un correo falla, se reintenta al día siguiente. Si el asesor renueva, el ciclo vuelve a empezar con la nueva fecha.",
+        "width": 500,
+        "height": 520,
+        "color": 4
+      },
+      "id": "rn-nota",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "id": "rn-cron",
+      "name": "Cada día 9:00 a. m.",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/functions/v1/renovaciones",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"action\": \"pendientes\" }",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "rn-consultar",
+      "name": "Consultar vencimientos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        540,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS Pagos → Supabase (x-webhook-secret)"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convierte la lista de la función 'renovaciones' en un correo por asesor.\n// ===== CONFIGURA AQUÍ =====\nconst URL_RENOVAR = 'https://maximusinmobiliaria.tech/dashboard?renovar=1';\nconst URL_LOGO = 'https://maximusinmobiliaria.tech/assets/email/logo-maximus-email.png';\nconst WHATSAPP_SOPORTE = '584247835697';\n// ==========================\nconst res = $input.first().json;\nconst lista = Array.isArray(res.items) ? res.items : [];\nconst esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst TZ = 'America/Caracas';\nconst diaCaracas = (d) => new Date(d).toLocaleDateString('en-CA', { timeZone: TZ }); // AAAA-MM-DD\nconst fecha = (d) => new Date(d).toLocaleDateString('es-VE', { timeZone: TZ, day: 'numeric', month: 'long', year: 'numeric' });\nconst hora = (d) => new Date(d).toLocaleTimeString('es-VE', { timeZone: TZ, hour: '2-digit', minute: '2-digit' });\nconst diasEntre = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000);\n\nreturn lista\n  .filter(x => /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(String(x.email || '').trim()))\n  .map(x => {\n    const difDias = diasEntre(diaCaracas(Date.now()), diaCaracas(x.vence_at)); // días de calendario en Venezuela\n    const hoyOManana = x.tipo === 'vence_hoy';\n    const cuando = difDias <= 0 ? 'hoy' : (difDias === 1 ? 'mañana' : 'en ' + difDias + ' días');\n    const base = {\n      auth_id: x.auth_id, tipo: x.tipo, vence_at: x.vence_at,\n      email: String(x.email).trim(), nombre: esc(x.nombre || 'Asesor'),\n      url_renovar: URL_RENOVAR, logo_url: URL_LOGO, url_whatsapp: 'https://wa.me/' + WHATSAPP_SOPORTE,\n    };\n    if (!hoyOManana) {\n      return { json: { ...base,\n        asunto: '⏳ Tu membresía MAXIMUS Pro vence ' + cuando,\n        preheader: 'Vence el ' + fecha(x.vence_at) + ' · renueva por US$ 4.99 y no pierdas el acceso',\n        badge: '⏳ Aviso de renovación', badge_bg: '#ECFDF5', badge_borde: '#A7F3D0', badge_color: '#059669', acento: '#10B981',\n        titulo: 'Tu membresía vence ' + cuando,\n        mensaje: 'Tu membresía MAXIMUS Pro vence el ' + fecha(x.vence_at) + '. Renuévala ahora para seguir usando tu CRM, el cotizador y la carga de inmuebles sin interrupciones.',\n        etiqueta_vence: 'Vence el', vence_texto: fecha(x.vence_at),\n        perderas_titulo: 'Lo que mantienes al renovar',\n      } };\n    }\n    return { json: { ...base,\n      asunto: '⚠️ Tu membresía MAXIMUS Pro vence ' + (difDias <= 0 ? 'hoy' : 'mañana'),\n      preheader: 'Vence ' + (difDias <= 0 ? 'hoy' : 'mañana') + ' a las ' + hora(x.vence_at) + ' · renueva para no perder el acceso',\n      badge: '⚠ Vence ' + (difDias <= 0 ? 'hoy' : 'mañana'), badge_bg: '#FFFBEB', badge_borde: '#FDE68A', badge_color: '#B45309', acento: '#F59E0B',\n      titulo: 'Tu membresía vence ' + (difDias <= 0 ? 'hoy' : 'mañana'),\n      mensaje: 'Tu membresía MAXIMUS Pro vence ' + (difDias <= 0 ? 'hoy' : 'mañana') + ' a las ' + hora(x.vence_at) + '. Si no la renuevas, tu cuenta volverá al plan gratuito y perderás el acceso a las herramientas Pro.',\n      etiqueta_vence: 'Vence', vence_texto: fecha(x.vence_at) + ', ' + hora(x.vence_at),\n      perderas_titulo: 'Lo que perderás si no renuevas',\n    } };\n  });"
+      },
+      "id": "rn-preparar",
+      "name": "Preparar correos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $json.asunto }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta name=\"color-scheme\" content=\"light only\">\n  <title>Renueva tu membresía MAXIMUS Pro</title>\n</head>\n<body style=\"margin:0; padding:0; background-color:#F4F7F6; font-family:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#111827; -webkit-font-smoothing:antialiased;\">\n  <!-- Pre-header (texto de vista previa en la bandeja de entrada) -->\n  <div style=\"display:none; max-height:0; overflow:hidden; opacity:0; font-size:1px; line-height:1px; color:#F4F7F6;\">\n    {{ $json.preheader }}\n  </div>\n\n  <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6; padding:32px 16px;\">\n    <tr>\n      <td align=\"center\">\n        <table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px; width:100%; background-color:#FFFFFF; border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(11,74,63,0.10); border:1px solid #E2E8F0;\">\n\n          <!-- Barra superior cromo & esmeralda -->\n          <tr>\n            <td style=\"height:6px; background:linear-gradient(90deg, #0B4A3F 0%, #10B981 50%, #CBD5E1 100%);\"></td>\n          </tr>\n\n          <!-- Cabecera con logo -->\n          <tr>\n            <td align=\"center\" style=\"background:linear-gradient(135deg, #071714 0%, #0B4A3F 100%); padding:34px 32px 28px 32px; border-bottom:2px solid #10B981;\">\n              <img src=\"{{ $json.logo_url }}\" width=\"72\" alt=\"MAXIMUS\" style=\"display:block; width:72px; height:auto; margin:0 auto 16px auto; border:0; outline:none; text-decoration:none; font-size:14px; font-weight:800; color:#F8FAFC;\">\n              <h1 style=\"margin:0; font-size:24px; font-weight:800; letter-spacing:2px; color:#F8FAFC; text-transform:uppercase;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span>\n              </h1>\n              <p style=\"margin:4px 0 0 0; font-size:11px; font-weight:700; letter-spacing:4px; color:#CBD5E1; text-transform:uppercase;\">\n                INMOBILIARIA\n              </p>\n            </td>\n          </tr>\n\n          <!-- Cuerpo -->\n          <tr>\n            <td style=\"padding:38px 36px 30px 36px;\">\n              <div style=\"margin-bottom:18px;\">\n                <span style=\"display:inline-block; background-color:{{ $json.badge_bg }}; border:1px solid {{ $json.badge_borde }}; color:{{ $json.badge_color }}; border-radius:999px; padding:6px 14px; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;\">\n                  {{ $json.badge }}\n                </span>\n              </div>\n\n              <h2 style=\"margin:0 0 12px 0; font-size:22px; font-weight:800; color:#0F172A; line-height:1.3;\">\n                {{ $json.titulo }}\n              </h2>\n\n              <p style=\"margin:0 0 26px 0; font-size:15px; line-height:1.65; color:#475569;\">\n                Hola, <strong style=\"color:#0F172A;\">{{ $json.nombre }}</strong>. {{ $json.mensaje }}\n              </p>\n\n              <!-- Resumen -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid {{ $json.acento }}; border-radius:14px; margin-bottom:24px;\">\n                <tr>\n                  <td style=\"padding:20px 24px;\">\n                    <p style=\"margin:0 0 12px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                      Tu membresía\n                    </p>\n                    <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; width:42%; border-bottom:1px solid #E2E8F0;\">Plan</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">Asesor Pro Mensual</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:7px 0; font-size:13px; color:#64748B; border-bottom:1px solid #E2E8F0;\">{{ $json.etiqueta_vence }}</td>\n                        <td style=\"padding:7px 0; font-size:13px; font-weight:700; color:#0F172A; border-bottom:1px solid #E2E8F0;\">{{ $json.vence_texto }}</td>\n                      </tr>\n                      <tr>\n                        <td style=\"padding:9px 0 2px 0; font-size:13px; color:#64748B;\">Renovación</td>\n                        <td style=\"padding:9px 0 2px 0; font-size:18px; font-weight:800; color:#059669;\">US$ 4.99 <span style=\"font-size:12px; font-weight:600; color:#64748B;\">/ mes</span></td>\n                      </tr>\n                    </table>\n                  </td>\n                </tr>\n              </table>\n\n              <p style=\"margin:0 0 10px 0; font-size:11px; font-weight:800; letter-spacing:1.5px; color:#0B4A3F; text-transform:uppercase;\">\n                {{ $json.perderas_titulo }}\n              </p>\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin-bottom:28px;\">\n                <tr><td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">•</span>&nbsp; Carga ilimitada de inmuebles al catálogo</td></tr>\n                <tr><td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">•</span>&nbsp; CRM de prospectos y cotizador express</td></tr>\n                <tr><td style=\"padding:5px 0; font-size:14px; color:#334155;\"><span style=\"color:#10B981; font-weight:800;\">•</span>&nbsp; Colecciones VIP y WhatsApp directo en tus propiedades</td></tr>\n              </table>\n\n              <!-- CTA -->\n              <table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\">\n                <tr>\n                  <td align=\"center\">\n                    <a href=\"{{ $json.url_renovar }}\" style=\"display:inline-block; background:linear-gradient(135deg, #0B4A3F 0%, #10B981 100%); background-color:#0B4A3F; color:#FFFFFF; text-decoration:none; padding:15px 34px; border-radius:12px; font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; box-shadow:0 6px 16px rgba(16,185,129,0.25);\">\n                      Renovar mi membresía →\n                    </a>\n                  </td>\n                </tr>\n              </table>\n\n              <p style=\"margin:24px 0 0 0; font-size:12px; line-height:1.6; color:#64748B; text-align:center;\">\n                Puedes pagar con Pago Móvil, Binance Pay o tarjeta. Si renuevas antes de que venza, no pierdes ni un día.<br>\n                ¿Dudas? <a href=\"{{ $json.url_whatsapp }}\" style=\"color:#059669; font-weight:700; text-decoration:none;\">Escríbenos por WhatsApp</a>.\n              </p>\n            </td>\n          </tr>\n\n          <!-- Footer -->\n          <tr>\n            <td style=\"background-color:#111827; padding:26px 32px; border-top:3px solid #10B981; text-align:center;\">\n              <p style=\"margin:0 0 6px 0; font-size:14px; font-weight:800; color:#F8FAFC; letter-spacing:1.5px;\">\n                MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500; font-size:11px; color:#CBD5E1; letter-spacing:2px;\">INMOBILIARIA</span>\n              </p>\n              <p style=\"margin:0 0 12px 0; font-size:12px; color:#94A3B8; line-height:1.5;\">\n                Experiencia, exclusividad y respaldo legal en cada inversión.<br>\n                San Cristóbal, Estado Táchira · Venezuela\n              </p>\n              <p style=\"margin:0; font-size:11px; color:#64748B;\">\n                © 2026 MAXIMUS Inmobiliaria. Recibes este aviso por tener una membresía Pro activa.\n              </p>\n            </td>\n          </tr>\n        </table>\n      </td>\n    </tr>\n  </table>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "rn-gmail",
+      "name": "Enviar recordatorio",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        980,
+        300
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/functions/v1/renovaciones",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ action: 'confirmar', items: [{ auth_id: $('Preparar correos').item.json.auth_id, tipo: $('Preparar correos').item.json.tipo, vence_at: $('Preparar correos').item.json.vence_at }] }) }}",
+        "options": {
+          "timeout": 20000
+        }
+      },
+      "id": "rn-confirmar",
+      "name": "Marcar como enviado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        220
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS Pagos → Supabase (x-webhook-secret)"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    }
+  ],
+  "connections": {
+    "Cada día 9:00 a. m.": {
+      "main": [
+        [
+          {
+            "node": "Consultar vencimientos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar vencimientos": {
+      "main": [
+        [
+          {
+            "node": "Preparar correos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar correos": {
+      "main": [
+        [
+          {
+            "node": "Enviar recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar recordatorio": {
+      "main": [
+        [
+          {
+            "node": "Marcar como enviado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Caracas",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false
+}
