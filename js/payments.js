@@ -454,4 +454,14 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
         history.replaceState(null, '', window.location.pathname); // limpia la URL
         pasoVerificando();
     });
+
+    // Botón "Renovar mi membresía" de los correos de recordatorio: /dashboard?renovar=1
+    document.addEventListener('DOMContentLoaded', function () {
+        const q = new URLSearchParams(window.location.search);
+        if (q.get('renovar') !== '1') return;
+        history.replaceState(null, '', window.location.pathname); // limpia la URL
+        setTimeout(function () {
+            if (typeof window.abrirModalSuscripcionPro === 'function') window.abrirModalSuscripcionPro('mensual');
+        }, 600);
+    });
 })();
