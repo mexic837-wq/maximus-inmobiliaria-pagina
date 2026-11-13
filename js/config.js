@@ -98,7 +98,7 @@ const APP_CONFIG = {
             BINANCE: {
                 activo: true,
                 nombre: 'Binance Pay / USDT',
-                pay_id: '849201938',                                    // TODO: tu Binance Pay ID real
+                pay_id: '455708236',
                 red: 'Binance Pay (USDT) · transferencia interna sin comisión'
             },
             STRIPE: {
