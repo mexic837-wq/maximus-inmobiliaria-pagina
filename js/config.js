@@ -90,10 +90,10 @@ const APP_CONFIG = {
             PAGO_MOVIL: {
                 activo: true,
                 nombre: 'Pago Móvil (Bolívares)',
-                banco: '0102 - Banco de Venezuela / 0134 - Banesco',   // TODO: banco real que recibe
-                telefono: '04247835697',                                // TODO: teléfono afiliado a Pago Móvil
-                ci_rif: 'V-20123456',                                   // TODO: cédula/RIF real
-                titular: 'MAXIMUS Inmobiliaria C.A.'
+                banco: '0102 - Banco de Venezuela',
+                telefono: '04247114483',
+                ci_rif: 'V-18420715',
+                titular: 'MAXIMUS Inmobiliaria C.A.'                    // TODO: confirmar el nombre real del titular
             },
             BINANCE: {
                 activo: true,
