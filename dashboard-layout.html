@@ -65,6 +65,7 @@
     <script src="js/services.js?v=3.0"></script>
     <script src="js/auth.js?v=4.0"></script>
     <script src="js/payments.js?v=4.0"></script>
+    <script src="js/busqueda-voz.js?v=1.0"></script>
     
     <style>
         .view-section { display: none; }
@@ -2515,12 +2516,11 @@
                                             <label class="block text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Tipo de Inmueble</label>
                                             <select id="filtro-avanzado-tipo" onchange="filtrarCatalogoInmuebles()" class="w-full bg-gray-50 border border-gray-200 text-gray-600 text-xs rounded-xl px-3 py-2 outline-none focus:border-maximus-accent font-medium cursor-pointer">
                                                 <option value="">Cualquier tipo</option>
-                                                <option value="fincas">Fincas</option>
                                                 <option value="casa">Casa</option>
-                                                <option value="departamento">Departamento</option>
-                                                <option value="local">Local Comercial</option>
-                                                <option value="galpones">Galpones</option>
-                                                <option value="casa_de_campo">Casa de campo</option>
+                                                <option value="apartamento">Apartamento</option>
+                                                <option value="terreno">Terreno / Finca</option>
+                                                <option value="local">Local Comercial / Oficina</option>
+                                                <option value="galpon">Galpón</option>
                                             </select>
                                         </div>
 
@@ -2602,6 +2602,23 @@
                             <span id="count-pill-favoritos" class="text-red-500 font-bold ml-0.5">(0)</span>
                         </button>
                         <span id="contador-resultados" class="ml-auto text-xs font-bold text-gray-400 hidden sm:inline-block">6 inmuebles disponibles</span>
+                    </div>
+                </div>
+
+                <!-- Resultado de la búsqueda inteligente por voz (lo llena js/busqueda-voz.js) -->
+                <div id="voz-resultado" class="flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-emerald-200 dark:border-emerald-900/60 bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-950/40 dark:to-[#0A1F1B]" aria-live="polite">
+                    <div class="flex items-start gap-3 min-w-0">
+                        <span class="w-10 h-10 rounded-xl bg-maximus-dark text-white flex items-center justify-center shrink-0"><i class="ph-fill ph-microphone text-lg"></i></span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-extrabold text-maximus-dark dark:text-white leading-snug"><span data-voz-res="titulo"></span> <span class="text-gray-300">·</span> <span data-voz-res="total" class="text-emerald-700 dark:text-emerald-300"></span></p>
+                            <p data-voz-res="frase" class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5"></p>
+                            <div data-voz-res="chips" class="mt-2 flex flex-wrap gap-1.5"></div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 shrink-0">
+                        <button type="button" data-voz-res="alerta" class="hidden h-9 px-3.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold cursor-pointer"><i class="ph-bold ph-bell-ringing"></i> Avísame cuando haya</button>
+                        <button type="button" data-voz-res="otra" class="h-9 px-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-xs font-bold cursor-pointer"><i class="ph-fill ph-microphone"></i> Otra búsqueda</button>
+                        <button type="button" data-voz-res="limpiar" class="h-9 px-3.5 rounded-xl bg-white dark:bg-transparent border border-gray-200 dark:border-emerald-900/60 text-gray-600 dark:text-gray-300 text-xs font-bold hover:bg-gray-50 cursor-pointer"><i class="ph-bold ph-x"></i> Quitar filtros</button>
                     </div>
                 </div>
 
@@ -9940,7 +9957,11 @@
 
                 let coincideTipo = true;
                 if (tipoFiltroSelect) {
-                    coincideTipo = searchData.includes(tipoFiltroSelect.toLowerCase()) || cardText.includes(tipoFiltroSelect.toLowerCase());
+                    const tipoCard = card.getAttribute('data-tipo') || '';
+                    const tipoBuscado = tipoFiltroSelect.toLowerCase();
+                    coincideTipo = tipoCard
+                        ? (tipoCard === tipoBuscado || tipoCard.startsWith(tipoBuscado))
+                        : (searchData.includes(tipoBuscado) || cardText.includes(tipoBuscado));
                 }
 
                 let coincideNumericos = true;
@@ -10004,6 +10025,60 @@
                 );
             }
         }
+
+        // ==========================================
+        // BÚSQUEDA INTELIGENTE POR VOZ (js/busqueda-voz.js)
+        // Recibe { operacion, tipo, zona, hab, banos, precioMin, precioMax, orden, favoritos }
+        // y los pone en los mismos filtros que usa el usuario a mano.
+        // ==========================================
+        function aplicarBusquedaInteligente(f) {
+            const vista = document.getElementById('view-inmuebles');
+            if (vista && !vista.classList.contains('active') && typeof activateTab === 'function') activateTab('view-inmuebles', true);
+
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+            const input = document.getElementById('buscador-inmuebles');
+            if (input) input.value = f.reconocido ? '' : (f.texto || '');
+
+            limpiarFiltrosAvanzados(true);
+            set('filtro-avanzado-tipo', f.tipo || '');
+            set('filtro-habitaciones', f.hab ? String(Math.min(4, f.hab)) : '');
+            set('filtro-banos', f.banos ? String(Math.min(4, f.banos)) : '');
+            set('filtro-precio-min', f.precioMin || '');
+            set('filtro-precio-max', f.precioMax || '');
+            set('filtro-orden', f.orden || '');
+
+            // Zona: mismo efecto que elegirla en el desplegable, sin abrirlo
+            selectedLocation = f.zona || 'todas';
+            set('filtro-avanzado-ubicacion', f.zona || '');
+            const labelZona = document.getElementById('selectedLocationLabel');
+            if (labelZona) labelZona.textContent = (UBICACIONES_TACHIRA[selectedLocation] || UBICACIONES_TACHIRA.todas).label;
+
+            setFiltroCategoria(f.favoritos ? 'favoritos' : (f.operacion || 'todos')); // vuelve a filtrar el catálogo
+            return Array.from(document.querySelectorAll('.tarjeta-inmueble')).filter(c => c.style.display !== 'none').length;
+        }
+        window.aplicarBusquedaInteligente = aplicarBusquedaInteligente;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.BusquedaVozMaximus || !document.getElementById('buscador-inmuebles')) return;
+            const vista = document.getElementById('view-inmuebles');
+            BusquedaVozMaximus.montar({
+                inputId: 'buscador-inmuebles',
+                ubicaciones: () => UBICACIONES_TACHIRA,
+                aplicar: aplicarBusquedaInteligente,
+                limpiar: () => {
+                    resetearFiltrosInmuebles();
+                    selectedLocation = 'todas';
+                    const labelZona = document.getElementById('selectedLocationLabel');
+                    if (labelZona) labelZona.textContent = UBICACIONES_TACHIRA.todas.label;
+                    filtrarCatalogoInmuebles();
+                },
+                observar: vista,
+                vistaActiva: () => Boolean(vista && vista.classList.contains('active')),
+                alMostrarResultado: (caja) => caja.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+            });
+            // Atajo: /dashboard#voz abre directo la búsqueda por voz en Inmuebles
+            if (location.hash === '#voz') setTimeout(() => { if (typeof activateTab === 'function') activateTab('view-inmuebles', true); BusquedaVozMaximus.abrir(); }, 800);
+        });
 
         function toggleFiltroSoloMaximus() {
             filtroSoloMaximusToggle = !filtroSoloMaximusToggle;
@@ -13517,7 +13592,7 @@
                 return `
                     <div data-inm-id="${inm.id}" onclick="abrirDetalleInmuebleAirbnb('${inm.id}')" class="tarjeta-inmueble bg-white rounded-[20px] shadow-premium overflow-hidden hover:shadow-premium-hover transition-all duration-300 group border border-transparent hover:border-amber-400/30 cursor-pointer"
                          data-maximus="${inm.isMaximus ? 'true' : 'false'}" data-operacion="${operacion.toLowerCase()}" data-search="${searchString}"
-                         data-idx="${idx}" data-precio="${precioNum}" data-hab="${habNum}" data-banos="${banosNum}" data-m2="${m2Num}">
+                         data-idx="${idx}" data-precio="${precioNum}" data-hab="${habNum}" data-banos="${banosNum}" data-m2="${m2Num}" data-tipo="${String(inm.tipo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}">
                         <!-- Las portadas "Editorial MAXIMUS" son 16:10 y ya traen precio y operación impresos:
                              el recuadro respeta esa proporción y solo se superponen etiquetas en fotos normales -->
                         <div class="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">

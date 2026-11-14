@@ -83,5 +83,9 @@
 	<string>MAXIMUS necesita acceso a la galería para subir fotografías de propiedades.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>MAXIMUS necesita guardar fichas e imágenes en tu galería.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>MAXIMUS usa el micrófono para que busques inmuebles por voz, por ejemplo: "casas en alquiler en Pueblo Nuevo".</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>MAXIMUS convierte tu voz en texto para aplicar los filtros de búsqueda de inmuebles.</string>
 </dict>
 </plist>
