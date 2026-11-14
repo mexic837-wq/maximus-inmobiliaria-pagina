@@ -59,12 +59,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
-    <script src="js/config.js?v=3.0"></script>
+    <script src="js/config.js?v=4.0"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
     <script src="js/services.js?v=3.0"></script>
-    <script src="js/auth.js?v=3.0"></script>
-    <script src="js/payments.js?v=3.0"></script>
+    <script src="js/auth.js?v=4.0"></script>
+    <script src="js/payments.js?v=4.0"></script>
     
     <style>
         .view-section { display: none; }
@@ -1086,6 +1086,34 @@
         .animate-indeterminate {
             animation: indeterminateProgress 1.4s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
         }
+
+        /* ===== Carrusel de asesores destacados (cinta continua; en móvil se desliza con el dedo) ===== */
+        @keyframes asesoresMarquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        .asesores-carrusel {
+            position: relative; display: flex; overflow: hidden; padding: 4px 0 10px;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+                    mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+        }
+        .asesores-pista {
+            display: flex; gap: 16px; padding-right: 16px; flex-shrink: 0;
+            animation: asesoresMarquee var(--dur, 60s) linear infinite; will-change: transform;
+        }
+        .asesores-carrusel:hover .asesores-pista,
+        .asesores-carrusel:focus-within .asesores-pista { animation-play-state: paused; }
+        .asesores-pista > article { width: 300px; flex-shrink: 0; }
+        @media (max-width: 767px) {
+            .asesores-carrusel { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; -webkit-mask-image: none; mask-image: none; }
+            .asesores-carrusel::-webkit-scrollbar { display: none; }
+            .asesores-pista { animation: none !important; gap: 12px; padding: 0 16px; }
+            .asesores-pista[aria-hidden="true"] { display: none; }
+            .asesores-pista > .asesor-repetido { display: none; }
+            .asesores-pista > article { width: 82vw; max-width: 320px; scroll-snap-align: center; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .asesores-carrusel { overflow-x: auto; scrollbar-width: none; }
+            .asesores-pista { animation: none !important; }
+            .asesores-pista[aria-hidden="true"] { display: none; }
+        }
     </style>
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
@@ -1198,10 +1226,10 @@
                     <span class="sidebar-tooltip">Inmuebles</span>
                 </a>
 
-                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Captaciones MAXIMUS">
-                    <i class="ph-fill ph-buildings text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Captaciones MAXIMUS</span>
-                    <span class="sidebar-tooltip">Captaciones MAXIMUS</span>
+                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Captaciones Destacadas">
+                    <i class="ph-fill ph-diamond text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Captaciones Destacadas</span>
+                    <span class="sidebar-tooltip">Captaciones Destacadas</span>
                 </a>
 
                 <!-- Reseñas (Exclusivo Clientes / Usuarios Normales) -->
@@ -1406,8 +1434,8 @@
                         <span>Inmuebles</span>
                     </a>
                     <a href="#" data-target="view-exclusivas-maximus" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
-                        <i class="ph ph-buildings text-base text-maximus-accent"></i>
-                        <span>Captaciones MAXIMUS</span>
+                        <i class="ph-fill ph-diamond text-base text-maximus-accent"></i>
+                        <span>Captaciones Destacadas</span>
                     </a>
                     <a href="#" data-target="view-perfil" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
@@ -1894,7 +1922,7 @@
             <!-- ==========================================
                  VISTA: PLANES & PRECIOS (MODERNO & MINIMALISTA)
                  ========================================== -->
-            <section id="view-planes" class="view-section max-w-4xl mx-auto pb-16 sm:pb-12 pt-0 sm:pt-1 relative">
+            <section id="view-planes" class="view-section max-w-5xl mx-auto pb-16 sm:pb-12 pt-0 sm:pt-1 relative">
                 <!-- Resplandor sutil de fondo (Luxury Ambient Glow) -->
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[500px] h-[220px] bg-emerald-500/10 dark:bg-emerald-500/5 blur-3xl pointer-events-none rounded-full -z-10"></div>
 
@@ -1934,7 +1962,7 @@
                 </div>
 
                 <!-- Grid de Tarjetas Compacto y Centrado (Mini Zoom Out) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch max-w-[680px] mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch max-w-[680px] lg:max-w-[1000px] mx-auto">
 
                     <!-- Plan Gratuito (Cliente) -->
                     <div class="rounded-2xl p-4 sm:p-5 bg-white dark:bg-[#0B221C] border border-gray-200/90 dark:border-emerald-950/60 shadow-xs hover:shadow-md hover:border-gray-300 dark:hover:border-emerald-900 transition-all duration-200 flex flex-col justify-between">
@@ -1972,7 +2000,7 @@
                             </ul>
                         </div>
 
-                        <div class="mt-5">
+                        <div class="mt-5" id="planes-estado-gratis">
                             <div class="w-full py-2.5 rounded-xl bg-gray-100 dark:bg-[#132B22] text-gray-500 dark:text-gray-400 text-center text-xs font-bold flex items-center justify-center gap-1.5 border border-gray-200/50 dark:border-emerald-900/30">
                                 <i class="ph-bold ph-check-circle text-emerald-500 text-sm"></i>
                                 <span>Tu plan actual</span>
@@ -1992,7 +2020,7 @@
 
                         <div>
                             <div class="mb-3 pt-0.5">
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-300/90 mb-1">Asesor Pro</p>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-300/90 mb-1">Asesor Inmobiliario Pro</p>
                                 <div class="flex items-baseline gap-1.5">
                                     <span id="precioProDisplay" class="text-2xl sm:text-3xl font-black text-white transition-all duration-150">$4.99</span>
                                     <span id="periodoProDisplay" class="text-xs font-medium text-gray-300">/mes</span>
@@ -2038,6 +2066,69 @@
                         <div class="mt-5">
                             <button type="button" id="btnComenzarPro" onclick="abrirModalSuscripcionPro('mensual')" class="w-full py-2.5 sm:py-3 rounded-xl bg-maximus-accent hover:bg-emerald-400 text-maximus-dark font-extrabold text-xs sm:text-[13px] shadow-sm hover:shadow-md active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5">
                                 <span>Comenzar ahora</span>
+                                <i class="ph-bold ph-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Plan Asesor Platinum (máxima visibilidad) -->
+                    <div class="plan-platinum-card rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#1E242B] via-[#14181D] to-[#0B0D10] border border-slate-400/50 text-white shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-slate-700/30 hover:border-slate-300/70 transition-all duration-200 flex flex-col justify-between relative md:col-span-2 lg:col-span-1">
+                        <!-- Brillo platino (recortado aquí, no en la tarjeta, para no cortar la etiqueta superior) -->
+                        <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                            <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-slate-300/10 blur-2xl"></div>
+                        </div>
+                        <div class="absolute -top-3 right-5 z-20 pointer-events-none">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-slate-100 to-slate-300 text-slate-900 text-[9px] font-black uppercase tracking-widest shadow-md border border-white/60">
+                                <i class="ph-fill ph-diamond text-[10px]"></i>
+                                Máxima visibilidad
+                            </span>
+                        </div>
+
+                        <div class="relative">
+                            <div class="mb-3 pt-0.5">
+                                <p class="text-[11px] font-bold uppercase tracking-wider mb-1 bg-gradient-to-r from-slate-100 via-slate-300 to-slate-100 bg-clip-text text-transparent">Asesor Inmobiliario Platinum</p>
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-2xl sm:text-3xl font-black text-white">$9.99</span>
+                                    <span class="text-xs font-medium text-slate-300">/mes</span>
+                                </div>
+                                <p class="text-[11px] text-slate-300/80 mt-1 leading-relaxed">
+                                    Más publicidad: tu perfil y tus inmuebles frente a clientes y asesores de todo Táchira.
+                                </p>
+                            </div>
+
+                            <hr class="border-white/10 my-3">
+
+                            <ul class="space-y-2 text-[12px] text-slate-200">
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-bold ph-check text-slate-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span><strong class="text-white">Todo lo del plan Pro</strong></span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Tu perfil en <strong class="text-white">Captaciones Destacadas</strong> y en la web pública</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Tus inmuebles destacados ante clientes y asesores</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Botón de WhatsApp directo en tu tarjeta de asesor</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Reseñas de clientes y calificación de 1 a 5 estrellas</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Insignia Platinum en tu perfil</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-5 relative">
+                            <button type="button" id="btnComenzarPlatinum" onclick="abrirModalSuscripcionPro('platinum')" class="w-full py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-slate-100 via-white to-slate-200 hover:from-white hover:to-slate-100 text-slate-900 font-extrabold text-xs sm:text-[13px] shadow-sm hover:shadow-md active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                                <span>Quiero ser Platinum</span>
                                 <i class="ph-bold ph-arrow-right text-xs"></i>
                             </button>
                         </div>
@@ -2187,6 +2278,28 @@
 
                 <!-- Scripts interactivos de la vista de planes -->
                 <script>
+                // Señala en las tarjetas cuál es el plan actual del usuario (free | pro | platinum)
+                window.marcarPlanActualEnPlanes = function () {
+                    let u = null;
+                    try { u = (typeof AuthService !== 'undefined' && AuthService.getCurrentUser()) || JSON.parse(localStorage.getItem('maximus_user') || 'null'); } catch (_) {}
+                    const rol = (u && (u.role || u.rol)) || 'cliente';
+                    const plan = (u && u.plan) || 'free';
+                    const actual = (rol === 'asesor_externo' && plan === 'platinum') ? 'platinum'
+                                 : (rol === 'asesor_externo') ? 'pro' : 'free';
+                    const PILL = '<i class="ph-bold ph-check-circle text-sm"></i><span>Tu plan actual</span>';
+                    const gratis = document.getElementById('planes-estado-gratis');
+                    if (gratis) gratis.style.visibility = actual === 'free' ? '' : 'hidden';
+                    const marcar = (id, esActual, textoNormal, textoRenovar) => {
+                        const b = document.getElementById(id);
+                        if (!b) return;
+                        b.innerHTML = esActual
+                            ? PILL.replace('Tu plan actual', textoRenovar)
+                            : '<span>' + textoNormal + '</span><i class="ph-bold ph-arrow-right text-xs"></i>';
+                    };
+                    marcar('btnComenzarPro', actual === 'pro', actual === 'platinum' ? 'Cambiar a Pro' : 'Comenzar ahora', 'Tu plan actual · Renovar');
+                    marcar('btnComenzarPlatinum', actual === 'platinum', actual === 'pro' ? 'Mejorar a Platinum' : 'Quiero ser Platinum', 'Tu plan actual · Renovar');
+                };
+
                 // Función interactiva de cambio de periodo Mensual / Anual
                 window.togglePlanPeriodo = function(periodo) {
                     const btnMensual = document.getElementById('toggleMensual');
@@ -2516,122 +2629,147 @@
             </section>
 
             <!-- ========================================================
-                 SECCIÓN EXCLUSIVA: CAPTACIONES & ASESORES ÉLITE MAXIMUS
+                 CAPTACIONES DESTACADAS: asesores Platinum + sus inmuebles
+                 (solo usuarios con plan Platinum vigente)
                  ======================================================== -->
-            <section id="view-exclusivas-maximus" class="view-section max-w-[1240px] mx-auto space-y-9 pb-10">
-                <!-- Encabezado minimalista -->
-                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-                    <div class="max-w-2xl">
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">
-                            <i class="ph-fill ph-seal-check text-sm"></i> Captación directa
-                        </span>
-                        <h2 class="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight text-maximus-dark dark:text-white leading-tight">Captaciones MAXIMUS</h2>
-                        <p class="mt-2 text-sm md:text-[15px] text-gray-500 dark:text-gray-400 leading-relaxed">
-                            Propiedades captadas directamente por nuestro equipo, con documentación verificada.<span class="staff-only"> Incluye 50% de comisión compartida garantizada.</span>
-                        </p>
-                        <!-- Acceso rápido a gestión admin (visible si es admin) -->
-                        <div class="admin-only pt-3">
-                            <button onclick="activateTab('view-admin-config', true)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#0A1F1B] hover:bg-gray-50 border border-gray-200 dark:border-emerald-900/50 text-maximus-dark dark:text-emerald-200 text-xs font-bold transition-all cursor-pointer">
-                                <i class="ph-bold ph-gear"></i> Configurar asesores en panel admin
-                            </button>
+            <section id="view-exclusivas-maximus" class="view-section max-w-[1240px] mx-auto space-y-10 pb-10">
+
+                <!-- HERO (compacto): qué es + cómo funciona en 3 pasos -->
+                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B2B25] via-[#07201B] to-[#030F0C] text-white px-5 py-6 sm:px-8 sm:py-7 shadow-lg shadow-emerald-950/20">
+                    <div class="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-slate-200/10 blur-3xl pointer-events-none"></div>
+                    <div class="absolute inset-0 opacity-[0.06] pointer-events-none" style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 22px 22px;"></div>
+
+                    <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                        <div class="min-w-0">
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">
+                                <i class="ph-fill ph-diamond text-xs"></i> Asesores verificados · Táchira
+                            </span>
+                            <h2 class="mt-1.5 text-2xl sm:text-3xl md:text-[34px] font-black tracking-tight leading-tight">
+                                Captaciones <span class="bg-gradient-to-r from-slate-100 via-white to-slate-300 bg-clip-text text-transparent">Destacadas</span>
+                            </h2>
+                            <p class="mt-1.5 text-sm text-emerald-50/75 max-w-xl">Encuentra tu próximo inmueble con asesores calificados por sus propios clientes.</p>
+                        </div>
+
+                        <!-- Indicadores en una sola línea -->
+                        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 text-xs sm:text-[13px]">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.07] border border-white/10"><i class="ph-bold ph-users-three text-emerald-300"></i><strong id="stat-asesores-count" class="font-black">--</strong><span class="text-emerald-50/70">asesores</span></span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.07] border border-white/10"><i class="ph-bold ph-house-line text-emerald-300"></i><strong id="stat-captaciones-count" class="font-black">--</strong><span class="text-emerald-50/70">inmuebles</span></span>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.07] border border-white/10"><i class="ph-fill ph-star text-amber-300"></i><strong id="stat-promedio-estrellas" class="font-black">--</strong></span>
                         </div>
                     </div>
 
-                    <!-- Indicadores clave -->
-                    <div class="flex items-stretch gap-3 shrink-0">
-                        <div class="min-w-[132px] px-5 py-3.5 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 shadow-sm">
-                            <p id="stat-captaciones-count" class="text-3xl font-extrabold text-maximus-dark dark:text-white leading-none">--</p>
-                            <p class="mt-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">Captaciones directas</p>
+                    <!-- Cómo funciona -->
+                    <ol class="keep-grid relative mt-5 grid grid-cols-3 gap-2 sm:gap-3">
+                        <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-3.5 py-2.5 rounded-2xl bg-white/[0.05] border border-white/10 text-center sm:text-left">
+                            <span class="w-8 h-8 rounded-xl bg-white text-[#0B2B25] text-sm font-black flex items-center justify-center shrink-0">1</span>
+                            <span class="text-[11px] sm:text-[13px] leading-snug"><strong>Elige un asesor</strong><span class="hidden sm:block text-[11px] text-emerald-50/60">Mira su calificación y especialidad</span></span>
+                        </li>
+                        <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-3.5 py-2.5 rounded-2xl bg-white/[0.05] border border-white/10 text-center sm:text-left">
+                            <span class="w-8 h-8 rounded-xl bg-white text-[#0B2B25] text-sm font-black flex items-center justify-center shrink-0">2</span>
+                            <span class="text-[11px] sm:text-[13px] leading-snug"><strong>Revisa sus inmuebles</strong><span class="hidden sm:block text-[11px] text-emerald-50/60">Toca “Ver inmuebles” para filtrar</span></span>
+                        </li>
+                        <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-3.5 py-2.5 rounded-2xl bg-white/[0.05] border border-white/10 text-center sm:text-left">
+                            <span class="w-8 h-8 rounded-xl bg-[#25D366] text-white text-base flex items-center justify-center shrink-0"><i class="ph-fill ph-whatsapp-logo"></i></span>
+                            <span class="text-[11px] sm:text-[13px] leading-snug"><strong>Escríbele por WhatsApp</strong><span class="hidden sm:block text-[11px] text-emerald-50/60">Directo, sin intermediarios</span></span>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Para asesores Pro: invitación a Platinum (fuera del hero para no confundir a los clientes) -->
+                <div id="cta-hazte-platinum" class="hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-3.5 rounded-2xl border border-slate-300/80 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-white to-slate-100 dark:from-slate-900/60 dark:via-[#0A1F1B] dark:to-slate-900/60">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-300 text-slate-900 flex items-center justify-center text-lg shrink-0 shadow-sm"><i class="ph-fill ph-diamond"></i></span>
+                            <div class="min-w-0">
+                                <p class="text-sm font-extrabold text-gray-900 dark:text-white">¿Quieres aparecer aquí?</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Con Platinum tu perfil y tus inmuebles se muestran a todos los clientes, con reseñas y WhatsApp directo.</p>
+                            </div>
                         </div>
-                        <div class="min-w-[132px] px-5 py-3.5 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 shadow-sm">
-                            <p id="stat-asesores-count" class="text-3xl font-extrabold text-maximus-dark dark:text-white leading-none">--</p>
-                            <p class="mt-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">Asesores certificados</p>
-                        </div>
+                        <button type="button" onclick="abrirModalSuscripcionPro('platinum')" class="shrink-0 inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-extrabold transition-all cursor-pointer">
+                            Hazte Platinum · $9.99/mes <i class="ph-bold ph-arrow-right"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- BLOQUE 1: ASESORES OFICIALES -->
+                <!-- BLOQUE 1: ASESORES DESTACADOS -->
                 <div class="space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
                         <div>
-                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Nuestros asesores</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Elige un asesor para ver solo sus inmuebles, o escríbele por WhatsApp.</p>
+                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white tracking-tight flex items-center gap-2">
+                                Asesores destacados
+                                <span id="badge-asesores-activos-count" class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold">…</span>
+                            </h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Escríbeles directo o mira solo los inmuebles de cada uno.</p>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span id="badge-asesores-activos-count" class="text-xs font-medium text-gray-500 dark:text-gray-400">Cargando asesores...</span>
-                            <div class="flex items-center gap-1 bg-white dark:bg-[#071714] p-1 rounded-full border border-gray-200/80 dark:border-emerald-900/40">
-                                <button type="button" onclick="deslizarAsesoresCarousel(-1)" id="btn-header-asesores-prev" class="w-7 h-7 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950 text-gray-600 dark:text-gray-300 hover:text-emerald-700 flex items-center justify-center text-xs transition-colors cursor-pointer disabled:opacity-30 disabled:pointer-events-none" title="Anterior" aria-label="Anterior">
-                                    <i class="ph-bold ph-caret-left"></i>
-                                </button>
-                                <button type="button" onclick="deslizarAsesoresCarousel(1)" id="btn-header-asesores-next" class="w-7 h-7 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-950 text-gray-600 dark:text-gray-300 hover:text-emerald-700 flex items-center justify-center text-xs transition-colors cursor-pointer disabled:opacity-30 disabled:pointer-events-none" title="Siguiente" aria-label="Siguiente">
-                                    <i class="ph-bold ph-caret-right"></i>
-                                </button>
-                            </div>
+                        <div class="relative w-full sm:w-[280px]">
+                            <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" id="buscador-asesores-platinum" oninput="renderAsesoresMaximus()" placeholder="Buscar por nombre o especialidad" class="w-full h-11 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 rounded-xl pl-10 pr-4 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
                         </div>
                     </div>
 
-                    <!-- Pills de Filtrado por Especialidad -->
-                    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none" id="pills-especialidad-asesores">
-                        <button onclick="filtrarAsesoresPorEspecialidad('todos', this)" class="pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-extrabold bg-maximus-dark text-white shadow-sm transition-all">Todos</button>
-                        <button onclick="filtrarAsesoresPorEspecialidad('Luxury', this)" class="pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 transition-all">Luxury & Residencial</button>
-                        <button onclick="filtrarAsesoresPorEspecialidad('Apartamentos', this)" class="pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 transition-all">Apartamentos & Pisos</button>
-                        <button onclick="filtrarAsesoresPorEspecialidad('Penthouses', this)" class="pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 transition-all">Penthouses & Terrenos</button>
-                        <button onclick="filtrarAsesoresPorEspecialidad('Comercial', this)" class="pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 transition-all">Comercial & Industrial</button>
+                    <div id="grid-asesores-maximus" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+                        <!-- Generado vía JS -->
                     </div>
-
-                    <!-- Carrusel de asesores (4 visibles en escritorio, deslizable) -->
-                    <div class="relative group/carousel">
-                        <button type="button" id="btn-asesores-prev" onclick="deslizarAsesoresCarousel(-1)"
-                                class="absolute -left-3 sm:-left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white dark:bg-[#071714] text-maximus-dark dark:text-white shadow-lg border border-gray-200/90 dark:border-emerald-900/60 hover:border-emerald-500 hover:text-emerald-700 flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 active:scale-95 disabled:opacity-20 disabled:pointer-events-none cursor-pointer"
-                                title="Anterior" aria-label="Anterior">
-                            <i class="ph-bold ph-caret-left text-lg"></i>
-                        </button>
-
-                        <div id="grid-asesores-maximus" class="flex gap-4 overflow-x-auto scroll-smooth scrollbar-none snap-x snap-mandatory py-2 px-1" onscroll="actualizarEstadoFlechasAsesores()">
-                            <!-- Generado vía JS -->
-                        </div>
-
-                        <button type="button" id="btn-asesores-next" onclick="deslizarAsesoresCarousel(1)"
-                                class="absolute -right-3 sm:-right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white dark:bg-[#071714] text-maximus-dark dark:text-white shadow-lg border border-gray-200/90 dark:border-emerald-900/60 hover:border-emerald-500 hover:text-emerald-700 flex items-center justify-center transition-all opacity-80 sm:opacity-0 group-hover/carousel:opacity-100 active:scale-95 disabled:opacity-20 disabled:pointer-events-none cursor-pointer"
-                                title="Siguiente" aria-label="Siguiente">
-                            <i class="ph-bold ph-caret-right text-lg"></i>
-                        </button>
-                    </div>
+                    <div id="contenedor-ver-mas-asesores" class="hidden justify-center pt-2"></div>
                 </div>
 
-                <!-- BLOQUE 2: INMUEBLES CAPTADOS -->
+                <!-- BLOQUE 2: INMUEBLES DE ASESORES PLATINUM -->
                 <div id="contenedor-captaciones-vip" class="space-y-5 scroll-mt-6">
                     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div>
-                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Inmuebles captados</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5"><span class="staff-only">Disponibles de inmediato para presentar a tus clientes con comisión protegida.</span><span class="cliente-only">Inmuebles disponibles de inmediato, con documentación verificada.</span></p>
+                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Inmuebles destacados</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Seleccionados de asesores verificados, disponibles para visitar.</p>
                         </div>
-
                         <div class="relative w-full lg:w-auto lg:min-w-[300px]">
                             <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="text" id="buscador-captaciones-vip" oninput="buscarCaptacionesVip()" placeholder="Buscar por título o zona..." class="w-full h-11 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 hover:border-gray-300 rounded-xl pl-9 pr-3 text-sm font-medium text-maximus-dark dark:text-white placeholder-gray-400 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all">
+                            <input type="text" id="buscador-captaciones-vip" oninput="buscarCaptacionesVip()" placeholder="Buscar por título o zona..." class="w-full h-11 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 rounded-xl pl-10 pr-4 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
                         </div>
                     </div>
 
                     <!-- Banner de filtro activo por asesor -->
-                    <div id="banner-filtro-asesor-activo" class="hidden items-center justify-between gap-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 px-4 py-2.5 rounded-xl animate-fadeIn">
-                        <div class="flex items-center gap-2 text-xs text-emerald-900 dark:text-emerald-100 font-medium flex-wrap">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <div id="banner-filtro-asesor-activo" class="hidden items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl">
+                        <div class="flex items-center gap-2 text-xs text-slate-800 dark:text-slate-100 font-medium flex-wrap">
+                            <i class="ph-fill ph-diamond text-slate-500"></i>
                             <span>Mostrando solo a: <strong id="nombre-asesor-filtrado" class="font-extrabold"></strong></span>
-                            <span id="contador-inmuebles-filtrados" class="bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold"></span>
+                            <span id="contador-inmuebles-filtrados" class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2 py-0.5 rounded-full text-[10px] font-bold border border-slate-200 dark:border-slate-700"></span>
                         </div>
-                        <button onclick="limpiarFiltroAsesor()" class="shrink-0 px-3 py-1.5 rounded-lg bg-white dark:bg-[#0A1F1B] hover:bg-gray-50 border border-emerald-200 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer">
-                            <i class="ph-bold ph-x"></i> Ver todas
+                        <button onclick="limpiarFiltroAsesor()" class="shrink-0 px-3 py-1.5 rounded-lg bg-white dark:bg-[#0A1F1B] hover:bg-gray-50 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center gap-1 transition cursor-pointer">
+                            <i class="ph-bold ph-x"></i> Ver todos
                         </button>
                     </div>
 
-                    <!-- Grilla de tarjetas dinámica -->
-                    <div id="grid-exclusivas-maximus" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Las tarjetas se generan dinámicamente vía JS -->
+                    <div id="grid-exclusivas-maximus" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+                        <!-- Generado vía JS -->
                     </div>
 
-                    <!-- Mostrar más / menos -->
-                    <div id="contenedor-ver-mas-captaciones" class="hidden justify-center pt-2">
+                    <div id="contenedor-ver-mas-captaciones" class="hidden justify-center pt-2"></div>
+                </div>
+
+                <!-- MODAL: RESEÑAS DEL ASESOR -->
+                <div id="modal-resenas-asesor" class="fixed inset-0 z-[1000] hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm sm:p-4" onclick="if (event.target === this) cerrarModalResenasAsesor()" role="dialog" aria-modal="true" aria-labelledby="resenas-asesor-nombre">
+                    <div class="w-full sm:max-w-lg bg-white dark:bg-[#071F1A] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-gray-200 dark:border-emerald-950/60 max-h-[92vh] flex flex-col overflow-hidden">
+                        <div class="px-5 sm:px-6 pt-5 pb-4 border-b border-gray-100 dark:border-emerald-950/50 flex items-start gap-3.5 shrink-0">
+                            <img id="resenas-asesor-avatar" src="" alt="" class="w-14 h-14 rounded-2xl object-cover ring-2 ring-slate-200 shrink-0">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500 flex items-center gap-1"><i class="ph-fill ph-diamond"></i> Asesor Platinum</p>
+                                <h3 id="resenas-asesor-nombre" class="text-lg font-black text-gray-900 dark:text-white truncate"></h3>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span id="resenas-asesor-estrellas" class="flex items-center text-amber-400 text-sm"></span>
+                                    <span id="resenas-asesor-resumen" class="text-xs font-semibold text-gray-500"></span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="cerrarModalResenasAsesor()" aria-label="Cerrar" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-emerald-950/60 hover:bg-gray-200 text-gray-500 dark:text-gray-300 flex items-center justify-center transition cursor-pointer shrink-0">
+                                <i class="ph-bold ph-x text-sm"></i>
+                            </button>
+                        </div>
+
+                        <div class="overflow-y-auto flex-1 px-5 sm:px-6 py-5 space-y-5">
+                            <div id="resena-form-box"></div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase tracking-wider text-gray-400 mb-2.5">Lo que dicen sus clientes</h4>
+                                <div id="resenas-lista" class="space-y-3"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -4643,7 +4781,7 @@
                                         <label class="flex items-center gap-2.5 cursor-pointer group">
                                             <input type="radio" name="tipo_asesor" value="externo" onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4 cursor-pointer">
                                             <span class="text-sm font-bold text-gray-600 group-hover:text-gray-900 flex items-center gap-1.5 transition-colors">
-                                                <i class="ph-fill ph-user text-gray-500 text-base"></i> Asesor Externo
+                                                <i class="ph-fill ph-user text-gray-500 text-base"></i> Otro asesor inmobiliario
                                             </span>
                                         </label>
                                     </div>
@@ -4659,7 +4797,7 @@
                                     <!-- Contenedor Asesor Externo Manual -->
                                     <div id="container-asesor-externo" style="display: none;" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-200">
                                         <div>
-                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nombre del Asesor Externo *</label>
+                                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nombre del Asesor *</label>
                                             <input type="text" id="inm-asesor-nombre" placeholder="Ej: Carlos Mendoza" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                         </div>
                                         <div>
@@ -7695,12 +7833,15 @@
 
                 user.avatar = avatarFinalUrl;
                 if (document.getElementById('userAvatar')) document.getElementById('userAvatar').src = avatarFinalUrl;
+                const esPlatinumUser = (user.plan === 'platinum');
+                const tituloAsesorPlan = esPlatinumUser ? 'Asesor Inmobiliario Platinum' : 'Asesor Inmobiliario Pro';
+                if (user.title && /externo/i.test(user.title)) user.title = tituloAsesorPlan; // títulos antiguos
                 if (user.title && document.getElementById('userTitle')) {
                     document.getElementById('userTitle').textContent = user.title;
                 } else if (userRole === 'cliente') {
                     document.getElementById('userTitle').textContent = 'Usuario Registrado';
                 } else if (userRole === 'asesor_externo') {
-                    document.getElementById('userTitle').textContent = 'Asesor Inmobiliario Externo';
+                    document.getElementById('userTitle').textContent = tituloAsesorPlan;
                 }
                 const dropName = document.getElementById('dropdown-userName');
                 const dropEmail = document.getElementById('dropdown-userEmail');
@@ -7730,12 +7871,12 @@
                     }
                 } else if (userRole === 'asesor_externo') {
                     if (roleBadge) {
-                        roleBadge.textContent = 'EXTERNO (PRO)';
-                        roleBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 border border-blue-300';
+                        roleBadge.textContent = esPlatinumUser ? 'PLATINUM' : 'PRO';
+                        roleBadge.className = esPlatinumUser ? 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 text-slate-900 border border-slate-400' : 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white border border-emerald-700';
                     }
                     if (dropBadge) {
-                        dropBadge.textContent = 'Asesor Externo';
-                        dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-100 text-blue-900';
+                        dropBadge.textContent = esPlatinumUser ? 'Asesor Platinum' : 'Asesor Pro';
+                        dropBadge.className = esPlatinumUser ? 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 text-slate-900 border border-slate-400' : 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white border border-emerald-700';
                     }
                 } else {
                     if (roleBadge) {
@@ -9247,6 +9388,7 @@
                 if (typeof inicializarGestionFaqsAdmin === 'function') inicializarGestionFaqsAdmin();
             }
             if (targetId === 'view-planes') {
+                if (typeof marcarPlanActualEnPlanes === 'function') marcarPlanActualEnPlanes();
                 if (typeof cargarFaqsEnPlanesDashboard === 'function') cargarFaqsEnPlanesDashboard();
             }
             if (targetId === 'view-admin-config') {
@@ -13217,16 +13359,16 @@
                             }
                             if (!asesorData) {
                                 const esExt = inm.is_maximus === false;
-                                const nomAsesor = inm.asesor_nombre || (esExt ? 'Asesor Externo Aliado' : 'Asesor MAXIMUS');
+                                const nomAsesor = inm.asesor_nombre || (esExt ? 'Asesor Inmobiliario' : 'Asesor MAXIMUS');
                                 const telAsesor = inm.asesor_telefono || '+58 424-1234567';
                                 asesorData = {
                                     nombre: nomAsesor,
-                                    cargo: esExt ? 'Asesor Externo Aliado' : 'Captador Oficial',
+                                    cargo: esExt ? 'Asesor Inmobiliario' : 'Captador Oficial',
                                     telefono: telAsesor,
                                     whatsapp: telAsesor,
                                     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nomAsesor)}&background=0B4A3F&color=fff&bold=true`,
                                     rating: esExt ? '5.0' : '5.0 (Oficial)',
-                                    experiencia: esExt ? 'Asesor Externo Aliado' : 'Equipo MAXIMUS',
+                                    experiencia: esExt ? 'Asesor Inmobiliario' : 'Equipo MAXIMUS',
                                     tipo: esExt ? 'externo' : 'maximus'
                                 };
                             }
@@ -13271,6 +13413,8 @@
                                 m2: (inm.metros_cuadrados !== undefined && inm.metros_cuadrados !== null && Number(inm.metros_cuadrados) > 0) ? `${inm.metros_cuadrados} m²` : (existing.m2 || 'N/D'),
                                 estacionamientos: (inm.estacionamientos !== undefined && inm.estacionamientos !== null) ? (Number(inm.estacionamientos) > 0 ? `${inm.estacionamientos} Puesto${Number(inm.estacionamientos) === 1 ? '' : 's'}` : 'Sin puesto propio') : (existing.estacionamientos || 'Sin puesto propio'),
                                 fotos: fotosList,
+                                agenteId: inm.agente_id || existing.agenteId || null,
+                                asesorRefId: inm.asesor_id || existing.asesorRefId || null,
                                 asesor: asesorData,
                                 aspectosDestacados: inm.aspectos_destacados || existing.aspectosDestacados || (esMaximus ? [
                                     { icono: 'ph-shield-check', titulo: 'Documentación 100% Verificada', desc: 'Libre de gravamen y lista para firmar en registro.' },
@@ -13429,367 +13573,694 @@
         window.renderCatalogoInmueblesDinamico = renderCatalogoInmueblesDinamico;
 
 
-        // Renderizar Asesores Oficiales en la Vista de Captaciones
-        
         // ========================================================
-        // CONTROL DE NAVEGACIÓN Y CARRUSEL DE ASESORES (4 POR VISTA)
+        // CAPTACIONES DESTACADAS — asesores Platinum, sus inmuebles y reseñas
+        // Datos: RPC public.listar_asesores_platinum() + tabla resenas_asesores
+        // (sql/migration-plan-platinum.sql). Solo aparecen planes Platinum vigentes.
         // ========================================================
-        function deslizarAsesoresCarousel(direccion) {
-            const container = document.getElementById('grid-asesores-maximus');
-            if (!container) return;
+        let ASESORES_PLATINUM_DATA = [];
+        let asesoresPlatinumCargadoAt = 0;
+        let mostrarTodosAsesoresPlatinum = false;
+        var mostrarTodasCaptacionesMaximus = false;
 
-            const primerItem = container.querySelector('.tarjeta-asesor-item');
-            const scrollAmount = primerItem ? (primerItem.offsetWidth + 16) : 280;
-
-            container.scrollBy({
-                left: direccion * scrollAmount,
-                behavior: 'smooth'
-            });
-
-            setTimeout(actualizarEstadoFlechasAsesores, 320);
+        function sbPlatinum() {
+            return (typeof getSupabase === 'function') ? getSupabase() : null;
         }
 
-        function actualizarEstadoFlechasAsesores() {
-            const container = document.getElementById('grid-asesores-maximus');
-            if (!container) return;
-
-            const atStart = container.scrollLeft <= 5;
-            const atEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
-            const hasOverflow = container.scrollWidth > container.clientWidth + 10;
-
-            const btnPrevSide = document.getElementById('btn-asesores-prev');
-            const btnNextSide = document.getElementById('btn-asesores-next');
-            const btnPrevHeader = document.getElementById('btn-header-asesores-prev');
-            const btnNextHeader = document.getElementById('btn-header-asesores-next');
-
-            [btnPrevSide, btnPrevHeader].forEach(b => {
-                if (b) {
-                    b.disabled = atStart;
-                    b.style.opacity = atStart ? '0.25' : '1';
-                }
-            });
-
-            [btnNextSide, btnNextHeader].forEach(b => {
-                if (b) {
-                    b.disabled = atEnd;
-                    b.style.opacity = atEnd ? '0.25' : '1';
-                }
-            });
-
-            if (btnPrevSide && btnNextSide) {
-                if (!hasOverflow) {
-                    btnPrevSide.classList.add('hidden');
-                    btnNextSide.classList.add('hidden');
-                } else {
-                    btnPrevSide.classList.remove('hidden');
-                    btnNextSide.classList.remove('hidden');
-                }
-            }
+        // Teléfono → solo dígitos con código de país (wa.me)
+        function waDigitosPlatinum(tel) {
+            let d = String(tel || '').replace(/[^0-9]/g, '');
+            if (d.length === 11 && d.startsWith('0')) d = '58' + d.slice(1);   // 0414xxxxxxx → 58414xxxxxxx
+            if (d.length === 10 && d.startsWith('4')) d = '58' + d;            // 414xxxxxxx
+            return d.length >= 10 ? d : '';
         }
 
-        async function renderAsesoresMaximus(filtroEspecialidad = null) {
-            const container = document.getElementById('grid-asesores-maximus');
-            if (!container) return;
+        function avatarPlatinum(a) {
+            if (a && a.avatar_url) return a.avatar_url;
+            const ini = String((a && a.nombre) || 'A').split(/\s+/).filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'A';
+            return `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#1E293B'/><stop offset='1' stop-color='#0B2B25'/></linearGradient></defs><rect width='400' height='300' fill='url(#g)'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='#E2E8F0' font-family='sans-serif' font-weight='800' font-size='96'>${ini}</text></svg>`)}`;
+        }
 
-            if (filtroEspecialidad !== null) {
-                filtroEspecialidadActual = filtroEspecialidad;
+        // Estrellas (0 reseñas = 5.0, lo resuelve la base de datos)
+        function estrellasHTMLPlatinum(valor, tam = 'text-sm') {
+            const v = Math.max(0, Math.min(5, Number(valor) || 0));
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                const icono = v >= i ? 'ph-fill ph-star' : (v >= i - 0.5 ? 'ph-fill ph-star-half' : 'ph ph-star');
+                html += `<i class="${icono} ${tam}"></i>`;
             }
+            return html;
+        }
 
-            // Sincronizar asesores e inmuebles directamente con Supabase
-            const asesores = await obtenerAsesoresMaximusActuales();
-            await sincronizarInmueblesDesdeDB();
-            const allProps = Object.values(INMUEBLES_DETALLE_DATA);
+        function usuarioActualPlatinum() {
+            try {
+                return (typeof AuthService !== 'undefined' && AuthService.getCurrentUser()) || JSON.parse(localStorage.getItem('maximus_user') || 'null');
+            } catch (_) { return null; }
+        }
 
-            // Calcular captaciones reales por asesor con data consolidada de la DB
-            asesores.forEach(asesor => {
-                const propsDelAsesor = allProps.filter(inm => 
-                    inm.isMaximus && (
-                        (inm.asesor && inm.asesor.nombre && inm.asesor.nombre.toLowerCase().trim() === asesor.nombre.toLowerCase().trim()) ||
-                        (inm.asesor_id === asesor.id) ||
-                        (inm.asesor && inm.asesor.id === asesor.id) ||
-                        (inm.agente_id === asesor.id)
-                    )
-                );
-                asesor.captacionesActivas = propsDelAsesor.length;
+        // Promesa con límite de tiempo: la sección nunca se queda "cargando"
+        function conLimitePlatinum(promesa, ms = 9000) {
+            return Promise.race([promesa, new Promise((_, rej) => setTimeout(() => rej(new Error('tiempo agotado')), ms))]);
+        }
+
+        // Listado público: va directo a la API REST con la clave anon (no depende de la sesión)
+        async function cargarAsesoresPlatinum(forzar = false) {
+            if (!forzar && asesoresPlatinumCargadoAt && (Date.now() - asesoresPlatinumCargadoAt) < 60000) return ASESORES_PLATINUM_DATA;
+            const url = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.SUPABASE_URL) || '';
+            const key = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.SUPABASE_ANON_KEY) || '';
+            try {
+                if (!url || !key) throw new Error('Supabase no configurado');
+                const r = await conLimitePlatinum(fetch(url.replace(/\/$/, '') + '/rest/v1/rpc/listar_asesores_platinum', {
+                    method: 'POST',
+                    headers: { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' },
+                    body: '{}'
+                }));
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                ASESORES_PLATINUM_DATA = Array.isArray(data) ? data : [];
+            } catch (e) {
+                console.warn('Captaciones Destacadas: no se pudo cargar asesores Platinum (¿falta ejecutar sql/migration-plan-platinum.sql?)', e);
+            }
+            asesoresPlatinumCargadoAt = Date.now(); // evita reintentos en bucle; se recarga al minuto
+            return ASESORES_PLATINUM_DATA;
+        }
+
+        // Lista que se muestra: asesores Platinum + equipo MAXIMUS, intercalados y con el mismo diseño.
+        // (ASESORES_PLATINUM_DATA se mantiene solo con Platinum: son los únicos con reseñas.)
+        let ASESORES_DESTACADOS = [];
+        let asesoresEquipoCache = null;
+        let asesoresEquipoCargadoAt = 0;
+
+        // Alterna elementos de dos listas: a0, b0, a1, b1… (empieza por Platinum)
+        function intercalarListas(a, b) {
+            const out = [];
+            for (let i = 0; i < Math.max(a.length, b.length); i++) {
+                if (i < a.length) out.push(a[i]);
+                if (i < b.length) out.push(b[i]);
+            }
+            return out;
+        }
+
+        function inmuebleEsDeAsesorPlatinum(inm, a) {
+            const ids = [String(a.usuario_id || ''), String(a.auth_id || '')].filter(Boolean);
+            return ids.includes(String(inm.agenteId || '')) || ids.includes(String(inm.asesorRefId || ''));
+        }
+
+        function inmuebleEsDeAsesorEquipo(inm, a) {
+            const id = String(a.usuario_id || '');
+            const nom = String(a.nombre || '').toLowerCase().trim();
+            return (id && (String(inm.agenteId || '') === id || String(inm.asesorRefId || '') === id || String((inm.asesor && inm.asesor.id) || '') === id))
+                || (nom && inm.asesor && String(inm.asesor.nombre || '').toLowerCase().trim() === nom);
+        }
+
+        // Inmuebles del equipo (captaciones directas), sin duplicados por código
+        function inmueblesEquipoUnicos() {
+            const mapa = new Map();
+            Object.values(INMUEBLES_DETALLE_DATA || {}).forEach(inm => {
+                if (!inm || !inm.isMaximus) return;
+                const k = String(inm.codigo || inm.id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (k && !mapa.has(k)) mapa.set(k, inm);
+            });
+            return Array.from(mapa.values());
+        }
+
+        async function cargarAsesoresDestacados(forzar = false) {
+            const equipoFresco = asesoresEquipoCache && (Date.now() - asesoresEquipoCargadoAt) < 60000;
+            const [plat, equipo] = await Promise.all([
+                cargarAsesoresPlatinum(forzar),
+                (equipoFresco && !forzar)
+                    ? asesoresEquipoCache
+                    : conLimitePlatinum(obtenerAsesoresMaximusActuales())
+                        .then(l => { asesoresEquipoCache = l; asesoresEquipoCargadoAt = Date.now(); return l; })
+                        .catch(() => asesoresEquipoCache || (typeof ASESORES_MAXIMUS_DATA !== 'undefined' ? ASESORES_MAXIMUS_DATA : []))
+            ]);
+            const inmEquipo = inmueblesEquipoUnicos();
+            const equipoNorm = (Array.isArray(equipo) ? equipo : []).filter(a => a && a.activo !== false && a.nombre).map(a => {
+                const entrada = {
+                    tipo: 'equipo',
+                    auth_id: 'eq-' + a.id,
+                    usuario_id: String(a.id),
+                    nombre: a.nombre,
+                    especialidad: a.especialidad || a.cargo || '',
+                    zona: a.zona || null,
+                    whatsapp: a.whatsapp || a.telefono || '',
+                    estrellas: Math.min(5, Number(String(a.rating == null ? '5' : a.rating).replace(/[^0-9.]/g, '')) || 5),
+                    total_resenas: null,
+                    avatar_url: a.avatar || null
+                };
+                entrada.total_inmuebles = inmEquipo.filter(inm => inmuebleEsDeAsesorEquipo(inm, entrada)).length;
+                return entrada;
+            });
+            equipoNorm.sort((x, y) => (y.total_inmuebles || 0) - (x.total_inmuebles || 0));
+            const platNorm = (plat || []).map(a => Object.assign({}, a, { tipo: 'platinum' }));
+            ASESORES_DESTACADOS = intercalarListas(platNorm, equipoNorm);
+            return ASESORES_DESTACADOS;
+        }
+
+        // Inmuebles destacados (Platinum + equipo), intercalados; deja resuelto el asesor para la ficha
+        function inmueblesDestacadosActuales() {
+            const dePlat = [];
+            const deEquipo = [];
+            const vistos = new Set();
+            const platinum = ASESORES_DESTACADOS.filter(a => a.tipo === 'platinum');
+            const equipo = ASESORES_DESTACADOS.filter(a => a.tipo === 'equipo');
+
+            Object.values(INMUEBLES_DETALLE_DATA || {}).forEach(inm => {
+                if (!inm || vistos.has(inm.id)) return;
+                const a = platinum.find(x => inmuebleEsDeAsesorPlatinum(inm, x));
+                if (!a) return;
+                vistos.add(inm.id);
+                const wa = waDigitosPlatinum(a.whatsapp);
+                inm.asesor = Object.assign({}, inm.asesor || {}, {
+                    id: a.auth_id,
+                    nombre: a.nombre,
+                    cargo: 'Asesor Inmobiliario Platinum',
+                    telefono: wa ? '+' + wa : (inm.asesor && inm.asesor.telefono) || '',
+                    whatsapp: wa || (inm.asesor && inm.asesor.whatsapp) || '',
+                    avatar: avatarPlatinum(a),
+                    rating: Number(a.estrellas || 5).toFixed(1),
+                    experiencia: 'Asesor Inmobiliario Platinum',
+                    tipo: 'platinum'
+                });
+                inm._destacado = a;
+                dePlat.push(inm);
             });
 
-            // Actualizar contadores del Hero con datos en vivo de la DB
-            const statAsesores = document.getElementById('stat-asesores-count');
-            const totalActivos = asesores.filter(a => a.activo !== false).length;
-            if (statAsesores) statAsesores.textContent = totalActivos;
+            inmueblesEquipoUnicos().forEach(inm => {
+                if (vistos.has(inm.id)) return;
+                vistos.add(inm.id);
+                inm._destacado = equipo.find(x => inmuebleEsDeAsesorEquipo(inm, x)) || null;
+                deEquipo.push(inm);
+            });
 
-            const badgeAsesores = document.getElementById('badge-asesores-activos-count');
-            if (badgeAsesores) badgeAsesores.textContent = `${totalActivos} Asesores Activos en Táchira`;
+            return intercalarListas(dePlat, deEquipo);
+        }
 
-            // Filtrar por especialidad si no es 'todos'
-            let asesoresFiltrados = asesores.filter(a => a.activo !== false);
-            if (filtroEspecialidadActual !== 'todos') {
-                asesoresFiltrados = asesoresFiltrados.filter(a => 
-                    a.especialidad && a.especialidad.toLowerCase().includes(filtroEspecialidadActual.toLowerCase())
-                );
-            }
+        function actualizarCtaPlatinum() {
+            const cta = document.getElementById('cta-hazte-platinum');
+            if (!cta) return;
+            const u = usuarioActualPlatinum();
+            const rol = (u && (u.role || u.rol)) || 'cliente';
+            const esAsesorSinPlatinum = rol === 'asesor_externo' && (u && u.plan) !== 'platinum';
+            cta.classList.toggle('hidden', !esAsesorSinPlatinum);
+        }
 
-            container.innerHTML = '';
-            
-            if (asesoresFiltrados.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-8 text-center bg-white rounded-2xl border border-gray-100 p-6">
-                        <i class="ph-bold ph-users text-3xl text-gray-300 mb-2"></i>
-                        <p class="text-sm font-bold text-gray-500">No hay asesores bajo esta especialidad.</p>
-                        <button onclick="filtrarAsesoresPorEspecialidad('todos')" class="mt-2 text-xs font-bold text-maximus-accent underline">Ver todos los asesores</button>
-                    </div>`;
-                return;
-            }
+        // Tarjeta de asesor compacta: foto pequeña, calificación clara y botones con texto
+        function tarjetaAsesorPlatinumHTML(a) {
+            const esPlat = a.tipo !== 'equipo';
+            const nombre = escNotif(a.nombre || 'Asesor');
+            const primerNombre = encodeURIComponent(String(a.nombre || '').split(' ')[0] || '');
+            const wa = waDigitosPlatinum(a.whatsapp);
+            const estrellas = Number(a.estrellas || 5);
+            const totalRes = Number(a.total_resenas || 0);
+            const totalInm = Number(a.total_inmuebles || 0);
+            const seleccionado = filtroAsesorSeleccionado && String(filtroAsesorSeleccionado) === String(a.auth_id);
+            const idAttr = escNotif(String(a.auth_id));
+            const waHref = wa ? `https://wa.me/${wa}?text=Hola%20${primerNombre},%20te%20contacto%20desde%20MAXIMUS%20por%20tus%20inmuebles%20destacados.` : '';
+            const accionOpiniones = esPlat ? `abrirModalResenasAsesor('${idAttr}')` : `abrirModalPerfilAsesor('${escNotif(String(a.usuario_id))}')`;
+            const textoOpiniones = esPlat
+                ? (totalRes > 0 ? `${totalRes} ${totalRes === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas aún')
+                : 'Asesor verificado';
 
-            asesoresFiltrados.forEach(asesor => {
-                const esSeleccionado = filtroAsesorSeleccionado && filtroAsesorSeleccionado.toLowerCase() === asesor.nombre.toLowerCase();
-                const ringClase = esSeleccionado 
-                    ? 'ring-2 ring-emerald-500 shadow-xl bg-emerald-50/50 border-emerald-400 scale-[1.02]' 
-                    : 'bg-white shadow-premium border-maximus-silver/20 hover:border-emerald-300';
-
-                const nombreSeguro = escNotif(asesor.nombre);
-                const totalCap = Number(asesor.captacionesActivas) || 0;
-                const cardHTML = `
-                    <div class="tarjeta-asesor-item w-[85%] sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)] shrink-0 snap-start ${ringClase} rounded-2xl p-4 border transition-all duration-300 group hover:-translate-y-0.5 hover:shadow-md relative cursor-pointer" onclick="seleccionarAsesorParaFiltro('${asesor.nombre}', this)">
-                        <div class="flex items-center gap-3">
-                            <img src="${asesor.avatar}" alt="" class="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm shrink-0">
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-bold text-sm text-maximus-dark group-hover:text-emerald-700 transition-colors truncate flex items-center gap-1">
-                                    <span class="truncate">${nombreSeguro}</span>
-                                    <i class="ph-fill ph-seal-check text-emerald-500 text-sm shrink-0" title="Asesor verificado"></i>
-                                </h4>
-                                <p class="text-xs text-gray-500 truncate">${escNotif(asesor.cargo)}</p>
-                            </div>
+            return `
+                <article class="tarjeta-asesor-item group relative rounded-2xl bg-white dark:bg-[#0A1F1B] border ${seleccionado ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-gray-100 dark:border-emerald-950/60 hover:border-gray-200'} p-4 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col gap-3.5">
+                    <div class="flex items-start gap-3">
+                        <div class="relative shrink-0">
+                            <img src="${avatarPlatinum(a)}" alt="${nombre}" loading="lazy" class="w-14 h-14 rounded-2xl object-cover bg-slate-100"
+                                 onerror="this.onerror=null; this.src=avatarPlatinum({nombre: this.alt});">
+                            <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${esPlat ? 'bg-gradient-to-br from-slate-100 to-slate-300 text-slate-900' : 'bg-amber-100 text-amber-600'} border-2 border-white dark:border-[#0A1F1B] flex items-center justify-center text-[11px]" title="${esPlat ? 'Asesor Platinum' : 'Asesor destacado'}">
+                                <i class="ph-fill ${esPlat ? 'ph-diamond' : 'ph-star'}"></i>
+                            </span>
                         </div>
-
-                        <div class="mt-3 flex items-center gap-1.5 flex-wrap">
-                            <span class="px-2 py-0.5 rounded-md bg-gray-100 text-gray-600 text-[11px] font-medium truncate max-w-full">${escNotif(asesor.especialidad)}</span>
-                            <span class="px-2 py-0.5 rounded-md ${totalCap > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-400'} text-[11px] font-semibold">${totalCap} ${totalCap === 1 ? 'captación' : 'captaciones'}</span>
-                        </div>
-
-                        <div class="mt-3.5 flex items-center gap-1.5" onclick="event.stopPropagation()">
-                            <a href="https://wa.me/${asesor.whatsapp || asesor.telefono}?text=Hola%20${encodeURIComponent(asesor.nombre.split(' ')[0])},%20te%20contacto%20desde%20la%20plataforma%20MAXIMUS%20por%20tus%20inmuebles%20captados." target="_blank" rel="noopener" class="flex-1 h-9 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold text-center flex items-center justify-center gap-1.5 transition-colors">
-                                <i class="ph-fill ph-whatsapp-logo text-emerald-600 text-sm"></i> WhatsApp
-                            </a>
-                            <button onclick="abrirModalPerfilAsesor('${asesor.id}')" class="w-9 h-9 rounded-xl bg-gray-50 hover:bg-emerald-50 hover:text-emerald-700 text-gray-500 flex items-center justify-center transition-all cursor-pointer" title="Ver ficha del asesor" aria-label="Ver ficha del asesor">
-                                <i class="ph-bold ph-user text-sm"></i>
-                            </button>
-                            <button onclick="seleccionarAsesorParaFiltro('${asesor.nombre}')" class="w-9 h-9 rounded-xl ${esSeleccionado ? 'bg-emerald-600 text-white' : 'bg-gray-50 hover:bg-maximus-dark hover:text-white text-gray-500'} flex items-center justify-center transition-all cursor-pointer" title="Ver solo sus inmuebles" aria-label="Ver solo sus inmuebles">
-                                <i class="ph-bold ${esSeleccionado ? 'ph-check' : 'ph-funnel'} text-sm"></i>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="font-extrabold text-[15px] text-gray-900 dark:text-white leading-tight flex items-center gap-1">
+                                <span class="truncate">${nombre}</span>
+                                <i class="ph-fill ph-seal-check text-sky-500 text-sm shrink-0" title="Asesor verificado"></i>
+                            </h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">${escNotif(a.especialidad || 'Asesor Inmobiliario')}</p>
+                            <button type="button" onclick="${accionOpiniones}" class="mt-1 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-xs text-left cursor-pointer group/stars" title="${esPlat ? 'Ver reseñas' : 'Ver perfil'}">
+                                <span class="flex items-center text-amber-400">${estrellasHTMLPlatinum(estrellas, 'text-[13px]')}</span>
+                                <strong class="text-gray-900 dark:text-white">${estrellas.toFixed(1)}</strong>
+                                <span class="text-gray-400 group-hover/stars:text-emerald-700 group-hover/stars:underline">· ${textoOpiniones}</span>
                             </button>
                         </div>
                     </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHTML);
-            });
 
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
+                        <span class="px-2 py-1 rounded-lg ${esPlat ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'}">${esPlat ? 'Platinum' : 'Destacado'}</span>
+                        ${totalInm > 0 ? `<span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"><i class="ph-bold ph-house-line"></i> ${totalInm} ${totalInm === 1 ? 'inmueble' : 'inmuebles'}</span>` : ''}
+                        ${a.zona ? `<span class="px-2 py-1 rounded-lg bg-gray-50 text-gray-600 dark:bg-emerald-950/30 dark:text-gray-300 truncate max-w-[140px]"><i class="ph-fill ph-map-pin"></i> ${escNotif(a.zona)}</span>` : ''}
+                    </div>
+
+                    <div class="mt-auto space-y-2">
+                        ${wa
+                            ? `<a href="${waHref}" target="_blank" rel="noopener" class="w-full h-10 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white text-[13px] font-extrabold flex items-center justify-center gap-1.5 transition-colors shadow-sm"><i class="ph-fill ph-whatsapp-logo text-base"></i> Escribir por WhatsApp</a>`
+                            : `<span class="w-full h-10 rounded-xl bg-gray-100 dark:bg-emerald-950/40 text-gray-400 text-xs font-bold flex items-center justify-center gap-1.5" title="Este asesor aún no registró su WhatsApp"><i class="ph-fill ph-whatsapp-logo text-base"></i> WhatsApp no disponible</span>`}
+                        <div class="grid grid-cols-2 gap-2">
+                            ${totalInm > 0
+                                ? `<button type="button" onclick="seleccionarAsesorParaFiltro('${idAttr}')" class="h-9 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${seleccionado ? 'bg-emerald-600 text-white' : 'bg-gray-50 dark:bg-emerald-950/40 text-gray-700 dark:text-gray-200 hover:bg-gray-100'}"><i class="ph-bold ${seleccionado ? 'ph-check' : 'ph-house-line'}"></i> ${seleccionado ? 'Mostrando' : 'Ver inmuebles'}</button>`
+                                : `<span class="h-9 rounded-xl text-[11px] font-semibold flex items-center justify-center text-gray-400 bg-gray-50/60 dark:bg-emerald-950/20">Sin inmuebles aún</span>`}
+                            <button type="button" onclick="${accionOpiniones}" class="h-9 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 bg-gray-50 dark:bg-emerald-950/40 text-gray-700 dark:text-gray-200 hover:bg-gray-100 transition-all cursor-pointer">
+                                <i class="ph-bold ${esPlat ? 'ph-star' : 'ph-user'}"></i> ${esPlat ? 'Reseñas' : 'Ver perfil'}
+                            </button>
+                        </div>
+                    </div>
+                </article>`;
         }
 
-        // Filtro por Especialidad en Píldoras
-        function filtrarAsesoresPorEspecialidad(especialidad, btnElement) {
-            filtroEspecialidadActual = especialidad;
-            document.querySelectorAll('#pills-especialidad-asesores .pill-esp-asesor').forEach(b => {
-                b.className = 'pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-600 hover:bg-gray-50 border border-gray-200 transition-all';
-            });
-            if (btnElement) {
-                btnElement.className = 'pill-esp-asesor shrink-0 px-4 py-1.5 rounded-full text-xs font-extrabold bg-maximus-dark text-white shadow-sm transition-all';
+        // Nombre conservado: muchas vistas lo llaman para refrescar Captaciones.
+        async function renderAsesoresMaximus() {
+            const container = document.getElementById('grid-asesores-maximus');
+            if (!container) return;
+            actualizarCtaPlatinum();
+            const GRID_ASESORES = 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4';
+
+            if (!ASESORES_DESTACADOS.length && !asesoresPlatinumCargadoAt) {
+                container.className = GRID_ASESORES;
+                container.innerHTML = Array.from({ length: 4 }).map(() => `
+                    <div class="rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 p-4 space-y-3 animate-pulse">
+                        <div class="flex items-center gap-3"><div class="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-emerald-950/40"></div><div class="flex-1 space-y-2"><div class="h-3 w-2/3 bg-gray-100 dark:bg-emerald-950/40 rounded"></div><div class="h-3 w-1/2 bg-gray-100 dark:bg-emerald-950/40 rounded"></div></div></div>
+                        <div class="h-10 bg-gray-100 dark:bg-emerald-950/40 rounded-xl"></div>
+                    </div>`).join('');
             }
-            renderAsesoresMaximus(especialidad);
-        }
 
-        // Seleccionar Asesor para filtrar los inmuebles abajo
-        function seleccionarAsesorParaFiltro(nombreAsesor) {
-            if (filtroAsesorSeleccionado === nombreAsesor) {
-                limpiarFiltroAsesor();
+            await conLimitePlatinum(sincronizarInmueblesDesdeDB()).catch(() => null);
+            const asesores = await cargarAsesoresDestacados();
+
+            const total = asesores.length;
+            const statA = document.getElementById('stat-asesores-count');
+            if (statA) statA.textContent = total;
+            const badge = document.getElementById('badge-asesores-activos-count');
+            if (badge) badge.textContent = total;
+            const statE = document.getElementById('stat-promedio-estrellas');
+            if (statE) {
+                const prom = total ? asesores.reduce((s, a) => s + (Number(a.estrellas) || 5), 0) / total : 0;
+                statE.textContent = total ? prom.toFixed(1) : '--';
+            }
+
+            const q = (document.getElementById('buscador-asesores-platinum')?.value || '').toLowerCase().trim();
+            const filtrados = q
+                ? asesores.filter(a => [a.nombre, a.especialidad, a.zona].some(v => String(v || '').toLowerCase().includes(q)))
+                : asesores;
+
+            const btnMas = document.getElementById('contenedor-ver-mas-asesores');
+            if (total === 0 || filtrados.length === 0) container.className = GRID_ASESORES;
+            if (total === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full relative overflow-hidden rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900/40 dark:to-[#0A1F1B] px-6 py-12 text-center">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 text-slate-800 flex items-center justify-center text-2xl shadow-sm"><i class="ph-fill ph-diamond"></i></div>
+                        <h4 class="mt-4 text-lg font-black text-gray-900 dark:text-white">Muy pronto: asesores destacados</h4>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">Aquí aparecerán los asesores inmobiliarios destacados de Táchira, con sus inmuebles y las reseñas de sus clientes.</p>
+                    </div>`;
+                if (btnMas) { btnMas.classList.add('hidden'); btnMas.classList.remove('flex'); btnMas.innerHTML = ''; }
                 return;
             }
-            filtroAsesorSeleccionado = nombreAsesor;
-            renderAsesoresMaximus();
-            renderExclusivasMaximus(nombreAsesor);
+            if (filtrados.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-10 text-center text-sm font-semibold text-gray-500 bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-100 dark:border-emerald-950/60">No hay asesores que coincidan con “${escNotif(q)}”.</div>`;
+                if (btnMas) { btnMas.classList.add('hidden'); btnMas.classList.remove('flex'); btnMas.innerHTML = ''; }
+                return;
+            }
 
-            // Scroll suave al contenedor de captaciones
-            const vipSection = document.getElementById('contenedor-captaciones-vip');
-            if (vipSection) {
-                vipSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Carrusel continuo (pausa al pasar el mouse) salvo que pidan "Ver todos" o estén buscando
+            const enCarrusel = !mostrarTodosAsesoresPlatinum && !q && filtrados.length > 1;
+            if (enCarrusel) {
+                let cinta = [...filtrados];
+                while (cinta.length < 6) cinta = cinta.concat(filtrados); // suficiente para que la cinta no tenga huecos
+                const html = cinta.map((a, i) => i < filtrados.length ? tarjetaAsesorPlatinumHTML(a) : tarjetaAsesorPlatinumHTML(a).replace('<article class="', '<article class="asesor-repetido ')).join(''); // los repetidos se ocultan en móvil
+                const dur = Math.max(30, Math.round(cinta.length * 316 / 24)); // ~24 px/s
+                container.className = 'asesores-carrusel';
+                container.innerHTML = `<div class="asesores-pista" style="--dur:${dur}s">${html}</div><div class="asesores-pista" aria-hidden="true" inert style="--dur:${dur}s">${html}</div>`;
+            } else {
+                container.className = GRID_ASESORES;
+                container.innerHTML = filtrados.map(tarjetaAsesorPlatinumHTML).join('');
+            }
+
+            if (btnMas) {
+                if (!q && filtrados.length > 1) {
+                    btnMas.classList.remove('hidden'); btnMas.classList.add('flex');
+                    btnMas.innerHTML = mostrarTodosAsesoresPlatinum
+                        ? `<button type="button" onclick="mostrarTodosAsesoresPlatinum = false; renderAsesoresMaximus(); document.getElementById('grid-asesores-maximus')?.scrollIntoView({ behavior: 'smooth', block: 'center' });" class="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer bg-white dark:bg-[#0A1F1B] text-maximus-dark dark:text-white border border-gray-200 dark:border-emerald-900/50 hover:bg-gray-50"><i class="ph-bold ph-arrows-left-right"></i> Volver al carrusel</button>`
+                        : `<button type="button" onclick="mostrarTodosAsesoresPlatinum = true; renderAsesoresMaximus();" class="h-10 px-5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer bg-maximus-dark hover:bg-[#07362e] text-white shadow-sm"><i class="ph-bold ph-squares-four"></i> Ver todos los asesores (${filtrados.length}) <i class="ph-bold ph-arrow-right"></i></button>`;
+                } else {
+                    btnMas.classList.add('hidden'); btnMas.classList.remove('flex'); btnMas.innerHTML = '';
+                }
             }
         }
 
-        // Limpiar filtro de asesor
+        // Compatibilidad con llamadas antiguas (pills de especialidad / carrusel ya no existen)
+        function filtrarAsesoresPorEspecialidad() { renderAsesoresMaximus(); }
+        function deslizarAsesoresCarousel() {}
+        function actualizarEstadoFlechasAsesores() {}
+
+        // Acepta el auth_id del asesor Platinum (o su nombre, por compatibilidad)
+        function seleccionarAsesorParaFiltro(idONombre) {
+            const clave = String(idONombre || '');
+            const a = ASESORES_DESTACADOS.find(x => String(x.auth_id) === clave)
+                   || ASESORES_DESTACADOS.find(x => String(x.usuario_id) === clave)
+                   || ASESORES_DESTACADOS.find(x => String(x.nombre || '').toLowerCase() === clave.toLowerCase());
+            const id = a ? String(a.auth_id) : clave;
+            if (filtroAsesorSeleccionado === id) { limpiarFiltroAsesor(); return; }
+            filtroAsesorSeleccionado = id;
+            renderAsesoresMaximus();
+            renderExclusivasMaximus(id);
+            document.getElementById('contenedor-captaciones-vip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         function limpiarFiltroAsesor() {
             filtroAsesorSeleccionado = null;
             renderAsesoresMaximus();
             renderExclusivasMaximus(null);
         }
 
-        // Buscar en captaciones VIP
         function buscarCaptacionesVip() {
-            const input = document.getElementById('buscador-captaciones-vip');
-            const q = input ? input.value : '';
+            const q = document.getElementById('buscador-captaciones-vip')?.value || '';
             renderExclusivasMaximus(filtroAsesorSeleccionado, q);
         }
 
-        var mostrarTodasCaptacionesMaximus = false;
-
         function toggleMostrarMasCaptaciones() {
             mostrarTodasCaptacionesMaximus = !mostrarTodasCaptacionesMaximus;
-            const input = document.getElementById('buscador-captaciones-vip');
-            const q = input ? input.value : '';
-            renderExclusivasMaximus(filtroAsesorSeleccionado, q);
+            buscarCaptacionesVip();
             if (!mostrarTodasCaptacionesMaximus) {
                 document.getElementById('contenedor-captaciones-vip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
 
-        // Renderizar Inmuebles Captados por MAXIMUS (Conectado a Base de Datos - 2 Filas Iniciales)
+        // Nombre conservado. Pinta los inmuebles de asesores Platinum.
         async function renderExclusivasMaximus(filtroAsesor = null, busqueda = '') {
             const container = document.getElementById('grid-exclusivas-maximus');
             if (!container) return;
 
-            // Asegurar sincronización en vivo con Supabase
-            await sincronizarInmueblesDesdeDB();
+            await conLimitePlatinum(sincronizarInmueblesDesdeDB()).catch(() => null);
+            await cargarAsesoresDestacados();
+            let propiedades = inmueblesDestacadosActuales();
 
-            // Obtener inmuebles captados por MAXIMUS y deduplicar por código/id canónico
-            const rawPropiedades = Object.values(INMUEBLES_DETALLE_DATA).filter(inm => inm && inm.isMaximus);
-            const mapaUnicos = new Map();
-            rawPropiedades.forEach(inm => {
-                const key = (inm.codigo || inm.id || '').toString().toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (key && !mapaUnicos.has(key)) {
-                    mapaUnicos.set(key, inm);
-                }
-            });
-            let propiedades = Array.from(mapaUnicos.values());
+            const statC = document.getElementById('stat-captaciones-count');
+            if (statC) statC.textContent = propiedades.length;
 
-            // Actualizar total en hero con datos 100% de la base de datos
-            const statCaptaciones = document.getElementById('stat-captaciones-count');
-            if (statCaptaciones) statCaptaciones.textContent = propiedades.length;
-
-            // Manejo del banner de filtro activo
             const banner = document.getElementById('banner-filtro-asesor-activo');
             const nombreEl = document.getElementById('nombre-asesor-filtrado');
             const contadorEl = document.getElementById('contador-inmuebles-filtrados');
-
             if (filtroAsesor) {
-                propiedades = propiedades.filter(inm => 
-                    inm.asesor && inm.asesor.nombre && inm.asesor.nombre.toLowerCase().includes(filtroAsesor.toLowerCase())
-                );
+                const a = ASESORES_DESTACADOS.find(x => String(x.auth_id) === String(filtroAsesor));
+                propiedades = propiedades.filter(inm => inm._destacado && String(inm._destacado.auth_id) === String(filtroAsesor));
                 if (banner && nombreEl && contadorEl) {
-                    banner.classList.remove('hidden');
-                    banner.classList.add('flex');
-                    nombreEl.textContent = filtroAsesor;
-                    contadorEl.textContent = `${propiedades.length} Inmuebles`;
+                    banner.classList.remove('hidden'); banner.classList.add('flex');
+                    nombreEl.textContent = a ? a.nombre : 'Asesor';
+                    contadorEl.textContent = `${propiedades.length} ${propiedades.length === 1 ? 'inmueble' : 'inmuebles'}`;
                 }
-            } else {
-                if (banner) {
-                    banner.classList.add('hidden');
-                    banner.classList.remove('flex');
-                }
+            } else if (banner) {
+                banner.classList.add('hidden'); banner.classList.remove('flex');
             }
 
-            // Filtro por texto si existe
             if (busqueda && busqueda.trim()) {
                 const q = busqueda.toLowerCase().trim();
-                propiedades = propiedades.filter(inm => 
-                    inm.titulo.toLowerCase().includes(q) ||
-                    (inm.ubicacion && inm.ubicacion.toLowerCase().includes(q)) ||
-                    (inm.sectorNombre && inm.sectorNombre.toLowerCase().includes(q)) ||
-                    (inm.precio && inm.precio.toLowerCase().includes(q))
-                );
+                propiedades = propiedades.filter(inm =>
+                    [inm.titulo, inm.ubicacion, inm.sectorNombre, inm.precio, inm.asesor && inm.asesor.nombre]
+                        .some(v => String(v || '').toLowerCase().includes(q)));
             }
 
-            container.innerHTML = '';
-
             const btnContainer = document.getElementById('contenedor-ver-mas-captaciones');
+            const ocultarBtn = () => { if (btnContainer) { btnContainer.classList.add('hidden'); btnContainer.classList.remove('flex'); btnContainer.innerHTML = ''; } };
 
             if (propiedades.length === 0) {
+                const sinPlatinum = ASESORES_DESTACADOS.length === 0;
                 container.innerHTML = `
                     <div class="col-span-full py-14 text-center bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-100 dark:border-emerald-950/60 px-6 space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl"><i class="ph-bold ph-magnifying-glass"></i></div>
-                        <h4 class="text-base font-bold text-maximus-dark dark:text-white">No encontramos captaciones con esos filtros</h4>
-                        <p class="text-xs text-gray-500 max-w-md mx-auto">Prueba con otra búsqueda o elige otro asesor del equipo.</p>
-                        ${filtroAsesor ? `<button onclick="limpiarFiltroAsesor()" class="px-4 py-2 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-xs font-bold transition-all cursor-pointer">Ver todas las captaciones</button>` : ''}
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-200 flex items-center justify-center mx-auto text-2xl"><i class="ph-bold ${sinPlatinum ? 'ph-buildings' : 'ph-magnifying-glass'}"></i></div>
+                        <h4 class="text-base font-bold text-maximus-dark dark:text-white">${sinPlatinum ? 'Aún no hay inmuebles destacados' : (filtroAsesor ? 'Este asesor aún no tiene inmuebles publicados' : 'No encontramos inmuebles con esa búsqueda')}</h4>
+                        <p class="text-xs text-gray-500 max-w-md mx-auto">${sinPlatinum ? 'Los inmuebles de los asesores destacados aparecerán aquí.' : 'Prueba con otra búsqueda o elige otro asesor.'}</p>
+                        ${filtroAsesor ? `<button onclick="limpiarFiltroAsesor()" class="px-4 py-2 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-xs font-bold transition-all cursor-pointer">Ver todos los inmuebles</button>` : ''}
                     </div>`;
-                if (btnContainer) {
-                    btnContainer.classList.add('hidden');
-                    btnContainer.classList.remove('flex');
-                    btnContainer.innerHTML = '';
-                }
+                ocultarBtn();
                 return;
             }
 
-            // Límite de 2 filas: 4 columnas en desktop x 2 filas = 8 inmuebles
-            const limiteFilas = 8;
-            const hayMas = propiedades.length > limiteFilas;
-            const itemsAMostrar = mostrarTodasCaptacionesMaximus ? propiedades : propiedades.slice(0, limiteFilas);
+            const limite = 8;
+            const hayMas = propiedades.length > limite;
+            const items = mostrarTodasCaptacionesMaximus ? propiedades : propiedades.slice(0, limite);
 
-            itemsAMostrar.forEach(inm => {
+            container.innerHTML = items.map(inm => {
                 const imgUrl = (inm.fotos && inm.fotos.length > 0) ? inm.fotos[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
-                const avatar = inm.asesor?.avatar || 'https://ui-avatars.com/api/?name=Admin&background=0B4A3F&color=fff&bold=true';
-                const asesorNombre = inm.asesor?.nombre || 'Asesor MAXIMUS';
-                const comision = inm.comision || '50/50';
-                const precio = inm.precio || '$0';
-
-                const cardHTML = `
-                    <div class="bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer" onclick="abrirDetalleInmuebleAirbnb('${inm.id}')">
-                        <!-- Portada 16:10: las plantillas Editorial MAXIMUS ya traen precio y operación impresos -->
+                const a = inm._destacado || { nombre: inm.asesor && inm.asesor.nombre, avatar_url: inm.asesor && inm.asesor.avatar, estrellas: 5, tipo: 'equipo' };
+                const est = Number(a.estrellas || 5);
+                const esPlat = a.tipo === 'platinum';
+                return `
+                    <div class="bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer" onclick="abrirDetalleInmuebleAirbnb('${escNotif(inm.id)}')">
                         <div class="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">
-                            <img src="${imgUrl}" alt="${escNotif(inm.titulo)}" loading="lazy" onload="mxCoverLoaded(this)" onerror="mxCoverLoaded(this, true)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <img src="${escNotif(imgUrl)}" alt="${escNotif(inm.titulo)}" loading="lazy" onload="mxCoverLoaded(this)" onerror="mxCoverLoaded(this, true)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                             <div class="mx-cover-ov hidden">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                                 <span class="absolute top-2.5 left-2.5 bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">${escNotif(inm.operacion || 'VENTA')}</span>
-                                <h4 class="absolute bottom-2.5 left-3 text-xl font-black text-white drop-shadow-md">${escNotif(precio)}</h4>
+                                <h4 class="absolute bottom-2.5 left-3 text-xl font-black text-white drop-shadow-md">${escNotif(inm.precio || '')}</h4>
                             </div>
+                            <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-slate-100 to-slate-300 text-slate-900 text-[9px] font-black uppercase tracking-widest shadow"><i class="ph-fill ${esPlat ? 'ph-diamond' : 'ph-star'} text-[10px]"></i> ${esPlat ? 'Platinum' : 'Destacado'}</span>
                         </div>
-
                         <div class="p-4">
                             <div class="flex items-center justify-between gap-2 mb-1.5">
                                 <span class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider bg-emerald-50 px-2 py-0.5 rounded-md">${escNotif(inm.badgeTipo || 'Propiedad')}</span>
-                                <span class="text-[11px] font-medium text-gray-400 truncate"><i class="ph-fill ph-map-pin text-emerald-600"></i> ${escNotif(inm.sectorNombre || inm.ubicacion || 'San Cristóbal')}</span>
+                                <span class="text-[11px] font-medium text-gray-400 truncate"><i class="ph-fill ph-map-pin text-emerald-600"></i> ${escNotif(inm.sectorNombre || inm.ubicacion || 'Táchira')}</span>
                             </div>
                             <h5 class="text-sm font-bold text-maximus-dark dark:text-white leading-snug line-clamp-1 group-hover:text-emerald-700 transition-colors">${escNotif(inm.titulo)}</h5>
-
                             <div class="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-emerald-950 text-[11px]">
-                                <span class="flex items-center gap-1.5 text-gray-500 min-w-0" title="Captador oficial">
-                                    <img src="${avatar}" alt="" class="w-5 h-5 rounded-full object-cover shrink-0">
-                                    <span class="truncate">${escNotif(asesorNombre)}</span>
+                                <span class="flex items-center gap-1.5 text-gray-600 dark:text-gray-300 min-w-0">
+                                    <img src="${avatarPlatinum(a)}" alt="" class="w-6 h-6 rounded-full object-cover shrink-0 ring-1 ring-slate-300">
+                                    <span class="truncate font-semibold">${escNotif(a.nombre || (inm.asesor && inm.asesor.nombre) || 'Asesor')}</span>
                                 </span>
-                                <span class="staff-only shrink-0 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${escNotif(comision)}</span>
-                                <span class="cliente-only shrink-0 font-semibold text-emerald-700 flex items-center gap-1">Ver <i class="ph-bold ph-arrow-right text-[10px]"></i></span>
+                                <span class="shrink-0 flex items-center gap-0.5 font-bold text-gray-700 dark:text-gray-200"><i class="ph-fill ph-star text-amber-400"></i>${est.toFixed(1)}</span>
                             </div>
                         </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHTML);
-            });
+                    </div>`;
+            }).join('');
 
-            // Actualizar botón Mostrar más / Mostrar menos
-            if (btnContainer) {
-                if (hayMas) {
-                    btnContainer.classList.remove('hidden');
-                    btnContainer.classList.add('flex');
-                    if (mostrarTodasCaptacionesMaximus) {
-                        btnContainer.innerHTML = `
-                            <button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-white hover:bg-gray-50 text-maximus-dark border border-gray-200 hover:border-gray-300 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer group">
-                                <span>Mostrar menos</span>
-                                <i class="ph-bold ph-caret-up text-sm group-hover:-translate-y-0.5 transition-transform"></i>
-                            </button>
-                        `;
-                    } else {
-                        const restantes = propiedades.length - limiteFilas;
-                        btnContainer.innerHTML = `
-                            <button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-maximus-dark hover:bg-[#07362e] text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm cursor-pointer group">
-                                <i class="ph-bold ph-plus-circle text-base text-emerald-300 group-hover:scale-110 transition-transform"></i>
-                                <span>Mostrar más inmuebles (+${restantes})</span>
-                                <i class="ph-bold ph-caret-down text-sm group-hover:translate-y-0.5 transition-transform"></i>
-                            </button>
-                        `;
-                    }
-                } else {
-                    btnContainer.classList.add('hidden');
-                    btnContainer.classList.remove('flex');
-                    btnContainer.innerHTML = '';
-                }
+            if (btnContainer && hayMas) {
+                btnContainer.classList.remove('hidden'); btnContainer.classList.add('flex');
+                btnContainer.innerHTML = mostrarTodasCaptacionesMaximus
+                    ? `<button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-white hover:bg-gray-50 text-maximus-dark border border-gray-200 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer">Mostrar menos <i class="ph-bold ph-caret-up"></i></button>`
+                    : `<button type="button" onclick="toggleMostrarMasCaptaciones()" class="px-6 py-2.5 bg-maximus-dark hover:bg-[#07362e] text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm cursor-pointer">Mostrar más inmuebles (+${propiedades.length - limite}) <i class="ph-bold ph-caret-down"></i></button>`;
+            } else {
+                ocultarBtn();
             }
         }
+
+        // ---------------- Reseñas de asesores Platinum ----------------
+        let resenaAsesorActual = null;
+        let resenaEstrellasElegidas = 0;
+
+        async function abrirModalResenasAsesor(authId) {
+            const a = ASESORES_PLATINUM_DATA.find(x => String(x.auth_id) === String(authId));
+            if (!a) return;
+            resenaAsesorActual = a;
+            resenaEstrellasElegidas = 0;
+            const modal = document.getElementById('modal-resenas-asesor');
+            // La sección tiene animación (crea su propio contexto de apilado): el modal va directo en <body>
+            if (modal.parentElement !== document.body) document.body.appendChild(modal);
+            document.getElementById('resenas-asesor-avatar').src = avatarPlatinum(a);
+            document.getElementById('resenas-asesor-nombre').textContent = a.nombre || 'Asesor';
+            pintarResumenResenas(a);
+            document.getElementById('resenas-lista').innerHTML = '<p class="text-xs text-gray-400"><i class="ph-bold ph-spinner ph-spin"></i> Cargando reseñas…</p>';
+            document.getElementById('resena-form-box').innerHTML = '';
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            await Promise.all([pintarFormularioResena(), pintarListaResenas()]);
+        }
+
+        function cerrarModalResenasAsesor() {
+            const modal = document.getElementById('modal-resenas-asesor');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            document.body.style.overflow = '';
+            resenaAsesorActual = null;
+        }
+
+        function pintarResumenResenas(a) {
+            const n = Number(a.total_resenas || 0);
+            document.getElementById('resenas-asesor-estrellas').innerHTML = estrellasHTMLPlatinum(a.estrellas || 5);
+            document.getElementById('resenas-asesor-resumen').textContent = `${Number(a.estrellas || 5).toFixed(1)} · ${n} ${n === 1 ? 'reseña' : 'reseñas'}`;
+        }
+
+        async function sesionSupabasePlatinum() {
+            const sb = sbPlatinum();
+            if (!sb) return null;
+            try { const { data } = await conLimitePlatinum(sb.auth.getSession(), 6000); return data && data.session ? data.session : null; } catch (_) { return null; }
+        }
+
+        async function pintarFormularioResena() {
+            const box = document.getElementById('resena-form-box');
+            const a = resenaAsesorActual;
+            if (!box || !a) return;
+            const sesion = await sesionSupabasePlatinum();
+            if (!sesion) {
+                box.innerHTML = `<div class="p-4 rounded-2xl bg-gray-50 dark:bg-[#0A241F] border border-gray-200 dark:border-emerald-900/50 text-center">
+                    <p class="text-sm font-bold text-gray-800 dark:text-gray-100">¿Trabajaste con ${escNotif(a.nombre)}?</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Inicia sesión con tu cuenta para dejar tu reseña.</p>
+                    <a href="/login" class="inline-flex mt-3 px-4 py-2 rounded-xl bg-maximus-dark text-white text-xs font-bold">Iniciar sesión</a></div>`;
+                return;
+            }
+            if (String(sesion.user.id) === String(a.auth_id)) {
+                box.innerHTML = `<p class="text-xs text-gray-500 bg-gray-50 dark:bg-[#0A241F] rounded-xl px-4 py-3 border border-gray-200 dark:border-emerald-900/50">Este es tu perfil Platinum: aquí ves las reseñas que te dejan tus clientes.</p>`;
+                return;
+            }
+            // ¿Ya dejó una reseña? → la puede editar
+            let mia = null;
+            try {
+                const { data } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').select('id, estrellas, comentario')
+                    .eq('asesor_auth_id', a.auth_id).eq('autor_auth_id', sesion.user.id).maybeSingle());
+                mia = data;
+            } catch (_) {}
+            resenaEstrellasElegidas = mia ? Number(mia.estrellas) : 0;
+
+            box.innerHTML = `
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-900/40 dark:to-[#0A241F] border border-slate-200 dark:border-slate-700 space-y-3">
+                    <p class="text-sm font-black text-gray-900 dark:text-white">${mia ? 'Edita tu reseña' : `Califica a ${escNotif(String(a.nombre || '').split(' ')[0])}`}</p>
+                    <div id="resena-selector-estrellas" class="flex items-center gap-1" role="radiogroup" aria-label="Calificación de 1 a 5 estrellas">
+                        ${[1, 2, 3, 4, 5].map(v => `<button type="button" data-v="${v}" role="radio" aria-label="${v} estrella${v > 1 ? 's' : ''}" class="resena-star w-10 h-10 rounded-xl flex items-center justify-center text-2xl text-gray-300 hover:scale-110 transition-transform cursor-pointer"><i class="ph-fill ph-star"></i></button>`).join('')}
+                        <span id="resena-estrellas-label" class="ml-1 text-xs font-bold text-gray-500"></span>
+                    </div>
+                    <textarea id="resena-comentario" rows="3" maxlength="600" placeholder="Cuenta cómo fue tu experiencia (opcional)" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/50 bg-white dark:bg-[#061814] text-sm text-gray-900 dark:text-white outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 resize-none">${escNotif(mia && mia.comentario ? mia.comentario : '')}</textarea>
+                    <div id="resena-error" class="hidden text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2"></div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="btn-enviar-resena" class="flex-1 h-11 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition cursor-pointer disabled:opacity-60">${mia ? 'Guardar cambios' : 'Publicar reseña'}</button>
+                        ${mia ? `<button type="button" id="btn-borrar-resena" class="h-11 px-4 rounded-xl bg-white dark:bg-transparent border border-gray-200 dark:border-emerald-900/50 text-gray-500 hover:text-red-600 hover:border-red-200 text-xs font-bold transition cursor-pointer">Eliminar</button>` : ''}
+                    </div>
+                </div>`;
+
+            const etiquetas = ['', 'Mala', 'Regular', 'Buena', 'Muy buena', 'Excelente'];
+            const pintarEstrellas = (v) => {
+                box.querySelectorAll('.resena-star').forEach(b => {
+                    const on = Number(b.dataset.v) <= v;
+                    b.classList.toggle('text-amber-400', on);
+                    b.classList.toggle('text-gray-300', !on);
+                    b.setAttribute('aria-checked', String(Number(b.dataset.v) === v));
+                });
+                const l = document.getElementById('resena-estrellas-label');
+                if (l) l.textContent = etiquetas[v] || '';
+            };
+            box.querySelectorAll('.resena-star').forEach(b => {
+                b.addEventListener('click', () => { resenaEstrellasElegidas = Number(b.dataset.v); pintarEstrellas(resenaEstrellasElegidas); });
+                b.addEventListener('mouseenter', () => pintarEstrellas(Number(b.dataset.v)));
+            });
+            document.getElementById('resena-selector-estrellas').addEventListener('mouseleave', () => pintarEstrellas(resenaEstrellasElegidas));
+            pintarEstrellas(resenaEstrellasElegidas);
+
+            document.getElementById('btn-enviar-resena').addEventListener('click', () => enviarResenaAsesor(sesion.user.id));
+            const btnBorrar = document.getElementById('btn-borrar-resena');
+            if (btnBorrar) btnBorrar.addEventListener('click', () => borrarResenaAsesor(mia.id));
+        }
+
+        async function enviarResenaAsesor(autorId) {
+            const a = resenaAsesorActual;
+            const err = document.getElementById('resena-error');
+            const btn = document.getElementById('btn-enviar-resena');
+            err.classList.add('hidden');
+            if (!resenaEstrellasElegidas) { err.textContent = 'Elige de 1 a 5 estrellas.'; err.classList.remove('hidden'); return; }
+            const comentario = (document.getElementById('resena-comentario').value || '').trim().slice(0, 600) || null;
+            btn.disabled = true;
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="ph-bold ph-spinner ph-spin"></i> Guardando…';
+            try {
+                const { error } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').upsert({
+                    asesor_auth_id: a.auth_id,
+                    autor_auth_id: autorId,
+                    estrellas: resenaEstrellasElegidas,
+                    comentario
+                }, { onConflict: 'asesor_auth_id,autor_auth_id' }));
+                if (error) throw error;
+                if (typeof mostrarToastNotificacion === 'function') mostrarToastNotificacion('⭐ ¡Gracias! Tu reseña quedó publicada');
+                await refrescarTrasResena();
+            } catch (e) {
+                console.warn('Reseña:', e);
+                err.textContent = 'No pudimos guardar tu reseña. Intenta de nuevo.';
+                err.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = original;
+            }
+        }
+
+        async function borrarResenaAsesor(id) {
+            if (!confirm('¿Eliminar tu reseña?')) return;
+            try {
+                const { error } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').delete().eq('id', id));
+                if (error) throw error;
+                await refrescarTrasResena();
+            } catch (e) {
+                alert('No se pudo eliminar la reseña.');
+            }
+        }
+
+        async function moderarResenaAsesor(id, ocultar) {
+            try {
+                const { error } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').update({ oculto: ocultar }).eq('id', id));
+                if (error) throw error;
+                await refrescarTrasResena();
+            } catch (e) {
+                alert('No se pudo actualizar la reseña.');
+            }
+        }
+
+        async function refrescarTrasResena() {
+            const id = resenaAsesorActual && resenaAsesorActual.auth_id;
+            await cargarAsesoresPlatinum(true);
+            const a = ASESORES_PLATINUM_DATA.find(x => String(x.auth_id) === String(id));
+            if (a) { resenaAsesorActual = a; pintarResumenResenas(a); }
+            await Promise.all([pintarFormularioResena(), pintarListaResenas()]);
+            renderAsesoresMaximus();
+            renderExclusivasMaximus(filtroAsesorSeleccionado, document.getElementById('buscador-captaciones-vip')?.value || '');
+        }
+
+        async function pintarListaResenas() {
+            const lista = document.getElementById('resenas-lista');
+            const a = resenaAsesorActual;
+            if (!lista || !a) return;
+            const u = usuarioActualPlatinum();
+            const esAdmin = u && (u.role === 'admin' || u.rol === 'admin');
+            let filas = [];
+            try {
+                const { data, error } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores')
+                    .select('id, autor_nombre, estrellas, comentario, oculto, created_at')
+                    .eq('asesor_auth_id', a.auth_id)
+                    .order('created_at', { ascending: false })
+                    .limit(50));
+                if (error) throw error;
+                filas = data || [];
+            } catch (e) {
+                lista.innerHTML = '<p class="text-xs text-gray-400">No se pudieron cargar las reseñas.</p>';
+                return;
+            }
+            if (!filas.length) {
+                lista.innerHTML = `<div class="text-center py-6 px-4 rounded-2xl bg-gray-50 dark:bg-[#0A241F]">
+                    <p class="text-sm font-bold text-gray-700 dark:text-gray-200">Todavía no tiene reseñas</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Mientras tanto se muestra con 5 estrellas. ¡Sé el primero en calificarlo!</p></div>`;
+                return;
+            }
+            lista.innerHTML = filas.map(r => {
+                const fecha = r.created_at ? new Date(r.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+                const ini = String(r.autor_nombre || 'U').trim().charAt(0).toUpperCase();
+                return `
+                    <div class="p-3.5 rounded-2xl border ${r.oculto ? 'border-dashed border-red-200 bg-red-50/40 opacity-70' : 'border-gray-100 dark:border-emerald-950/60 bg-white dark:bg-[#0A241F]'}">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-100 text-xs font-black flex items-center justify-center shrink-0">${escNotif(ini)}</span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold text-gray-900 dark:text-white truncate">${escNotif(r.autor_nombre || 'Usuario MAXIMUS')}${r.oculto ? ' <span class="text-red-600">(oculta)</span>' : ''}</p>
+                                <p class="text-[10px] text-gray-400">${escNotif(fecha)}</p>
+                            </div>
+                            <span class="flex items-center text-amber-400">${estrellasHTMLPlatinum(r.estrellas, 'text-xs')}</span>
+                        </div>
+                        ${r.comentario ? `<p class="mt-2 text-[13px] text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">${escNotif(r.comentario)}</p>` : ''}
+                        ${esAdmin ? `<button type="button" onclick="moderarResenaAsesor('${escNotif(r.id)}', ${!r.oculto})" class="mt-2 text-[11px] font-bold ${r.oculto ? 'text-emerald-700' : 'text-red-600'} hover:underline cursor-pointer">${r.oculto ? 'Volver a mostrar' : 'Ocultar reseña'}</button>` : ''}
+                    </div>`;
+            }).join('');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && resenaAsesorActual) cerrarModalResenasAsesor();
+        });
+
+        window.renderAsesoresMaximus = renderAsesoresMaximus;
+        window.renderExclusivasMaximus = renderExclusivasMaximus;
+        window.seleccionarAsesorParaFiltro = seleccionarAsesorParaFiltro;
+        window.abrirModalResenasAsesor = abrirModalResenasAsesor;
+        window.cerrarModalResenasAsesor = cerrarModalResenasAsesor;
+        window.moderarResenaAsesor = moderarResenaAsesor;
+        window.avatarPlatinum = avatarPlatinum;
 
         // Abrir Ficha / Perfil del Asesor en Modal (Con Animación Suave y 100% Sincronizado con Supabase)
         async function abrirModalPerfilAsesor(asesorId) {
@@ -14398,7 +14869,7 @@
                     if (typeof toggleTipoAsesor === 'function') toggleTipoAsesor();
                     const inputNombre = document.getElementById('inm-asesor-nombre');
                     const inputTel = document.getElementById('inm-asesor-telefono');
-                    if (inputNombre && (!inputNombre.value || inputNombre.value === 'Asesor Externo') && u && u.name) {
+                    if (inputNombre && (!inputNombre.value || inputNombre.value === 'Asesor Inmobiliario') && u && u.name) {
                         inputNombre.value = u.name;
                     }
                     if (inputTel && (!inputTel.value || inputTel.value.includes('1234567')) && u && u.telefono) {
@@ -14501,7 +14972,7 @@
                     tipo: 'maximus'
                 };
             } else {
-                const nombreExt = (document.getElementById('inm-asesor-nombre')?.value || '').trim() || 'Asesor Externo';
+                const nombreExt = (document.getElementById('inm-asesor-nombre')?.value || '').trim() || 'Asesor Inmobiliario';
                 const prefijoExt = (document.getElementById('inm-asesor-telefono-prefijo')?.value || '+58').trim();
                 const numeroRaw = (document.getElementById('inm-asesor-telefono')?.value || '').trim();
                 
@@ -14513,13 +14984,13 @@
                 asesor = {
                     id: 'asesor-ext-' + Date.now(),
                     nombre: nombreExt,
-                    cargo: 'Asesor Externo Aliado',
+                    cargo: 'Asesor Inmobiliario',
                     telefono: telefonoCompleto,
                     whatsapp: telefonoCompleto,
                     email: 'contacto@maximusinmobiliaria.com',
                     avatar: `https://ui-avatars.com/api/?name=${nomFormateado}&background=0B4A3F&color=fff&bold=true`,
                     rating: '5.0',
-                    experiencia: 'Asesor Externo Aliado',
+                    experiencia: 'Asesor Inmobiliario',
                     tipo: 'externo'
                 };
             }
@@ -14617,6 +15088,15 @@
                 comision_porcentaje: numComision,
                 agente_id: asesorIdRelacional
             };
+            // Asesor Pro / Platinum: el inmueble queda ligado a su cuenta (Captaciones Destacadas)
+            try {
+                const uCarga = (typeof AuthService !== 'undefined' && AuthService.getCurrentUser()) || null;
+                if (uCarga && uCarga.id && (uCarga.role === 'asesor_externo' || uCarga.rol === 'asesor_externo')) {
+                    payloadSupabase.asesor_id = String(uCarga.id);
+                    payloadSupabase.asesor_nombre = asesor.nombre || uCarga.name || null;
+                    payloadSupabase.asesor_telefono = asesor.telefono || uCarga.telefono || null;
+                }
+            } catch (_) {}
 
             // Guardar en la base de datos Supabase
             if (typeof InmuebleService !== 'undefined') {
@@ -15756,8 +16236,13 @@
                     cardRolBadge.textContent = 'DIRECTOR / ADMIN';
                     cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
                 } else if (userRoleRaw === 'asesor_externo') {
-                    cardRolBadge.textContent = 'ASESOR EXTERNO (PRO)';
-                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+                    let planPerfil = p.plan;
+                    if (!planPerfil) { try { planPerfil = (JSON.parse(localStorage.getItem('maximus_user') || '{}') || {}).plan; } catch (_) {} }
+                    const esPlatPerfil = planPerfil === 'platinum';
+                    cardRolBadge.textContent = esPlatPerfil ? 'ASESOR INMOBILIARIO PLATINUM' : 'ASESOR INMOBILIARIO PRO';
+                    cardRolBadge.className = esPlatPerfil
+                        ? 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-800 text-slate-900 dark:text-slate-100 border border-slate-400 dark:border-slate-500'
+                        : 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white border border-emerald-700';
                 } else {
                     cardRolBadge.textContent = 'ASESOR MAXIMUS';
                     cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800';
@@ -18241,7 +18726,7 @@
     <div id="mobileDrawerOverlay" onclick="toggleMobileDrawer(false)"></div>
     <nav id="mobileTabBar" aria-label="Navegación principal">
         <button type="button" data-tab="view-inmuebles"><i class="ph-fill ph-house"></i><span>Inmuebles</span></button>
-        <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-buildings"></i><span>Captaciones</span></button>
+        <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-diamond"></i><span>Destacadas</span></button>
         <button type="button" data-tab="resenas" data-action="resena" onclick="abrirModalDejarResena()" class="cliente-only" title="Subir Reseña"><i class="ph-fill ph-star text-amber-500"></i><span>Reseñas</span></button>
         <button type="button" data-tab="view-resumen" class="staff-only"><i class="ph-fill ph-squares-four"></i><span>Panorama</span></button>
         <button type="button" data-tab="view-colecciones" class="staff-only"><i class="ph-fill ph-folder-simple"></i><span>Colecciones</span></button>

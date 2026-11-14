@@ -36,14 +36,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
-    <script src="js/config.js"></script>
+    <script src="js/config.js?v=4.0"></script>
     <!-- Íconos Phosphor: solo se usan en contenido que llega después (FAQs), no bloquean el render -->
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/services.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/payments.js"></script>
+    <script src="js/auth.js?v=4.0"></script>
+    <script src="js/payments.js?v=4.0"></script>
 
     <style>
         /* Smooth Scroll Nativo de Alto Rendimiento (60/120 FPS) */
@@ -67,6 +67,34 @@
         .marquee-wrapper:hover .marquee-group {
             animation-play-state: paused;
         }
+        /* ===== Carrusel de asesores destacados (cinta continua; en móvil se desliza con el dedo) ===== */
+        @keyframes asesoresMarquee { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        .asesores-carrusel {
+            position: relative; display: flex; overflow: hidden; padding: 4px 0 10px;
+            -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+                    mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+        }
+        .asesores-pista {
+            display: flex; gap: 16px; padding-right: 16px; flex-shrink: 0;
+            animation: asesoresMarquee var(--dur, 60s) linear infinite; will-change: transform;
+        }
+        .asesores-carrusel:hover .asesores-pista,
+        .asesores-carrusel:focus-within .asesores-pista { animation-play-state: paused; }
+        .asesores-pista > article { width: 300px; flex-shrink: 0; }
+        @media (max-width: 767px) {
+            .asesores-carrusel { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; -webkit-mask-image: none; mask-image: none; }
+            .asesores-carrusel::-webkit-scrollbar { display: none; }
+            .asesores-pista { animation: none !important; gap: 12px; padding: 0 16px; }
+            .asesores-pista[aria-hidden="true"] { display: none; }
+            .asesores-pista > .asesor-repetido { display: none; }
+            .asesores-pista > article { width: 82vw; max-width: 320px; scroll-snap-align: center; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .asesores-carrusel { overflow-x: auto; scrollbar-width: none; }
+            .asesores-pista { animation: none !important; }
+            .asesores-pista[aria-hidden="true"] { display: none; }
+        }
+
 
         /* ========================================================
            VERSIÓN MÓVIL (≤ 767px) - Proporciones nativas tipo App
@@ -158,12 +186,6 @@
             .benefit-card h3 { font-size: 1.02rem !important; margin-bottom: .25rem !important; }
             .benefit-card p { font-size: .83rem; line-height: 1.45; }
 
-            /* Equipo: 2 columnas compactas */
-            #grid-equipo { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: .85rem !important; }
-            #grid-equipo > div .p-6 { padding: .85rem .6rem 1rem !important; }
-            #grid-equipo h3 { font-size: .88rem !important; }
-            #grid-equipo h3 + p { font-size: .72rem !important; margin-bottom: .65rem !important; }
-            #grid-equipo a { width: 2.1rem !important; height: 2.1rem !important; }
 
             /* Testimonios: carrusel deslizable */
             .testimonios-track { flex-wrap: nowrap !important; justify-content: flex-start !important; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -1rem; padding: 0 1rem .5rem; gap: .85rem !important; scrollbar-width: none; }
@@ -342,12 +364,12 @@
                 </div>
                 <div class="hidden md:flex items-center gap-4">
                     <a href="/login#register" class="text-xs uppercase tracking-wider font-bold text-gray-700 hover:text-maximus-accent transition">Crear Cuenta</a>
-                    <a href="/login" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-5 py-2.5 rounded-full text-xs uppercase tracking-wider font-bold transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
+                    <a href="/login" data-sesion="nav" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-5 py-2.5 rounded-full text-xs uppercase tracking-wider font-bold transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
                 </div>
 
                 <!-- Controles Móviles -->
                 <div class="flex md:hidden items-center gap-2">
-                    <a href="/login" class="h-10 px-4 rounded-full bg-maximus-dark text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-maximus-dark/25 active:scale-95 transition">
+                    <a href="/login" data-sesion="movil" class="h-10 px-4 rounded-full bg-maximus-dark text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-maximus-dark/25 active:scale-95 transition">
                         <i class="fas fa-user text-[11px]"></i> Entrar
                     </a>
                     <button type="button" id="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Abrir menú" aria-expanded="false" class="w-10 h-10 rounded-full bg-gray-100 text-maximus-dark flex items-center justify-center active:scale-95 transition">
@@ -379,14 +401,14 @@
             <a href="#nosotros" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-star text-sm"></i></span> Nosotros
             </a>
-            <a href="#equipo" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
-                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-users text-sm"></i></span> Nuestro Equipo
+            <a href="#asesores-platinum" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-users text-sm"></i></span> Asesores Destacados
             </a>
             <a href="#planes" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-tag text-sm"></i></span> Planes
             </a>
             <div class="grid grid-cols-2 gap-2 mt-2 pt-3 border-t border-gray-100">
-                <a href="/login" class="h-12 rounded-2xl bg-maximus-dark text-white text-sm font-semibold flex items-center justify-center gap-2">
+                <a href="/login" data-sesion="menu" class="h-12 rounded-2xl bg-maximus-dark text-white text-sm font-semibold flex items-center justify-center gap-2">
                     <i class="fas fa-user-lock text-xs"></i> Iniciar Sesión
                 </a>
                 <a href="https://wa.me/584240000000" target="_blank" class="h-12 rounded-2xl bg-emerald-500 text-white text-sm font-semibold flex items-center justify-center gap-2">
@@ -556,6 +578,263 @@
                 <span>Solicitar Asesoría Privada</span>
             </a>
         </div>
+    </section>
+
+    <!-- Captaciones Destacadas: asesores Platinum + equipo MAXIMUS intercalados. Se oculta sola si no hay ninguno. -->
+    <section id="asesores-platinum" class="hidden pt-6 pb-20 sm:pb-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
+        <div class="absolute -top-24 right-0 w-[420px] h-[420px] rounded-full bg-emerald-100/50 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-8">
+                <p class="text-xs font-bold uppercase tracking-widest text-maximus-accent mb-2">Verificados y calificados por sus clientes</p>
+                <h2 class="text-3xl md:text-5xl font-bold text-maximus-dark mb-3">Asesores Destacados</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto text-base sm:text-lg">Profesionales inmobiliarios de Táchira con sus mejores captaciones. Escríbeles directo por WhatsApp.</p>
+            </div>
+
+            <ol class="grid grid-cols-3 gap-2 sm:gap-3 max-w-4xl mx-auto mb-8">
+                <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-4 py-3 rounded-2xl bg-white border border-gray-200/80 shadow-sm text-center sm:text-left">
+                    <span class="w-8 h-8 rounded-xl bg-maximus-dark text-white text-sm font-black flex items-center justify-center shrink-0">1</span>
+                    <span class="text-[11px] sm:text-sm leading-snug text-gray-800"><strong>Elige un asesor</strong><span class="hidden sm:block text-xs text-gray-500">Mira su calificación y especialidad</span></span>
+                </li>
+                <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-4 py-3 rounded-2xl bg-white border border-gray-200/80 shadow-sm text-center sm:text-left">
+                    <span class="w-8 h-8 rounded-xl bg-maximus-dark text-white text-sm font-black flex items-center justify-center shrink-0">2</span>
+                    <span class="text-[11px] sm:text-sm leading-snug text-gray-800"><strong>Revisa sus inmuebles</strong><span class="hidden sm:block text-xs text-gray-500">Fotos, precios y ubicación</span></span>
+                </li>
+                <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-4 py-3 rounded-2xl bg-white border border-gray-200/80 shadow-sm text-center sm:text-left">
+                    <span class="w-8 h-8 rounded-xl bg-[#25D366] text-white text-base flex items-center justify-center shrink-0"><i class="fab fa-whatsapp"></i></span>
+                    <span class="text-[11px] sm:text-sm leading-snug text-gray-800"><strong>Escríbele por WhatsApp</strong><span class="hidden sm:block text-xs text-gray-500">Directo, sin intermediarios</span></span>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Carrusel a todo el ancho, como el de Propiedades -->
+        <div class="relative z-10 max-w-[1600px] mx-auto">
+            <div id="grid-asesores-platinum-landing" class="asesores-carrusel"></div>
+        </div>
+
+        <div class="relative z-10 mt-6 px-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button type="button" id="btn-ver-todos-asesores" class="hidden inline-flex items-center text-white bg-maximus-dark hover:bg-black px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all text-sm"></button>
+            <a href="/dashboard#view-exclusivas-maximus" class="inline-flex items-center text-gray-700 bg-white hover:bg-gray-50 border border-gray-200 px-6 py-3 rounded-xl font-semibold shadow-sm transition-all text-sm">
+                <i class="fas fa-house text-maximus-accent mr-2"></i> Ver sus inmuebles
+            </a>
+        </div>
+
+        <!-- Modal de reseñas (solo lectura en la web pública) -->
+        <div id="modal-resenas-landing" class="fixed inset-0 z-[1000] hidden items-end sm:items-center justify-center bg-slate-900/70 backdrop-blur-sm sm:p-4" onclick="if (event.target === this) cerrarResenasLanding()" role="dialog" aria-modal="true" aria-labelledby="resenas-landing-nombre">
+            <div class="w-full sm:max-w-lg bg-white text-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[88vh] flex flex-col overflow-hidden">
+                <div class="px-5 sm:px-6 pt-5 pb-4 border-b border-gray-100 flex items-start gap-3.5">
+                    <img id="resenas-landing-avatar" src="" alt="" class="w-14 h-14 rounded-2xl object-cover ring-2 ring-slate-200 shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500"><i class="fas fa-gem"></i> Asesor Platinum</p>
+                        <h3 id="resenas-landing-nombre" class="text-lg font-black truncate"></h3>
+                        <p id="resenas-landing-resumen" class="text-xs font-semibold text-gray-500 flex items-center gap-1.5"></p>
+                    </div>
+                    <button type="button" onclick="cerrarResenasLanding()" aria-label="Cerrar" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center shrink-0">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="resenas-landing-lista" class="overflow-y-auto flex-1 px-5 sm:px-6 py-5 space-y-3"></div>
+                <div class="px-5 sm:px-6 py-4 border-t border-gray-100 bg-gray-50">
+                    <a href="/dashboard#view-exclusivas-maximus" class="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl bg-maximus-dark hover:bg-black text-white text-sm font-semibold transition-all">
+                        <i class="fas fa-star text-amber-300 text-xs"></i> Deja tu reseña (inicia sesión)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        (function () {
+            const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            let ASESORES = [];
+
+            function api(ruta, opciones) {
+                const url = (window.APP_CONFIG && APP_CONFIG.SUPABASE_URL || '').replace(/\/$/, '');
+                const key = window.APP_CONFIG && APP_CONFIG.SUPABASE_ANON_KEY;
+                if (!url || !key) return Promise.reject(new Error('Supabase no configurado'));
+                const ctrl = new AbortController();
+                const t = setTimeout(() => ctrl.abort(), 9000);
+                return fetch(url + ruta, Object.assign({ signal: ctrl.signal }, opciones || {}, {
+                    headers: Object.assign({ apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }, (opciones && opciones.headers) || {})
+                })).then(r => { clearTimeout(t); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+            }
+
+            function wa(tel) {
+                let d = String(tel || '').replace(/[^0-9]/g, '');
+                if (d.length === 11 && d.startsWith('0')) d = '58' + d.slice(1);
+                if (d.length === 10 && d.startsWith('4')) d = '58' + d;
+                return d.length >= 10 ? d : '';
+            }
+
+            function avatar(a) {
+                if (a && a.avatar_url) return a.avatar_url;
+                const ini = String((a && a.nombre) || 'A').split(/\s+/).filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'A';
+                return 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#1E293B'/><stop offset='1' stop-color='#0B2B25'/></linearGradient></defs><rect width='400' height='300' fill='url(#g)'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='#E2E8F0' font-family='sans-serif' font-weight='800' font-size='96'>${ini}</text></svg>`);
+            }
+
+            function estrellas(v, tam) {
+                v = Math.max(0, Math.min(5, Number(v) || 0));
+                let h = '';
+                for (let i = 1; i <= 5; i++) {
+                    const cls = v >= i ? 'fas fa-star' : (v >= i - 0.5 ? 'fas fa-star-half-stroke' : 'far fa-star');
+                    h += `<i class="${cls} ${tam || 'text-xs'}"></i>`;
+                }
+                return h;
+            }
+
+            function tarjeta(a) {
+                const esPlat = a.tipo !== 'equipo';
+                const nombre = esc(a.nombre || 'Asesor');
+                const est = Number(a.estrellas || 5);
+                const nRes = Number(a.total_resenas || 0);
+                const nInm = Number(a.total_inmuebles || 0);
+                const tel = wa(a.whatsapp);
+                const primer = encodeURIComponent(String(a.nombre || '').split(' ')[0] || '');
+                const id = esc(a.auth_id);
+                const opiniones = esPlat ? (nRes > 0 ? `${nRes} ${nRes === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas aún') : 'Asesor verificado';
+                return `
+                <article class="rounded-2xl bg-white border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-lg p-4 transition-all duration-300 flex flex-col gap-3.5 text-left">
+                    <div class="flex items-start gap-3">
+                        <div class="relative shrink-0">
+                            <img src="${avatar(a)}" alt="${nombre}" loading="lazy" class="w-14 h-14 rounded-2xl object-cover bg-slate-100">
+                            <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${esPlat ? 'bg-gradient-to-br from-slate-100 to-slate-300 text-slate-900' : 'bg-amber-100 text-amber-600'} border-2 border-white flex items-center justify-center text-[10px]" title="${esPlat ? 'Asesor Platinum' : 'Asesor destacado'}"><i class="fas ${esPlat ? 'fa-gem' : 'fa-star'}"></i></span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-bold text-[15px] text-gray-900 leading-tight flex items-center gap-1"><span class="truncate">${nombre}</span> <i class="fas fa-circle-check text-sky-500 text-xs shrink-0"></i></h3>
+                            <p class="text-xs text-gray-500 truncate mt-0.5">${esc(a.especialidad || 'Asesor Inmobiliario')}</p>
+                            ${esPlat
+                                ? `<button type="button" data-resenas="${id}" class="mt-1 flex flex-wrap items-center gap-x-1 text-xs text-left text-gray-900"><span class="text-amber-400 flex items-center gap-0.5">${estrellas(est, 'text-[11px]')}</span><strong>${est.toFixed(1)}</strong><span class="text-gray-400 hover:text-maximus-dark hover:underline">· ${opiniones}</span></button>`
+                                : `<div class="mt-1 flex flex-wrap items-center gap-x-1 text-xs text-gray-900"><span class="text-amber-400 flex items-center gap-0.5">${estrellas(est, 'text-[11px]')}</span><strong>${est.toFixed(1)}</strong><span class="text-gray-400">· ${opiniones}</span></div>`}
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
+                        <span class="px-2 py-1 rounded-lg ${esPlat ? 'bg-slate-100 text-slate-700' : 'bg-amber-50 text-amber-700'}">${esPlat ? 'Platinum' : 'Destacado'}</span>
+                        ${nInm > 0 ? `<span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700"><i class="fas fa-house text-[10px]"></i> ${nInm} ${nInm === 1 ? 'inmueble' : 'inmuebles'}</span>` : ''}
+                        ${a.zona ? `<span class="px-2 py-1 rounded-lg bg-gray-50 text-gray-600 truncate max-w-[140px]"><i class="fas fa-location-dot text-[10px]"></i> ${esc(a.zona)}</span>` : ''}
+                    </div>
+                    <div class="mt-auto space-y-2">
+                        ${tel
+                            ? `<a href="https://wa.me/${tel}?text=Hola%20${primer},%20vi%20tu%20perfil%20en%20MAXIMUS%20y%20quisiera%20asesor%C3%ADa." target="_blank" rel="noopener" class="w-full h-10 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors"><i class="fab fa-whatsapp text-base"></i> Escribir por WhatsApp</a>`
+                            : `<span class="w-full h-10 rounded-xl bg-gray-100 text-gray-400 text-xs font-semibold flex items-center justify-center" title="Este asesor aún no registró su WhatsApp">WhatsApp no disponible</span>`}
+                        ${esPlat ? `<button type="button" data-resenas="${id}" class="w-full h-9 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"><i class="fas fa-star text-[10px] text-amber-400"></i> Ver reseñas</button>` : ''}
+                    </div>
+                </article>`;
+            }
+
+            let LISTA_MOSTRADA = [];
+            let verTodos = false;
+
+            function pintar() {
+                const grid = document.getElementById('grid-asesores-platinum-landing');
+                const btn = document.getElementById('btn-ver-todos-asesores');
+                if (!grid) return;
+                const lista = LISTA_MOSTRADA;
+                if (!verTodos && lista.length > 1) {
+                    let cinta = [...lista];
+                    while (cinta.length < 8) cinta = cinta.concat(lista);
+                    const html = cinta.map((a, i) => i < lista.length ? tarjeta(a) : tarjeta(a).replace('<article class="', '<article class="asesor-repetido ')).join(''); // los repetidos se ocultan en móvil
+                    const dur = Math.max(35, Math.round(cinta.length * 316 / 24)); // ~24 px/s
+                    grid.className = 'asesores-carrusel';
+                    grid.innerHTML = `<div class="asesores-pista" style="--dur:${dur}s">${html}</div><div class="asesores-pista" aria-hidden="true" inert style="--dur:${dur}s">${html}</div>`;
+                } else {
+                    grid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
+                    grid.innerHTML = lista.map(tarjeta).join('');
+                }
+                if (btn) {
+                    btn.classList.toggle('hidden', lista.length < 2);
+                    btn.innerHTML = verTodos
+                        ? '<i class="fas fa-arrows-left-right mr-2"></i> Volver al carrusel'
+                        : `<i class="fas fa-grip mr-2"></i> Ver todos los asesores (${lista.length}) <i class="fas fa-arrow-right ml-2"></i>`;
+                }
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#btn-ver-todos-asesores')) return;
+                verTodos = !verTodos;
+                pintar();
+                if (!verTodos) document.getElementById('asesores-platinum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+
+            async function cargar() {
+                const seccion = document.getElementById('asesores-platinum');
+                const grid = document.getElementById('grid-asesores-platinum-landing');
+                if (!seccion || !grid) return;
+                const [plat, equipo] = await Promise.all([
+                    api('/rest/v1/rpc/listar_asesores_platinum', { method: 'POST', body: '{}' }).catch(() => []),
+                    api('/rest/v1/asesores_maximus?select=id,nombre,cargo,especialidad,whatsapp,telefono,avatar,rating&activo=eq.true&order=orden.asc').catch(() => [])
+                ]);
+                ASESORES = (Array.isArray(plat) ? plat : []).map(a => Object.assign({}, a, { tipo: 'platinum' })); // solo Platinum tienen reseñas
+                const delEquipo = (Array.isArray(equipo) ? equipo : []).filter(a => a && a.nombre).map(a => ({
+                    tipo: 'equipo',
+                    auth_id: 'eq-' + a.id,
+                    nombre: a.nombre,
+                    especialidad: a.especialidad || a.cargo || '',
+                    zona: null,
+                    whatsapp: a.whatsapp || a.telefono || '',
+                    estrellas: Math.min(5, Number(String(a.rating == null ? '5' : a.rating).replace(/[^0-9.]/g, '')) || 5),
+                    total_inmuebles: 0,
+                    avatar_url: a.avatar || null
+                }));
+                // Intercalar: Platinum, equipo, Platinum, equipo… (empieza por Platinum)
+                const lista = [];
+                for (let i = 0; i < Math.max(ASESORES.length, delEquipo.length); i++) {
+                    if (i < ASESORES.length) lista.push(ASESORES[i]);
+                    if (i < delEquipo.length) lista.push(delEquipo[i]);
+                }
+                if (!lista.length) { seccion.classList.add('hidden'); return; }
+                LISTA_MOSTRADA = lista;
+                pintar();
+                seccion.classList.remove('hidden');
+            }
+
+            async function abrir(authId) {
+                const a = ASESORES.find(x => String(x.auth_id) === String(authId));
+                if (!a) return;
+                const modal = document.getElementById('modal-resenas-landing');
+                if (modal.parentElement !== document.body) document.body.appendChild(modal);
+                document.getElementById('resenas-landing-avatar').src = avatar(a);
+                document.getElementById('resenas-landing-nombre').textContent = a.nombre || 'Asesor';
+                const n = Number(a.total_resenas || 0);
+                document.getElementById('resenas-landing-resumen').innerHTML = `<span class="text-amber-400">${estrellas(a.estrellas)}</span> ${Number(a.estrellas || 5).toFixed(1)} · ${n} ${n === 1 ? 'reseña' : 'reseñas'}`;
+                const lista = document.getElementById('resenas-landing-lista');
+                lista.innerHTML = '<p class="text-xs text-gray-400">Cargando reseñas…</p>';
+                modal.classList.remove('hidden'); modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                try {
+                    const filas = await api(`/rest/v1/resenas_asesores?select=autor_nombre,estrellas,comentario,created_at&asesor_auth_id=eq.${encodeURIComponent(a.auth_id)}&oculto=eq.false&order=created_at.desc&limit=30`);
+                    lista.innerHTML = (filas && filas.length) ? filas.map(r => `
+                        <div class="p-3.5 rounded-2xl border border-gray-100">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-full bg-slate-200 text-slate-700 text-xs font-black flex items-center justify-center shrink-0">${esc(String(r.autor_nombre || 'U').trim().charAt(0).toUpperCase())}</span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-bold truncate">${esc(r.autor_nombre || 'Usuario MAXIMUS')}</p>
+                                    <p class="text-[10px] text-gray-400">${r.created_at ? esc(new Date(r.created_at).toLocaleDateString('es-VE', { day: 'numeric', month: 'short', year: 'numeric' })) : ''}</p>
+                                </div>
+                                <span class="text-amber-400">${estrellas(r.estrellas, 'text-[10px]')}</span>
+                            </div>
+                            ${r.comentario ? `<p class="mt-2 text-[13px] text-gray-600 leading-relaxed whitespace-pre-line">${esc(r.comentario)}</p>` : ''}
+                        </div>`).join('')
+                        : '<div class="text-center py-6"><p class="text-sm font-bold text-gray-700">Todavía no tiene reseñas</p><p class="text-xs text-gray-500 mt-0.5">¡Sé el primero en calificarlo!</p></div>';
+                } catch (e) {
+                    lista.innerHTML = '<p class="text-xs text-gray-400">No se pudieron cargar las reseñas.</p>';
+                }
+            }
+
+            window.cerrarResenasLanding = function () {
+                const modal = document.getElementById('modal-resenas-landing');
+                if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+                document.body.style.overflow = '';
+            };
+
+            document.addEventListener('click', (e) => {
+                const b = e.target.closest('[data-resenas]');
+                if (b) abrir(b.getAttribute('data-resenas'));
+            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.cerrarResenasLanding(); });
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cargar); else cargar();
+            window.cargarAsesoresPlatinumLanding = cargar;
+        })();
+        </script>
     </section>
 
     <!-- Lead Magnet: Home Valuation -->
@@ -831,7 +1110,7 @@
             </div>
 
             <!-- Cards Grid Compacto y Centrado (Mini Zoom Out) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch max-w-[680px] mx-auto pt-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch max-w-[680px] lg:max-w-[1000px] mx-auto pt-1">
                 <!-- Card 1: Gratuito -->
                 <div id="card-plan-gratis" class="pricing-card rounded-2xl p-4 sm:p-5 bg-gray-50/70 border border-gray-200/90 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gray-300">
                     <div>
@@ -890,7 +1169,7 @@
 
                     <div class="relative z-10 pt-0.5">
                         <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-300/80 mb-1">Asesores & Agencias Aliadas</p>
-                        <h3 class="text-base font-black text-white">MAXIMUS Pro</h3>
+                        <h3 class="text-base font-black text-white">Asesor Inmobiliario Pro</h3>
                         <div class="flex items-baseline gap-1 mt-1">
                             <span id="precioLandingDisplay" class="text-2xl sm:text-3xl font-black text-white tracking-tight">$4.99</span>
                             <span id="periodoLandingDisplay" class="text-xs font-medium text-gray-300">/ mes</span>
@@ -932,6 +1211,66 @@
                             Activar Membresía Pro
                         </button>
                         <p class="text-center text-[10px] text-gray-400 mt-1.5">
+                            Pago Móvil (Bs BCV) · Binance USDT · Tarjetas
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Asesor Platinum (máxima visibilidad) -->
+                <div id="card-plan-platinum" class="pricing-card rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#1E242B] via-[#14181D] to-[#0B0D10] text-white border border-slate-400/50 shadow-lg flex flex-col justify-between relative transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/40 hover:border-slate-300/70 md:col-span-2 lg:col-span-1">
+                    <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                        <div class="absolute -top-12 -right-12 w-36 h-36 bg-slate-300/10 rounded-full blur-2xl"></div>
+                    </div>
+                    <div class="absolute -top-3 right-5 z-20 pointer-events-none">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-slate-100 to-slate-300 text-slate-900 text-[9px] font-black uppercase tracking-widest shadow-md border border-white/60">
+                            <i class="fas fa-gem text-[9px]"></i> Máxima visibilidad
+                        </span>
+                    </div>
+
+                    <div class="relative z-10 pt-0.5">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-300/80 mb-1">Más publicidad para tu marca</p>
+                        <h3 class="text-base font-black text-white">Asesor Inmobiliario Platinum</h3>
+                        <div class="flex items-baseline gap-1 mt-1">
+                            <span class="text-2xl sm:text-3xl font-black text-white tracking-tight">$9.99</span>
+                            <span class="text-xs font-medium text-slate-300">/ mes</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300/90 mt-1 leading-relaxed">Tu perfil y tus inmuebles frente a clientes y asesores de todo Táchira.</p>
+
+                        <hr class="border-white/10 my-3">
+
+                        <ul class="space-y-2 text-[12px] text-slate-200">
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-check text-slate-300 text-xs"></i>
+                                <span><strong>Todo lo del plan Pro</strong></span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-star text-amber-300 text-xs"></i>
+                                <span>Perfil en <strong>Captaciones Destacadas</strong></span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-star text-amber-300 text-xs"></i>
+                                <span>Visible también en esta página web</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-star text-amber-300 text-xs"></i>
+                                <span>Botón de <strong>WhatsApp</strong> en tu tarjeta</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-star text-amber-300 text-xs"></i>
+                                <span><strong>Reseñas</strong> y calificación de 1 a 5 estrellas</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-star text-amber-300 text-xs"></i>
+                                <span>Insignia <strong>Platinum</strong> en tu perfil</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-5 relative z-10">
+                        <button type="button" id="btnCtaPlatinumLanding" onclick="abrirModalSuscripcionPro('platinum')" class="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-gradient-to-r from-slate-100 via-white to-slate-200 hover:from-white hover:to-slate-100 text-slate-900 font-black text-xs tracking-wide shadow-md transition-all text-center block cursor-pointer hover:scale-[1.01] active:scale-95">
+                            Quiero ser Platinum
+                        </button>
+                        <p class="text-center text-[10px] text-slate-400 mt-1.5">
                             Pago Móvil (Bs BCV) · Binance USDT · Tarjetas
                         </p>
                     </div>
@@ -1081,80 +1420,6 @@
     </section>
 
     <!-- Equipo de Agentes -->
-    <!-- Equipo (Conectado dinámicamente con Supabase / Admin Dashboard) -->
-    <section id="equipo" class="py-24 bg-gray-50 relative overflow-hidden">
-        <!-- Marca de Agua Difuminada MAXIMUS Equipo -->
-        <div class="absolute -left-24 bottom-10 w-[380px] md:w-[520px] h-[380px] md:h-[520px] pointer-events-none select-none opacity-[0.038] -rotate-[10deg] z-0 maximus-watermark" style="--wm-rot: -10deg; animation-delay: -11.5s;">
-            <img src="assest/maximus-logo-icon.svg" alt="" class="w-full h-full object-contain" />
-        </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <p id="equipo-tag" class="text-xs font-bold uppercase tracking-widest text-maximus-accent mb-2">NUESTRO EQUIPO</p>
-                <h2 id="equipo-titulo" class="text-3xl font-bold text-maximus-dark mb-4">Agentes Expertos a tu Servicio</h2>
-                <p id="equipo-subtitulo" class="text-gray-500 max-w-2xl mx-auto">Profesionales con años de experiencia listos para asesorarte en cada paso de tu inversión.</p>
-            </div>
-            
-            <!-- Grid Dinámico de Agentes -->
-            <div id="grid-equipo" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-                <!-- Agente 1 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
-                    <div class="relative overflow-hidden aspect-square bg-gray-100">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Lic. Eva Camargo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark truncate">Lic. Eva Camargo</h3>
-                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Directora Comercial</p>
-                        <div class="flex justify-center space-x-3">
-                            <a href="https://wa.me/584241234567" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                            <a href="mailto:eva.camargo@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Agente 2 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
-                    <div class="relative overflow-hidden aspect-square bg-gray-100">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Abg. José Guerrero" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark truncate">Abg. José Guerrero</h3>
-                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Director Legal</p>
-                        <div class="flex justify-center space-x-3">
-                            <a href="https://wa.me/584149876543" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                            <a href="mailto:jose.guerrero@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Agente 3 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
-                    <div class="relative overflow-hidden aspect-square bg-gray-100">
-                        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="María Rodríguez" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark truncate">María Rodríguez</h3>
-                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Asesora Inmobiliaria</p>
-                        <div class="flex justify-center space-x-3">
-                            <a href="https://wa.me/584125557890" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                            <a href="mailto:maria.rodriguez@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Agente 4 -->
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all group text-center flex flex-col justify-between">
-                    <div class="relative overflow-hidden aspect-square bg-gray-100">
-                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Carlos Mendoza" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-maximus-dark truncate">Carlos Mendoza</h3>
-                        <p class="text-maximus-accent text-sm mb-4 truncate font-medium">Asesor de Inversiones</p>
-                        <div class="flex justify-center space-x-3">
-                            <a href="https://wa.me/584247778899" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                            <a href="mailto:carlos.mendoza@maximus.com" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo"><i class="far fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
         <!-- Testimonios / Reseñas de Clientes (Sincronizado con Supabase y Marquee Continuo) -->
     <section id="testimonios" class="py-24 bg-white overflow-hidden relative">
@@ -1192,7 +1457,7 @@
             </div>
 
             <div class="mt-5 text-center flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="/login" class="inline-flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 px-6 py-3 rounded-xl border border-emerald-300 transition-all shadow-2xs hover:scale-105 active:scale-95">
+                <a href="/login" data-sesion="resena" class="inline-flex items-center gap-2 text-xs uppercase tracking-wider font-extrabold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 px-6 py-3 rounded-xl border border-emerald-300 transition-all shadow-2xs hover:scale-105 active:scale-95">
                     <i class="fas fa-star text-amber-500"></i>
                     <span>¿Eres cliente? Sube tu reseña desde tu cuenta</span>
                 </a>
@@ -1229,7 +1494,7 @@
                         <li><a href="#" class="text-gray-400 hover:text-white transition">Inicio</a></li>
                         <li><a href="#propiedades" class="text-gray-400 hover:text-white transition">Catálogo de Propiedades</a></li>
                         <li><a href="#nosotros" class="text-gray-400 hover:text-white transition">Sobre Nosotros</a></li>
-                        <li><a href="/login" class="text-gray-400 hover:text-maximus-accent transition">Iniciar Sesión</a></li>
+                        <li><a href="/login" data-sesion="texto" class="text-gray-400 hover:text-maximus-accent transition">Iniciar Sesión</a></li>
                         <li><a href="/terminos" class="text-gray-400 hover:text-maximus-accent transition">Términos y Condiciones</a></li>
                     </ul>
                 </div>
@@ -1385,10 +1650,6 @@
                     ['#planes .planes-toggle-container', 'zoom', 80],
                     ['#planes .pricing-card', 'up', 140],
                     ['#planes .planes-faq', 'up', 80],
-                    ['#equipo #equipo-tag', 'down', 0],
-                    ['#equipo h2', 'up', 0],
-                    ['#equipo-subtitulo', 'up', 60],
-                    ['#grid-equipo > div', 'up', 120],
                     ['#testimonios .inline-flex', 'down', 0],
                     ['#testimonios h2', 'up', 0],
                     ['#testimonios p', 'up', 60],
@@ -1840,6 +2101,32 @@
         }
 
         // 6. Carga dinámica de propiedades desde InmuebleService (Supabase / Mock)
+        // Ids (usuario y auth) de los asesores con Platinum vigente → para reconocer sus inmuebles
+        function idsAsesoresPlatinum() {
+            if (!window._idsPlatinumPromise) {
+                const url = (window.APP_CONFIG && APP_CONFIG.SUPABASE_URL || '').replace(/\/$/, '');
+                const key = window.APP_CONFIG && APP_CONFIG.SUPABASE_ANON_KEY;
+                const ctrl = new AbortController();
+                const t = setTimeout(() => ctrl.abort(), 8000);
+                window._idsPlatinumPromise = (!url || !key ? Promise.resolve([]) :
+                    fetch(url + '/rest/v1/rpc/listar_asesores_platinum', {
+                        method: 'POST', body: '{}', signal: ctrl.signal,
+                        headers: { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'application/json' }
+                    }).then(r => r.ok ? r.json() : []))
+                    .then(lista => {
+                        clearTimeout(t);
+                        const ids = new Set();
+                        (Array.isArray(lista) ? lista : []).forEach(a => {
+                            if (a.usuario_id) ids.add(String(a.usuario_id));
+                            if (a.auth_id) ids.add(String(a.auth_id));
+                        });
+                        return ids;
+                    })
+                    .catch(() => new Set());
+            }
+            return window._idsPlatinumPromise;
+        }
+
         async function cargarPropiedadesDestacadas(operacion = 'todos', busqueda = '') {
             const group1 = document.getElementById('marquee-group-1');
             const group2 = document.getElementById('marquee-group-2');
@@ -1874,8 +2161,23 @@
                     }
                 }
 
-                // SIEMPRE barajar aleatoriamente las propiedades subidas para que salgan al azar
-                items = shuffleInmuebles(items);
+                // DESTACADAS = inmuebles de asesores Platinum + captaciones directas MAXIMUS, intercalados
+                // (Platinum, MAXIMUS, Platinum, …) y barajados dentro de cada grupo para que roten.
+                // Si con el filtro elegido no hay ninguno, se muestra el catálogo general para no dejar el carrusel vacío.
+                const idsPlat = await idsAsesoresPlatinum();
+                const esPlat = i => idsPlat.has(String(i.agente_id || '')) || idsPlat.has(String(i.asesor_id || ''));
+                const dePlat = shuffleInmuebles(items.filter(esPlat));
+                const deMaximus = shuffleInmuebles(items.filter(i => !esPlat(i) && (i.is_maximus === true || i.isMaximus === true)));
+                if (dePlat.length || deMaximus.length) {
+                    const mezcla = [];
+                    for (let k = 0; k < Math.max(dePlat.length, deMaximus.length); k++) {
+                        if (k < dePlat.length) mezcla.push(dePlat[k]);
+                        if (k < deMaximus.length) mezcla.push(deMaximus[k]);
+                    }
+                    items = mezcla;
+                } else {
+                    items = shuffleInmuebles(items);
+                }
                 const totalEncontrados = items.length;
 
                 // RENDIMIENTO: el carrusel es de "destacadas", no el catálogo completo.
@@ -1997,8 +2299,6 @@
             syncPillsUI('todos');
             cargarPropiedadesDestacadas('todos', '');
             
-            // Cargar miembros del equipo desde EquipoWebService
-            cargarEquipoLanding();
             
             // Cargar reseñas dinámicas desde Supabase para el Marquee
             cargarResenasEnLanding();
@@ -2238,60 +2538,6 @@
             }
         }
 
-        async function cargarEquipoLanding() {
-            try {
-                if (!window.EquipoWebService) return;
-
-                // Cargar textos de cabecera
-                const cfg = EquipoWebService.getConfig();
-                if (cfg) {
-                    const tagEl = document.getElementById('equipo-tag');
-                    const tituloEl = document.getElementById('equipo-titulo');
-                    const subtituloEl = document.getElementById('equipo-subtitulo');
-                    if (tagEl && cfg.etiqueta) tagEl.textContent = cfg.etiqueta;
-                    if (tituloEl && cfg.titulo) tituloEl.textContent = cfg.titulo;
-                    if (subtituloEl && cfg.subtitulo) subtituloEl.textContent = cfg.subtitulo;
-                }
-
-                // Cargar miembros del equipo visibles
-                const res = await EquipoWebService.getAll({ mostrar_en_web: true, activo: true });
-                const miembros = (res && res.data && res.data.length > 0) ? res.data : null;
-                const grid = document.getElementById('grid-equipo');
-
-                if (grid && miembros && miembros.length > 0) {
-                    grid.innerHTML = miembros.map(m => {
-                        const foto = m.foto_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80';
-                        const rawWa = (m.whatsapp || m.telefono || '').replace(/\D/g, '');
-                        const waLink = rawWa ? `https://wa.me/${rawWa}?text=${encodeURIComponent('Hola ' + m.nombre + ', quisiera consultar sobre una propiedad en MAXIMUS.')}` : '#';
-                        const mailLink = m.email ? `mailto:${m.email}?subject=${encodeURIComponent('Consulta Inmobiliaria - MAXIMUS')}` : '#';
-
-                        return `
-                            <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group text-center flex flex-col justify-between">
-                                <div class="relative overflow-hidden aspect-square bg-gray-100">
-                                    <img src="${foto}" alt="${m.nombre}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80'">
-                                </div>
-                                <div class="p-6">
-                                    <h3 class="text-lg font-bold text-maximus-dark truncate">${m.nombre}</h3>
-                                    <p class="text-maximus-accent text-sm mb-4 truncate font-medium">${m.cargo}</p>
-                                    <div class="flex justify-center space-x-3">
-                                        <a href="${waLink}" target="_blank" class="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center hover:bg-maximus-accent hover:text-white transition-all shadow-sm" title="Contactar por WhatsApp">
-                                            <i class="fab fa-whatsapp"></i>
-                                        </a>
-                                        <a href="${mailLink}" class="w-9 h-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-maximus-dark hover:text-white transition-all shadow-sm" title="Enviar Correo">
-                                            <i class="far fa-envelope"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                    if (window.applyMotionReveal) window.applyMotionReveal(grid);
-                }
-            } catch (err) {
-                console.error('Error al cargar equipo en landing:', err);
-            }
-        }
-
         // 9. Menú de navegación móvil
         window.toggleMobileMenu = function(forceState) {
             const menu = document.getElementById('mobile-menu');
@@ -2324,13 +2570,22 @@
                     const loginLinks = document.querySelectorAll('a[href="/login"]');
                     loginLinks.forEach(link => {
                         link.href = '/dashboard';
-                        if (link.classList.contains('px-6')) {
-                            link.innerHTML = `<i class="fas fa-th-large mr-2"></i> Mi Panel (${firstName})`;
-                            link.classList.add('bg-emerald-800');
-                        } else if (link.querySelector('.fa-user')) {
-                            link.innerHTML = `<i class="fas fa-th-large text-[11px]"></i> Panel`;
-                        } else {
-                            link.innerHTML = `<span class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center"><i class="fas fa-th-large text-sm"></i></span> Mi Panel Inmobiliario`;
+                        switch (link.dataset.sesion) {
+                            case 'nav':     // botón de la barra superior (escritorio): ícono y texto en una línea
+                                link.classList.add('inline-flex', 'items-center', 'gap-2');
+                                link.innerHTML = '<i class="fas fa-th-large text-[11px]"></i><span>Mi Panel</span>';
+                                break;
+                            case 'movil':   // botón compacto de la barra en celular
+                                link.innerHTML = '<i class="fas fa-th-large text-[11px]"></i> Panel';
+                                break;
+                            case 'menu':    // menú desplegable del celular
+                                link.innerHTML = '<i class="fas fa-th-large text-xs"></i> Mi Panel';
+                                break;
+                            case 'resena':  // botón de testimonios: conserva su texto y su estilo
+                                link.href = '/dashboard#view-perfil';
+                                break;
+                            default:        // enlaces de texto (pie de página)
+                                link.textContent = 'Mi Panel';
                         }
                     });
                 }

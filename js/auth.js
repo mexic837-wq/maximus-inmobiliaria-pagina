@@ -200,7 +200,7 @@ const AuthService = {
                 const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
                 const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
-                const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : (perfil?.titulo || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))));
+                const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : ((perfil?.titulo && !/externo/i.test(perfil.titulo) ? perfil.titulo : null) || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? (perfil?.plan === 'platinum' ? 'Asesor Inmobiliario Platinum' : 'Asesor Inmobiliario Pro') : 'Usuario Registrado'))));
 
                 const appUser = {
                     id: authUser.id,
@@ -534,7 +534,7 @@ const AuthService = {
                         const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
                         const rolFinal = esDirectorOAdmin ? 'admin' : (perfil ? perfil.rol : (meta.rol || 'cliente'));
-                        const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : (perfil?.titulo || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))));
+                        const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : ((perfil?.titulo && !/externo/i.test(perfil.titulo) ? perfil.titulo : null) || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? (perfil?.plan === 'platinum' ? 'Asesor Inmobiliario Platinum' : 'Asesor Inmobiliario Pro') : 'Usuario Registrado'))));
                         const nombre = perfil ? perfil.nombre_completo : (meta.full_name || meta.name || session.user.email.split('@')[0]);
                         const avatar = perfil ? perfil.avatar_url : (meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`);
 
@@ -761,7 +761,7 @@ const AuthService = {
                     role: APP_CONFIG.ROLES.ASESOR_EXTERNO,
                     tipo_asesor: 'externo',
                     plan: 'pro',
-                    title: 'Asesor Inmobiliario Externo (Pro)',
+                    title: 'Asesor Inmobiliario Pro',
                     avatar: 'https://ui-avatars.com/api/?name=Pedro+Ramirez&background=1E3A8A&color=fff&bold=true',
                 }
             },
@@ -984,7 +984,7 @@ const AuthService = {
             const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
             const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
-            const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : (perfil?.titulo || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario Externo' : 'Usuario Registrado'))));
+            const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : ((perfil?.titulo && !/externo/i.test(perfil.titulo) ? perfil.titulo : null) || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? (perfil?.plan === 'platinum' ? 'Asesor Inmobiliario Platinum' : 'Asesor Inmobiliario Pro') : 'Usuario Registrado'))));
 
             const user = {
                 id: data.user.id,
@@ -1009,7 +1009,7 @@ const AuthService = {
     async _supabaseRegister({ nombre, email, password, telefono, telefono_e164 = '', prefijo = '+58', rol = 'cliente' }) {
         const esAsesorExt = (rol === 'asesor_externo' || (APP_CONFIG.ROLES && rol === APP_CONFIG.ROLES.ASESOR_EXTERNO));
         const rolFinal = esAsesorExt ? (APP_CONFIG.ROLES?.ASESOR_EXTERNO || 'asesor_externo') : 'cliente';
-        const tituloFinal = esAsesorExt ? 'Asesor Inmobiliario Externo (Pro)' : 'Usuario Registrado';
+        const tituloFinal = esAsesorExt ? 'Asesor Inmobiliario Pro' : 'Usuario Registrado';
         const avatarBg = esAsesorExt ? '1E3A8A' : '0B4A3F';
         try {
             const sb = typeof getSupabase === 'function' ? getSupabase() : null;
