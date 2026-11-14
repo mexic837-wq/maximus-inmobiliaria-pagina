@@ -660,7 +660,7 @@
             border-color: #163B32 !important;
         }
 
-        /* Botón de Captaciones MAXIMUS en el Buscador (NUNCA BLANCO) */
+        /* Botón de Captaciones Destacadas en el Buscador (NUNCA BLANCO) */
         html.dark #btn-filtro-maximus-toggle,
         html.dark button#btn-filtro-maximus-toggle {
             background: #0B2B23 !important;
@@ -2482,10 +2482,10 @@
                                 </div>
                             </div>
                             
-                            <!-- Botón Filtro Rápido MAXIMUS -->
+                            <!-- Botón Filtro Rápido: Captaciones Destacadas (MAXIMUS + asesores Platinum) -->
                             <button id="btn-filtro-maximus-toggle" onclick="toggleFiltroSoloMaximus()" class="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-wider transition-all border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-maximus-dark shadow-sm hover:scale-[1.02] cursor-pointer shrink-0">
-                                <i class="ph-fill ph-buildings text-maximus-accent text-sm"></i>
-                                <span>Captaciones MAXIMUS</span>
+                                <i class="ph-fill ph-diamond text-maximus-accent text-sm"></i>
+                                <span>Captaciones Destacadas</span>
                                 <span id="badge-count-captaciones-toggle" class="bg-maximus-accent text-white text-[9px] px-1.5 py-0.2 rounded-full font-black ml-0.5">6</span>
                             </button>
                             <div class="relative shrink-0" id="filtrosDropdownWrapper">
@@ -9900,6 +9900,26 @@
         let filtroCategoriaActivo = 'todos'; // 'todos' | 'maximus' | 'venta' | 'alquiler'
         let filtroSoloMaximusToggle = false;
 
+        // Captaciones Destacadas = captaciones MAXIMUS + inmuebles de asesores Platinum
+        window._idsInmPlatinum = window._idsInmPlatinum || new Set();
+        function esTarjetaDestacada(card) {
+            return card.getAttribute('data-maximus') === 'true' || window._idsInmPlatinum.has(String(card.getAttribute('data-inm-id') || ''));
+        }
+        async function actualizarIdsInmueblesPlatinum() {
+            try {
+                if (typeof cargarAsesoresPlatinum !== 'function') return;
+                await cargarAsesoresPlatinum();
+                const ids = new Set();
+                Object.values(INMUEBLES_DETALLE_DATA || {}).forEach(inm => {
+                    if (inm && ASESORES_PLATINUM_DATA.some(a => inmuebleEsDeAsesorPlatinum(inm, a))) ids.add(String(inm.id));
+                });
+                window._idsInmPlatinum = ids;
+            } catch (_) {}
+        }
+        function contarTarjetasDestacadas() {
+            return Array.from(document.querySelectorAll('.tarjeta-inmueble')).filter(esTarjetaDestacada).length;
+        }
+
         function filtrarCatalogoInmuebles() {
             const searchInput = document.getElementById('buscador-inmuebles');
             const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -9934,7 +9954,7 @@
 
                 let coincideCategoria = true;
                 if (filtroCategoriaActivo === 'maximus' || filtroSoloMaximusToggle) {
-                    coincideCategoria = isMaximus;
+                    coincideCategoria = esTarjetaDestacada(card);
                 } else if (filtroCategoriaActivo === 'venta') {
                     coincideCategoria = operacion === 'venta';
                 } else if (filtroCategoriaActivo === 'alquiler') {
@@ -10012,8 +10032,7 @@
             }
             const badgeCaptacionesToggle = document.getElementById('badge-count-captaciones-toggle');
             if (badgeCaptacionesToggle) {
-                const totalMaximus = document.querySelectorAll('.tarjeta-inmueble[data-maximus="true"]').length;
-                badgeCaptacionesToggle.textContent = totalMaximus || '6';
+                badgeCaptacionesToggle.textContent = contarTarjetasDestacadas();
             }
 
             // Animar tarjetas visibles con GSAP
@@ -10080,8 +10099,11 @@
             if (location.hash === '#voz') setTimeout(() => { if (typeof activateTab === 'function') activateTab('view-inmuebles', true); BusquedaVozMaximus.abrir(); }, 800);
         });
 
-        function toggleFiltroSoloMaximus() {
+        async function toggleFiltroSoloMaximus() {
             filtroSoloMaximusToggle = !filtroSoloMaximusToggle;
+            if (filtroSoloMaximusToggle && typeof actualizarIdsInmueblesPlatinum === 'function') {
+                await Promise.race([actualizarIdsInmueblesPlatinum(), new Promise(r => setTimeout(r, 4000))]);
+            }
             const btn = document.getElementById('btn-filtro-maximus-toggle');
             
             if (btn) {
@@ -13542,6 +13564,14 @@
 
             const badgeMaximus = document.getElementById('badge-count-captaciones-toggle');
             if (badgeMaximus) badgeMaximus.textContent = totalMaximus;
+            // Suma los inmuebles de asesores Platinum cuando termine de cargar la lista
+            if (typeof actualizarIdsInmueblesPlatinum === 'function') {
+                actualizarIdsInmueblesPlatinum().then(() => {
+                    const b = document.getElementById('badge-count-captaciones-toggle');
+                    if (b) b.textContent = contarTarjetasDestacadas();
+                    if (filtroSoloMaximusToggle) filtrarCatalogoInmuebles();
+                });
+            }
 
             const contadorRes = document.getElementById('contador-resultados');
             if (contadorRes) {
