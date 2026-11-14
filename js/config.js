@@ -66,17 +66,28 @@ const APP_CONFIG = {
         USUARIO: 'cliente', // Alias
     },
 
-    // ========== PLANES DE SUSCRIPCIÓN (ASESORES EXTERNOS) ==========
+    // ========== PLANES DE SUSCRIPCIÓN (ASESORES INMOBILIARIOS) ==========
     // ⚠️ El precio REAL lo fija el servidor (supabase/functions/_shared/pagos.ts → PLANES).
-    // Este valor es solo para mostrarlo en pantalla: si lo cambias, cámbialo también allá.
+    // Estos valores son solo para mostrarlos en pantalla: si los cambias, cámbialos también allá.
+    // `plan` = valor que queda en usuarios.plan al activarse.
     PLANES_SUSCRIPCION: {
         MENSUAL: {
             id: 'mensual',
-            nombre: 'Plan Mensual Pro',
+            plan: 'pro',
+            nombre: 'Asesor Inmobiliario Pro',
             precio_usd: 4.99,
             periodo_label: '/mes',
             descripcion: 'Acceso completo al CRM, cotizador, colecciones y carga de inmuebles.',
             badge: null
+        },
+        PLATINUM: {
+            id: 'platinum',
+            plan: 'platinum',
+            nombre: 'Asesor Inmobiliario Platinum',
+            precio_usd: 9.99,
+            periodo_label: '/mes',
+            descripcion: 'Todo lo de Pro + perfil y captaciones en Captaciones Destacadas, reseñas y contacto directo por WhatsApp.',
+            badge: 'Más visibilidad'
         }
     },
 

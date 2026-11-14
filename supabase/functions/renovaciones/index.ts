@@ -36,7 +36,7 @@ Deno.serve(async (req) => {
 async function pendientes(sb: any) {
   const ahora = Date.now();
   const { data: usuarios, error } = await sb.from("usuarios")
-    .select("auth_id,nombre_completo,email,telefono,plan_vence_at")
+    .select("auth_id,nombre_completo,email,telefono,plan,plan_vence_at")
     .eq("rol", "asesor_externo")
     .not("plan_vence_at", "is", null)
     .not("email", "is", null)
@@ -68,6 +68,7 @@ async function pendientes(sb: any) {
       nombre: u.nombre_completo,
       email: u.email,
       telefono: u.telefono,
+      plan: u.plan === "platinum" ? "Asesor Inmobiliario Platinum" : "Asesor Inmobiliario Pro",
       dias_restantes: Math.ceil((venceMs - ahora) / DIA_MS),
     });
   }

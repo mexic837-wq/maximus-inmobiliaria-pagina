@@ -3,7 +3,8 @@ import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 // FUENTE ÚNICA DE PRECIOS. El cliente solo envía el id del plan; el monto sale de aquí.
 export const PLANES: Record<string, { nombre: string; usd: number; meses: number }> = {
-  mensual: { nombre: "Plan Mensual Pro", usd: 4.99, meses: 1 },
+  mensual: { nombre: "Asesor Inmobiliario Pro", usd: 4.99, meses: 1 },
+  platinum: { nombre: "Asesor Inmobiliario Platinum", usd: 9.99, meses: 1 },
 };
 
 export const METODOS = ["pago_movil", "binance", "stripe"] as const;
