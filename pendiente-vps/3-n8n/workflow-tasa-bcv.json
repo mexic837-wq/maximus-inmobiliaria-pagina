@@ -1,0 +1,137 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 14. Tasa BCV: actualización automática y alerta",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Tasa BCV automática\nCada 2 horas pide a Supabase que consulte la tasa oficial BCV y la guarde (tabla `tasas_bcv`).\nAsí Pago Móvil siempre cobra en Bs con la tasa del día, aunque nadie esté pagando.\n\n**Configuración (una sola vez):**\n1. Ejecuta el SQL pendiente (Parte 5) y despliega la Edge Function `tasa-bcv`.\n2. Nodo *Actualizar tasa*: credencial Header Auth **MAXIMUS Pagos → Supabase (x-webhook-secret)** (la misma del flujo de Binance).\n3. Nodo *Correo de alerta*: tu credencial *Gmail MAXIMUS*. Cambia el correo destino si hace falta.\n4. Activa el workflow.\n\nSi la fuente en línea falla, el sistema sigue con la última tasa guardada (hasta 72 h) y te llega un correo para que revises.\nPara fijar una tasa a mano, mira la Parte 5 del SQL pendiente.",
+        "width": 520,
+        "height": 380,
+        "color": 4
+      },
+      "id": "bcv-nota",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-300, -60]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "id": "bcv-schedule",
+      "name": "Cada 2 horas",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/functions/v1/tasa-bcv",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{ \"action\": \"refrescar\" }",
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "bcv-http",
+      "name": "Actualizar tasa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "MAXIMUS Pagos → Supabase (x-webhook-secret)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "bcv-if-1",
+              "leftValue": "={{ $json.ok === true && $json.requiere_revision !== true }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bcv-if",
+      "name": "¿Hay problema con la tasa?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [740, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "maximusinmobiliariars@gmail.com",
+        "subject": "=⚠️ Tasa BCV sin actualizar · Pago Móvil {{ $json.ok === false ? 'DESACTIVADO' : 'con tasa de respaldo' }}",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:Arial,sans-serif;max-width:560px;margin:auto;border:1px solid #E5E7EB;border-radius:16px;overflow:hidden\"><div style=\"background:#0B4A3F;color:#fff;padding:18px 22px\"><b>MAXIMUS<span style=\"color:#10B981\">.</span></b> · Alerta de tasa BCV</div><div style=\"padding:22px;font-size:14px;line-height:1.6;color:#111827\"><p>No se pudo obtener la tasa oficial BCV desde la fuente en línea.</p><p><b>Situación:</b> {{ $json.ok === false ? 'No hay ninguna tasa disponible: Pago Móvil está desactivado hasta que se resuelva (Binance y tarjeta siguen funcionando).' : 'Se está cobrando con la última tasa guardada (' + $json.tasa + ' Bs/US$, fuente ' + $json.fuente + ', estado ' + $json.estado + ').' }}</p><p><b>Qué hacer:</b> revisa la tasa del día en bcv.org.ve. Si hace falta, fíjala a mano en Supabase con el INSERT de la Parte 5 del SQL (manda durante 36 h).</p><p style=\"font-size:12px;color:#6B7280\">Este aviso se repite cada 2 horas mientras el problema siga.</p></div></div>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "bcv-gmail",
+      "name": "Correo de alerta",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [980, 220],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cada 2 horas": {
+      "main": [[{ "node": "Actualizar tasa", "type": "main", "index": 0 }]]
+    },
+    "Actualizar tasa": {
+      "main": [[{ "node": "¿Hay problema con la tasa?", "type": "main", "index": 0 }]]
+    },
+    "¿Hay problema con la tasa?": {
+      "main": [[{ "node": "Correo de alerta", "type": "main", "index": 0 }], []]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false
+}

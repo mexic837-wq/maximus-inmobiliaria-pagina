@@ -1,0 +1,207 @@
+{
+  "name": "MAXIMUS Inmobiliaria - Publica tu inmueble (cola Platinum por WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. Ejecuta antes `sql/migration-captaciones-platinum.sql` en Supabase.\n2. **Supabase**: el nodo *Tomar solicitud* usa tu credencial **Supabase API** (la misma de Alertas de búsqueda, con la service_role).\n3. **WhatsApp (Evolution API)**: en *Armar mensajes* cambia `WA_API_URL` y `WA_INSTANCIA`. Crea una credencial **Header Auth** llamada `Evolution API` con Name `apikey` y Value = tu API key, y asígnala a los 2 nodos de WhatsApp.\n   · Si usas **WhatsApp Cloud API (Meta)**: reemplaza los 2 nodos por el nodo *WhatsApp Business Cloud*. Ojo: Meta exige una **plantilla aprobada** para escribirle a alguien que no te ha escrito en 24 h.\n4. **Gmail**: elige tu credencial *Gmail MAXIMUS* en *Correo al asesor* (respaldo si falla WhatsApp).\n5. Activa el workflow. El landing llama a `POST /webhook/captacion-inmueble` con `{ captacion_id }`.\n\nSeguridad: el webhook solo recibe el id. Los datos y el número del asesor salen de Supabase, y cada solicitud se notifica una sola vez.",
+        "height": 420,
+        "width": 520
+      },
+      "id": "cap-nota-setup",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-120, -260]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "captacion-inmueble",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*",
+          "responseCode": 200
+        }
+      },
+      "id": "cap-webhook",
+      "name": "Webhook Publica tu inmueble",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [460, 240],
+      "webhookId": "maximus-captacion-inmueble"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Solo se acepta un UUID; el resto de los datos se lee de Supabase\nconst b = $input.first().json.body || $input.first().json;\nconst id = String(b.captacion_id || '').trim();\nif (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return [];\nreturn [{ json: { id } }];"
+      },
+      "id": "cap-validar",
+      "name": "Validar id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/rest/v1/rpc/tomar_captacion_para_notificar",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_id: $json.id }) }}",
+        "options": {}
+      },
+      "id": "cap-tomar",
+      "name": "Tomar solicitud (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 240],
+      "credentials": {
+        "supabaseApi": {
+          "id": "CREAR_EN_N8N",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== CONFIGURA AQUÍ =====\nconst WA_API_URL = 'https://evolution.maximusinmobiliaria.tech'; // URL de tu Evolution API (sin / al final)\nconst WA_INSTANCIA = 'maximus';                                   // nombre de la instancia conectada\nconst URL_DASHBOARD = 'https://maximusinmobiliaria.tech/dashboard';\n// ==========================\n// Si la solicitud ya se había notificado, Supabase devuelve [] y aquí no sale nada\nreturn $input.all().map(i => i.json).filter(c => c && c.id).map(c => {\nconst OPER = { venta: 'VENDER', alquiler: 'ALQUILAR (poner en alquiler)', compra: 'COMPRAR' };\nconst oper = OPER[c.operacion] || c.operacion;\nconst primerCliente = String(c.nombre || '').split(' ')[0];\nconst primerAsesor = String(c.asesor_nombre || '').split(' ')[0];\nconst esc = (s) => String(s ?? '').replace(/[&<>\"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[ch]));\n\nconst linkCliente = `https://wa.me/${c.whatsapp}?text=${encodeURIComponent(`Hola ${primerCliente}, soy ${c.asesor_nombre} de MAXIMUS Inmobiliaria. Recibí tu solicitud ${c.codigo} para ${oper.toLowerCase()} ${c.tipo_inmueble} en ${c.zona}. ¿Tienes un momento para conversar?`)}`;\n\nconst textoAsesor = [\n  `🏠 *Nueva solicitud MAXIMUS* · ${c.codigo}`,\n  c.es_equipo_maximus ? '_(No había asesores Platinum en cola: va al equipo MAXIMUS)_' : `Te tocó en la cola Platinum, ${primerAsesor}.`,\n  '',\n  `👤 *Cliente:* ${c.nombre}`,\n  `📱 *WhatsApp:* +${c.whatsapp}`,\n  `🔑 *Quiere:* ${oper}`,\n  `🏷️ *Tipo:* ${c.tipo_inmueble}`,\n  `📍 *Zona:* ${c.zona}`,\n  c.precio_estimado ? `💵 *Precio aprox.:* ${c.precio_estimado}` : null,\n  c.comentario ? `📝 *Comentario:* ${c.comentario}` : null,\n  '',\n  `👉 Escríbele ya: ${linkCliente}`\n].filter(l => l !== null).join('\\n');\n\nconst textoCliente = [\n  `Hola ${primerCliente} 👋, recibimos tu solicitud en *MAXIMUS Inmobiliaria* (${c.codigo}).`,\n  `Tu asesor asignado es *${c.asesor_nombre}* y te escribirá muy pronto por este medio.`,\n  `Si prefieres adelantarte, escríbele aquí: https://wa.me/${c.asesor_whatsapp}`\n].join('\\n');\n\nconst html = `<div style=\"font-family:Arial,sans-serif;max-width:560px;margin:auto;border:1px solid #E5E7EB;border-radius:16px;overflow:hidden\">\n<div style=\"background:#0B4A3F;color:#fff;padding:20px 24px\"><b style=\"font-size:18px\">MAXIMUS<span style=\"color:#10B981\">.</span></b><br><span style=\"font-size:12px;color:#CBD5E1\">Nueva solicitud · ${esc(c.codigo)}</span></div>\n<div style=\"padding:24px;color:#111827;font-size:14px;line-height:1.6\">\n<p>Hola ${esc(primerAsesor)}, ${c.es_equipo_maximus ? 'esta solicitud llegó al equipo MAXIMUS.' : 'te tocó esta solicitud en la cola Platinum.'}</p>\n<p><b>Cliente:</b> ${esc(c.nombre)}<br><b>WhatsApp:</b> +${esc(c.whatsapp)}<br><b>Quiere:</b> ${esc(oper)}<br><b>Tipo:</b> ${esc(c.tipo_inmueble)}<br><b>Zona:</b> ${esc(c.zona)}${c.precio_estimado ? `<br><b>Precio aprox.:</b> ${esc(c.precio_estimado)}` : ''}${c.comentario ? `<br><b>Comentario:</b> ${esc(c.comentario)}` : ''}</p>\n<p style=\"text-align:center;margin:24px 0\"><a href=\"${linkCliente}\" style=\"background:#25D366;color:#fff;text-decoration:none;padding:12px 22px;border-radius:10px;font-weight:bold\">Escribirle por WhatsApp</a></p>\n<p style=\"font-size:12px;color:#6B7280\">Panel: <a href=\"${URL_DASHBOARD}\">${URL_DASHBOARD}</a></p>\n</div></div>`;\n\nreturn {\n  json: {\n    ...c,\n    wa_url_envio: `${WA_API_URL}/message/sendText/${WA_INSTANCIA}`,\n    texto_asesor: textoAsesor,\n    texto_cliente: textoCliente,\n    asunto: `🏠 Nueva solicitud ${c.codigo}: ${c.nombre} quiere ${oper.toLowerCase()} (${c.zona})`,\n    html,\n    tiene_email: /@/.test(String(c.asesor_email || ''))\n  }\n};\n});"
+      },
+      "id": "cap-armar",
+      "name": "Armar mensajes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.wa_url_envio }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.asesor_whatsapp, text: $json.texto_asesor }) }}",
+        "options": {}
+      },
+      "id": "cap-wa-asesor",
+      "name": "WhatsApp al asesor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1380, 80],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.wa_url_envio }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.whatsapp, text: $json.texto_cliente }) }}",
+        "options": {}
+      },
+      "id": "cap-wa-cliente",
+      "name": "WhatsApp de confirmación al cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1380, 240],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "cap-if-email",
+              "leftValue": "={{ $json.tiene_email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cap-if-email-node",
+      "name": "¿Asesor tiene correo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1380, 420]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.asesor_email }}",
+        "subject": "={{ $json.asunto }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "cap-gmail",
+      "name": "Correo al asesor",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1620, 400],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Publica tu inmueble": {
+      "main": [[{ "node": "Validar id", "type": "main", "index": 0 }]]
+    },
+    "Validar id": {
+      "main": [[{ "node": "Tomar solicitud (Supabase)", "type": "main", "index": 0 }]]
+    },
+    "Tomar solicitud (Supabase)": {
+      "main": [[{ "node": "Armar mensajes", "type": "main", "index": 0 }]]
+    },
+    "Armar mensajes": {
+      "main": [[
+        { "node": "WhatsApp al asesor", "type": "main", "index": 0 },
+        { "node": "WhatsApp de confirmación al cliente", "type": "main", "index": 0 },
+        { "node": "¿Asesor tiene correo?", "type": "main", "index": 0 }
+      ]]
+    },
+    "¿Asesor tiene correo?": {
+      "main": [[{ "node": "Correo al asesor", "type": "main", "index": 0 }], []]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

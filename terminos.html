@@ -45,10 +45,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
-    <script src="js/config.js?v=4.0"></script>
+    <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/services.js"></script>
-    <script src="js/auth.js?v=4.0"></script>
+    <script src="js/auth.js?v=4.6"></script>
 
     <style>
         html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -91,7 +91,7 @@
                     <a href="/" class="hover:text-maximus-dark transition">Inicio</a>
                     <a href="/catalogo" class="hover:text-maximus-dark transition">Propiedades</a>
                     <a href="/#nosotros" class="hover:text-maximus-dark transition">Nosotros</a>
-                    <a href="/#planes" class="hover:text-maximus-dark transition">Planes Pro</a>
+                    <a href="/#planes" class="hover:text-maximus-dark transition">Planes</a>
                     <a href="#contacto" class="hover:text-maximus-dark transition">Contacto</a>
                 </div>
 
@@ -233,7 +233,7 @@
                             5. Alianzas y Comisión Compartida (50/50)
                         </a>
                         <a href="#membresias-pro" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
-                            6. Membresías Pro de Asesores
+                            6. Membresías de Asesores
                         </a>
                         <a href="#verificacion-legal" class="toc-link block py-2 px-3 rounded-lg border-l-2 border-transparent text-gray-600 hover:text-maximus-dark hover:bg-gray-50 transition">
                             7. Verificación Jurídica y Responsabilidad
@@ -325,7 +325,7 @@
                             </li>
                             <li class="flex items-start gap-2">
                                 <i class="fas fa-check text-emerald-600 text-xs mt-1 shrink-0"></i>
-                                <span><strong>Asesor Inmobiliario Pro / Platinum (Membresía):</strong> Profesional inmobiliario independiente que suscribe la plataforma para acceder a herramientas CRM, cotizador y alianzas comerciales bajo el esquema de comisión compartida 50/50.</span>
+                                <span><strong>Asesor Inmobiliario Bronce / Gold / Platinum (Membresía):</strong> Profesional inmobiliario independiente que suscribe la plataforma para acceder a herramientas CRM, cotizador y alianzas comerciales bajo el esquema de comisión compartida 50/50.</span>
                             </li>
                         </ul>
                     </div>
@@ -440,19 +440,19 @@
                     </div>
                 </section>
 
-                <!-- 6. Membresías Pro de Asesores -->
+                <!-- 6. Membresías de Asesores -->
                 <section id="membresias-pro" class="legal-section bg-white rounded-2xl border border-gray-200/90 p-6 sm:p-8 shadow-xs">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-dark flex items-center justify-center font-black text-sm">
                             06
                         </div>
                         <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-                            Membresías Pro y Plataforma Tecnológica
+                            Membresías de Asesores y Plataforma Tecnológica
                         </h2>
                     </div>
                     <div class="text-gray-600 text-xs sm:text-sm leading-relaxed space-y-3">
                         <p>
-                            Los asesores inmobiliarios que deseen utilizar la suite tecnológica de MAXIMUS (panel CRM, publicación en catálogo con branding personal, cotizador express y notificaciones automáticas por WhatsApp) pueden optar por la membresía <strong>Asesor Inmobiliario Pro</strong> (US$ 4.99/mes) o <strong>Asesor Inmobiliario Platinum</strong> (US$ 9.99/mes), que además incluye la publicación de su perfil e inmuebles en la sección Captaciones Destacadas y un sistema de reseñas de clientes.
+                            Los asesores inmobiliarios que deseen utilizar la suite tecnológica de MAXIMUS (panel CRM, publicación en catálogo con branding personal, cotizador express y notificaciones automáticas por WhatsApp) pueden optar por la membresía <strong>Asesor Inmobiliario Bronce</strong> (US$ 2.99/mes), <strong>Asesor Inmobiliario Gold</strong> (US$ 4.99/mes) o <strong>Asesor Inmobiliario Platinum</strong> (US$ 9.99/mes). Gold y Platinum incluyen además un sistema de reseñas de clientes, visible en la ficha de sus inmuebles. Ningún plan altera el orden en que se muestran los inmuebles en la plataforma.
                         </p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                             <div class="p-3 rounded-xl border border-gray-200 bg-gray-50">
@@ -461,7 +461,11 @@
                             </div>
                             <div class="p-3 rounded-xl border border-gray-200 bg-gray-50">
                                 <strong class="text-gray-900 block mb-1">Política de Cancelación</strong>
-                                <span>El usuario puede suspender o no renovar su membresía en cualquier momento. Los pagos por períodos ya devengados o en curso no son reembolsables.</span>
+                                <span>El usuario puede suspender o no renovar su membresía en cualquier momento. Los pagos por períodos ya devengados o en curso, incluido el mes de cortesía de la promoción del primer pago, no son reembolsables.</span>
+                            </div>
+                            <div class="sm:col-span-2 p-3 rounded-xl border border-emerald-200 bg-emerald-50/60">
+                                <strong class="text-gray-900 block mb-1">🎁 Promoción del Primer Pago</strong>
+                                <span>El primer pago aprobado de cada usuario, en cualquiera de los planes (Bronce, Gold o Platinum), otorga una vigencia de <strong>dos (2) meses</strong>: un (1) mes pagado más un (1) mes de cortesía. A partir del segundo pago, cada pago otorga un (1) mes de vigencia. La promoción aplica una sola vez por usuario, no es acumulable ni canjeable por dinero, y no aplica a quienes ya hayan realizado un pago de membresía con anterioridad. MAXIMUS puede modificar o retirar esta promoción para pagos futuros, previo aviso en la plataforma.</span>
                             </div>
                         </div>
                     </div>

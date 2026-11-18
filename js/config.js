@@ -50,7 +50,12 @@ const APP_CONFIG = {
         AUTH_2FA_CAMBIO_ESTADO:  '/webhook/auth-2fa-cambio-estado',
         PERFIL_ACTUALIZADO:      '/webhook/perfil-actualizado',
         CONFIRMACION_PAGO:       '/webhook/confirmacion-pago',
+        CAPTACION_INMUEBLE:      '/webhook/captacion-inmueble', // formulario "Publica tu inmueble" del landing
+        OFICINA_ALIADA:          '/webhook/oficina-aliada',     // registro "¿Inmobiliaria? Regístrate aquí"
     },
+
+    // Respaldo cuando no hay asesores Platinum en la cola (equipo MAXIMUS)
+    WHATSAPP_EQUIPO_MAXIMUS: '584247114483',
 
     // ========== STORAGE (Imágenes de Inmuebles) ==========
     // Supabase Storage bucket donde se guardarán las fotos
@@ -66,6 +71,12 @@ const APP_CONFIG = {
         USUARIO: 'cliente', // Alias
     },
 
+    // ========== LÍMITE DE INMUEBLES PUBLICADOS POR PLAN ==========
+    // null = ilimitado. Cuenta los inmuebles disponibles o reservados del asesor.
+    // ⚠️ La base de datos también lo hace valer (sql/migration-limite-inmuebles.sql → limite_inmuebles_plan).
+    // Si cambias un número aquí, cámbialo también allá.
+    LIMITE_INMUEBLES_POR_PLAN: { pro: 3, gold: 7, platinum: null },
+
     // ========== PLANES DE SUSCRIPCIÓN (ASESORES INMOBILIARIOS) ==========
     // ⚠️ El precio REAL lo fija el servidor (supabase/functions/_shared/pagos.ts → PLANES).
     // Estos valores son solo para mostrarlos en pantalla: si los cambias, cámbialos también allá.
@@ -74,11 +85,20 @@ const APP_CONFIG = {
         MENSUAL: {
             id: 'mensual',
             plan: 'pro',
-            nombre: 'Asesor Inmobiliario Pro',
+            nombre: 'Asesor Inmobiliario Bronce',
+            precio_usd: 2.99,
+            periodo_label: '/mes',
+            descripcion: 'Acceso completo al CRM, cotizador y colecciones, con hasta 3 inmuebles publicados.',
+            badge: null
+        },
+        GOLD: {
+            id: 'gold',
+            plan: 'gold',
+            nombre: 'Asesor Inmobiliario Gold',
             precio_usd: 4.99,
             periodo_label: '/mes',
-            descripcion: 'Acceso completo al CRM, cotizador, colecciones y carga de inmuebles.',
-            badge: null
+            descripcion: 'Todo lo de Bronce + hasta 7 inmuebles, insignia Gold y reseñas de tus clientes visibles en la ficha de cada uno de tus inmuebles.',
+            badge: 'Con reseñas'
         },
         PLATINUM: {
             id: 'platinum',
@@ -86,8 +106,8 @@ const APP_CONFIG = {
             nombre: 'Asesor Inmobiliario Platinum',
             precio_usd: 9.99,
             periodo_label: '/mes',
-            descripcion: 'Todo lo de Pro + perfil y captaciones en Captaciones Destacadas, reseñas y contacto directo por WhatsApp.',
-            badge: 'Más visibilidad'
+            descripcion: 'Todo lo de Gold + inmuebles ilimitados y recibes por WhatsApp, en turno rotativo, a los propietarios que publican su inmueble desde la web.',
+            badge: 'Recibe clientes'
         }
     },
 
@@ -95,7 +115,7 @@ const APP_CONFIG = {
     // La verificación y activación ocurren en el servidor (Edge Functions + n8n).
     // Aquí solo van los datos que se MUESTRAN al cliente para pagar.
     DATOS_PAGO_VENEZUELA: {
-        TASA_BCV_USD: 75.00, // Solo referencia visual; el monto exacto en Bs lo calcula el servidor con la tasa del día
+        TASA_BCV_USD: 914.02, // Solo referencia de respaldo; la tasa real la consulta el servidor cada día (Edge Function tasa-bcv)
         WHATSAPP_CONCILIACION: '584247835697',
         METODOS: {
             PAGO_MOVIL: {

@@ -1,4 +1,4 @@
-// Recordatorios de renovación de la membresía Pro. La llama n8n una vez al día.
+// Recordatorios de renovación de la membresía Bronce. La llama n8n una vez al día.
 // Auth: cabecera x-webhook-secret = PAGOS_WEBHOOK_SECRET
 //
 //   { action: "pendientes" }
@@ -7,7 +7,7 @@
 //          - tipo "vence_hoy": faltan 24 h o menos
 //   { action: "confirmar", items: [{ auth_id, tipo, vence_at }] }
 //       -> n8n lo llama SOLO para los correos que sí se enviaron; así uno que falle se reintenta mañana.
-import { adminClient, corsHeaders, json, validarSecreto } from "../_shared/pagos.ts";
+import { adminClient, corsHeaders, json, PLANES, validarSecreto } from "../_shared/pagos.ts";
 
 const DIAS_AVISO = 5;
 const DIA_MS = 86_400_000;
@@ -68,7 +68,10 @@ async function pendientes(sb: any) {
       nombre: u.nombre_completo,
       email: u.email,
       telefono: u.telefono,
-      plan: u.plan === "platinum" ? "Asesor Inmobiliario Platinum" : "Asesor Inmobiliario Pro",
+      plan: u.plan === "platinum" ? "Asesor Inmobiliario Platinum"
+        : u.plan === "gold" ? "Asesor Inmobiliario Gold" : "Asesor Inmobiliario Bronce",
+      // Precio de renovación del plan actual (lo usa el correo de n8n)
+      precio_usd: (PLANES[u.plan === "platinum" || u.plan === "gold" ? u.plan : "mensual"] ?? PLANES.mensual).usd,
       dias_restantes: Math.ceil((venceMs - ahora) / DIA_MS),
     });
   }

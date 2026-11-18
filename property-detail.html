@@ -209,7 +209,7 @@
                             <div class="min-w-0 flex-1">
                                 <h3 class="font-black text-sm text-maximus-dark flex items-center gap-1.5 flex-wrap">
                                     <span id="detail-asesor-nombre" class="truncate">José Guerrero</span>
-                                    <span class="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
+                                    <span id="detail-asesor-plan" class="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
                                 </h3>
                                 <p id="detail-asesor-cargo" class="text-[11px] font-semibold text-gray-500 truncate">Director & Captador Principal MAXIMUS</p>
                             </div>
@@ -536,11 +536,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
-    <script src="js/config.js?v=4.0"></script>
+    <script src="js/config.js?v=4.7"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/supabase-client.js"></script>
     <script src="js/services.js"></script>
-    <script src="js/auth.js?v=4.0"></script>
+    <script src="js/auth.js?v=4.6"></script>
+    <script src="js/asesor-publico.js?v=1.1"></script>
     
     <script>
         window.currentDetailProperty = null;
@@ -997,6 +998,9 @@
                         badgeTipo: (supabaseItem.tipo || 'INMUEBLE').toUpperCase(),
                         operacion: esAlq ? 'ALQUILER' : 'VENTA',
                         isMaximus: supabaseItem.is_maximus !== false,
+                        asesor_id: supabaseItem.asesor_id || null,
+                        agente_id: supabaseItem.agente_id || null,
+                        origen_captura: supabaseItem.origen_captura || null,
                         precio: formatUSD(supabaseItem.precio),
                         moneda: esAlq ? 'USD/mes' : 'USD',
                         precioM2: supabaseItem.metros_cuadrados ? `${formatUSD(Math.round(supabaseItem.precio / supabaseItem.metros_cuadrados))} / m²` : '$593 USD / m²',
@@ -1012,7 +1016,8 @@
                         ],
                         asesor: {
                             nombre: supabaseItem.asesor_nombre || 'José Guerrero',
-                            cargo: 'Director & Captador Principal MAXIMUS',
+                            cargo: supabaseItem.asesor_nombre ? 'Asesor Inmobiliario' : 'Asesor MAXIMUS',
+                            tipo: supabaseItem.is_maximus === false ? 'externo' : 'maximus',
                             telefono: supabaseItem.asesor_telefono || '+58 424-7835697',
                             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(supabaseItem.asesor_nombre || 'Jose Guerrero')}&background=0B4A3F&color=fff&bold=true`
                         },
@@ -1125,6 +1130,10 @@
                 if (elTelBtn && asesor.telefono) {
                     elTelBtn.href = `tel:${asesor.telefono.replace(/\s+/g, '')}`;
                 }
+
+                // Nombre real del asesor + su plan (Bronce / Gold / Platinum / Equipo MAXIMUS).
+                // Captados de WhatsApp: contacto José Guerrero (el asesor original queda en privado).
+                if (window.AsesorPublico) AsesorPublico.aplicar('detail', data);
 
                 // 5. Especificaciones Rápidas (4 KPIs)
                 const elHab = document.getElementById('detail-spec-hab');

@@ -1,7 +1,7 @@
 /**
  * ====================================================================
  * MAXIMUS INMOBILIARIA - Pagos de suscripción
- *   Asesor Inmobiliario Pro (US$ 4.99/mes) · Asesor Inmobiliario Platinum (US$ 9.99/mes)
+ *   Asesor Inmobiliario Bronce (US$ 2.99/mes) · Gold (US$ 4.99/mes) · Platinum (US$ 9.99/mes)
  * ====================================================================
  * Métodos: Pago Móvil (Bs, tasa BCV) · Binance Pay (USDT) · Stripe (tarjetas)
  *
@@ -17,7 +17,8 @@ const PaymentGatewayService = {
     getPlanes() {
         if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.PLANES_SUSCRIPCION) return APP_CONFIG.PLANES_SUSCRIPCION;
         return {
-            MENSUAL:  { id: 'mensual',  plan: 'pro',      nombre: 'Asesor Inmobiliario Pro',      precio_usd: 4.99, periodo_label: '/mes' },
+            MENSUAL:  { id: 'mensual',  plan: 'pro',      nombre: 'Asesor Inmobiliario Bronce',      precio_usd: 2.99, periodo_label: '/mes' },
+            GOLD:     { id: 'gold',     plan: 'gold',     nombre: 'Asesor Inmobiliario Gold',     precio_usd: 4.99, periodo_label: '/mes' },
             PLATINUM: { id: 'platinum', plan: 'platinum', nombre: 'Asesor Inmobiliario Platinum', precio_usd: 9.99, periodo_label: '/mes' }
         };
     },
@@ -91,6 +92,24 @@ const PaymentGatewayService = {
         return 'timeout';
     },
 
+    // Tasa BCV vigente y precio de cada plan en Bs (Edge Function "tasa-bcv"; no requiere sesión).
+    // Es informativo: el monto exacto que se cobra lo fija el servidor al crear el pago.
+    async consultarTasaBCV() {
+        try {
+            const { data, error } = await this._sb().functions.invoke('tasa-bcv', { body: { action: 'consultar' } });
+            return (!error && data && data.ok && Number(data.tasa) > 1) ? data : null;
+        } catch (_) { return null; }
+    },
+
+    // ¿Aún no tiene ningún pago aprobado? Entonces su primer pago dura 2 meses (1 de regalo).
+    // Solo sirve para mostrar el aviso: la regla real la aplica el servidor (activar_pago_suscripcion).
+    async esPrimerPago() {
+        try {
+            const { data, error } = await this._sb().rpc('es_primer_pago');
+            return !error && data === true;
+        } catch (_) { return false; }
+    },
+
     // Trae rol/plan reales desde la DB (ya subidos por el servidor) y refresca la sesión local
     async refrescarPerfil() {
         try {
@@ -130,8 +149,37 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
     let pagoActual = null;            // respuesta pública del servidor
     let referenciaEnviada = '';
     let cancelarEspera = false;
+    let primerPago = null;            // null = aún no se sabe; true = su primer pago dura 2 meses
+    let tasaInfo = null;              // null = sin consultar; false = no disponible; objeto = tasa BCV del día
 
     const $ = (id) => document.getElementById(id);
+
+    // Muestra en la opción Pago Móvil la tasa BCV del día y el monto en Bs del plan elegido
+    async function cargarTasaPagoMovil() {
+        if (tasaInfo === null) tasaInfo = (await PaymentGatewayService.consultarTasaBCV()) || false;
+        const el = $('sub-pago-movil');
+        if (!el || !tasaInfo) return;
+        const bs = tasaInfo.precios_bs ? tasaInfo.precios_bs[planId] : null;
+        let fecha = '';
+        if (tasaInfo.fecha_valor) {
+            const [a, m, d] = String(tasaInfo.fecha_valor).split('-');
+            if (d) fecha = ` del ${d}/${m}`;
+        }
+        el.innerHTML = `Tasa BCV${fecha}: <strong>Bs. ${PaymentGatewayService.formatBs(tasaInfo.tasa)}</strong>`
+            + (bs ? ` · Pagas <strong>Bs. ${PaymentGatewayService.formatBs(bs)}</strong>` : '');
+    }
+
+    // Aviso "paga 1 mes y recibe 2" (estilos en línea: este modal también se abre en páginas con CSS compilado)
+    async function cargarPromoPrimerPago() {
+        if (primerPago === null) primerPago = await PaymentGatewayService.esPrimerPago();
+        const el = $('promo-primer-pago');
+        if (!el || !primerPago) return;
+        el.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:linear-gradient(90deg,#ECFDF5,#FEF3C7);border:1px solid #A7F3D0;">
+                <span style="font-size:22px;line-height:1">🎁</span>
+                <p style="margin:0;font-size:12px;line-height:1.35;color:#064E3B;"><strong>Tu primer pago rinde el doble:</strong> pagas 1 mes y recibes 2.</p>
+            </div>`;
+    }
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     const OPCIONES = [
@@ -183,7 +231,7 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
             <div class="space-y-4">
                 <div>
                     <h3 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">Inicia sesión para continuar</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tu membresía Pro se vincula a tu cuenta para activarse automáticamente al confirmar el pago.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tu membresía Bronce se vincula a tu cuenta para activarse automáticamente al confirmar el pago.</p>
                 </div>
                 <button type="button" onclick="loginConGoogleDesdeModal()" class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer">
                     <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -201,13 +249,14 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
         const selectorPlan = Object.values(PaymentGatewayService.getPlanes()).map(p => {
             const activo = p.id === planId;
             const esPlat = p.plan === 'platinum';
+            const esGold = p.plan === 'gold';
             return `
             <button type="button" data-plan="${esc(p.id)}" class="plan-opcion relative p-3 rounded-2xl border text-left transition-all cursor-pointer ${activo
-                ? (esPlat ? 'border-slate-400 bg-gradient-to-br from-slate-50 to-slate-200/70 ring-2 ring-slate-400/40 dark:from-slate-800 dark:to-slate-900 dark:border-slate-500' : 'border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/30 dark:bg-emerald-950/40')
+                ? (esPlat ? 'border-slate-400 bg-gradient-to-br from-slate-50 to-slate-200/70 ring-2 ring-slate-400/40 dark:from-slate-800 dark:to-slate-900 dark:border-slate-500' : esGold ? 'border-amber-400 bg-amber-50/70 ring-2 ring-amber-400/40 dark:bg-amber-950/30' : 'border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/30 dark:bg-emerald-950/40')
                 : 'border-gray-200 dark:border-emerald-900/40 bg-white dark:bg-[#0A241F] hover:border-gray-300'}">
                 ${p.badge ? `<span class="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-slate-800 text-white text-[9px] font-black uppercase tracking-wider">${esc(p.badge)}</span>` : ''}
-                <span class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider ${esPlat ? 'text-slate-700 dark:text-slate-200' : 'text-emerald-700 dark:text-emerald-300'}">
-                    <i class="ph-fill ${esPlat ? 'ph-diamond' : 'ph-seal-check'}"></i>${esPlat ? 'Platinum' : 'Pro'}
+                <span class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider ${esPlat ? 'text-slate-700 dark:text-slate-200' : esGold ? 'text-amber-700 dark:text-amber-300' : 'text-emerald-700 dark:text-emerald-300'}">
+                    <i class="ph-fill ${esPlat ? 'ph-diamond' : esGold ? 'ph-crown' : 'ph-seal-check'}"></i>${esPlat ? 'Platinum' : esGold ? 'Gold' : 'Bronce'}
                 </span>
                 <strong class="block text-base font-black text-gray-900 dark:text-white mt-0.5">${PaymentGatewayService.formatUsd(p.precio_usd)}<span class="text-[11px] font-semibold text-gray-500">${esc(p.periodo_label)}</span></strong>
             </button>`;
@@ -218,7 +267,7 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
                     <div class="w-10 h-10 rounded-xl ${o.color} flex items-center justify-center text-lg shrink-0"><i class="ph-bold ${o.icon}"></i></div>
                     <div>
                         <strong class="text-xs sm:text-sm font-bold text-gray-900 dark:text-white block">${o.titulo}</strong>
-                        <span class="text-[11px] text-gray-500 dark:text-gray-400">${o.sub}</span>
+                        <span class="text-[11px] text-gray-500 dark:text-gray-400"${o.key === 'pago_movil' ? ' id="sub-pago-movil"' : ''}>${o.sub}</span>
                     </div>
                 </div>
                 <i class="ph-bold ph-caret-right text-gray-400 group-hover:text-emerald-600 transition-all"></i>
@@ -232,7 +281,8 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Confirmamos tu pago automáticamente. Sin permanencia.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-2.5">${selectorPlan}</div>
+                <div class="grid grid-cols-3 gap-2">${selectorPlan}</div>
+                <div id="promo-primer-pago"></div>
                 <div class="p-3.5 rounded-2xl bg-gray-50 dark:bg-[#0A241F] border border-gray-200/80 dark:border-emerald-900/50 flex items-center justify-between gap-3">
                     <span class="text-[10px] uppercase font-bold text-gray-400">${esc(plan.nombre)}</span>
                     <strong class="text-sm text-gray-900 dark:text-white shrink-0">${PaymentGatewayService.formatUsd(plan.precio_usd)} USD ${esc(plan.periodo_label)}</strong>
@@ -245,6 +295,8 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
             b.addEventListener('click', () => elegirMetodo(b.dataset.metodo, b)));
         document.querySelectorAll('#modal-pago-cuerpo .plan-opcion').forEach(b =>
             b.addEventListener('click', () => { planId = PaymentGatewayService.getPlan(b.dataset.plan).id; pasoMetodo(); }));
+        cargarPromoPrimerPago();
+        cargarTasaPagoMovil();
     }
 
     async function elegirMetodo(key, boton) {
@@ -406,8 +458,11 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
                 <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl"><i class="ph-fill ph-check-circle"></i></div>
                 <h3 class="text-2xl font-black text-gray-900 dark:text-white">¡Membresía activada!</h3>
                 <p class="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">${planId === 'platinum'
-                    ? 'Ya eres <strong>Asesor Inmobiliario Platinum</strong>: tu perfil y tus inmuebles aparecen en Captaciones Destacadas.'
-                    : 'Tu cuenta ya tiene permisos de <strong>Asesor Inmobiliario Pro</strong>: catálogo, CRM y cotizador.'}</p>
+                    ? 'Ya eres <strong>Asesor Inmobiliario Platinum</strong>: publicas inmuebles ilimitados y entras en la cola que recibe a los propietarios que publican desde la web.'
+                    : planId === 'gold'
+                    ? 'Ya eres <strong>Asesor Inmobiliario Gold</strong>: puedes publicar hasta 7 inmuebles y tus reseñas se muestran en la ficha de cada uno.'
+                    : 'Tu cuenta ya tiene permisos de <strong>Asesor Inmobiliario Bronce</strong>: catálogo, CRM y cotizador.'}</p>
+                ${primerPago ? '<p style="margin:0;font-size:12px;color:#064E3B;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:14px;padding:8px 12px;max-width:24rem;margin-left:auto;margin-right:auto;">🎁 <strong>Tu primer pago incluye 1 mes de regalo:</strong> tu membresía dura 2 meses.</p>' : ''}
                 <div class="p-3.5 rounded-2xl bg-gray-50 text-xs font-mono text-gray-700 max-w-xs mx-auto border border-gray-200/80">Ref: <strong>${esc(pagoActual.codigo)}</strong></div>
                 <button type="button" class="${BTN_PRIMARIO}" onclick="window.location.href='/dashboard'">Ir a mi Dashboard</button>
             </div>`);
@@ -445,9 +500,11 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
 
     window.abrirModalSuscripcionPro = async function (planInicial = 'mensual') {
         crearModalDOM();
-        // 'mensual' (Pro) o 'platinum'; un id desconocido cae en Pro
+        // 'mensual' (Bronce), 'gold' o 'platinum'; un id desconocido cae en Bronce
         planId = PaymentGatewayService.getPlan(planInicial).id;
         pagoActual = null;
+        primerPago = null;
+        tasaInfo = null;
         cancelarEspera = false;
 
         modalElement.classList.remove('opacity-0', 'pointer-events-none');
@@ -459,6 +516,7 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
     };
 
     window.abrirModalSuscripcionPlatinum = function () { return window.abrirModalSuscripcionPro('platinum'); };
+    window.abrirModalSuscripcionGold = function () { return window.abrirModalSuscripcionPro('gold'); };
 
     window.cerrarModalSuscripcionPro = function () {
         cancelarEspera = true;
@@ -495,7 +553,7 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
         setTimeout(async function () {
             if (typeof window.abrirModalSuscripcionPro !== 'function') return;
             const u = await PaymentGatewayService.getUsuarioActual();
-            window.abrirModalSuscripcionPro(u && u.plan === 'platinum' ? 'platinum' : 'mensual');
+            window.abrirModalSuscripcionPro(u && (u.plan === 'platinum' || u.plan === 'gold') ? u.plan : 'mensual');
         }, 600);
     });
 })();
