@@ -160,6 +160,11 @@ const InmuebleService = {
                     delete payloadSb.id;
                 }
                 const sbRes = await sb.from(APP_CONFIG.TABLES.INMUEBLES).insert(payloadSb).select().single();
+                if (sbRes && sbRes.error && /LIMITE_INMUEBLES/.test(String(sbRes.error.message || ''))) {
+                    // El plan no permite más inmuebles: no se guarda ni siquiera en el respaldo local
+                    this._saveLocal(list.filter(i => i.id !== nuevo.id));
+                    return { data: null, error: sbRes.error };
+                }
                 if (sbRes && sbRes.data) {
                     res = sbRes;
                     const idx = list.findIndex(i => i.id === nuevo.id);

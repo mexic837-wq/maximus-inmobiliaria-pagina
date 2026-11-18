@@ -151,7 +151,7 @@
     // ========== 4. BLOQUEO DE PAGOS EXTERNOS DENTRO DE LA APP ==========
     if (CONFIG.hidePayments) {
         var nativeProNotice = function () {
-            showNotice('Funciones Pro', 'Esta función está disponible para cuentas con plan Pro activo. Si ya tienes un plan, inicia sesión con la misma cuenta.');
+            showNotice('Funciones de asesor', 'Esta función está disponible para cuentas con plan Bronce activo. Si ya tienes un plan, inicia sesión con la misma cuenta.');
         };
         ['abrirModalSuscripcionPro', 'procesarPagoSuscripcionModal'].forEach(function (fn) {
             try {

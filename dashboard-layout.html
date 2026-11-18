@@ -59,12 +59,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
-    <script src="js/config.js?v=4.0"></script>
+    <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
     <script src="js/services.js?v=3.0"></script>
-    <script src="js/auth.js?v=4.0"></script>
-    <script src="js/payments.js?v=4.0"></script>
+    <script src="js/auth.js?v=4.5"></script>
+    <script src="js/payments.js?v=4.7"></script>
+    <script src="js/limites-inmuebles.js?v=1.2"></script>
+    <script src="js/asesor-publico.js?v=1.1"></script>
+    <script src="js/oficinas-aliadas.js?v=1.2"></script>
+    <script src="js/oficinas-aliadas-admin.js?v=1.0"></script>
+    <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
     <script src="js/busqueda-voz.js?v=1.0"></script>
     
     <style>
@@ -1115,6 +1120,13 @@
             .asesores-pista { animation: none !important; }
             .asesores-pista[aria-hidden="true"] { display: none; }
         }
+        /* Portada "Recomendado de la semana" (Captaciones Destacadas) */
+        @keyframes spotlightFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        .spotlight-fade { animation: spotlightFade .45s ease-out both; }
+        /* Filas deslizables de "Descubre" (sin barra visible) */
+        .descubre-fila { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .descubre-fila::-webkit-scrollbar { display: none; }
+        @media (prefers-reduced-motion: reduce) { .spotlight-fade { animation: none; } }
     </style>
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
@@ -1227,10 +1239,10 @@
                     <span class="sidebar-tooltip">Inmuebles</span>
                 </a>
 
-                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Captaciones Destacadas">
-                    <i class="ph-fill ph-diamond text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Captaciones Destacadas</span>
-                    <span class="sidebar-tooltip">Captaciones Destacadas</span>
+                <a href="#" data-target="view-exclusivas-maximus" class="nav-link text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Descubre">
+                    <i class="ph-fill ph-compass text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Descubre</span>
+                    <span class="sidebar-tooltip">Descubre</span>
                 </a>
 
                 <!-- Reseñas (Exclusivo Clientes / Usuarios Normales) -->
@@ -1275,11 +1287,6 @@
                     <span class="sidebar-tooltip">Colecciones</span>
                 </a>
 
-                <a href="#" data-target="view-vendidos" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cierres de mercado">
-                    <i class="ph ph-handshake text-xl flex-shrink-0"></i>
-                    <span class="sidebar-label">Cierres de mercado</span>
-                    <span class="sidebar-tooltip">Cierres de mercado</span>
-                </a>
 
                 <a href="#" data-target="view-cotizador" class="nav-link agente-only staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Cotizador Express">
                     <i class="ph ph-calculator text-xl flex-shrink-0"></i>
@@ -1324,6 +1331,13 @@
                     <i class="ph ph-identification-badge text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Equipo</span>
                     <span class="sidebar-tooltip">Equipo en Web</span>
+                </a>
+
+                <a href="#" id="nav-admin-oficinas" data-target="view-admin-oficinas" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Oficinas aliadas (Landing)">
+                    <i class="ph ph-buildings text-xl text-maximus-accent flex-shrink-0"></i>
+                    <span class="sidebar-label">Oficinas aliadas</span>
+                    <span id="badge-oficinas-pendientes" class="hidden sidebar-label ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700" title="Solicitudes por revisar">0</span>
+                    <span class="sidebar-tooltip">Oficinas aliadas</span>
                 </a>
 
                 <a href="#" id="nav-admin-faqs" data-target="view-admin-faqs" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Preguntas Frecuentes (Landing)">
@@ -1435,8 +1449,8 @@
                         <span>Inmuebles</span>
                     </a>
                     <a href="#" data-target="view-exclusivas-maximus" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
-                        <i class="ph-fill ph-diamond text-base text-maximus-accent"></i>
-                        <span>Captaciones Destacadas</span>
+                        <i class="ph-fill ph-compass text-base text-maximus-accent"></i>
+                        <span>Descubre</span>
                     </a>
                     <a href="#" data-target="view-perfil" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
@@ -1578,13 +1592,13 @@
                                 <i class="ph-fill ph-user-circle text-lg text-emerald-600"></i> Mi Perfil
                             </button>
 
-                            <!-- Opción Upgrade a Cuenta Pro (Visible para Clientes) -->
+                            <!-- Opción Upgrade a Cuenta Bronce (Visible para Clientes) -->
                             <button data-app-hide onclick="abrirModalSuscripcionPro('mensual'); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-maximus-accent transition-colors flex items-center justify-between group cursor-pointer">
                                 <div class="flex items-center gap-3">
                                     <i class="ph-fill ph-crown text-lg text-amber-500 group-hover:scale-110 transition-transform"></i>
-                                    <span>Activar Cuenta Pro</span>
+                                    <span>Activar Cuenta Bronce</span>
                                 </div>
-                                <span class="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 text-[10px] font-bold">Pro</span>
+                                <span class="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 text-[10px] font-bold">Bronce</span>
                             </button>
 
                             <!-- Subir Reseña (Usuarios Normales) -->
@@ -1963,7 +1977,12 @@
                 </div>
 
                 <!-- Grid de Tarjetas Compacto y Centrado (Mini Zoom Out) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch max-w-[680px] lg:max-w-[1000px] mx-auto">
+                <!-- Promo: el primer pago de cualquier plan dura 2 meses -->
+                <div class="flex items-center justify-center gap-2.5 mx-auto mb-5 max-w-xl px-4 py-2.5 rounded-full bg-gradient-to-r from-emerald-50 to-amber-50 dark:from-emerald-950/50 dark:to-amber-950/30 border border-emerald-200 dark:border-emerald-800/60 text-center">
+                    <span class="text-xl leading-none">🎁</span>
+                    <p class="text-xs sm:text-[13px] font-medium text-emerald-900 dark:text-emerald-100"><strong>Tu primer pago rinde el doble:</strong> paga 1 mes y recibe 2, en cualquier plan.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 items-stretch max-w-[680px] xl:max-w-[1280px] mx-auto">
 
                     <!-- Plan Gratuito (Cliente) -->
                     <div class="rounded-2xl p-4 sm:p-5 bg-white dark:bg-[#0B221C] border border-gray-200/90 dark:border-emerald-950/60 shadow-xs hover:shadow-md hover:border-gray-300 dark:hover:border-emerald-900 transition-all duration-200 flex flex-col justify-between">
@@ -2009,7 +2028,7 @@
                         </div>
                     </div>
 
-                    <!-- Plan Asesor Pro (Destacado Luxury Compacto) -->
+                    <!-- Plan Asesor Bronce (Destacado Luxury Compacto) -->
                     <div class="rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#082921] to-[#041712] border border-emerald-500/40 text-white shadow-lg shadow-emerald-950/20 hover:shadow-xl hover:shadow-emerald-900/30 hover:border-emerald-400/60 transition-all duration-200 flex flex-col justify-between relative">
                         <!-- Badge "Más Popular" Compacto -->
                         <div class="absolute -top-3 right-5 z-20 pointer-events-none">
@@ -2021,9 +2040,9 @@
 
                         <div>
                             <div class="mb-3 pt-0.5">
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-300/90 mb-1">Asesor Inmobiliario Pro</p>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-300/90 mb-1">Asesor Inmobiliario Bronce</p>
                                 <div class="flex items-baseline gap-1.5">
-                                    <span id="precioProDisplay" class="text-2xl sm:text-3xl font-black text-white transition-all duration-150">$4.99</span>
+                                    <span id="precioProDisplay" class="text-2xl sm:text-3xl font-black text-white transition-all duration-150">$2.99</span>
                                     <span id="periodoProDisplay" class="text-xs font-medium text-gray-300">/mes</span>
                                 </div>
                                 <p id="ahorroBadgePro" class="hidden text-[10px] font-bold text-emerald-300 mt-0.5 flex items-center gap-1">
@@ -2043,7 +2062,7 @@
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <i class="ph-bold ph-check text-emerald-400 text-xs mt-0.5 shrink-0"></i>
-                                    <span>Carga ilimitada de inmuebles al catálogo</span>
+                                    <span>Publica hasta <strong class="text-white">3 inmuebles</strong> en el catálogo</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <i class="ph-bold ph-check text-emerald-400 text-xs mt-0.5 shrink-0"></i>
@@ -2072,8 +2091,66 @@
                         </div>
                     </div>
 
-                    <!-- Plan Asesor Platinum (máxima visibilidad) -->
-                    <div class="plan-platinum-card rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#1E242B] via-[#14181D] to-[#0B0D10] border border-slate-400/50 text-white shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-slate-700/30 hover:border-slate-300/70 transition-all duration-200 flex flex-col justify-between relative md:col-span-2 lg:col-span-1">
+                    <!-- Plan Asesor Gold (plan medio: más inmuebles + reseñas en sus fichas; sin ventaja de posición) -->
+                    <div class="plan-gold-card rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#2A2110] via-[#1C160A] to-[#0F0C06] border border-amber-400/50 text-white shadow-lg shadow-amber-950/30 hover:shadow-xl hover:shadow-amber-900/30 hover:border-amber-300/70 transition-all duration-200 flex flex-col justify-between relative">
+                        <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                            <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-amber-300/10 blur-2xl"></div>
+                        </div>
+                        <div class="absolute -top-3 right-5 z-20 pointer-events-none">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-200 to-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-widest shadow-md border border-white/60">
+                                <i class="ph-fill ph-crown text-[10px]"></i>
+                                Con reseñas
+                            </span>
+                        </div>
+
+                        <div class="relative">
+                            <div class="mb-3 pt-0.5">
+                                <p class="text-[11px] font-bold uppercase tracking-wider mb-1 text-amber-300">Asesor Inmobiliario Gold</p>
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-2xl sm:text-3xl font-black text-white">$4.99</span>
+                                    <span class="text-xs font-medium text-amber-100/70">/mes</span>
+                                </div>
+                                <p class="text-[11px] text-amber-100/70 mt-1 leading-relaxed">
+                                    Más publicidad: tu perfil y tus inmuebles frente a clientes y asesores de todo Táchira.
+                                </p>
+                            </div>
+
+                            <hr class="border-white/10 my-3">
+
+                            <ul class="space-y-2 text-[12px] text-amber-50/90">
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-bold ph-check text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span><strong class="text-white">Todo lo del plan Bronce</strong></span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-buildings text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Publica hasta <strong class="text-white">7 inmuebles</strong></span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span><strong class="text-white">Reseñas de tus clientes</strong> y calificación de 1 a 5 estrellas</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Tus reseñas visibles en la ficha de cada uno de tus inmuebles</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Insignia Gold en tu perfil</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-5 relative">
+                            <button type="button" id="btnComenzarGold" onclick="abrirModalSuscripcionPro('gold')" class="w-full py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-200 hover:to-amber-300 text-amber-950 font-extrabold text-xs sm:text-[13px] shadow-sm hover:shadow-md active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                                <span>Quiero ser Gold</span>
+                                <i class="ph-bold ph-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Plan Asesor Platinum (el más alto: recibe propietarios de la web en cola rotativa) -->
+                    <div class="plan-platinum-card rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#1E242B] via-[#14181D] to-[#0B0D10] border border-slate-400/50 text-white shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-slate-700/30 hover:border-slate-300/70 transition-all duration-200 flex flex-col justify-between relative">
                         <!-- Brillo platino (recortado aquí, no en la tarjeta, para no cortar la etiqueta superior) -->
                         <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
                             <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-slate-300/10 blur-2xl"></div>
@@ -2081,7 +2158,7 @@
                         <div class="absolute -top-3 right-5 z-20 pointer-events-none">
                             <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-slate-100 to-slate-300 text-slate-900 text-[9px] font-black uppercase tracking-widest shadow-md border border-white/60">
                                 <i class="ph-fill ph-diamond text-[10px]"></i>
-                                Máxima visibilidad
+                                Recibe clientes
                             </span>
                         </div>
 
@@ -2093,7 +2170,7 @@
                                     <span class="text-xs font-medium text-slate-300">/mes</span>
                                 </div>
                                 <p class="text-[11px] text-slate-300/80 mt-1 leading-relaxed">
-                                    Más publicidad: tu perfil y tus inmuebles frente a clientes y asesores de todo Táchira.
+                                    Te llegan por WhatsApp los propietarios que quieren vender o alquilar su inmueble.
                                 </p>
                             </div>
 
@@ -2102,23 +2179,19 @@
                             <ul class="space-y-2 text-[12px] text-slate-200">
                                 <li class="flex items-start gap-2">
                                     <i class="ph-bold ph-check text-slate-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span><strong class="text-white">Todo lo del plan Pro</strong></span>
+                                    <span><strong class="text-white">Todo lo del plan Gold</strong></span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span>Tu perfil en <strong class="text-white">Captaciones Destacadas</strong> y en la web pública</span>
+                                    <i class="ph-bold ph-infinity text-emerald-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Publica <strong class="text-white">inmuebles ilimitados</strong></span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span>Tus inmuebles destacados ante clientes y asesores</span>
+                                    <i class="ph-fill ph-whatsapp-logo text-emerald-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Recibes por WhatsApp a los propietarios que usan <strong class="text-white">“Publica tu inmueble”</strong></span>
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span>Botón de WhatsApp directo en tu tarjeta de asesor</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span>Reseñas de clientes y calificación de 1 a 5 estrellas</span>
+                                    <i class="ph-fill ph-arrows-clockwise text-emerald-300 text-xs mt-0.5 shrink-0"></i>
+                                    <span>Reparto en cola rotativa y justa entre asesores Platinum</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
@@ -2270,7 +2343,7 @@
                             </button>
                             <div class="faq-body max-h-0 overflow-hidden transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
                                 <div class="faq-motion-inner px-4 sm:px-5 pb-4 pt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-emerald-950/60 opacity-0 -translate-y-2 transition-all duration-300">
-                                    <strong>Por supuesto, no hay cláusulas de permanencia.</strong> Puedes cancelar tu membresía con un solo clic. Tu cuenta permanecerá con privilegios Pro hasta el último día del ciclo facturado y luego regresará automáticamente al plan gratuito sin cargos adicionales.
+                                    <strong>Por supuesto, no hay cláusulas de permanencia.</strong> Puedes cancelar tu membresía con un solo clic. Tu cuenta permanecerá con privilegios Bronce hasta el último día del ciclo facturado y luego regresará automáticamente al plan gratuito sin cargos adicionales.
                                 </div>
                             </div>
                         </div>
@@ -2285,7 +2358,7 @@
                     try { u = (typeof AuthService !== 'undefined' && AuthService.getCurrentUser()) || JSON.parse(localStorage.getItem('maximus_user') || 'null'); } catch (_) {}
                     const rol = (u && (u.role || u.rol)) || 'cliente';
                     const plan = (u && u.plan) || 'free';
-                    const actual = (rol === 'asesor_externo' && plan === 'platinum') ? 'platinum'
+                    const actual = (rol === 'asesor_externo' && (plan === 'platinum' || plan === 'gold')) ? plan
                                  : (rol === 'asesor_externo') ? 'pro' : 'free';
                     const PILL = '<i class="ph-bold ph-check-circle text-sm"></i><span>Tu plan actual</span>';
                     const gratis = document.getElementById('planes-estado-gratis');
@@ -2297,8 +2370,9 @@
                             ? PILL.replace('Tu plan actual', textoRenovar)
                             : '<span>' + textoNormal + '</span><i class="ph-bold ph-arrow-right text-xs"></i>';
                     };
-                    marcar('btnComenzarPro', actual === 'pro', actual === 'platinum' ? 'Cambiar a Pro' : 'Comenzar ahora', 'Tu plan actual · Renovar');
-                    marcar('btnComenzarPlatinum', actual === 'platinum', actual === 'pro' ? 'Mejorar a Platinum' : 'Quiero ser Platinum', 'Tu plan actual · Renovar');
+                    marcar('btnComenzarPro', actual === 'pro', (actual === 'platinum' || actual === 'gold') ? 'Cambiar a Bronce' : 'Comenzar ahora', 'Tu plan actual · Renovar');
+                    marcar('btnComenzarGold', actual === 'gold', actual === 'pro' ? 'Mejorar a Gold' : (actual === 'platinum' ? 'Cambiar a Gold' : 'Quiero ser Gold'), 'Tu plan actual · Renovar');
+                    marcar('btnComenzarPlatinum', actual === 'platinum', (actual === 'pro' || actual === 'gold') ? 'Mejorar a Platinum' : 'Quiero ser Platinum', 'Tu plan actual · Renovar');
                 };
 
                 // Función interactiva de cambio de periodo Mensual / Anual
@@ -2320,7 +2394,7 @@
                             precioPro.style.opacity = '0';
                             precioPro.style.transform = 'scale(0.9)';
                             setTimeout(() => {
-                                precioPro.textContent = '$4.99';
+                                precioPro.textContent = '$2.99';
                                 precioPro.style.opacity = '1';
                                 precioPro.style.transform = 'scale(1)';
                             }, 120);
@@ -2336,7 +2410,7 @@
                             precioPro.style.opacity = '0';
                             precioPro.style.transform = 'scale(0.9)';
                             setTimeout(() => {
-                                precioPro.textContent = '$4.99';
+                                precioPro.textContent = '$2.99';
                                 precioPro.style.opacity = '1';
                                 precioPro.style.transform = 'scale(1)';
                             }, 120);
@@ -2387,13 +2461,13 @@
 
             <!-- B. VISTA: INMUEBLES (Ajustada, Compacta y con 4 Columnas) -->
             <section id="view-inmuebles" class="view-section max-w-[1550px] mx-auto space-y-3.5 pb-6">
-                <!-- Banner segmentado para cuentas gratuitas: Vendedor (captación MAXIMUS) / Asesor (Membresía Pro). Dismissible -->
+                <!-- Banner segmentado para cuentas gratuitas: Vendedor (captación MAXIMUS) / Asesor (Membresía Bronce). Dismissible -->
                 <div id="banner-pro-cliente" class="cliente-only relative rounded-2xl bg-gradient-to-r from-[#06241E] via-[#0A3D33] to-[#06241E] text-white shadow-md overflow-hidden">
                     <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-emerald-400/10 blur-2xl pointer-events-none"></div>
                     <button type="button" onclick="document.getElementById('banner-pro-cliente').style.display='none'; localStorage.setItem('maximus_banner_pro_dismissed', 'true');" class="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" title="Cerrar aviso">
                         <i class="ph-bold ph-x"></i>
                     </button>
-                    <div class="relative grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/10">
+                    <div class="relative grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 divide-y md:divide-y-0 xl:divide-x divide-white/10">
                         <!-- Opción 1: Propietario que quiere vender (lead de captación para MAXIMUS) -->
                         <div class="flex items-center gap-3 p-3 sm:p-4 pr-11 md:pr-4">
                             <div class="w-10 h-10 rounded-xl bg-amber-400/15 text-amber-300 ring-1 ring-amber-300/30 flex items-center justify-center text-lg shrink-0">
@@ -2407,17 +2481,30 @@
                                 Valorar gratis
                             </button>
                         </div>
-                        <!-- Opción 2: Asesor que quiere publicar (Membresía Pro) -->
-                        <div data-app-hide class="flex items-center gap-3 p-3 sm:p-4 md:pr-12">
+                        <!-- Opción 2: Asesor que quiere publicar (Membresía Bronce) -->
+                        <div data-app-hide class="flex items-center gap-3 p-3 sm:p-4 md:pr-12 xl:pr-4 md:border-l xl:border-l-0 md:border-white/10">
                             <div class="w-10 h-10 rounded-xl bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-300/30 flex items-center justify-center text-lg shrink-0">
                                 <i class="ph-fill ph-briefcase"></i>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <p class="text-[13px] font-bold leading-tight flex items-center gap-1.5 flex-wrap">¿Eres asesor inmobiliario? <span class="px-1.5 py-px rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">Pro</span></p>
+                                <p class="text-[13px] font-bold leading-tight flex items-center gap-1.5 flex-wrap">¿Eres asesor inmobiliario? <span class="px-1.5 py-px rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">Bronce</span></p>
                                 <p class="hidden sm:block text-[11px] text-white/60 mt-0.5">Publica en este catálogo, usa el CRM y el cotizador.</p>
                             </div>
                             <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 text-xs font-bold transition cursor-pointer">
                                 Ver planes
+                            </button>
+                        </div>
+                        <!-- Opción 3: Inmobiliaria que quiere sumarse a la red de oficinas aliadas -->
+                        <div class="flex items-center gap-3 p-3 sm:p-4 md:col-span-2 xl:col-span-1 md:border-t xl:border-t-0 md:border-white/10 xl:pr-12">
+                            <div class="w-10 h-10 rounded-xl bg-sky-400/15 text-sky-300 ring-1 ring-sky-300/30 flex items-center justify-center text-lg shrink-0">
+                                <i class="ph-fill ph-buildings"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[13px] font-bold leading-tight flex items-center gap-1.5 flex-wrap">¿Inmobiliaria? <span class="px-1.5 py-px rounded-full bg-sky-400/20 text-sky-300 text-[9px] font-bold uppercase tracking-wider">Aliados</span></p>
+                                <p class="hidden sm:block text-[11px] text-white/60 mt-0.5">Súmate a la red de oficinas aliadas de MAXIMUS.</p>
+                            </div>
+                            <button type="button" onclick="abrirRegistroInmobiliaria('panel-banner')" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-gray-950 text-xs font-bold transition cursor-pointer">
+                                Regístrate aquí
                             </button>
                         </div>
                     </div>
@@ -2482,12 +2569,7 @@
                                 </div>
                             </div>
                             
-                            <!-- Botón Filtro Rápido: Captaciones Destacadas (MAXIMUS + asesores Platinum) -->
-                            <button id="btn-filtro-maximus-toggle" onclick="toggleFiltroSoloMaximus()" class="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full text-[10.5px] sm:text-[11px] font-extrabold uppercase tracking-wider transition-all border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-maximus-dark shadow-sm hover:scale-[1.02] cursor-pointer shrink-0">
-                                <i class="ph-fill ph-diamond text-maximus-accent text-sm"></i>
-                                <span>Captaciones Destacadas</span>
-                                <span id="badge-count-captaciones-toggle" class="bg-maximus-accent text-white text-[9px] px-1.5 py-0.2 rounded-full font-black ml-0.5">6</span>
-                            </button>
+                            <!-- (Se quitó el filtro rápido "Captaciones Destacadas": daba ventaja por plan) -->
                             <div class="relative shrink-0" id="filtrosDropdownWrapper">
                                 <button onclick="toggleFiltrosDropdown()" class="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-[10.5px] sm:text-[11px] font-bold rounded-full transition-colors relative z-10 shrink-0 cursor-pointer">
                                     <i class="ph-fill ph-faders"></i> Filtros
@@ -2651,115 +2733,126 @@
                  ======================================================== -->
             <section id="view-exclusivas-maximus" class="view-section max-w-[1240px] mx-auto space-y-10 pb-10">
 
-                <!-- HERO (compacto): qué es + cómo funciona en 3 pasos -->
-                <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B2B25] via-[#07201B] to-[#030F0C] text-white px-5 py-6 sm:px-8 sm:py-7 shadow-lg shadow-emerald-950/20">
-                    <div class="absolute -top-24 -right-20 w-72 h-72 rounded-full bg-slate-200/10 blur-3xl pointer-events-none"></div>
-                    <div class="absolute inset-0 opacity-[0.06] pointer-events-none" style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 22px 22px;"></div>
+                <!-- ========================================================
+                     DESCUBRE: explorar inmuebles por criterios objetivos.
+                     Ninguna fila depende del plan del asesor: todos compiten igual.
+                     ======================================================== -->
 
-                    <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-                        <div class="min-w-0">
-                            <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-slate-300">
-                                <i class="ph-fill ph-diamond text-xs"></i> Asesores verificados · Táchira
+                <!-- HERO -->
+                <div class="relative overflow-clip rounded-[28px] bg-gradient-to-br from-[#0B2B25] via-[#07201B] to-[#030F0C] text-white shadow-xl shadow-emerald-950/20">
+                    <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-40 right-0 w-[28rem] h-[28rem] rounded-full bg-slate-200/[0.07] blur-3xl pointer-events-none"></div>
+                    <div class="absolute inset-0 opacity-[0.05] pointer-events-none" style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 22px 22px;"></div>
+
+                    <div class="relative grid xl:grid-cols-[1.1fr_1fr] gap-7 p-5 sm:p-8 lg:p-10">
+                        <div class="flex flex-col justify-center min-w-0">
+                            <span class="inline-flex items-center gap-1.5 self-start text-[10px] font-black uppercase tracking-[0.18em] text-emerald-200/80 bg-white/[0.06] border border-white/10 rounded-full px-3 py-1">
+                                <i class="ph-fill ph-compass text-xs"></i> Explora el Táchira
                             </span>
-                            <h2 class="mt-1.5 text-2xl sm:text-3xl md:text-[34px] font-black tracking-tight leading-tight">
-                                Captaciones <span class="bg-gradient-to-r from-slate-100 via-white to-slate-300 bg-clip-text text-transparent">Destacadas</span>
+                            <h2 class="mt-4 text-[30px] sm:text-4xl lg:text-[46px] font-black tracking-tight leading-[1.05]">
+                                Descubre tu <span class="bg-gradient-to-r from-emerald-200 via-white to-slate-300 bg-clip-text text-transparent">próximo lugar</span>
                             </h2>
-                            <p class="mt-1.5 text-sm text-emerald-50/75 max-w-xl">Encuentra tu próximo inmueble con asesores calificados por sus propios clientes.</p>
-                        </div>
+                            <p class="mt-3 text-sm sm:text-[15px] text-emerald-50/75 max-w-md leading-relaxed">Lo más nuevo, por zonas y en colecciones pensadas para lo que buscas.</p>
 
-                        <!-- Indicadores en una sola línea -->
-                        <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 text-xs sm:text-[13px]">
-                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.07] border border-white/10"><i class="ph-bold ph-users-three text-emerald-300"></i><strong id="stat-asesores-count" class="font-black">--</strong><span class="text-emerald-50/70">asesores</span></span>
-                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.07] border border-white/10"><i class="ph-bold ph-house-line text-emerald-300"></i><strong id="stat-captaciones-count" class="font-black">--</strong><span class="text-emerald-50/70">inmuebles</span></span>
-                            <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/[0.07] border border-white/10"><i class="ph-fill ph-star text-amber-300"></i><strong id="stat-promedio-estrellas" class="font-black">--</strong></span>
-                        </div>
-                    </div>
+                            <form class="mt-6 relative max-w-md" onsubmit="event.preventDefault(); descubreBuscar(document.getElementById('descubre-buscador').value);">
+                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
+                                <input type="text" id="descubre-buscador" placeholder="Zona, tipo o palabra clave" class="w-full h-12 rounded-2xl bg-white text-gray-900 placeholder:text-gray-400 pl-11 pr-28 text-sm font-medium outline-none focus:ring-4 focus:ring-emerald-400/30 shadow-lg shadow-black/20">
+                                <button type="submit" class="absolute right-1.5 top-1/2 -translate-y-1/2 h-9 px-4 rounded-xl bg-maximus-dark hover:bg-black text-white text-xs font-extrabold transition-colors cursor-pointer">Buscar</button>
+                            </form>
 
-                    <!-- Cómo funciona -->
-                    <ol class="keep-grid relative mt-5 grid grid-cols-3 gap-2 sm:gap-3">
-                        <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-3.5 py-2.5 rounded-2xl bg-white/[0.05] border border-white/10 text-center sm:text-left">
-                            <span class="w-8 h-8 rounded-xl bg-white text-[#0B2B25] text-sm font-black flex items-center justify-center shrink-0">1</span>
-                            <span class="text-[11px] sm:text-[13px] leading-snug"><strong>Elige un asesor</strong><span class="hidden sm:block text-[11px] text-emerald-50/60">Mira su calificación y especialidad</span></span>
-                        </li>
-                        <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-3.5 py-2.5 rounded-2xl bg-white/[0.05] border border-white/10 text-center sm:text-left">
-                            <span class="w-8 h-8 rounded-xl bg-white text-[#0B2B25] text-sm font-black flex items-center justify-center shrink-0">2</span>
-                            <span class="text-[11px] sm:text-[13px] leading-snug"><strong>Revisa sus inmuebles</strong><span class="hidden sm:block text-[11px] text-emerald-50/60">Toca “Ver inmuebles” para filtrar</span></span>
-                        </li>
-                        <li class="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3 px-2 sm:px-3.5 py-2.5 rounded-2xl bg-white/[0.05] border border-white/10 text-center sm:text-left">
-                            <span class="w-8 h-8 rounded-xl bg-[#25D366] text-white text-base flex items-center justify-center shrink-0"><i class="ph-fill ph-whatsapp-logo"></i></span>
-                            <span class="text-[11px] sm:text-[13px] leading-snug"><strong>Escríbele por WhatsApp</strong><span class="hidden sm:block text-[11px] text-emerald-50/60">Directo, sin intermediarios</span></span>
-                        </li>
-                    </ol>
-                </div>
-
-                <!-- Para asesores Pro: invitación a Platinum (fuera del hero para no confundir a los clientes) -->
-                <div id="cta-hazte-platinum" class="hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-3.5 rounded-2xl border border-slate-300/80 dark:border-slate-700 bg-gradient-to-r from-slate-50 via-white to-slate-100 dark:from-slate-900/60 dark:via-[#0A1F1B] dark:to-slate-900/60">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-300 text-slate-900 flex items-center justify-center text-lg shrink-0 shadow-sm"><i class="ph-fill ph-diamond"></i></span>
-                            <div class="min-w-0">
-                                <p class="text-sm font-extrabold text-gray-900 dark:text-white">¿Quieres aparecer aquí?</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Con Platinum tu perfil y tus inmuebles se muestran a todos los clientes, con reseñas y WhatsApp directo.</p>
+                            <div class="mt-6 flex items-center gap-5 sm:gap-7 text-xs">
+                                <div><p class="text-2xl font-black leading-none" id="descubre-stat-total">--</p><p class="mt-1 text-emerald-50/60 font-medium">inmuebles</p></div>
+                                <span class="w-px h-8 bg-white/15"></span>
+                                <div><p class="text-2xl font-black leading-none" id="descubre-stat-zonas">--</p><p class="mt-1 text-emerald-50/60 font-medium">zonas</p></div>
+                                <span class="w-px h-8 bg-white/15"></span>
+                                <div><p class="text-2xl font-black leading-none" id="descubre-stat-nuevos">--</p><p class="mt-1 text-emerald-50/60 font-medium">nuevos esta semana</p></div>
                             </div>
                         </div>
-                        <button type="button" onclick="abrirModalSuscripcionPro('platinum')" class="shrink-0 inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-extrabold transition-all cursor-pointer">
-                            Hazte Platinum · $9.99/mes <i class="ph-bold ph-arrow-right"></i>
-                        </button>
+
+                        <!-- Tarjeta "Descubre deslizando" -->
+                        <div class="min-w-0">
+                            <button type="button" onclick="abrirDescubreDeslizando()" class="group relative w-full h-full min-h-[280px] rounded-3xl overflow-hidden text-left cursor-pointer bg-white/[0.05] border border-white/10">
+                                <div id="descubre-pila-preview" class="absolute inset-0"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
+                                <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-200"><i class="ph-fill ph-hand-swipe-right text-sm"></i> Nuevo</span>
+                                    <p class="mt-1 text-2xl sm:text-[28px] font-black leading-tight">Descubre deslizando</p>
+                                    <p class="mt-1 text-sm text-white/75 max-w-sm">Desliza a la derecha lo que te gusta y se guarda en tus favoritos. A la izquierda, el siguiente.</p>
+                                    <span class="mt-4 inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-white text-[#0B2B25] text-sm font-extrabold group-hover:bg-emerald-50 transition">Empezar <i class="ph-bold ph-arrow-right"></i></span>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- BLOQUE 1: ASESORES DESTACADOS -->
+                <!-- RECIÉN LLEGADOS -->
                 <div class="space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+                    <div class="flex items-end justify-between gap-3">
                         <div>
-                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white tracking-tight flex items-center gap-2">
-                                Asesores destacados
-                                <span id="badge-asesores-activos-count" class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-bold">…</span>
-                            </h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Escríbeles directo o mira solo los inmuebles de cada uno.</p>
+                            <h3 class="text-xl sm:text-2xl font-black text-maximus-dark dark:text-white tracking-tight flex items-center gap-2"><i class="ph-fill ph-sparkle text-amber-400"></i> Recién llegados</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Los últimos inmuebles publicados, de todos los asesores.</p>
                         </div>
-                        <div class="relative w-full sm:w-[280px]">
-                            <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="text" id="buscador-asesores-platinum" oninput="renderAsesoresMaximus()" placeholder="Buscar por nombre o especialidad" class="w-full h-11 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 rounded-xl pl-10 pr-4 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
+                        <div class="hidden sm:flex items-center gap-2">
+                            <button type="button" onclick="document.getElementById('descubre-nuevos').scrollBy({left:-600,behavior:'smooth'})" class="w-10 h-10 rounded-xl border border-gray-200 dark:border-emerald-900/50 bg-white dark:bg-[#0A1F1B] hover:bg-gray-50 flex items-center justify-center cursor-pointer" aria-label="Anteriores"><i class="ph-bold ph-caret-left"></i></button>
+                            <button type="button" onclick="document.getElementById('descubre-nuevos').scrollBy({left:600,behavior:'smooth'})" class="w-10 h-10 rounded-xl border border-gray-200 dark:border-emerald-900/50 bg-white dark:bg-[#0A1F1B] hover:bg-gray-50 flex items-center justify-center cursor-pointer" aria-label="Siguientes"><i class="ph-bold ph-caret-right"></i></button>
                         </div>
                     </div>
-
-                    <div id="grid-asesores-maximus" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-                        <!-- Generado vía JS -->
-                    </div>
-                    <div id="contenedor-ver-mas-asesores" class="hidden justify-center pt-2"></div>
+                    <div id="descubre-nuevos" class="descubre-fila flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"></div>
                 </div>
 
-                <!-- BLOQUE 2: INMUEBLES DE ASESORES PLATINUM -->
-                <div id="contenedor-captaciones-vip" class="space-y-5 scroll-mt-6">
+                <!-- EXPLORA POR ZONA -->
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-black text-maximus-dark dark:text-white tracking-tight flex items-center gap-2"><i class="ph-fill ph-map-trifold text-emerald-600"></i> Explora por zona</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Las zonas con más opciones ahora mismo.</p>
+                    </div>
+                    <div id="descubre-zonas" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+                </div>
+
+                <!-- COLECCIONES -->
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-black text-maximus-dark dark:text-white tracking-tight flex items-center gap-2"><i class="ph-fill ph-stack text-emerald-600"></i> Colecciones</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Inmuebles agrupados según lo que quieres hacer.</p>
+                    </div>
+                    <div id="descubre-colecciones" class="descubre-fila flex gap-3 sm:gap-4 overflow-x-auto snap-x pb-2 -mx-4 px-4 sm:mx-0 sm:px-0"></div>
+                </div>
+
+                <!-- RESULTADOS -->
+                <div id="descubre-resultados" class="space-y-5 scroll-mt-6">
                     <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                         <div>
-                            <h3 class="text-xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Inmuebles destacados</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Seleccionados de asesores verificados, disponibles para visitar.</p>
+                            <h3 id="descubre-resultados-titulo" class="text-xl sm:text-2xl font-black text-maximus-dark dark:text-white tracking-tight">Todos los inmuebles</h3>
+                            <p id="descubre-resultados-sub" class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Ordenados del más reciente al más antiguo.</p>
                         </div>
-                        <div class="relative w-full lg:w-auto lg:min-w-[300px]">
-                            <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                            <input type="text" id="buscador-captaciones-vip" oninput="buscarCaptacionesVip()" placeholder="Buscar por título o zona..." class="w-full h-11 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 rounded-xl pl-10 pr-4 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" id="descubre-limpiar" onclick="descubreLimpiar()" class="hidden h-9 px-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 text-xs font-bold items-center gap-1 cursor-pointer"><i class="ph-bold ph-x"></i> Quitar filtro</button>
+                            <div id="descubre-chips-op" class="inline-flex p-1 rounded-xl bg-gray-100 dark:bg-emerald-950/40">
+                                <button type="button" data-op="" onclick="descubreOperacion('')" class="h-9 px-3.5 rounded-lg text-xs font-bold transition cursor-pointer">Todos</button>
+                                <button type="button" data-op="venta" onclick="descubreOperacion('venta')" class="h-9 px-3.5 rounded-lg text-xs font-bold transition cursor-pointer">Venta</button>
+                                <button type="button" data-op="alquiler" onclick="descubreOperacion('alquiler')" class="h-9 px-3.5 rounded-lg text-xs font-bold transition cursor-pointer">Alquiler</button>
+                            </div>
                         </div>
                     </div>
+                    <div id="descubre-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                    <div id="descubre-mas" class="hidden justify-center pt-2"></div>
+                </div>
 
-                    <!-- Banner de filtro activo por asesor -->
-                    <div id="banner-filtro-asesor-activo" class="hidden items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl">
-                        <div class="flex items-center gap-2 text-xs text-slate-800 dark:text-slate-100 font-medium flex-wrap">
-                            <i class="ph-fill ph-diamond text-slate-500"></i>
-                            <span>Mostrando solo a: <strong id="nombre-asesor-filtrado" class="font-extrabold"></strong></span>
-                            <span id="contador-inmuebles-filtrados" class="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2 py-0.5 rounded-full text-[10px] font-bold border border-slate-200 dark:border-slate-700"></span>
+                <!-- MODAL: DESCUBRE DESLIZANDO -->
+                <div id="modal-descubre-deslizando" class="fixed inset-0 z-[1000] hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Descubre deslizando" onclick="if (event.target === this) cerrarDescubreDeslizando()">
+                    <div class="w-full max-w-sm flex flex-col items-center gap-4">
+                        <div class="w-full flex items-center justify-between text-white">
+                            <p class="text-sm font-extrabold flex items-center gap-1.5"><i class="ph-fill ph-hand-swipe-right"></i> Descubre deslizando</p>
+                            <button type="button" onclick="cerrarDescubreDeslizando()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer" aria-label="Cerrar"><i class="ph-bold ph-x"></i></button>
                         </div>
-                        <button onclick="limpiarFiltroAsesor()" class="shrink-0 px-3 py-1.5 rounded-lg bg-white dark:bg-[#0A1F1B] hover:bg-gray-50 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center gap-1 transition cursor-pointer">
-                            <i class="ph-bold ph-x"></i> Ver todos
-                        </button>
+                        <div id="descubre-pila" class="relative w-full aspect-[3/4] max-h-[62vh]"></div>
+                        <div class="flex items-center gap-5">
+                            <button type="button" onclick="descubreDecidir(false)" class="w-14 h-14 rounded-full bg-white text-rose-500 text-2xl shadow-xl flex items-center justify-center hover:scale-105 transition cursor-pointer" aria-label="Siguiente"><i class="ph-bold ph-x"></i></button>
+                            <button type="button" onclick="descubreVerActual()" class="w-11 h-11 rounded-full bg-white/15 text-white text-lg flex items-center justify-center hover:bg-white/25 transition cursor-pointer" aria-label="Ver detalle"><i class="ph-bold ph-info"></i></button>
+                            <button type="button" onclick="descubreDecidir(true)" class="w-14 h-14 rounded-full bg-emerald-500 text-white text-2xl shadow-xl flex items-center justify-center hover:scale-105 transition cursor-pointer" aria-label="Me gusta"><i class="ph-fill ph-heart"></i></button>
+                        </div>
+                        <p id="descubre-pila-contador" class="text-xs text-white/60"></p>
                     </div>
-
-                    <div id="grid-exclusivas-maximus" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-                        <!-- Generado vía JS -->
-                    </div>
-
-                    <div id="contenedor-ver-mas-captaciones" class="hidden justify-center pt-2"></div>
                 </div>
 
                 <!-- MODAL: RESEÑAS DEL ASESOR -->
@@ -2768,7 +2861,7 @@
                         <div class="px-5 sm:px-6 pt-5 pb-4 border-b border-gray-100 dark:border-emerald-950/50 flex items-start gap-3.5 shrink-0">
                             <img id="resenas-asesor-avatar" src="" alt="" class="w-14 h-14 rounded-2xl object-cover ring-2 ring-slate-200 shrink-0">
                             <div class="min-w-0 flex-1">
-                                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500 flex items-center gap-1"><i class="ph-fill ph-diamond"></i> Asesor Platinum</p>
+                                <p id="resenas-asesor-etiqueta" class="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-300 flex items-center gap-1"><i class="ph-fill ph-seal-check"></i> Asesor verificado</p>
                                 <h3 id="resenas-asesor-nombre" class="text-lg font-black text-gray-900 dark:text-white truncate"></h3>
                                 <div class="flex items-center gap-1.5 mt-0.5">
                                     <span id="resenas-asesor-estrellas" class="flex items-center text-amber-400 text-sm"></span>
@@ -4172,6 +4265,60 @@
                 </div>
             </div>
 
+            <!-- VISTA: OFICINAS ALIADAS (LANDING PAGE) · lógica en js/oficinas-aliadas-admin.js -->
+            <section id="view-admin-oficinas" class="view-section admin-only max-w-[1400px] mx-auto space-y-6">
+                <div class="pt-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Oficinas aliadas</h2>
+                        <p class="text-gray-500 mt-1 text-sm sm:text-base font-medium max-w-2xl">Elige qué inmobiliarias aparecen con su logo en la página de inicio. Aquí también llegan las solicitudes de "¿Inmobiliaria? Regístrate aquí".</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="/inicio#oficinas-aliadas" target="_blank" class="px-5 py-3 rounded-xl border border-gray-200 dark:border-[#14352D] bg-white dark:bg-[#0C221D] hover:bg-gray-50 text-gray-700 dark:text-gray-200 text-sm font-bold shadow-sm transition-all flex items-center gap-2">
+                            <i class="ph-bold ph-arrow-square-out text-base text-maximus-accent"></i>
+                            <span>Ver en Landing</span>
+                        </a>
+                        <button type="button" onclick="OficinasAdmin.nueva()" class="px-6 py-3 rounded-xl bg-maximus-dark hover:bg-black text-white text-sm font-bold shadow-lg shadow-maximus-dark/20 transition-all hover:-translate-y-0.5 flex items-center gap-2 cursor-pointer">
+                            <i class="ph-bold ph-plus text-base text-emerald-400"></i>
+                            <span>Agregar oficina</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-maximus-silver/20 shadow-sm flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-maximus-accent text-xl flex items-center justify-center shrink-0"><i class="ph-fill ph-eye"></i></div>
+                        <div><p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">En la web</p><h4 id="kpi-oficinas-publicadas" class="text-2xl font-extrabold text-maximus-dark dark:text-white">0</h4></div>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-maximus-silver/20 shadow-sm flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 text-xl flex items-center justify-center shrink-0"><i class="ph-fill ph-clock"></i></div>
+                        <div><p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Por revisar</p><h4 id="kpi-oficinas-pendientes" class="text-2xl font-extrabold text-amber-600">0</h4></div>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-maximus-silver/20 shadow-sm flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-gray-100 text-gray-500 text-xl flex items-center justify-center shrink-0"><i class="ph-fill ph-eye-slash"></i></div>
+                        <div><p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Ocultas</p><h4 id="kpi-oficinas-ocultas" class="text-2xl font-extrabold text-gray-600 dark:text-gray-300">0</h4></div>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-maximus-silver/20 shadow-sm flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 text-xl flex items-center justify-center shrink-0"><i class="ph-fill ph-buildings"></i></div>
+                        <div><p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total</p><h4 id="kpi-oficinas-total" class="text-2xl font-extrabold text-blue-600">0</h4></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" data-filtro-oficinas="todas">Todas</button>
+                        <button type="button" data-filtro-oficinas="publicadas">En la web</button>
+                        <button type="button" data-filtro-oficinas="pendientes">Por revisar</button>
+                        <button type="button" data-filtro-oficinas="ocultas">Ocultas</button>
+                    </div>
+                    <div class="relative sm:w-72">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="buscador-oficinas" placeholder="Buscar por nombre o zona" class="w-full h-10 bg-white dark:bg-[#0A1F1B] border border-gray-200 dark:border-emerald-900/50 rounded-xl pl-10 pr-4 text-sm text-gray-800 dark:text-gray-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition">
+                    </div>
+                </div>
+
+                <div id="admin-oficinas-lista" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+            </section>
+
             <!-- VISTA: GESTIÓN DE PREGUNTAS FRECUENTES (LANDING PAGE) -->
             <section id="view-admin-faqs" class="view-section admin-only max-w-[1400px] mx-auto space-y-8">
                 <!-- Cabecera Principal -->
@@ -4671,6 +4818,11 @@
                     <div>
                         <h2 class="text-2xl sm:text-4xl font-extrabold text-maximus-dark tracking-tight">Cargar Nuevo Inmueble</h2>
                         <p class="text-gray-500 mt-1 text-xs sm:text-base font-medium">Sube una nueva propiedad al catálogo con todos sus detalles e imágenes.</p>
+                        <!-- Solo se muestra a asesores Bronce y Gold (tienen tope de inmuebles) -->
+                        <div id="contador-limite-inmuebles" class="hidden mt-3 max-w-sm">
+                            <p data-texto class="text-xs font-bold text-gray-600"></p>
+                            <div class="mt-1.5 h-1.5 rounded-full bg-gray-100 overflow-hidden"><div data-barra class="h-full w-0 rounded-full bg-emerald-500"></div></div>
+                        </div>
                     </div>
                     <button type="button" onclick="activateTab('view-inmuebles', true)" class="px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer self-start sm:self-auto shrink-0">
                         <i class="ph-bold ph-arrow-left"></i> Volver a Inmuebles
@@ -4678,13 +4830,13 @@
                 </div>
 
                 <div class="bg-white rounded-[24px] shadow-premium p-8 border border-maximus-silver/20 max-w-4xl mx-auto">
-                    <form class="space-y-8" id="form-cargar-inmueble">
+                    <form class="space-y-8" id="form-cargar-inmueble" autocomplete="off">
                         <!-- Info Básica -->
                         <div>
                             <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Información Básica</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Título del Inmueble</label>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Título del Inmueble *</label>
                                     <input type="text" id="inm-titulo" placeholder="Ej: Quinta de lujo con piscina..." class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                 </div>
                                 <div>
@@ -4710,17 +4862,18 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio</label>
-                                    <input type="text" id="inm-precio" placeholder="Ej: $150.000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio *</label>
+                                    <input type="text" id="inm-precio" inputmode="numeric" placeholder="Ej: 150.000" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                 </div>
-                                <div>
+                                <!-- Moneda: oculta, la fija la operación (Venta = USD · Alquiler = USD/mes) -->
+                                <div class="hidden">
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Moneda</label>
                                     <select id="inm-moneda" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                         <option value="USD">USD</option>
                                         <option value="USD/mes">USD/mes</option>
                                     </select>
                                 </div>
-                                <div class="md:col-span-2">
+                                <div>
                                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Precio m² (Opcional)</label>
                                     <input type="text" id="inm-preciom2" placeholder="Ej: $771 USD / m²" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
                                     <input type="hidden" id="inm-comision" value="">
@@ -4785,34 +4938,11 @@
                         <div>
                             <div class="grid grid-cols-1 gap-6">
                                 <div>
-                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Asesor Responsable</h3>
-                                    
-                                    <!-- Selector de Tipo de Asesor (Oficial MAXIMUS vs Externo) -->
-                                    <div class="flex items-center gap-6 mb-4">
-                                        <label class="flex items-center gap-2.5 cursor-pointer group">
-                                            <input type="radio" name="tipo_asesor" value="maximus" checked onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4 cursor-pointer">
-                                            <span class="text-sm font-bold text-maximus-dark group-hover:text-emerald-700 flex items-center gap-1.5 transition-colors">
-                                                <i class="ph-fill ph-seal-check text-emerald-600 text-base"></i> Asesor Oficial MAXIMUS
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2.5 cursor-pointer group">
-                                            <input type="radio" name="tipo_asesor" value="externo" onchange="toggleTipoAsesor()" class="accent-maximus-accent w-4 h-4 cursor-pointer">
-                                            <span class="text-sm font-bold text-gray-600 group-hover:text-gray-900 flex items-center gap-1.5 transition-colors">
-                                                <i class="ph-fill ph-user text-gray-500 text-base"></i> Otro asesor inmobiliario
-                                            </span>
-                                        </label>
-                                    </div>
+                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-1 border-b border-gray-100 pb-2 flex items-center gap-2"><i class="ph-fill ph-user-circle text-emerald-600"></i> Asesor de contacto</h3>
+                                    <p class="text-xs text-gray-500 mb-4">Los clientes interesados escribirán a este WhatsApp. Se llena solo con tus datos; cámbialo si el contacto es otra persona.</p>
 
-                                    <!-- Contenedor Asesor Oficial MAXIMUS -->
-                                    <div id="container-asesor-maximus">
-                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Seleccionar Asesor Oficial MAXIMUS</label>
-                                        <select id="inm-asesor-select" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
-                                            <!-- Poblado via JS -->
-                                        </select>
-                                    </div>
-
-                                    <!-- Contenedor Asesor Externo Manual -->
-                                    <div id="container-asesor-externo" style="display: none;" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                                    <!-- Datos del asesor de contacto (se precargan con el usuario que publica) -->
+                                    <div id="container-asesor-externo" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-200">
                                         <div>
                                             <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Nombre del Asesor *</label>
                                             <input type="text" id="inm-asesor-nombre" placeholder="Ej: Carlos Mendoza" class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400">
@@ -5023,39 +5153,35 @@
                             </div>
                         </div>
 
-                        <!-- Amenidades y Fotos -->
+                        <!-- Fotos: se suben directo a Supabase Storage (js/cargar-inmueble-ui.js) -->
                         <div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Amenidades (Separadas por coma)</h3>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ej: Piscina, Cancha, Vigilancia</label>
-                                    <textarea id="inm-amenidades" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400"></textarea>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2">Fotos (URLs separadas por coma)</h3>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URLs de las imágenes</label>
-                                    <textarea id="inm-fotos" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-maximus-dark outline-none focus:border-maximus-accent placeholder-gray-400"></textarea>
-                                </div>
+                            <div class="flex items-center justify-between mb-1 border-b border-gray-100 pb-2">
+                                <h3 class="text-lg font-extrabold text-maximus-dark flex items-center gap-2"><i class="ph-fill ph-images text-emerald-600"></i> Fotos del inmueble *</h3>
+                                <span id="fotos-contador" class="text-[11px] font-bold text-gray-500 bg-gray-50 px-2.5 py-1 rounded-full border border-gray-200">0 fotos</span>
                             </div>
+                            <p class="text-xs text-gray-500 mb-4">La primera foto es la portada. Arrástralas para cambiar el orden.</p>
+                            <div id="fotos-uploader"></div>
+                            <!-- Compatibilidad: las URLs subidas se guardan aquí separadas por coma -->
+                            <input type="hidden" id="inm-fotos" value="">
                         </div>
 
-                        <!-- Asignación MAXIMUS -->
+                        <!-- Amenidades: se agregan con el botón + (sin comas) -->
                         <div>
-                            <h3 class="text-lg font-extrabold text-maximus-dark mb-4 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                <i class="ph-fill ph-buildings text-maximus-accent"></i> Captación MAXIMUS
-                            </h3>
-                            <label class="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100 cursor-pointer hover:bg-emerald-100/50 transition-colors">
-                                <input type="checkbox" id="inm-ismaximus" class="w-5 h-5 rounded border-gray-300 text-maximus-accent focus:ring-maximus-accent">
-                                <div>
-                                    <p class="text-sm font-extrabold text-maximus-dark">Marcar como Captación Directa MAXIMUS</p>
-                                    <p class="text-[11px] text-gray-500 font-medium">Esto hará que el inmueble aparezca en la sección exclusiva con la insignia correspondiente.</p>
-                                </div>
-                            </label>
+                            <h3 class="text-lg font-extrabold text-maximus-dark mb-1 border-b border-gray-100 pb-2 flex items-center gap-2"><i class="ph-fill ph-sparkle text-emerald-600"></i> Amenidades</h3>
+                            <p class="text-xs text-gray-500 mb-4">Escribe una y pulsa <strong>+</strong> o Enter. También puedes tocar las sugerencias.</p>
+                            <div id="amenidades-editor"></div>
+                            <input type="hidden" id="inm-amenidades" value="">
                         </div>
 
-                        <div class="pt-4 flex justify-end">
-                            <button type="button" onclick="guardarInmuebleAdmin()" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
-                                <i class="ph-bold ph-check"></i> Guardar Inmueble
+                        <!-- Revisión antes de publicar -->
+                        <div id="cargar-resumen-faltantes" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-sm text-amber-800"></div>
+
+                        <div class="pt-2 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <button type="button" onclick="CargaInmuebleUI && CargaInmuebleUI.limpiar(true)" class="px-5 py-3 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-100 transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="ph-bold ph-arrow-counter-clockwise"></i> Limpiar formulario
+                            </button>
+                            <button type="button" id="btn-guardar-inmueble" onclick="guardarInmuebleAdmin()" class="px-8 py-3.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="ph-bold ph-check"></i> <span>Publicar inmueble</span>
                             </button>
                         </div>
                     </form>
@@ -5442,9 +5568,14 @@
                                     <div class="min-w-0 flex-1">
                                         <h3 class="font-black text-xs sm:text-sm text-maximus-dark flex items-center gap-1.5 flex-wrap">
                                             <span id="airbnb-asesor-nombre" class="truncate">José Guerrero</span>
-                                            <span class="text-[8px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
+                                            <span id="airbnb-asesor-plan" class="text-[8px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
                                         </h3>
                                         <p id="airbnb-asesor-cargo" class="text-[10px] sm:text-[11px] font-semibold text-gray-500 truncate">Director & Captador Principal MAXIMUS</p>
+                                        <!-- Reseñas del asesor (planes Gold y Platinum): se muestra solo si el inmueble es suyo -->
+                                        <button type="button" id="airbnb-asesor-resenas" class="hidden mt-0.5 items-center gap-1 text-[10px] sm:text-[11px] font-bold text-gray-700 hover:text-emerald-700 cursor-pointer group/res">
+                                            <span id="airbnb-asesor-resenas-estrellas" class="flex items-center text-amber-400"></span>
+                                            <span id="airbnb-asesor-resenas-texto" class="group-hover/res:underline"></span>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="flex sm:flex-col gap-1.5 shrink-0 w-full sm:w-auto">
@@ -5976,7 +6107,7 @@
                     
                 </div>
 
-                <!-- Tarjetas para cuentas gratuitas: reseña y paso a Asesor Pro -->
+                <!-- Tarjetas para cuentas gratuitas: reseña y paso a Asesor Bronce -->
                 <div class="cliente-only grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="p-5 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 shadow-sm flex items-center gap-4">
                         <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-500 flex items-center justify-center shrink-0">
@@ -7851,7 +7982,11 @@
                 user.avatar = avatarFinalUrl;
                 if (document.getElementById('userAvatar')) document.getElementById('userAvatar').src = avatarFinalUrl;
                 const esPlatinumUser = (user.plan === 'platinum');
-                const tituloAsesorPlan = esPlatinumUser ? 'Asesor Inmobiliario Platinum' : 'Asesor Inmobiliario Pro';
+                const esGoldUser = (user.plan === 'gold');
+                const tituloAsesorPlan = esPlatinumUser ? 'Asesor Inmobiliario Platinum' : (esGoldUser ? 'Asesor Inmobiliario Gold' : 'Asesor Inmobiliario Bronce');
+                const CLASE_BADGE_PLAN = esPlatinumUser ? 'bg-gradient-to-r from-slate-200 to-slate-300 text-slate-900 border border-slate-400'
+                    : esGoldUser ? 'bg-gradient-to-r from-amber-200 to-amber-300 text-amber-950 border border-amber-400'
+                    : 'bg-emerald-600 text-white border border-emerald-700';
                 if (user.title && /externo/i.test(user.title)) user.title = tituloAsesorPlan; // títulos antiguos
                 if (user.title && document.getElementById('userTitle')) {
                     document.getElementById('userTitle').textContent = user.title;
@@ -7888,12 +8023,12 @@
                     }
                 } else if (userRole === 'asesor_externo') {
                     if (roleBadge) {
-                        roleBadge.textContent = esPlatinumUser ? 'PLATINUM' : 'PRO';
-                        roleBadge.className = esPlatinumUser ? 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 text-slate-900 border border-slate-400' : 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white border border-emerald-700';
+                        roleBadge.textContent = esPlatinumUser ? 'PLATINUM' : (esGoldUser ? 'GOLD' : 'BRONCE');
+                        roleBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ' + CLASE_BADGE_PLAN;
                     }
                     if (dropBadge) {
-                        dropBadge.textContent = esPlatinumUser ? 'Asesor Platinum' : 'Asesor Pro';
-                        dropBadge.className = esPlatinumUser ? 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-gradient-to-r from-slate-200 to-slate-300 text-slate-900 border border-slate-400' : 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white border border-emerald-700';
+                        dropBadge.textContent = esPlatinumUser ? 'Asesor Platinum' : (esGoldUser ? 'Asesor Gold' : 'Asesor Bronce');
+                        dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ' + CLASE_BADGE_PLAN;
                     }
                 } else {
                     if (roleBadge) {
@@ -7951,7 +8086,7 @@
                 staffElements.forEach(el => el.style.display = 'none');
                 clienteElements.forEach(el => el.style.display = '');
 
-                // Respetar si el cliente ya cerró el banner de invitación Pro
+                // Respetar si el cliente ya cerró el banner de invitación Bronce
                 if (localStorage.getItem('maximus_banner_pro_dismissed') === 'true') {
                     const b = document.getElementById('banner-pro-cliente');
                     if (b) b.style.display = 'none';
@@ -8022,7 +8157,7 @@
                 'view-resumen', 'view-metricas', 'view-historico-asesores', 
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-oficinas', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
                 'view-mis-clientes', 'view-agenda',
                 'view-admin-usuarios'
             ];
@@ -9239,16 +9374,20 @@
                 'view-resumen', 'view-metricas', 'view-historico-asesores', 
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-oficinas', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
                 'view-mis-clientes',
                 'view-admin-usuarios'
             ];
 
             const vistasExclusivasAdmin = [
-                'view-admin-cotizador', 
-                'view-admin-config', 'view-admin-equipo-web', 'view-admin-faqs', 'view-admin-tutoriales', 'view-admin-usuarios'
+                'view-admin-cotizador',
+                'view-admin-config', 'view-admin-equipo-web', 'view-admin-oficinas', 'view-admin-faqs', 'view-admin-tutoriales', 'view-admin-usuarios'
             ];
 
+            // "Cierres de mercado" se retiró del panel: enlaces viejos llevan a Inmuebles
+            if (targetId === 'view-vendidos') {
+                targetId = 'view-inmuebles';
+            }
             if (targetId === 'view-metricas') {
                 targetId = 'view-resumen';
             }
@@ -9380,8 +9519,7 @@
             if (targetId === 'view-resumen' && typeof renderBienvenidaAsesor === 'function') renderBienvenidaAsesor();
             if (targetId === 'view-agenda' && typeof inicializarAgenda === 'function') inicializarAgenda();
             if (targetId === 'view-exclusivas-maximus') {
-                if (typeof renderAsesoresMaximus === 'function') renderAsesoresMaximus();
-                if (typeof renderExclusivasMaximus === 'function') renderExclusivasMaximus();
+                if (typeof renderDescubre === 'function') renderDescubre();
             }
             if (targetId === 'view-historico-asesores') {
                 if (typeof inicializarHistoricoAsesores === 'function') inicializarHistoricoAsesores();
@@ -9400,6 +9538,9 @@
             }
             if (targetId === 'view-admin-equipo-web') {
                 if (typeof inicializarGestionEquipoWeb === 'function') inicializarGestionEquipoWeb();
+            }
+            if (targetId === 'view-admin-oficinas') {
+                if (window.OficinasAdmin) OficinasAdmin.iniciar();
             }
             if (targetId === 'view-admin-faqs') {
                 if (typeof inicializarGestionFaqsAdmin === 'function') inicializarGestionFaqsAdmin();
@@ -11092,6 +11233,13 @@
 
             const elTelBtn = document.getElementById('airbnb-asesor-tel-btn');
             if (elTelBtn) elTelBtn.href = `tel:${data.asesor.telefono.replace(/\s+/g, '')}`;
+
+            // Nombre real del asesor + su plan (Bronce / Gold / Platinum / Equipo MAXIMUS).
+            // Captados de WhatsApp: contacto José Guerrero (el asesor original queda en privado).
+            if (window.AsesorPublico) AsesorPublico.aplicar('airbnb', data);
+
+            // Reseñas: beneficio de Gold y Platinum, igual para todos (no cambia el orden de nada)
+            if (typeof pintarResenasEnFicha === 'function') pintarResenasEnFicha(data);
 
             // 4. Especificaciones Rápidas
             const elHab = document.getElementById('airbnb-spec-hab');
@@ -13512,6 +13660,8 @@
                                 fotos: fotosList,
                                 agenteId: inm.agente_id || existing.agenteId || null,
                                 asesorRefId: inm.asesor_id || existing.asesorRefId || null,
+                                origenCaptura: inm.origen_captura || existing.origenCaptura || null,
+                                creadoEn: inm.created_at || existing.creadoEn || null,
                                 asesor: asesorData,
                                 aspectosDestacados: inm.aspectos_destacados || existing.aspectosDestacados || (esMaximus ? [
                                     { icono: 'ph-shield-check', titulo: 'Documentación 100% Verificada', desc: 'Libre de gravamen y lista para firmar en registro.' },
@@ -13766,6 +13916,18 @@
             return out;
         }
 
+        // Gira la lista según el día: el mismo orden para todos durante el día, distinto al siguiente
+        function rotarDiario(lista) {
+            if (!lista.length) return lista;
+            const k = Math.floor(Date.now() / 86400000) % lista.length;
+            return lista.slice(k).concat(lista.slice(0, k));
+        }
+
+        // Asesor con plan Platinum (no Gold ni equipo): recibe la portada y el primer lugar
+        function esAsesorRecomendado(a) {
+            return !!a && a.tipo === 'platinum' && a.plan !== 'gold';
+        }
+
         function inmuebleEsDeAsesorPlatinum(inm, a) {
             const ids = [String(a.usuario_id || ''), String(a.auth_id || '')].filter(Boolean);
             return ids.includes(String(inm.agenteId || '')) || ids.includes(String(inm.asesorRefId || ''));
@@ -13818,7 +13980,11 @@
             });
             equipoNorm.sort((x, y) => (y.total_inmuebles || 0) - (x.total_inmuebles || 0));
             const platNorm = (plat || []).map(a => Object.assign({}, a, { tipo: 'platinum' }));
-            ASESORES_DESTACADOS = intercalarListas(platNorm, equipoNorm);
+            // Orden "por recomendación": Platinum primero (rotan cada día, así todos pasan por el
+            // primer puesto) y después Gold y equipo intercalados. Al cliente no se le dice el plan.
+            const soloPlatinum = rotarDiario(platNorm.filter(a => a.plan !== 'gold'));
+            const soloGold = platNorm.filter(a => a.plan === 'gold');
+            ASESORES_DESTACADOS = soloPlatinum.concat(intercalarListas(soloGold, equipoNorm));
             return ASESORES_DESTACADOS;
         }
 
@@ -13839,12 +14005,12 @@
                 inm.asesor = Object.assign({}, inm.asesor || {}, {
                     id: a.auth_id,
                     nombre: a.nombre,
-                    cargo: 'Asesor Inmobiliario Platinum',
+                    cargo: a.plan === 'gold' ? 'Asesor Inmobiliario Gold' : 'Asesor Inmobiliario Platinum',
                     telefono: wa ? '+' + wa : (inm.asesor && inm.asesor.telefono) || '',
                     whatsapp: wa || (inm.asesor && inm.asesor.whatsapp) || '',
                     avatar: avatarPlatinum(a),
                     rating: Number(a.estrellas || 5).toFixed(1),
-                    experiencia: 'Asesor Inmobiliario Platinum',
+                    experiencia: a.plan === 'gold' ? 'Asesor Inmobiliario Gold' : 'Asesor Inmobiliario Platinum',
                     tipo: 'platinum'
                 });
                 inm._destacado = a;
@@ -13858,7 +14024,23 @@
                 deEquipo.push(inm);
             });
 
-            return intercalarListas(dePlat, deEquipo);
+            // Platinum: uno de cada asesor por turno (en el orden del día), para que nadie acapare.
+            // Los dos primeros van en formato grande; el resto se intercala con Gold + equipo,
+            // así Platinum ocupa ~la mitad de los espacios visibles.
+            const porAsesor = new Map();
+            platinum.filter(esAsesorRecomendado).forEach(a => porAsesor.set(String(a.auth_id), []));
+            const deGold = [];
+            dePlat.forEach(inm => {
+                inm._grande = false;
+                const lista = porAsesor.get(String(inm._destacado.auth_id));
+                if (lista && esAsesorRecomendado(inm._destacado)) lista.push(inm); else deGold.push(inm);
+            });
+            const colas = Array.from(porAsesor.values());
+            const dePlatinum = [];
+            for (let i = 0; colas.some(c => i < c.length); i++) colas.forEach(c => { if (i < c.length) dePlatinum.push(c[i]); });
+            dePlatinum.slice(0, 2).forEach(inm => { inm._grande = true; });
+
+            return dePlatinum.slice(0, 2).concat(intercalarListas(dePlatinum.slice(2), intercalarListas(deGold, deEquipo)));
         }
 
         function actualizarCtaPlatinum() {
@@ -13866,13 +14048,169 @@
             if (!cta) return;
             const u = usuarioActualPlatinum();
             const rol = (u && (u.role || u.rol)) || 'cliente';
-            const esAsesorSinPlatinum = rol === 'asesor_externo' && (u && u.plan) !== 'platinum';
-            cta.classList.toggle('hidden', !esAsesorSinPlatinum);
+            const planU = (u && u.plan) || '';
+            const esAsesor = rol === 'asesor_externo';
+            // Al cliente no se le muestra nada; al asesor sí se le explica abiertamente qué gana
+            if (!esAsesor || planU === 'platinum') { cta.classList.add('hidden'); cta.innerHTML = ''; return; }
+            const esGold = planU === 'gold';
+            const fila = (icono, texto, on = true) => `<li class="flex items-start gap-2 ${on ? '' : 'opacity-45'}"><i class="ph-bold ${on ? icono : 'ph-minus'} mt-0.5 ${on ? 'text-emerald-500' : 'text-gray-400'}"></i><span>${texto}</span></li>`;
+            cta.classList.remove('hidden');
+            cta.innerHTML = `
+                <div class="relative overflow-hidden rounded-3xl border border-gray-200 dark:border-emerald-900/50 bg-white dark:bg-[#0A1F1B] p-5 sm:p-7">
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-6">
+                        <div class="lg:w-[34%] min-w-0">
+                            <p class="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-300">Para asesores</p>
+                            <h4 class="mt-1.5 text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">${esGold ? 'Pasa de destacado a <span class="text-emerald-700 dark:text-emerald-300">recomendado</span>' : '¿Quieres aparecer aquí?'}</h4>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">${esGold ? 'Ya apareces en esta sección. Con Platinum ocupas los primeros lugares y te llegan propietarios que quieren vender o alquilar.' : 'Los clientes eligen asesor desde esta página. Así se ve cada plan aquí:'}</p>
+                        </div>
+                        <div class="flex-1 grid sm:grid-cols-2 gap-3">
+                            ${esGold ? '' : `
+                            <div class="rounded-2xl border border-gray-200 dark:border-emerald-900/50 p-4 flex flex-col">
+                                <p class="text-sm font-black text-gray-900 dark:text-white flex items-center gap-1.5"><i class="ph-fill ph-crown text-amber-500"></i> Gold <span class="ml-auto text-xs font-bold text-gray-500">$4.99/mes</span></p>
+                                <ul class="mt-3 space-y-1.5 text-xs text-gray-600 dark:text-gray-300 flex-1">
+                                    ${fila('ph-check', 'Tu perfil y tus inmuebles en esta sección')}
+                                    ${fila('ph-check', 'Reseñas de tus clientes y WhatsApp directo')}
+                                    ${fila('ph-check', 'Primeros lugares y portada', false)}
+                                    ${fila('ph-check', 'Propietarios por WhatsApp', false)}
+                                </ul>
+                                <button type="button" onclick="abrirModalSuscripcionPro('gold')" class="mt-4 h-10 rounded-xl border border-gray-300 dark:border-emerald-800 text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-emerald-950/40 text-xs font-extrabold transition cursor-pointer">Elegir Gold</button>
+                            </div>`}
+                            <div class="relative rounded-2xl p-4 flex flex-col bg-gradient-to-br from-[#0B2B25] to-[#030F0C] text-white ${esGold ? 'sm:col-span-2' : ''}">
+                                <span class="absolute -top-2.5 right-4 px-2 py-0.5 rounded-full bg-emerald-400 text-[#06231D] text-[10px] font-black uppercase tracking-wider">Más clientes</span>
+                                <p class="text-sm font-black flex items-center gap-1.5"><i class="ph-fill ph-diamond text-slate-200"></i> Platinum <span class="ml-auto text-xs font-bold text-emerald-100/70">$9.99/mes</span></p>
+                                <ul class="mt-3 space-y-1.5 text-xs text-emerald-50/85 flex-1 ${esGold ? 'sm:grid sm:grid-cols-2 sm:gap-x-4 sm:space-y-0 sm:gap-y-1.5' : ''}">
+                                    ${fila('ph-check', 'Todo lo de Gold')}
+                                    ${fila('ph-check', 'Portada <strong>“Recomendado de la semana”</strong> en esta sección')}
+                                    ${fila('ph-check', 'Primeros lugares y tus inmuebles en formato grande')}
+                                    ${fila('ph-check', 'Propietarios de “Publica tu inmueble” por WhatsApp')}
+                                </ul>
+                                <button type="button" onclick="abrirModalSuscripcionPro('platinum')" class="mt-4 h-10 rounded-xl bg-white hover:bg-emerald-50 text-[#0B2B25] text-xs font-extrabold transition cursor-pointer flex items-center justify-center gap-1.5">${esGold ? 'Pasar a Platinum' : 'Elegir Platinum'} <i class="ph-bold ph-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Portada del hero: rota solo entre asesores Platinum. Sin Platinum, explica cómo funciona.
+        let spotlightIndice = 0;
+        let spotlightTimer = null;
+
+        function renderSpotlightRecomendado() {
+            const box = document.getElementById('spotlight-asesor-recomendado');
+            if (!box) return;
+            const lista = ASESORES_DESTACADOS.filter(esAsesorRecomendado);
+            clearInterval(spotlightTimer);
+
+            if (!lista.length) {
+                const paso = (n, t, s, wa) => `
+                    <li class="flex items-center gap-3.5 p-3.5 rounded-2xl bg-white/[0.05] border border-white/10">
+                        <span class="w-10 h-10 rounded-xl ${wa ? 'bg-[#25D366] text-white text-lg' : 'bg-white text-[#0B2B25] text-sm font-black'} flex items-center justify-center shrink-0">${wa ? '<i class="ph-fill ph-whatsapp-logo"></i>' : n}</span>
+                        <span class="text-sm leading-snug"><strong class="block">${t}</strong><span class="text-xs text-emerald-50/60">${s}</span></span>
+                    </li>`;
+                box.innerHTML = `
+                    <div class="h-full rounded-3xl bg-white/[0.04] border border-white/10 p-5 sm:p-6 flex flex-col justify-center">
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-200/70 mb-3">Cómo funciona</p>
+                        <ol class="space-y-2.5">
+                            ${paso(1, 'Elige un asesor', 'Mira su calificación y especialidad')}
+                            ${paso(2, 'Revisa sus inmuebles', 'Toca “Ver inmuebles” para filtrar')}
+                            ${paso(3, 'Escríbele por WhatsApp', 'Directo, sin intermediarios', true)}
+                        </ol>
+                    </div>`;
+                return;
+            }
+
+            spotlightIndice = spotlightIndice % lista.length;
+            const a = lista[spotlightIndice];
+            const nombre = escNotif(a.nombre || 'Asesor');
+            const idAttr = escNotif(String(a.auth_id));
+            const wa = waDigitosPlatinum(a.whatsapp);
+            const primerNombre = encodeURIComponent(String(a.nombre || '').split(' ')[0] || '');
+            const waHref = wa ? `https://wa.me/${wa}?text=Hola%20${primerNombre},%20te%20vi%20como%20asesor%20recomendado%20en%20MAXIMUS.` : '';
+            const estrellas = Number(a.estrellas || 5);
+            const totalRes = Number(a.total_resenas || 0);
+            const fotos = Object.values(INMUEBLES_DETALLE_DATA || {})
+                .filter(inm => inm && inmuebleEsDeAsesorPlatinum(inm, a) && inm.fotos && inm.fotos.length)
+                .slice(0, 3);
+            const totalInm = Number(a.total_inmuebles || 0) || fotos.length;
+            const puntos = lista.length > 1
+                ? `<div class="flex items-center gap-1.5">${lista.map((_, i) => `<button type="button" onclick="spotlightIndice=${i}; renderSpotlightRecomendado();" aria-label="Ver asesor ${i + 1}" class="h-1.5 rounded-full transition-all cursor-pointer ${i === spotlightIndice ? 'w-5 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/60'}"></button>`).join('')}</div>`
+                : '';
+
+            box.innerHTML = `
+                <article class="spotlight-fade h-full rounded-3xl bg-white text-gray-900 dark:bg-[#0A1F1B] dark:text-white p-5 sm:p-6 shadow-2xl shadow-black/30 flex flex-col">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-300"><i class="ph-fill ph-sparkle text-amber-400 text-sm"></i> Recomendado de la semana</span>
+                        ${puntos}
+                    </div>
+                    <div class="mt-4 flex items-center gap-4">
+                        <img src="${avatarPlatinum(a)}" alt="${nombre}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl object-cover bg-slate-100 ring-4 ring-emerald-50 dark:ring-emerald-950 shrink-0" onerror="this.onerror=null; this.src=avatarPlatinum({nombre: this.alt});">
+                        <div class="min-w-0">
+                            <h3 class="text-xl sm:text-2xl font-black tracking-tight leading-tight flex items-center gap-1.5"><span class="truncate">${nombre}</span><i class="ph-fill ph-seal-check text-sky-500 text-lg shrink-0"></i></h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${escNotif(a.especialidad || 'Asesor Inmobiliario')}${a.zona ? ' · ' + escNotif(a.zona) : ''}</p>
+                            <button type="button" onclick="abrirModalResenasAsesor('${idAttr}')" class="mt-1.5 flex items-center gap-1.5 text-xs cursor-pointer group/st">
+                                <span class="flex items-center text-amber-400">${estrellasHTMLPlatinum(estrellas, 'text-sm')}</span>
+                                <strong>${estrellas.toFixed(1)}</strong>
+                                <span class="text-gray-400 group-hover/st:underline">· ${totalRes > 0 ? `${totalRes} ${totalRes === 1 ? 'reseña' : 'reseñas'}` : 'Ver reseñas'}</span>
+                            </button>
+                        </div>
+                    </div>
+                    ${a.bio ? `<p class="mt-4 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">“${escNotif(a.bio)}”</p>` : ''}
+                    ${fotos.length ? `
+                    <div class="keep-grid mt-4 grid grid-cols-3 gap-2">
+                        ${fotos.map((inm, i) => `<button type="button" onclick="abrirDetalleInmuebleAirbnb('${escNotif(inm.id)}')" class="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 cursor-pointer group/ft"><img src="${escNotif(inm.fotos[1] || inm.fotos[0])}" alt="${escNotif(inm.titulo)}" loading="lazy" class="w-full h-full object-cover group-hover/ft:scale-105 transition-transform duration-500">${i === 2 && totalInm > 3 ? `<span class="absolute inset-0 bg-black/55 text-white text-sm font-black flex items-center justify-center">+${totalInm - 2}</span>` : ''}</button>`).join('')}
+                    </div>` : ''}
+                    <div class="keep-grid mt-auto pt-5 grid grid-cols-[1fr_auto] gap-2">
+                        ${wa
+                            ? `<a href="${waHref}" target="_blank" rel="noopener" class="h-11 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white text-sm font-extrabold flex items-center justify-center gap-2 transition-colors shadow-sm"><i class="ph-fill ph-whatsapp-logo text-lg"></i> Escribir por WhatsApp</a>`
+                            : `<button type="button" onclick="abrirModalResenasAsesor('${idAttr}')" class="h-11 rounded-xl bg-maximus-dark text-white text-sm font-extrabold cursor-pointer">Ver perfil</button>`}
+                        <button type="button" onclick="seleccionarAsesorParaFiltro('${idAttr}')" class="h-11 px-4 rounded-xl bg-gray-100 dark:bg-emerald-950/50 hover:bg-gray-200 text-gray-800 dark:text-gray-100 text-sm font-bold flex items-center gap-1.5 transition cursor-pointer"><i class="ph-bold ph-house-line"></i><span class="hidden sm:inline">Sus inmuebles</span></button>
+                    </div>
+                </article>`;
+
+            if (lista.length > 1) {
+                spotlightTimer = setInterval(() => {
+                    const sec = document.getElementById('view-exclusivas-maximus');
+                    const caja = document.getElementById('spotlight-asesor-recomendado');
+                    if (!sec || !sec.classList.contains('active') || (caja && caja.matches(':hover'))) return;
+                    spotlightIndice = (spotlightIndice + 1) % lista.length;
+                    renderSpotlightRecomendado();
+                }, 9000);
+            }
+        }
+
+        // Buscador del hero: llena el buscador de inmuebles y baja hasta ellos
+        function buscarDestacadasDesdeHero(texto) {
+            const hero = document.getElementById('buscador-destacadas-hero');
+            const q = texto != null ? texto : (hero ? hero.value : '');
+            if (hero && texto != null) hero.value = texto;
+            const input = document.getElementById('buscador-captaciones-vip');
+            if (input) input.value = q;
+            buscarCaptacionesVip();
+            document.getElementById('contenedor-captaciones-vip')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        let filtroOperacionDestacadas = '';
+        function filtrarOperacionDestacadas(op) {
+            filtroOperacionDestacadas = op || '';
+            buscarCaptacionesVip();
+        }
+
+        function pintarChipsOperacionDestacadas() {
+            document.querySelectorAll('#chips-operacion-destacadas .chip-op-dest').forEach(b => {
+                const on = (b.dataset.op || '') === filtroOperacionDestacadas;
+                b.classList.toggle('bg-white', on);
+                b.classList.toggle('dark:bg-[#0A1F1B]', on);
+                b.classList.toggle('shadow-sm', on);
+                b.classList.toggle('text-maximus-dark', on);
+                b.classList.toggle('dark:text-white', on);
+                b.classList.toggle('text-gray-500', !on);
+            });
         }
 
         // Tarjeta de asesor compacta: foto pequeña, calificación clara y botones con texto
         function tarjetaAsesorPlatinumHTML(a) {
             const esPlat = a.tipo !== 'equipo';
+            const recomendado = esAsesorRecomendado(a);
             const nombre = escNotif(a.nombre || 'Asesor');
             const primerNombre = encodeURIComponent(String(a.nombre || '').split(' ')[0] || '');
             const wa = waDigitosPlatinum(a.whatsapp);
@@ -13888,14 +14226,13 @@
                 : 'Asesor verificado';
 
             return `
-                <article class="tarjeta-asesor-item group relative rounded-2xl bg-white dark:bg-[#0A1F1B] border ${seleccionado ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-gray-100 dark:border-emerald-950/60 hover:border-gray-200'} p-4 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col gap-3.5">
+                <article class="tarjeta-asesor-item group relative rounded-2xl bg-white dark:bg-[#0A1F1B] border ${seleccionado ? 'border-emerald-500 ring-2 ring-emerald-500/30' : (recomendado ? 'border-emerald-200 dark:border-emerald-800/70 shadow-emerald-900/5' : 'border-gray-100 dark:border-emerald-950/60 hover:border-gray-200')} p-4 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col gap-3.5">
+                    ${recomendado ? '<span class="absolute inset-x-6 -top-px h-[2px] rounded-full bg-gradient-to-r from-transparent via-emerald-400 to-transparent"></span>' : ''}
                     <div class="flex items-start gap-3">
                         <div class="relative shrink-0">
-                            <img src="${avatarPlatinum(a)}" alt="${nombre}" loading="lazy" class="w-14 h-14 rounded-2xl object-cover bg-slate-100"
+                            <img src="${avatarPlatinum(a)}" alt="${nombre}" loading="lazy" class="w-14 h-14 rounded-2xl object-cover bg-slate-100 ${recomendado ? 'ring-2 ring-emerald-100 dark:ring-emerald-900' : ''}"
                                  onerror="this.onerror=null; this.src=avatarPlatinum({nombre: this.alt});">
-                            <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${esPlat ? 'bg-gradient-to-br from-slate-100 to-slate-300 text-slate-900' : 'bg-amber-100 text-amber-600'} border-2 border-white dark:border-[#0A1F1B] flex items-center justify-center text-[11px]" title="${esPlat ? 'Asesor Platinum' : 'Asesor destacado'}">
-                                <i class="ph-fill ${esPlat ? 'ph-diamond' : 'ph-star'}"></i>
-                            </span>
+                            ${recomendado ? `<span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-600 text-white border-2 border-white dark:border-[#0A1F1B] flex items-center justify-center text-[11px]" title="Asesor recomendado"><i class="ph-fill ph-sparkle"></i></span>` : ''}
                         </div>
                         <div class="min-w-0 flex-1">
                             <h4 class="font-extrabold text-[15px] text-gray-900 dark:text-white leading-tight flex items-center gap-1">
@@ -13912,7 +14249,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
-                        <span class="px-2 py-1 rounded-lg ${esPlat ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'}">${esPlat ? 'Platinum' : 'Destacado'}</span>
+                        ${recomendado ? '<span class="px-2 py-1 rounded-lg bg-emerald-600 text-white"><i class="ph-fill ph-sparkle"></i> Recomendado</span>' : ''}
                         ${totalInm > 0 ? `<span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"><i class="ph-bold ph-house-line"></i> ${totalInm} ${totalInm === 1 ? 'inmueble' : 'inmuebles'}</span>` : ''}
                         ${a.zona ? `<span class="px-2 py-1 rounded-lg bg-gray-50 text-gray-600 dark:bg-emerald-950/30 dark:text-gray-300 truncate max-w-[140px]"><i class="ph-fill ph-map-pin"></i> ${escNotif(a.zona)}</span>` : ''}
                     </div>
@@ -13951,6 +14288,7 @@
 
             await conLimitePlatinum(sincronizarInmueblesDesdeDB()).catch(() => null);
             const asesores = await cargarAsesoresDestacados();
+            renderSpotlightRecomendado();
 
             const total = asesores.length;
             const statA = document.getElementById('stat-asesores-count');
@@ -14080,9 +14418,16 @@
             if (busqueda && busqueda.trim()) {
                 const q = busqueda.toLowerCase().trim();
                 propiedades = propiedades.filter(inm =>
-                    [inm.titulo, inm.ubicacion, inm.sectorNombre, inm.precio, inm.asesor && inm.asesor.nombre]
+                    [inm.titulo, inm.ubicacion, inm.sectorNombre, inm.precio, inm.badgeTipo, inm.tipo, inm.asesor && inm.asesor.nombre]
                         .some(v => String(v || '').toLowerCase().includes(q)));
             }
+
+            pintarChipsOperacionDestacadas();
+            if (filtroOperacionDestacadas) {
+                propiedades = propiedades.filter(inm => String(inm.operacion || 'venta').toLowerCase().includes(filtroOperacionDestacadas));
+            }
+            // Formato grande solo en la vista general (sin filtros), para no romper la cuadrícula
+            const vistaGeneral = !filtroAsesor && !(busqueda && busqueda.trim()) && !filtroOperacionDestacadas;
 
             const btnContainer = document.getElementById('contenedor-ver-mas-captaciones');
             const ocultarBtn = () => { if (btnContainer) { btnContainer.classList.add('hidden'); btnContainer.classList.remove('flex'); btnContainer.innerHTML = ''; } };
@@ -14100,7 +14445,8 @@
                 return;
             }
 
-            const limite = 8;
+            const grandes = vistaGeneral ? propiedades.filter(inm => inm._grande).length : 0;
+            const limite = 8 + grandes; // cada tarjeta grande ocupa dos espacios: filas completas
             const hayMas = propiedades.length > limite;
             const items = mostrarTodasCaptacionesMaximus ? propiedades : propiedades.slice(0, limite);
 
@@ -14108,7 +14454,35 @@
                 const imgUrl = (inm.fotos && inm.fotos.length > 0) ? inm.fotos[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
                 const a = inm._destacado || { nombre: inm.asesor && inm.asesor.nombre, avatar_url: inm.asesor && inm.asesor.avatar, estrellas: 5, tipo: 'equipo' };
                 const est = Number(a.estrellas || 5);
-                const esPlat = a.tipo === 'platinum';
+                const recomendado = esAsesorRecomendado(a);
+                const wa = recomendado ? waDigitosPlatinum(a.whatsapp) : '';
+                const waHref = wa ? `https://wa.me/${wa}?text=${encodeURIComponent(`Hola ${String(a.nombre || '').split(' ')[0]}, me interesa el inmueble "${inm.titulo || ''}"${inm.codigo ? ' (' + inm.codigo + ')' : ''} que vi en MAXIMUS.`)}` : '';
+                const btnWa = wa ? `<a href="${waHref}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Escribir a ${escNotif(a.nombre)} por WhatsApp" class="shrink-0 w-8 h-8 rounded-full bg-[#25D366] hover:bg-[#1EBE5A] text-white flex items-center justify-center text-base shadow-sm transition-colors"><i class="ph-fill ph-whatsapp-logo"></i></a>` : '';
+
+                if (vistaGeneral && inm._grande) {
+                    return `
+                    <div class="sm:col-span-2 relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer min-h-[300px] lg:min-h-[340px] bg-gray-900" onclick="abrirDetalleInmuebleAirbnb('${escNotif(inm.id)}')">
+                        <img src="${escNotif((inm.fotos && inm.fotos[1]) || imgUrl)}" alt="${escNotif(inm.titulo)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10"></div>
+                        <div class="absolute top-3.5 left-3.5 flex items-center gap-1.5">
+                            <span class="bg-white/95 text-gray-900 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow">${escNotif(inm.operacion || 'Venta')}</span>
+                            <span class="bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow inline-flex items-center gap-1"><i class="ph-fill ph-sparkle"></i> Selección</span>
+                        </div>
+                        <div class="absolute inset-x-0 bottom-0 p-4 sm:p-5 text-white">
+                            <p class="text-[11px] font-semibold text-white/75 flex items-center gap-1"><i class="ph-fill ph-map-pin"></i> ${escNotif(inm.sectorNombre || inm.ubicacion || 'Táchira')} · ${escNotif(inm.badgeTipo || 'Propiedad')}</p>
+                            <h4 class="mt-1 text-lg sm:text-xl font-black leading-snug line-clamp-2 drop-shadow">${escNotif(inm.titulo)}</h4>
+                            <div class="mt-3 flex items-end justify-between gap-3">
+                                <p class="text-2xl sm:text-[28px] font-black leading-none drop-shadow">${escNotif(inm.precio || '')}</p>
+                                <div class="flex items-center gap-2 min-w-0 bg-white/10 backdrop-blur-md border border-white/15 rounded-full pl-1 pr-1 py-1">
+                                    <img src="${avatarPlatinum(a)}" alt="" class="w-7 h-7 rounded-full object-cover shrink-0">
+                                    <span class="text-xs font-bold truncate max-w-[110px]">${escNotif(a.nombre || 'Asesor')}</span>
+                                    <span class="text-[11px] font-bold flex items-center gap-0.5 pr-1"><i class="ph-fill ph-star text-amber-300"></i>${est.toFixed(1)}</span>
+                                    ${btnWa}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
                 return `
                     <div class="bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer" onclick="abrirDetalleInmuebleAirbnb('${escNotif(inm.id)}')">
                         <div class="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">
@@ -14118,7 +14492,7 @@
                                 <span class="absolute top-2.5 left-2.5 bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">${escNotif(inm.operacion || 'VENTA')}</span>
                                 <h4 class="absolute bottom-2.5 left-3 text-xl font-black text-white drop-shadow-md">${escNotif(inm.precio || '')}</h4>
                             </div>
-                            <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-slate-100 to-slate-300 text-slate-900 text-[9px] font-black uppercase tracking-widest shadow"><i class="ph-fill ${esPlat ? 'ph-diamond' : 'ph-star'} text-[10px]"></i> ${esPlat ? 'Platinum' : 'Destacado'}</span>
+                            ${recomendado ? '<span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-widest shadow"><i class="ph-fill ph-sparkle text-[10px]"></i> Recomendado</span>' : ''}
                         </div>
                         <div class="p-4">
                             <div class="flex items-center justify-between gap-2 mb-1.5">
@@ -14131,7 +14505,7 @@
                                     <img src="${avatarPlatinum(a)}" alt="" class="w-6 h-6 rounded-full object-cover shrink-0 ring-1 ring-slate-300">
                                     <span class="truncate font-semibold">${escNotif(a.nombre || (inm.asesor && inm.asesor.nombre) || 'Asesor')}</span>
                                 </span>
-                                <span class="shrink-0 flex items-center gap-0.5 font-bold text-gray-700 dark:text-gray-200"><i class="ph-fill ph-star text-amber-400"></i>${est.toFixed(1)}</span>
+                                <span class="shrink-0 flex items-center gap-2 font-bold text-gray-700 dark:text-gray-200"><span class="flex items-center gap-0.5"><i class="ph-fill ph-star text-amber-400"></i>${est.toFixed(1)}</span>${btnWa}</span>
                             </div>
                         </div>
                     </div>`;
@@ -14145,6 +14519,339 @@
             } else {
                 ocultarBtn();
             }
+        }
+
+        // ========================================================
+        // DESCUBRE (reemplaza a Captaciones Destacadas)
+        // Recién llegados · Explora por zona · Colecciones · Deslizar.
+        // Nada depende del plan del asesor: el orden es por fecha o por datos del inmueble.
+        // ========================================================
+        const descubreFiltro = { q: '', zona: '', coleccion: '', op: '' };
+        let descubreMostrarTodo = false;
+        const DESCUBRE_FOTO_VACIA = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80';
+
+        function descubreLista() {
+            return Object.values(INMUEBLES_DETALLE_DATA || {})
+                .filter(i => i && i.id && i.titulo)
+                .sort((a, b) => (Date.parse(b.creadoEn || 0) || 0) - (Date.parse(a.creadoEn || 0) || 0));
+        }
+        function descubrePrecioNum(inm) { return parseFloat(String(inm.precio || '').replace(/[^0-9.]/g, '')) || 0; }
+        function descubreTipo(inm) { return String(inm.tipo || inm.badgeTipo || '').toLowerCase(); }
+        function descubreEsNuevo(inm) { const t = Date.parse(inm.creadoEn || ''); return t && (Date.now() - t) < 7 * 86400000; }
+        function descubreFoto(inm, real = false) {
+            const f = inm.fotos || [];
+            return (real && f[1]) || f[0] || DESCUBRE_FOTO_VACIA;
+        }
+        function descubreTieneFoto(inm) { return (inm.fotos || []).some(f => f && f !== DESCUBRE_FOTO_VACIA); }
+
+        const DESCUBRE_COLECCIONES = [
+            { id: 'invertir', titulo: 'Para invertir', desc: 'Terrenos, locales y galpones en venta', icono: 'ph-trend-up', f: i => /terreno|local|galp/.test(descubreTipo(i)) && /venta/i.test(i.operacion) },
+            { id: 'primer-hogar', titulo: 'Primer hogar', desc: 'Casas y apartamentos hasta $40.000', icono: 'ph-key', f: i => /casa|apartamento/.test(descubreTipo(i)) && /venta/i.test(i.operacion) && descubrePrecioNum(i) > 0 && descubrePrecioNum(i) <= 40000 },
+            { id: 'familias', titulo: 'Para familias', desc: '3 habitaciones o más', icono: 'ph-users-three', f: i => Number(i.habitaciones) >= 3 },
+            { id: 'con-local', titulo: 'Vivienda + negocio', desc: 'Casas con local comercial', icono: 'ph-storefront', f: i => /casa/.test(descubreTipo(i)) && /local|comercial/i.test(`${i.titulo} ${i.subtitulo || ''}`) },
+            { id: 'construir', titulo: 'Para construir', desc: 'Terrenos listos para tu proyecto', icono: 'ph-hammer', f: i => /terreno/.test(descubreTipo(i)) },
+            { id: 'alquiler', titulo: 'En alquiler', desc: 'Para mudarte ya', icono: 'ph-calendar-check', f: i => /alquiler/i.test(i.operacion) }
+        ];
+
+        function descubreTarjetaHTML(inm, fila = false) {
+            const favs = (typeof getFavoritosDashboard === 'function') ? getFavoritosDashboard() : [];
+            const esFav = typeof esIdFavorito === 'function' && esIdFavorito(String(inm.id), favs);
+            const id = escNotif(inm.id);
+            const specs = [
+                Number(inm.habitaciones) > 0 ? `<span><i class="ph ph-bed"></i> ${escNotif(inm.habitaciones)}</span>` : '',
+                Number(inm.banos) > 0 ? `<span><i class="ph ph-bathtub"></i> ${escNotif(inm.banos)}</span>` : '',
+                inm.m2 && inm.m2 !== 'N/D' ? `<span><i class="ph ph-ruler"></i> ${escNotif(inm.m2)}</span>` : ''
+            ].join('');
+            return `
+                <article class="${fila ? 'snap-start shrink-0 w-[78vw] max-w-[290px] sm:w-[280px]' : ''} bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer" onclick="abrirDetalleInmuebleAirbnb('${id}')">
+                    <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                        <img src="${escNotif(descubreFoto(inm))}" alt="${escNotif(inm.titulo)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute top-2.5 left-2.5 flex gap-1.5">
+                            <span class="bg-white/95 text-gray-900 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow">${escNotif(inm.operacion || 'VENTA')}</span>
+                            ${descubreEsNuevo(inm) ? '<span class="bg-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full shadow">Nuevo</span>' : ''}
+                        </div>
+                        <button type="button" onclick="event.stopPropagation(); toggleFavoritoDashboard('${id}'); this.querySelector('i').className = 'ph-fill ph-heart ' + (this.querySelector('i').classList.contains('text-rose-500') ? 'text-gray-400' : 'text-rose-500');" aria-label="Guardar en favoritos" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/95 shadow flex items-center justify-center cursor-pointer hover:scale-110 transition">
+                            <i class="ph-fill ph-heart ${esFav ? 'text-rose-500' : 'text-gray-400'}"></i>
+                        </button>
+                    </div>
+                    <div class="p-3.5">
+                        <p class="text-lg font-black text-maximus-dark dark:text-white leading-none">${escNotif(inm.precio || '')}</p>
+                        <h5 class="mt-1.5 text-[13px] font-bold text-gray-800 dark:text-gray-100 leading-snug line-clamp-1 group-hover:text-emerald-700">${escNotif(inm.titulo)}</h5>
+                        <p class="mt-0.5 text-[11px] text-gray-500 truncate"><i class="ph-fill ph-map-pin text-emerald-600"></i> ${escNotif(inm.sectorNombre || inm.ubicacion || 'Táchira')} · ${escNotif((inm.badgeTipo || '').toLowerCase())}</p>
+                        ${specs ? `<div class="mt-2.5 pt-2.5 border-t border-gray-100 dark:border-emerald-950 flex items-center gap-3 text-[11px] font-semibold text-gray-500">${specs}</div>` : ''}
+                    </div>
+                </article>`;
+        }
+
+        async function renderDescubre() {
+            const grid = document.getElementById('descubre-grid');
+            if (!grid) return;
+            if (!Object.keys(INMUEBLES_DETALLE_DATA || {}).length) {
+                grid.innerHTML = Array.from({ length: 4 }).map(() => '<div class="h-64 rounded-2xl bg-gray-100 dark:bg-emerald-950/40 animate-pulse"></div>').join('');
+            }
+            await conLimitePlatinum(sincronizarInmueblesDesdeDB()).catch(() => null);
+            const lista = descubreLista();
+
+            // Indicadores
+            const zonas = new Map();
+            lista.forEach(i => { const z = String(i.sectorNombre || '').trim(); if (z) { if (!zonas.has(z)) zonas.set(z, []); zonas.get(z).push(i); } });
+            const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+            set('descubre-stat-total', lista.length);
+            set('descubre-stat-zonas', zonas.size);
+            set('descubre-stat-nuevos', lista.filter(descubreEsNuevo).length);
+
+            // Vista previa de la pila (hero)
+            const prev = document.getElementById('descubre-pila-preview');
+            if (prev) {
+                const fotos = lista.filter(descubreTieneFoto).slice(0, 3);
+                prev.innerHTML = fotos.map((inm, k) => `<img src="${escNotif(descubreFoto(inm, true))}" alt="" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${k === 0 ? 'group-hover:scale-105' : 'hidden'}">`).join('');
+            }
+
+            // Recién llegados
+            const nuevos = document.getElementById('descubre-nuevos');
+            if (nuevos) nuevos.innerHTML = lista.slice(0, 12).map(i => descubreTarjetaHTML(i, true)).join('')
+                || '<p class="text-sm text-gray-500 py-8">Aún no hay inmuebles publicados.</p>';
+
+            // Zonas: las 8 con más inmuebles
+            const zonasBox = document.getElementById('descubre-zonas');
+            if (zonasBox) {
+                const top = Array.from(zonas.entries()).sort((a, b) => b[1].length - a[1].length).slice(0, 8);
+                zonasBox.innerHTML = top.map(([z, inms]) => {
+                    const conFoto = inms.find(descubreTieneFoto) || inms[0];
+                    const precios = inms.filter(i => /venta/i.test(i.operacion)).map(descubrePrecioNum).filter(p => p > 0);
+                    const desde = precios.length ? Math.min(...precios) : 0;
+                    return `
+                        <button type="button" data-zona="${escNotif(z)}" onclick="descubreZona(this.dataset.zona)" class="group relative aspect-[4/3] sm:aspect-[5/4] rounded-2xl overflow-hidden text-left cursor-pointer bg-gray-200 ${descubreFiltro.zona === z ? 'ring-4 ring-emerald-500' : ''}">
+                            <img src="${escNotif(descubreFoto(conFoto, true))}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+                            <div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 text-white">
+                                <p class="text-base sm:text-lg font-black leading-tight truncate">${escNotif(z)}</p>
+                                <p class="text-[11px] sm:text-xs text-white/80 font-semibold">${inms.length} ${inms.length === 1 ? 'inmueble' : 'inmuebles'}</p>
+                                ${desde ? `<p class="text-[11px] sm:text-xs text-emerald-200 font-bold">desde $${desde.toLocaleString('en-US')}</p>` : ''}
+                            </div>
+                        </button>`;
+                }).join('');
+            }
+
+            // Colecciones (solo las que tienen inmuebles)
+            const colBox = document.getElementById('descubre-colecciones');
+            if (colBox) {
+                colBox.innerHTML = DESCUBRE_COLECCIONES.map(c => {
+                    const inms = lista.filter(c.f);
+                    if (!inms.length) return '';
+                    const fotos = inms.filter(descubreTieneFoto).slice(0, 3);
+                    const activa = descubreFiltro.coleccion === c.id;
+                    return `
+                        <button type="button" onclick="descubreColeccion('${c.id}')" class="snap-start shrink-0 w-[70vw] max-w-[260px] sm:w-[250px] text-left rounded-2xl bg-white dark:bg-[#0A1F1B] border ${activa ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-gray-100 dark:border-emerald-950/60'} p-2 shadow-sm hover:shadow-lg transition cursor-pointer group">
+                            <div class="keep-grid grid grid-cols-[2fr_1fr] grid-rows-2 gap-1 h-32 rounded-xl overflow-hidden">
+                                ${[0, 1, 2].map(k => `<div class="${k === 0 ? 'row-span-2' : ''} bg-gray-100 dark:bg-emerald-950/40 overflow-hidden">${fotos[k] ? `<img src="${escNotif(descubreFoto(fotos[k], true))}" alt="" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : ''}</div>`).join('')}
+                            </div>
+                            <div class="px-1.5 pt-2.5 pb-1">
+                                <p class="text-sm font-black text-gray-900 dark:text-white flex items-center gap-1.5"><i class="ph-fill ${c.icono} text-emerald-600"></i> ${c.titulo}</p>
+                                <p class="text-[11px] text-gray-500 mt-0.5">${c.desc} · <strong class="text-gray-700 dark:text-gray-300">${inms.length}</strong></p>
+                            </div>
+                        </button>`;
+                }).join('');
+            }
+
+            descubrePintarResultados(lista);
+        }
+
+        function descubrePintarResultados(lista = descubreLista()) {
+            const grid = document.getElementById('descubre-grid');
+            if (!grid) return;
+            const f = descubreFiltro;
+            let res = lista;
+            const col = DESCUBRE_COLECCIONES.find(c => c.id === f.coleccion);
+            if (col) res = res.filter(col.f);
+            if (f.zona) res = res.filter(i => String(i.sectorNombre || '').trim() === f.zona);
+            if (f.op) res = res.filter(i => String(i.operacion || '').toLowerCase().includes(f.op));
+            if (f.q) {
+                const q = f.q.toLowerCase();
+                res = res.filter(i => [i.titulo, i.subtitulo, i.ubicacion, i.sectorNombre, i.badgeTipo, i.codigo].some(v => String(v || '').toLowerCase().includes(q)));
+            }
+
+            const titulo = col ? col.titulo : f.zona ? `Inmuebles en ${f.zona}` : f.q ? `Resultados para “${f.q}”` : 'Todos los inmuebles';
+            const t = document.getElementById('descubre-resultados-titulo'); if (t) t.textContent = titulo;
+            const s = document.getElementById('descubre-resultados-sub'); if (s) s.textContent = `${res.length} ${res.length === 1 ? 'inmueble' : 'inmuebles'} · del más reciente al más antiguo`;
+            const limpiar = document.getElementById('descubre-limpiar');
+            if (limpiar) { const hay = !!(col || f.zona || f.q); limpiar.classList.toggle('hidden', !hay); limpiar.classList.toggle('inline-flex', hay); }
+            document.querySelectorAll('#descubre-chips-op button').forEach(b => {
+                const on = (b.dataset.op || '') === f.op;
+                ['bg-white', 'shadow-sm', 'text-maximus-dark', 'dark:bg-[#0A1F1B]', 'dark:text-white'].forEach(c => b.classList.toggle(c, on));
+                b.classList.toggle('text-gray-500', !on);
+            });
+
+            const limite = 12;
+            const items = descubreMostrarTodo ? res : res.slice(0, limite);
+            grid.innerHTML = items.length
+                ? items.map(i => descubreTarjetaHTML(i)).join('')
+                : `<div class="col-span-full py-14 text-center bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-100 dark:border-emerald-950/60 space-y-3">
+                        <div class="w-12 h-12 rounded-2xl bg-gray-100 dark:bg-emerald-950/40 text-gray-500 flex items-center justify-center mx-auto text-2xl"><i class="ph-bold ph-magnifying-glass"></i></div>
+                        <p class="text-sm font-bold text-maximus-dark dark:text-white">No encontramos inmuebles con ese filtro</p>
+                        <button type="button" onclick="descubreLimpiar()" class="px-4 py-2 rounded-xl bg-maximus-dark text-white text-xs font-bold cursor-pointer">Ver todos</button>
+                   </div>`;
+
+            const mas = document.getElementById('descubre-mas');
+            if (mas) {
+                const hayMas = res.length > limite;
+                mas.classList.toggle('hidden', !hayMas); mas.classList.toggle('flex', hayMas);
+                mas.innerHTML = hayMas
+                    ? `<button type="button" onclick="descubreMostrarTodo = !descubreMostrarTodo; descubrePintarResultados();" class="px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer ${descubreMostrarTodo ? 'bg-white border border-gray-200 text-maximus-dark' : 'bg-maximus-dark hover:bg-[#07362e] text-white shadow-sm'}">${descubreMostrarTodo ? 'Mostrar menos <i class="ph-bold ph-caret-up"></i>' : `Ver ${res.length - limite} más <i class="ph-bold ph-caret-down"></i>`}</button>`
+                    : '';
+            }
+        }
+
+        function descubreIrAResultados() {
+            descubreMostrarTodo = false;
+            descubrePintarResultados();
+            document.getElementById('descubre-resultados')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function descubreBuscar(q) { descubreFiltro.q = String(q || '').trim(); descubreFiltro.zona = ''; descubreFiltro.coleccion = ''; descubreIrAResultados(); }
+        function descubreZona(z) { descubreFiltro.zona = descubreFiltro.zona === z ? '' : z; descubreFiltro.coleccion = ''; descubreFiltro.q = ''; renderDescubre(); descubreIrAResultados(); }
+        function descubreColeccion(id) { descubreFiltro.coleccion = descubreFiltro.coleccion === id ? '' : id; descubreFiltro.zona = ''; descubreFiltro.q = ''; renderDescubre(); descubreIrAResultados(); }
+        function descubreOperacion(op) { descubreFiltro.op = op || ''; descubreMostrarTodo = false; descubrePintarResultados(); }
+        function descubreLimpiar() {
+            Object.assign(descubreFiltro, { q: '', zona: '', coleccion: '' });
+            const b = document.getElementById('descubre-buscador'); if (b) b.value = '';
+            renderDescubre();
+        }
+
+        // ---------- Descubre deslizando ----------
+        let descubrePilaLista = [];
+        let descubrePilaIdx = 0;
+        const DESCUBRE_VISTOS_KEY = 'maximus_descubre_vistos';
+        function descubreVistos() { try { return JSON.parse(localStorage.getItem(DESCUBRE_VISTOS_KEY) || '[]'); } catch (_) { return []; } }
+        function descubreMarcarVisto(id) {
+            try { const v = descubreVistos().filter(x => x !== id); v.push(id); localStorage.setItem(DESCUBRE_VISTOS_KEY, JSON.stringify(v.slice(-500))); } catch (_) {}
+        }
+
+        function abrirDescubreDeslizando() {
+            const modal = document.getElementById('modal-descubre-deslizando');
+            if (!modal) return;
+            if (modal.parentElement !== document.body) document.body.appendChild(modal);
+            const vistos = new Set(descubreVistos());
+            const favs = (typeof getFavoritosDashboard === 'function') ? getFavoritosDashboard() : [];
+            let lista = descubreLista().filter(descubreTieneFoto).filter(i => !(typeof esIdFavorito === 'function' && esIdFavorito(String(i.id), favs)));
+            const sinVer = lista.filter(i => !vistos.has(String(i.id)));
+            lista = sinVer.length ? sinVer : lista; // si ya vio todo, empieza de nuevo
+            for (let k = lista.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [lista[k], lista[j]] = [lista[j], lista[k]]; }
+            descubrePilaLista = lista;
+            descubrePilaIdx = 0;
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            descubrePintarPila();
+            document.addEventListener('keydown', descubreTeclas);
+        }
+        function cerrarDescubreDeslizando() {
+            const modal = document.getElementById('modal-descubre-deslizando');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            document.body.style.overflow = '';
+            document.removeEventListener('keydown', descubreTeclas);
+            descubrePintarResultados();
+        }
+        function descubreTeclas(e) {
+            if (e.key === 'ArrowRight') descubreDecidir(true);
+            else if (e.key === 'ArrowLeft') descubreDecidir(false);
+            else if (e.key === 'Escape') cerrarDescubreDeslizando();
+        }
+
+        function descubrePintarPila() {
+            const pila = document.getElementById('descubre-pila');
+            const cont = document.getElementById('descubre-pila-contador');
+            if (!pila) return;
+            const restantes = descubrePilaLista.slice(descubrePilaIdx, descubrePilaIdx + 2);
+            if (cont) cont.textContent = restantes.length ? `${descubrePilaIdx + 1} de ${descubrePilaLista.length} · usa ← → en el teclado` : '';
+            if (!restantes.length) {
+                pila.innerHTML = `<div class="absolute inset-0 rounded-3xl bg-white dark:bg-[#0A1F1B] flex flex-col items-center justify-center text-center p-8">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 text-3xl flex items-center justify-center"><i class="ph-fill ph-check-circle"></i></div>
+                    <p class="mt-4 text-lg font-black text-gray-900 dark:text-white">¡Los viste todos!</p>
+                    <p class="mt-1 text-sm text-gray-500">Los que te gustaron están en tus favoritos.</p>
+                    <button type="button" onclick="cerrarDescubreDeslizando()" class="mt-5 h-11 px-5 rounded-xl bg-maximus-dark text-white text-sm font-extrabold cursor-pointer">Listo</button></div>`;
+                return;
+            }
+            pila.innerHTML = restantes.map((inm, k) => `
+                <div class="descubre-carta absolute inset-0 rounded-3xl overflow-hidden bg-gray-900 shadow-2xl select-none touch-none ${k === 0 ? 'z-10 cursor-grab' : 'scale-95 translate-y-3 opacity-70'}" data-id="${escNotif(inm.id)}">
+                    <img src="${escNotif(descubreFoto(inm, true))}" alt="${escNotif(inm.titulo)}" draggable="false" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+                    <span class="descubre-sello-si absolute top-6 left-5 -rotate-12 px-3 py-1 rounded-lg border-4 border-emerald-400 text-emerald-400 text-2xl font-black opacity-0 pointer-events-none">ME GUSTA</span>
+                    <span class="descubre-sello-no absolute top-6 right-5 rotate-12 px-3 py-1 rounded-lg border-4 border-rose-400 text-rose-400 text-2xl font-black opacity-0 pointer-events-none">PASO</span>
+                    <div class="absolute inset-x-0 bottom-0 p-5 text-white pointer-events-none">
+                        <span class="bg-white/95 text-gray-900 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full">${escNotif(inm.operacion || 'VENTA')}</span>
+                        <p class="mt-2 text-3xl font-black leading-none">${escNotif(inm.precio || '')}</p>
+                        <p class="mt-1.5 text-base font-bold leading-snug line-clamp-2">${escNotif(inm.titulo)}</p>
+                        <p class="mt-1 text-xs text-white/75"><i class="ph-fill ph-map-pin"></i> ${escNotif(inm.sectorNombre || inm.ubicacion || 'Táchira')}${Number(inm.habitaciones) > 0 ? ` · ${escNotif(inm.habitaciones)} hab.` : ''}${inm.m2 && inm.m2 !== 'N/D' ? ` · ${escNotif(inm.m2)}` : ''}</p>
+                    </div>
+                </div>`).reverse().join('');
+            descubreActivarArrastre(pila.querySelector('.descubre-carta.z-10'));
+        }
+
+        function descubreActivarArrastre(carta) {
+            if (!carta) return;
+            let x0 = 0, y0 = 0, dx = 0, activo = false;
+            const si = carta.querySelector('.descubre-sello-si'), no = carta.querySelector('.descubre-sello-no');
+            carta.addEventListener('pointerdown', e => { activo = true; x0 = e.clientX; y0 = e.clientY; dx = 0; carta.setPointerCapture(e.pointerId); carta.style.transition = 'none'; carta.classList.replace('cursor-grab', 'cursor-grabbing'); });
+            carta.addEventListener('pointermove', e => {
+                if (!activo) return;
+                dx = e.clientX - x0; const dy = e.clientY - y0;
+                carta.style.transform = `translate(${dx}px, ${dy * 0.3}px) rotate(${dx / 18}deg)`;
+                si.style.opacity = Math.max(0, Math.min(1, dx / 90));
+                no.style.opacity = Math.max(0, Math.min(1, -dx / 90));
+            });
+            const soltar = () => {
+                if (!activo) return; activo = false;
+                carta.classList.replace('cursor-grabbing', 'cursor-grab');
+                if (Math.abs(dx) > 100) { descubreDecidir(dx > 0); return; }
+                if (Math.abs(dx) < 5) { descubreVerActual(); }
+                carta.style.transition = 'transform .25s ease'; carta.style.transform = ''; si.style.opacity = 0; no.style.opacity = 0;
+            };
+            carta.addEventListener('pointerup', soltar);
+            carta.addEventListener('pointercancel', soltar);
+        }
+
+        function descubreDecidir(meGusta) {
+            const inm = descubrePilaLista[descubrePilaIdx];
+            if (!inm) return;
+            const carta = document.querySelector('#descubre-pila .descubre-carta.z-10');
+            descubreMarcarVisto(String(inm.id));
+            if (meGusta && typeof toggleFavoritoDashboard === 'function') {
+                const favs = getFavoritosDashboard();
+                if (!esIdFavorito(String(inm.id), favs)) toggleFavoritoDashboard(String(inm.id));
+            }
+            descubrePilaIdx++;
+            if (carta) {
+                carta.style.transition = 'transform .3s ease, opacity .3s ease';
+                carta.style.transform = `translate(${meGusta ? 520 : -520}px, 40px) rotate(${meGusta ? 24 : -24}deg)`;
+                carta.style.opacity = '0';
+                setTimeout(descubrePintarPila, 260);
+            } else descubrePintarPila();
+        }
+
+        function descubreVerActual() {
+            const inm = descubrePilaLista[descubrePilaIdx];
+            if (!inm) return;
+            cerrarDescubreDeslizando();
+            abrirDetalleInmuebleAirbnb(String(inm.id));
+        }
+
+        // Enlace "★ 4.9 · 12 reseñas" en la ficha del inmueble, si su asesor es Gold o Platinum
+        async function pintarResenasEnFicha(inm) {
+            const btn = document.getElementById('airbnb-asesor-resenas');
+            if (!btn) return;
+            btn.classList.add('hidden'); btn.classList.remove('inline-flex');
+            if (!inm) return;
+            const idFicha = String(inm.id);
+            pintarResenasEnFicha.actual = idFicha;
+            await cargarAsesoresPlatinum().catch(() => null);
+            if (pintarResenasEnFicha.actual !== idFicha) return; // el usuario ya abrió otra ficha
+            const a = (ASESORES_PLATINUM_DATA || []).find(x => inmuebleEsDeAsesorPlatinum(inm, x));
+            if (!a) return;
+            const est = Number(a.estrellas || 5);
+            const n = Number(a.total_resenas || 0);
+            document.getElementById('airbnb-asesor-resenas-estrellas').innerHTML = estrellasHTMLPlatinum(est, 'text-[11px]');
+            document.getElementById('airbnb-asesor-resenas-texto').textContent = `${est.toFixed(1)} · ${n > 0 ? `${n} ${n === 1 ? 'reseña' : 'reseñas'}` : 'Ver reseñas'}`;
+            btn.onclick = () => abrirModalResenasAsesor(String(a.auth_id));
+            btn.classList.remove('hidden'); btn.classList.add('inline-flex');
         }
 
         // ---------------- Reseñas de asesores Platinum ----------------
@@ -14161,6 +14868,10 @@
             if (modal.parentElement !== document.body) document.body.appendChild(modal);
             document.getElementById('resenas-asesor-avatar').src = avatarPlatinum(a);
             document.getElementById('resenas-asesor-nombre').textContent = a.nombre || 'Asesor';
+            const etiqueta = document.getElementById('resenas-asesor-etiqueta');
+            if (etiqueta) etiqueta.innerHTML = a.plan === 'gold'
+                ? '<i class="ph-fill ph-seal-check"></i> Asesor verificado'
+                : '<i class="ph-fill ph-sparkle"></i> Asesor recomendado';
             pintarResumenResenas(a);
             document.getElementById('resenas-lista').innerHTML = '<p class="text-xs text-gray-400"><i class="ph-bold ph-spinner ph-spin"></i> Cargando reseñas…</p>';
             document.getElementById('resena-form-box').innerHTML = '';
@@ -14958,36 +15669,30 @@
         }
         window.togglePasswordVisibility = togglePasswordVisibility;
 
-        function abrirFormularioNuevoInmueble() {
+        async function abrirFormularioNuevoInmueble() {
+            // Plan Bronce (3) y Gold (7) tienen tope de inmuebles; Platinum, equipo MAXIMUS y admin no
+            if (window.LimitesInmuebles) {
+                const lim = await LimitesInmuebles.verificar();
+                if (!lim.permitido) { LimitesInmuebles.mostrarAviso(lim); return; }
+            }
             activateTab('view-admin-cargar-inmueble', true);
+            if (window.LimitesInmuebles) LimitesInmuebles.pintarContador();
             try {
                 let u = null;
                 try { u = JSON.parse(localStorage.getItem('maximus_user')); } catch(_) {}
                 if (!u && typeof currentUserProfile !== 'undefined') u = currentUserProfile;
                 
-                const uRole = (u && u.role ? u.role : (typeof userRole !== 'undefined' ? userRole : '')).toLowerCase();
-                const radioExterno = document.querySelector('input[name="tipo_asesor"][value="externo"]');
-                const radioMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]');
-                
-                if (uRole === 'asesor_externo') {
-                    if (radioExterno) radioExterno.checked = true;
-                    if (typeof toggleTipoAsesor === 'function') toggleTipoAsesor();
-                    const inputNombre = document.getElementById('inm-asesor-nombre');
-                    const inputTel = document.getElementById('inm-asesor-telefono');
-                    if (inputNombre && (!inputNombre.value || inputNombre.value === 'Asesor Inmobiliario') && u && u.name) {
-                        inputNombre.value = u.name;
-                    }
-                    if (inputTel && (!inputTel.value || inputTel.value.includes('1234567')) && u && u.telefono) {
-                        inputTel.value = u.telefono.replace(/^\+?(58|57)\s*/, '');
-                    }
-                    const chkMax = document.getElementById('inm-ismaximus');
-                    if (chkMax) chkMax.checked = false;
-                } else if (uRole === 'asesor_maximus') {
-                    if (radioMaximus) radioMaximus.checked = true;
-                    if (typeof toggleTipoAsesor === 'function') toggleTipoAsesor();
-                    const chkMax = document.getElementById('inm-ismaximus');
-                    if (chkMax) chkMax.checked = true;
+                // El asesor de contacto se precarga con quien publica (cualquier rol); se puede cambiar
+                const inputNombre = document.getElementById('inm-asesor-nombre');
+                const inputTel = document.getElementById('inm-asesor-telefono');
+                if (inputNombre && (!inputNombre.value || inputNombre.value === 'Asesor Inmobiliario') && u && u.name) {
+                    inputNombre.value = u.name;
                 }
+                const telUsuario = u && (u.whatsapp || u.telefono);
+                if (inputTel && (!inputTel.value || inputTel.value.includes('1234567')) && telUsuario) {
+                    inputTel.value = String(telUsuario).replace(/^\+?(58|57)\s*/, '');
+                }
+                if (window.CargaInmuebleUI) CargaInmuebleUI.iniciar();
             } catch(e) {
                 console.warn('Aviso al abrir formulario de nuevo inmueble:', e);
             }
@@ -15024,6 +15729,11 @@
         });
 
         async function guardarInmuebleAdmin() {
+            // Segunda revisión del límite del plan (por si publicó desde otra pestaña mientras llenaba el formulario)
+            if (window.LimitesInmuebles) {
+                const lim = await LimitesInmuebles.verificar();
+                if (!lim.permitido) { LimitesInmuebles.mostrarAviso(lim); return; }
+            }
             // Recolectar datos del formulario
             const titulo = document.getElementById('inm-titulo').value;
             const subtitulo = document.getElementById('inm-subtitulo').value;
@@ -15052,11 +15762,24 @@
             const banos = document.getElementById('inm-banos').value;
             const estacionamientos = document.getElementById('inm-estac').value;
             const m2 = document.getElementById('inm-m2').value;
-            const isMaximus = document.getElementById('inm-ismaximus').checked;
             const descripcion = document.getElementById('inm-descripcion').value;
-            
-            // Lógica de Asesor Responsable (Oficial MAXIMUS o Externo Manual)
-            const isAsesorMaximus = document.querySelector('input[name="tipo_asesor"][value="maximus"]')?.checked ?? true;
+
+            // Revisión de lo indispensable y de las fotos que aún se están subiendo
+            if (window.CargaInmuebleUI) {
+                const faltan = CargaInmuebleUI.validar();
+                if (faltan) return;
+            }
+
+            // "Captación MAXIMUS" ya no se marca a mano: lo es si la publica el equipo MAXIMUS o un admin
+            let rolCarga = '';
+            try {
+                const uRol = (typeof AuthService !== 'undefined' && AuthService.getCurrentUser()) || JSON.parse(localStorage.getItem('maximus_user') || 'null');
+                rolCarga = String((uRol && (uRol.role || uRol.rol)) || '').toLowerCase();
+            } catch (_) {}
+            const isMaximus = rolCarga === 'admin' || rolCarga === 'asesor_maximus';
+
+            // Asesor de contacto: siempre el nombre y WhatsApp del formulario
+            const isAsesorMaximus = false;
             let asesor = {};
             let asesorIdRelacional = null;
 
@@ -15095,8 +15818,8 @@
                     email: 'contacto@maximusinmobiliaria.com',
                     avatar: `https://ui-avatars.com/api/?name=${nomFormateado}&background=0B4A3F&color=fff&bold=true`,
                     rating: '5.0',
-                    experiencia: 'Asesor Inmobiliario',
-                    tipo: 'externo'
+                    experiencia: isMaximus ? 'Asesor MAXIMUS' : 'Asesor Inmobiliario',
+                    tipo: isMaximus ? 'maximus' : 'externo'
                 };
             }
 
@@ -15137,7 +15860,8 @@
             const nuevoId = 'inm-' + (Object.keys(INMUEBLES_DETALLE_DATA).length + 1);
             const codigo = '#MAX-' + (100 + Object.keys(INMUEBLES_DETALLE_DATA).length + 1);
 
-            const numPrecio = parseFloat(String(precio).replace(/[^0-9.]/g, '')) || 0;
+            // "150.000" = ciento cincuenta mil (el punto separa miles; la coma, decimales)
+            const numPrecio = parseFloat(String(precio).replace(/[^\d,]/g, '').replace(',', '.')) || 0;
             const numHabitaciones = parseInt(habitaciones) || 0;
             const numBanos = parseFloat(banos) || 0;
             const numM2 = parseFloat(m2) || 0;
@@ -15186,6 +15910,12 @@
                 habitaciones: numHabitaciones,
                 banos: numBanos,
                 metros_cuadrados: numM2,
+                // Antes no se enviaban y se perdían al recargar
+                estacionamientos: parseInt(String(estacionamientos).replace(/\D/g, ''), 10) || 0,
+                sector_nombre: sectorNombre,
+                sector_desc: sectorDesc,
+                aspectos_destacados: aspectosDestacados,
+                amenidades,
                 foto_principal: fotos.length > 0 ? fotos[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=85',
                 fotos: fotos.length > 0 ? fotos : [],
                 is_maximus: isMaximus,
@@ -15193,7 +15923,7 @@
                 comision_porcentaje: numComision,
                 agente_id: asesorIdRelacional
             };
-            // Asesor Pro / Platinum: el inmueble queda ligado a su cuenta (Captaciones Destacadas)
+            // Asesor Bronce / Gold / Platinum: el inmueble queda ligado a su cuenta (Captaciones Destacadas)
             try {
                 const uCarga = (typeof AuthService !== 'undefined' && AuthService.getCurrentUser()) || null;
                 if (uCarga && uCarga.id && (uCarga.role === 'asesor_externo' || uCarga.rol === 'asesor_externo')) {
@@ -15207,6 +15937,12 @@
             if (typeof InmuebleService !== 'undefined') {
                 try {
                     const sbRes = await InmuebleService.create(payloadSupabase);
+                    if (sbRes && window.LimitesInmuebles && LimitesInmuebles.esErrorDeLimite(sbRes.error)) {
+                        // La base de datos rechazó el inmueble por el tope del plan
+                        const lim = await LimitesInmuebles.verificar();
+                        LimitesInmuebles.mostrarAviso(lim.permitido ? Object.assign({}, lim, { usados: lim.limite }) : lim);
+                        return;
+                    }
                     if (sbRes && sbRes.data && sbRes.data.id) {
                         nuevoInmueble.id = String(sbRes.data.id);
                     }
@@ -15237,10 +15973,11 @@
                 });
             }
 
-            mostrarToastNotificacion('✅ Inmueble guardado en la base de datos y notificación de captación enviada');
-            
+            mostrarToastNotificacion('✅ Inmueble publicado');
+
             // Limpiar formulario y refrescar vistas con la base de datos
-            document.getElementById('form-cargar-inmueble').reset();
+            if (window.CargaInmuebleUI) CargaInmuebleUI.limpiar(false);
+            else document.getElementById('form-cargar-inmueble').reset();
             await sincronizarInmueblesDesdeDB(true);
             if (typeof updateDashboard === 'function') updateDashboard();
             if (typeof renderExclusivasMaximus === 'function') renderExclusivasMaximus();
@@ -16344,9 +17081,12 @@
                     let planPerfil = p.plan;
                     if (!planPerfil) { try { planPerfil = (JSON.parse(localStorage.getItem('maximus_user') || '{}') || {}).plan; } catch (_) {} }
                     const esPlatPerfil = planPerfil === 'platinum';
-                    cardRolBadge.textContent = esPlatPerfil ? 'ASESOR INMOBILIARIO PLATINUM' : 'ASESOR INMOBILIARIO PRO';
+                    const esGoldPerfil = planPerfil === 'gold';
+                    cardRolBadge.textContent = esPlatPerfil ? 'ASESOR INMOBILIARIO PLATINUM' : (esGoldPerfil ? 'ASESOR INMOBILIARIO GOLD' : 'ASESOR INMOBILIARIO BRONCE');
                     cardRolBadge.className = esPlatPerfil
                         ? 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-800 text-slate-900 dark:text-slate-100 border border-slate-400 dark:border-slate-500'
+                        : esGoldPerfil
+                        ? 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-100 to-amber-300 text-amber-950 border border-amber-400'
                         : 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white border border-emerald-700';
                 } else {
                     cardRolBadge.textContent = 'ASESOR MAXIMUS';
@@ -18831,7 +19571,7 @@
     <div id="mobileDrawerOverlay" onclick="toggleMobileDrawer(false)"></div>
     <nav id="mobileTabBar" aria-label="Navegación principal">
         <button type="button" data-tab="view-inmuebles"><i class="ph-fill ph-house"></i><span>Inmuebles</span></button>
-        <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-diamond"></i><span>Destacadas</span></button>
+        <button type="button" data-tab="view-exclusivas-maximus" class="cliente-only"><i class="ph-fill ph-compass"></i><span>Descubre</span></button>
         <button type="button" data-tab="resenas" data-action="resena" onclick="abrirModalDejarResena()" class="cliente-only" title="Subir Reseña"><i class="ph-fill ph-star text-amber-500"></i><span>Reseñas</span></button>
         <button type="button" data-tab="view-resumen" class="staff-only"><i class="ph-fill ph-squares-four"></i><span>Panorama</span></button>
         <button type="button" data-tab="view-colecciones" class="staff-only"><i class="ph-fill ph-folder-simple"></i><span>Colecciones</span></button>

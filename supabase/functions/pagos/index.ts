@@ -2,7 +2,7 @@
 //   { action: "crear",    plan_id, metodo }          -> crea el pago con precio fijado en servidor
 //   { action: "reportar", pago_id, referencia }      -> el usuario informa su ref. (pago móvil / Binance)
 // La activación nunca ocurre aquí: solo webhooks (Stripe) y conciliación (n8n / binance-sync).
-import { adminClient, corsHeaders, json, METODOS, PLANES, tasaBCV } from "../_shared/pagos.ts";
+import { adminClient, corsHeaders, json, METODOS, montoEnBs, obtenerTasaBCV, PLANES } from "../_shared/pagos.ts";
 
 const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin 0/O/1/I
 
@@ -59,8 +59,16 @@ async function crear(sb: any, user: any, body: Record<string, unknown>) {
   let tasa: number | null = null;
   let montoLocal: number | null = null;
   if (metodo === "pago_movil") {
-    tasa = await tasaBCV();
-    montoLocal = Math.round(plan.usd * tasa * 100) / 100;
+    try {
+      const info = await obtenerTasaBCV(sb);
+      tasa = info.tasa;
+      if (info.estado === "respaldo_db" || info.estado === "respaldo_env") {
+        console.warn(`pagos: Pago Móvil con tasa de respaldo (${info.estado}, ${info.tasa})`);
+      }
+    } catch (_) {
+      return json({ error: "Pago Móvil no está disponible en este momento porque no pudimos obtener la tasa BCV. Usa Binance o tarjeta, o intenta en unos minutos." }, 503);
+    }
+    montoLocal = montoEnBs(plan.usd, tasa);
   }
 
   const { data: pago, error } = await sb.from("pagos_suscripcion").insert({

@@ -157,7 +157,7 @@
                         <div class="mt-3 md:mt-7 flex items-center gap-4">
                             <div class="flex-1 flex items-center gap-1.5">
                                 <button type="button" onclick="setLoginShowcase(0)" id="scTab0" class="lx-tab is-active" aria-label="Ver Catálogo VIP"><span class="lx-fill"></span></button>
-                                <button type="button" onclick="setLoginShowcase(1)" id="scTab1" class="lx-tab" aria-label="Ver Asesores Pro"><span class="lx-fill"></span></button>
+                                <button type="button" onclick="setLoginShowcase(1)" id="scTab1" class="lx-tab" aria-label="Ver Asesores Bronce"><span class="lx-fill"></span></button>
                                 <button type="button" onclick="setLoginShowcase(2)" id="scTab2" class="lx-tab" aria-label="Ver Cotizador"><span class="lx-fill"></span></button>
                             </div>
                             <span class="hidden md:inline text-[11px] font-medium uppercase tracking-[0.18em] text-white/50">Táchira, VE</span>
@@ -267,7 +267,7 @@
                             <div class="flex items-center justify-center gap-1.5 flex-wrap mt-3">
                                 <button type="button" onclick="selectDemoAccount('admin')" class="mx-chip">Admin</button>
                                 <button type="button" onclick="selectDemoAccount('asesor_maximus')" class="mx-chip">Asesor MAXIMUS</button>
-                                <button type="button" onclick="selectDemoAccount('asesor_externo')" class="mx-chip">Asesor Pro</button>
+                                <button type="button" onclick="selectDemoAccount('asesor_externo')" class="mx-chip">Asesor Bronce</button>
                                 <button type="button" onclick="selectDemoAccount('cliente')" class="mx-chip">Cliente</button>
                             </div>
                         </details>
@@ -456,13 +456,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
-    <script src="js/config.js?v=4.0"></script>
+    <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.2"></script>
     <script src="js/mock-data.js?v=3.2"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="js/services.js?v=3.2"></script>
-    <script src="js/auth.js?v=4.0"></script>
-    <script src="js/payments.js?v=4.0"></script>
+    <script src="js/auth.js?v=4.5"></script>
+    <script src="js/payments.js?v=4.7"></script>
 
     <!-- Script para interactividad y auth -->
     <script>
@@ -647,10 +647,10 @@
                 if (lblCliente) lblCliente.className = 'relative cursor-pointer rounded-xl border-2 border-gray-200 bg-white hover:border-emerald-300 p-2.5 sm:p-3 flex flex-col transition-all';
                 if (lblAsesor) lblAsesor.className = 'relative cursor-pointer rounded-xl border-2 border-blue-500 bg-blue-50/70 p-2.5 sm:p-3 flex flex-col transition-all shadow-xs';
                 if (titleEl) titleEl.textContent = 'Crear Cuenta de Asesor Inmobiliario';
-                if (subTitleEl) subTitleEl.textContent = 'Membresía Pro: Accede al panel CRM, cotizador, colecciones y carga de inmuebles a la plataforma.';
+                if (subTitleEl) subTitleEl.textContent = 'Membresía Bronce: Accede al panel CRM, cotizador, colecciones y carga de inmuebles a la plataforma.';
                 if (badgeBox) badgeBox.className = 'p-3 rounded-xl bg-blue-50/80 border border-blue-200 text-blue-900 text-[11px] flex items-center gap-2.5 transition-all';
                 if (badgeIcon) badgeIcon.className = 'fas fa-briefcase text-blue-600 text-base shrink-0';
-                if (badgeText) badgeText.innerHTML = '<strong>Membresía Profesional:</strong> Habilita gestión comercial CRM, cotizador express y publicación de inmuebles en MAXIMUS.';
+                if (badgeText) badgeText.innerHTML = '<strong>Membresía Broncefesional:</strong> Habilita gestión comercial CRM, cotizador express y publicación de inmuebles en MAXIMUS.';
                 if (submitBtn) submitBtn.className = 'w-full py-3.5 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm tracking-wide shadow-md shadow-blue-600/30 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer';
                 if (submitText) submitText.textContent = 'Crear Cuenta de Asesor Inmobiliario';
             } else {
@@ -1133,12 +1133,12 @@
                 desc: 'Accede al inventario más selecto de San Cristóbal y Táchira con verificación legal garantizada.'
             },
             {
-                badge: '<i class="fas fa-briefcase text-xs mr-1"></i> Membresía Asesor Pro',
+                badge: '<i class="fas fa-briefcase text-xs mr-1"></i> Membresía Asesor Bronce',
                 title: 'CRM & WhatsApp Directo',
                 desc: 'Comercializa tu inventario, gestiona prospectos y comparte dossiers con tu marca personal.'
             },
             {
-                badge: '<i class="fas fa-calculator text-xs mr-1"></i> Herramientas Pro',
+                badge: '<i class="fas fa-calculator text-xs mr-1"></i> Herramientas de asesor',
                 title: 'Cotizador Express',
                 desc: 'Calcula comisiones, gastos notariales e impuestos en San Cristóbal al instante.'
             }

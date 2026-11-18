@@ -1,4 +1,4 @@
-# Pagos de suscripción — arquitectura (US$ 4.99/mes)
+# Pagos de suscripción — arquitectura (Bronce US$ 2.99 · Gold US$ 4.99 · Platinum US$ 9.99 al mes)
 
 Métodos: **Pago Móvil (Bs)**, **Binance Pay (USDT)**, **Stripe (tarjetas)**.
 
@@ -39,9 +39,10 @@ Navegador ──(JWT)──► Edge Function `pagos` ──► tabla pagos_suscr
 7. **Probar** con Stripe en modo test y un pago real de Bs mínimos antes de abrirlo al público.
 
 ## Cómo se concilia cada método
-- **Stripe:** automático e inmediato. Se valida firma, `payment_status=paid`, moneda y monto (499 centavos).
+- **Stripe:** automático e inmediato. Se valida firma, `payment_status=paid`, moneda y monto (el precio del plan en centavos: 299, 499 o 999).
 - **Pago Móvil:** el usuario paga el monto en Bs fijado (tasa BCV, válido 60 min) y escribe su referencia. Llega el SMS del banco a un celular con reenviador → n8n lo parsea → `confirmar-pago`. Coincide si la referencia termina igual (mín. 8 dígitos) y el monto está dentro de ±2 %. Funciona si el SMS llega antes o después de que el usuario reporte.
-- **Binance:** `binance-sync` lee tus cobros recibidos. Coincide por Binance ID del pagador (o ID de transacción) y monto ≥ 4.99 USDT.
+- **Tasa BCV (Pago Móvil):** `supabase/functions/_shared/tasa-bcv.ts`. Orden: tasa manual del admin (36 h) → última guardada si tiene menos de 3 h → `ve.dolarapi.com` (dos rutas, en paralelo, con validación y tope de salto de 25 %) → última guardada de hasta 72 h → `TASA_BCV_FALLBACK` → si no hay nada, Pago Móvil se desactiva. Cada tasa se guarda en la tabla `tasas_bcv`. n8n (`workflow-tasa-bcv.json`) la refresca cada 2 h llamando a la Edge Function `tasa-bcv` y avisa por correo si queda en respaldo. La página del BCV no se usa directo porque su certificado HTTPS está mal configurado.
+- **Binance:** `binance-sync` lee tus cobros recibidos. Coincide por Binance ID del pagador (o ID de transacción) y monto ≥ precio del plan en USDT.
 
 ## Pendiente de validar con datos reales
 - Regex del SMS en `workflow-pago-movil-sms.json`: cada banco redacta distinto; ajustar con 3-4 SMS reales.

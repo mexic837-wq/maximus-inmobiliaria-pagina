@@ -1,0 +1,122 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 15. Oficina aliada registrada (aviso al admin)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Oficinas aliadas\nCuando una inmobiliaria llena \"¿Inmobiliaria? Regístrate aquí\", la web llama a este webhook solo con el id.\nEl flujo lee los datos en Supabase (y los marca como notificados) y te manda un correo para revisarla.\n\n**Configuración (una sola vez):**\n1. Ejecuta el SQL pendiente (Parte 7).\n2. Nodo *Tomar registro*: credencial **Supabase API** (service_role).\n3. Nodo *Correo al admin*: credencial **Gmail MAXIMUS**. Cambia el correo destino si hace falta.\n4. Activa el workflow.\n\nPara aprobar: panel → Sitio web → Oficinas aliadas (el correo también trae el `UPDATE` por si hace falta).",
+        "width": 500,
+        "height": 330,
+        "color": 4
+      },
+      "id": "of-nota",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-300, -60]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "oficina-aliada",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "*",
+          "responseCode": 200
+        }
+      },
+      "id": "of-webhook",
+      "name": "Webhook Oficina aliada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [280, 300],
+      "webhookId": "maximus-oficina-aliada"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Solo se acepta un UUID; los datos se leen de Supabase\nconst b = $input.first().json.body || $input.first().json;\nconst id = String(b.oficina_id || '').trim();\nif (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return [];\nreturn [{ json: { id, origen: String(b.origen || 'web').slice(0, 40) } }];"
+      },
+      "id": "of-validar",
+      "name": "Validar id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/rest/v1/rpc/tomar_oficina_para_notificar",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_id: $json.id }) }}",
+        "options": {}
+      },
+      "id": "of-tomar",
+      "name": "Tomar registro (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "CREAR_EN_N8N",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Arma el correo para el admin. Si el registro ya se había notificado, Supabase devuelve [] y no sale nada.\nconst esc = (s) => String(s ?? '').replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst origen = $('Validar id').first().json.origen;\nreturn $input.all().map(i => i.json).filter(o => o && o.id).map(o => {\n  const fila = (k, v) => v ? `<tr><td style=\"padding:6px 0;color:#6B7280;width:38%\">${k}</td><td style=\"padding:6px 0;font-weight:700;color:#111827\">${esc(v)}</td></tr>` : '';\n  const aprobar = `UPDATE public.oficinas_aliadas SET estado = 'aprobada', aprobada_at = now() WHERE id = '${o.id}';`;\n  const rechazar = `UPDATE public.oficinas_aliadas SET estado = 'rechazada' WHERE id = '${o.id}';`;\n  const html = `<div style=\"font-family:Arial,sans-serif;max-width:580px;margin:auto;border:1px solid #E5E7EB;border-radius:16px;overflow:hidden\">\n<div style=\"background:#0B4A3F;color:#fff;padding:18px 22px\"><b>MAXIMUS<span style=\"color:#10B981\">.</span></b> · Nueva oficina aliada por revisar</div>\n<div style=\"padding:22px;font-size:14px;line-height:1.55;color:#111827\">\n<table style=\"width:100%;border-collapse:collapse;font-size:14px\">\n${fila('Inmobiliaria', o.nombre)}${fila('Responsable', o.responsable)}${fila('WhatsApp', '+' + o.whatsapp)}${fila('Correo', o.email)}${fila('Zona', o.zona)}${fila('Asesores', o.num_asesores)}${fila('Web / Instagram', o.sitio_web)}${fila('Descripción', o.descripcion)}${fila('Se registró desde', origen)}\n</table>\n<p style=\"text-align:center;margin:20px 0\"><a href=\"https://wa.me/${o.whatsapp}\" style=\"background:#25D366;color:#fff;text-decoration:none;padding:11px 20px;border-radius:10px;font-weight:bold\">Escribirle por WhatsApp</a></p>\n<p style=\"margin:0 0 10px\"><b>Para aprobarla:</b> entra al panel → <b>Sitio web → Oficinas aliadas</b>. Ahí puedes publicarla, subir su logo y destacarla.</p>\n<p style=\"margin:0 0 6px;font-size:12px;color:#6B7280\">Alternativa: pega esto en el SQL Editor de Supabase.</p>\n<pre style=\"background:#F3F4F6;padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap\">${esc(aprobar)}</pre>\n<p style=\"margin:12px 0 6px\"><b>Para rechazarla:</b></p>\n<pre style=\"background:#F3F4F6;padding:10px;border-radius:8px;font-size:12px;white-space:pre-wrap\">${esc(rechazar)}</pre>\n<p style=\"font-size:12px;color:#6B7280\">Sin logo, en la web aparece con sus iniciales.</p>\n</div></div>`;\n  return { json: { asunto: `🏢 Nueva oficina aliada por revisar: ${o.nombre} (${o.zona})`, html } };\n});"
+      },
+      "id": "of-armar",
+      "name": "Armar correo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "maximusinmobiliariars@gmail.com",
+        "subject": "={{ $json.asunto }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "of-gmail",
+      "name": "Correo al admin",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1160, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Oficina aliada": {
+      "main": [[{ "node": "Validar id", "type": "main", "index": 0 }]]
+    },
+    "Validar id": {
+      "main": [[{ "node": "Tomar registro (Supabase)", "type": "main", "index": 0 }]]
+    },
+    "Tomar registro (Supabase)": {
+      "main": [[{ "node": "Armar correo", "type": "main", "index": 0 }]]
+    },
+    "Armar correo": {
+      "main": [[{ "node": "Correo al admin", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
