@@ -97,8 +97,8 @@ const APP_CONFIG = {
             nombre: 'Asesor Inmobiliario Gold',
             precio_usd: 4.99,
             periodo_label: '/mes',
-            descripcion: 'Todo lo de Bronce + hasta 7 inmuebles, insignia Gold y reseñas de tus clientes visibles en la ficha de cada uno de tus inmuebles.',
-            badge: 'Con reseñas'
+            descripcion: 'Todo lo de Bronce + hasta 7 inmuebles publicados e insignia Gold en tu perfil.',
+            badge: 'Más inmuebles'
         },
         PLATINUM: {
             id: 'platinum',

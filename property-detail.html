@@ -212,6 +212,11 @@
                                     <span id="detail-asesor-plan" class="text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
                                 </h3>
                                 <p id="detail-asesor-cargo" class="text-[11px] font-semibold text-gray-500 truncate">Director & Captador Principal MAXIMUS</p>
+                                <!-- Calificación del asesor (la pinta js/asesor-publico.js). Para calificar: desde el panel. -->
+                                <span id="detail-asesor-resenas" class="hidden" style="align-items:center;gap:4px;margin-top:2px;font-size:11px;font-weight:700;color:#374151;">
+                                    <span id="detail-asesor-resenas-estrellas" style="display:inline-flex;color:#FBBF24;"></span>
+                                    <span id="detail-asesor-resenas-texto"></span>
+                                </span>
                             </div>
                         </div>
                         <div class="flex sm:flex-col gap-1.5 shrink-0 w-full sm:w-auto">
@@ -541,7 +546,7 @@
     <script src="js/supabase-client.js"></script>
     <script src="js/services.js"></script>
     <script src="js/auth.js?v=4.6"></script>
-    <script src="js/asesor-publico.js?v=1.1"></script>
+    <script src="js/asesor-publico.js?v=1.2"></script>
     
     <script>
         window.currentDetailProperty = null;
@@ -626,6 +631,8 @@
             }
 
             const p = window.currentDetailProperty || {};
+            // Contacto registrado: con eso el cliente podrá calificar al asesor
+            if (window.AsesorPublico && p.id) AsesorPublico.registrarContacto(p.id, 'whatsapp');
             const asesor = p.asesor || {};
             const tel = (asesor.telefono || p.asesor_telefono || '+584247835697').replace(/[^0-9]/g, '');
             const nombreAsesor = asesor.nombre || p.asesor_nombre || 'Asesor MAXIMUS';

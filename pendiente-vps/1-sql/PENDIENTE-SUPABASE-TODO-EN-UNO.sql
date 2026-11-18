@@ -30,6 +30,10 @@
 --             automático de sus inmuebles cuando paga un plan
 --   PARTE 7 · Oficinas aliadas: registro de inmobiliarias, moderación del admin y
 --             listado público para la sección "Oficinas aliadas" de la landing
+--   PARTE 8 · Reseñas solo de quien contactó al asesor (WhatsApp / Llamar desde la
+--             ficha), para TODOS los asesores; una por cuenta; 5.0 sin reseñas
+--             (tabla contactos_asesor; funciones registrar_contacto_asesor,
+--              asesor_auth_de_inmueble, contacto_verificado, resumen_resenas_inmueble)
 --
 -- DESPUÉS DE EJECUTAR, además:
 --   · Volver a desplegar las Edge Functions: pagos, stripe-webhook, confirmar-pago,
@@ -47,6 +51,7 @@
 --   2026-11-17  Parte 7: oficinas aliadas (registro + listado en la landing)
 --   2026-11-17  Parte 7 ajustada: el admin crea/edita/oculta/borra oficinas desde el panel
 --               (estado 'oculta', responsable y WhatsApp opcionales, permisos de admin)
+--   2026-11-18  Parte 8: reseñas solo con contacto verificado, para todos los asesores
 -- =====================================================================
 
 
@@ -1342,5 +1347,296 @@ GRANT EXECUTE ON FUNCTION public.tomar_oficina_para_notificar(UUID) TO service_r
 --      WHERE id = 'PEGA-AQUI-EL-ID';
 --   Rechazar:
 --     UPDATE public.oficinas_aliadas SET estado = 'rechazada' WHERE id = 'PEGA-AQUI-EL-ID';
+
+NOTIFY pgrst, 'reload schema';
+
+
+-- #####################################################################
+-- PARTE 8 · RESEÑAS SOLO DE QUIEN CONTACTÓ AL ASESOR (todos los asesores)
+-- #####################################################################
+-- Reglas:
+--   · Se puede calificar a CUALQUIER asesor de una ficha (equipo MAXIMUS, Bronce,
+--     Gold, Platinum), no solo a Gold/Platinum.
+--   · Solo puede calificar quien lo contactó desde la plataforma con su cuenta
+--     (botones WhatsApp / Llamar de la ficha). Cada clic queda en contactos_asesor.
+--   · El asesor del contacto lo decide el SERVIDOR a partir del inmueble: no se
+--     puede registrar un contacto falso con otro asesor.
+--   · Una reseña por cuenta y asesor (UNIQUE): si vuelve, la edita.
+--   · Sin reseñas, la calificación que se muestra es 5.0.
+-- =====================================================================
+
+-- 8.1 Tabla de reseñas (por si migration-plan-platinum.sql no se ejecutó)
+CREATE TABLE IF NOT EXISTS public.resenas_asesores (
+    id             UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    asesor_auth_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    autor_auth_id  UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    autor_nombre   TEXT,
+    estrellas      SMALLINT NOT NULL CHECK (estrellas BETWEEN 1 AND 5),
+    comentario     TEXT CHECK (comentario IS NULL OR char_length(comentario) <= 600),
+    oculto         BOOLEAN NOT NULL DEFAULT false,
+    created_at     TIMESTAMPTZ DEFAULT now(),
+    updated_at     TIMESTAMPTZ DEFAULT now(),
+    UNIQUE (asesor_auth_id, autor_auth_id),
+    CHECK (asesor_auth_id <> autor_auth_id)
+);
+CREATE INDEX IF NOT EXISTS idx_resenas_asesores_asesor
+    ON public.resenas_asesores (asesor_auth_id, created_at DESC) WHERE oculto = false;
+
+CREATE OR REPLACE FUNCTION public.resenas_asesores_guard()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_admin BOOLEAN := EXISTS (
+        SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin'
+    );
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        IF NOT v_admin THEN NEW.oculto := false; END IF;
+    ELSE
+        IF NEW.asesor_auth_id IS DISTINCT FROM OLD.asesor_auth_id
+           OR NEW.autor_auth_id IS DISTINCT FROM OLD.autor_auth_id THEN
+            RAISE EXCEPTION 'No se puede cambiar el asesor ni el autor de una reseña';
+        END IF;
+        IF NEW.oculto IS DISTINCT FROM OLD.oculto AND NOT v_admin
+           AND COALESCE(auth.role(), '') <> 'service_role' THEN
+            RAISE EXCEPTION 'Solo un administrador puede ocultar reseñas';
+        END IF;
+        NEW.updated_at := now();
+    END IF;
+    SELECT COALESCE(NULLIF(trim(u.nombre_completo), ''), 'Usuario MAXIMUS')
+      INTO NEW.autor_nombre
+      FROM public.usuarios u WHERE u.auth_id = NEW.autor_auth_id;
+    NEW.autor_nombre := COALESCE(NEW.autor_nombre, 'Usuario MAXIMUS');
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_resenas_asesores_guard ON public.resenas_asesores;
+CREATE TRIGGER trg_resenas_asesores_guard
+    BEFORE INSERT OR UPDATE ON public.resenas_asesores
+    FOR EACH ROW EXECUTE FUNCTION public.resenas_asesores_guard();
+
+ALTER TABLE public.resenas_asesores ENABLE ROW LEVEL SECURITY;
+GRANT SELECT ON public.resenas_asesores TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.resenas_asesores TO authenticated;
+
+-- 8.2 Cuenta (auth) del asesor que se muestra en la ficha de un inmueble.
+--     Misma regla que asesor_publico_inmueble (Parte 6.7):
+--       · inmueble ligado a un usuario (asesor_id / agente_id) → ese usuario
+--       · captado de WhatsApp / sin nombre → el contacto MAXIMUS (José Guerrero),
+--         buscado en usuarios por su teléfono o nombre
+--       · otro caso → el usuario con el mismo teléfono que el inmueble, si existe
+CREATE OR REPLACE FUNCTION public.asesor_auth_de_inmueble(p_inmueble_id TEXT)
+RETURNS UUID
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_i   public.inmuebles%ROWTYPE;
+    v_cfg public.config_captaciones%ROWTYPE;
+    v_id  UUID;
+    v_tel TEXT;
+BEGIN
+    SELECT * INTO v_i FROM public.inmuebles WHERE id::TEXT = p_inmueble_id;
+    IF NOT FOUND THEN RETURN NULL; END IF;
+    SELECT * INTO v_cfg FROM public.config_captaciones WHERE id;
+
+    SELECT u.auth_id INTO v_id
+      FROM public.usuarios u
+     WHERE u.auth_id IS NOT NULL
+       AND ((v_i.asesor_id IS NOT NULL AND (u.auth_id::TEXT = v_i.asesor_id OR u.id::TEXT = v_i.asesor_id))
+         OR (v_i.agente_id IS NOT NULL AND u.id = v_i.agente_id))
+     LIMIT 1;
+    IF v_id IS NOT NULL THEN RETURN v_id; END IF;
+
+    IF COALESCE(v_i.origen_captura, '') = 'whatsapp'
+       OR NULLIF(trim(COALESCE(v_i.asesor_nombre, '')), '') IS NULL
+       OR v_i.asesor_nombre ~* '^\s*asesor'
+       OR v_i.asesor_nombre = v_cfg.contacto_nombre THEN
+        v_tel := public.normalizar_tel_ve(v_cfg.contacto_telefono);
+        SELECT u.auth_id INTO v_id
+          FROM public.usuarios u
+         WHERE u.auth_id IS NOT NULL
+           AND (public.normalizar_tel_ve(COALESCE(NULLIF(u.whatsapp, ''), NULLIF(u.telefono_e164, ''), u.telefono)) = v_tel
+                OR lower(trim(u.nombre_completo)) = lower(trim(v_cfg.contacto_nombre)))
+         ORDER BY (u.rol IN ('admin', 'asesor_maximus')) DESC,
+                  (public.normalizar_tel_ve(COALESCE(NULLIF(u.whatsapp, ''), NULLIF(u.telefono_e164, ''), u.telefono)) = v_tel) DESC
+         LIMIT 1;
+        RETURN v_id;
+    END IF;
+
+    v_tel := public.normalizar_tel_ve(v_i.asesor_telefono);
+    IF COALESCE(v_tel, '') = '' THEN RETURN NULL; END IF;
+    SELECT u.auth_id INTO v_id
+      FROM public.usuarios u
+     WHERE u.auth_id IS NOT NULL
+       AND public.normalizar_tel_ve(COALESCE(NULLIF(u.whatsapp, ''), NULLIF(u.telefono_e164, ''), u.telefono)) = v_tel
+     LIMIT 1;
+    RETURN v_id;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.asesor_auth_de_inmueble(TEXT) TO anon, authenticated;
+
+-- 8.3 Contactos: quién contactó a qué asesor, por qué inmueble y por qué medio
+CREATE TABLE IF NOT EXISTS public.contactos_asesor (
+    id                 UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    autor_auth_id      UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    asesor_auth_id     UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    inmueble_id        TEXT NOT NULL,
+    canal              TEXT NOT NULL CHECK (canal IN ('whatsapp', 'llamada')),
+    veces              INT  NOT NULL DEFAULT 1,
+    primer_contacto_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    ultimo_contacto_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (autor_auth_id, asesor_auth_id, inmueble_id, canal),
+    CHECK (autor_auth_id <> asesor_auth_id)
+);
+CREATE INDEX IF NOT EXISTS idx_contactos_asesor_par
+    ON public.contactos_asesor (autor_auth_id, asesor_auth_id);
+CREATE INDEX IF NOT EXISTS idx_contactos_asesor_asesor
+    ON public.contactos_asesor (asesor_auth_id, ultimo_contacto_at DESC);
+
+ALTER TABLE public.contactos_asesor ENABLE ROW LEVEL SECURITY;
+
+-- Lo ve el cliente (sus contactos), el asesor (los que recibió) y el admin.
+-- Nadie escribe directo en la tabla: solo con registrar_contacto_asesor().
+DROP POLICY IF EXISTS "contactos_asesor: leer propios" ON public.contactos_asesor;
+CREATE POLICY "contactos_asesor: leer propios" ON public.contactos_asesor
+    FOR SELECT TO authenticated
+    USING (
+        autor_auth_id = auth.uid()
+        OR asesor_auth_id = auth.uid()
+        OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin')
+    );
+REVOKE INSERT, UPDATE, DELETE ON public.contactos_asesor FROM anon, authenticated;
+GRANT SELECT ON public.contactos_asesor TO authenticated;
+
+-- 8.4 Registrar un contacto (lo llama la ficha al tocar WhatsApp o Llamar)
+CREATE OR REPLACE FUNCTION public.registrar_contacto_asesor(p_inmueble_id TEXT, p_canal TEXT)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+VOLATILE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_autor  UUID := auth.uid();
+    v_asesor UUID;
+BEGIN
+    IF v_autor IS NULL OR p_canal NOT IN ('whatsapp', 'llamada') THEN RETURN false; END IF;
+    v_asesor := public.asesor_auth_de_inmueble(p_inmueble_id);
+    IF v_asesor IS NULL OR v_asesor = v_autor THEN RETURN false; END IF;
+
+    INSERT INTO public.contactos_asesor (autor_auth_id, asesor_auth_id, inmueble_id, canal)
+    VALUES (v_autor, v_asesor, p_inmueble_id, p_canal)
+    ON CONFLICT (autor_auth_id, asesor_auth_id, inmueble_id, canal)
+    DO UPDATE SET veces = public.contactos_asesor.veces + 1,
+                  ultimo_contacto_at = now();
+    RETURN true;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.registrar_contacto_asesor(TEXT, TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.registrar_contacto_asesor(TEXT, TEXT) TO authenticated;
+
+-- 8.5 ¿El usuario actual contactó a este asesor?
+CREATE OR REPLACE FUNCTION public.contacto_verificado(p_asesor_auth_id UUID)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+    SELECT auth.uid() IS NOT NULL AND EXISTS (
+        SELECT 1 FROM public.contactos_asesor c
+         WHERE c.autor_auth_id = auth.uid() AND c.asesor_auth_id = p_asesor_auth_id
+    );
+$$;
+
+GRANT EXECUTE ON FUNCTION public.contacto_verificado(UUID) TO anon, authenticated;
+
+-- 8.6 Políticas de reseñas: leer visibles, crear SOLO con contacto, editar/borrar la propia
+DROP POLICY IF EXISTS "resenas_asesores: leer visibles" ON public.resenas_asesores;
+CREATE POLICY "resenas_asesores: leer visibles" ON public.resenas_asesores
+    FOR SELECT TO anon, authenticated
+    USING (
+        oculto = false
+        OR autor_auth_id = auth.uid()
+        OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin')
+    );
+
+DROP POLICY IF EXISTS "resenas_asesores: crear propia" ON public.resenas_asesores;
+CREATE POLICY "resenas_asesores: crear propia" ON public.resenas_asesores
+    FOR INSERT TO authenticated
+    WITH CHECK (
+        autor_auth_id = auth.uid()
+        AND asesor_auth_id <> auth.uid()
+        AND public.contacto_verificado(asesor_auth_id)
+    );
+
+DROP POLICY IF EXISTS "resenas_asesores: editar propia o admin" ON public.resenas_asesores;
+CREATE POLICY "resenas_asesores: editar propia o admin" ON public.resenas_asesores
+    FOR UPDATE TO authenticated
+    USING (
+        autor_auth_id = auth.uid()
+        OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin')
+    )
+    WITH CHECK (
+        autor_auth_id = auth.uid()
+        OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin')
+    );
+
+DROP POLICY IF EXISTS "resenas_asesores: borrar propia o admin" ON public.resenas_asesores;
+CREATE POLICY "resenas_asesores: borrar propia o admin" ON public.resenas_asesores
+    FOR DELETE TO authenticated
+    USING (
+        autor_auth_id = auth.uid()
+        OR EXISTS (SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin')
+    );
+
+-- 8.7 Resumen para la ficha: asesor, estrellas (5.0 sin reseñas), total, nombre,
+--     y si el usuario actual lo contactó / ya lo calificó.
+--     Uso: POST /rest/v1/rpc/resumen_resenas_inmueble  { "p_inmueble_id": "..." }
+CREATE OR REPLACE FUNCTION public.resumen_resenas_inmueble(p_inmueble_id TEXT)
+RETURNS JSONB
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_asesor UUID := public.asesor_auth_de_inmueble(p_inmueble_id);
+    v_total  INT;
+    v_prom   NUMERIC;
+    v_nombre TEXT;
+    v_avatar TEXT;
+BEGIN
+    IF v_asesor IS NULL THEN RETURN NULL; END IF;
+    SELECT COUNT(*)::INT, ROUND(AVG(estrellas)::NUMERIC, 1)
+      INTO v_total, v_prom
+      FROM public.resenas_asesores WHERE asesor_auth_id = v_asesor AND oculto = false;
+    SELECT u.nombre_completo, COALESCE(NULLIF(u.avatar_url, ''), NULLIF(u.avatar, ''))
+      INTO v_nombre, v_avatar
+      FROM public.usuarios u WHERE u.auth_id = v_asesor LIMIT 1;
+    RETURN jsonb_build_object(
+        'asesor_auth_id', v_asesor,
+        'nombre',         v_nombre,
+        'avatar_url',     v_avatar,
+        'estrellas',      CASE WHEN v_total = 0 THEN 5.0 ELSE v_prom END,
+        'total_resenas',  v_total,
+        'es_yo',          COALESCE(auth.uid() = v_asesor, false),
+        'contacto',       public.contacto_verificado(v_asesor),
+        'ya_reseno',      EXISTS (SELECT 1 FROM public.resenas_asesores r
+                                   WHERE r.asesor_auth_id = v_asesor AND r.autor_auth_id = auth.uid())
+    );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.resumen_resenas_inmueble(TEXT) TO anon, authenticated;
 
 NOTIFY pgrst, 'reload schema';

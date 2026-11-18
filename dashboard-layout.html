@@ -66,7 +66,7 @@
     <script src="js/auth.js?v=4.5"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
-    <script src="js/asesor-publico.js?v=1.1"></script>
+    <script src="js/asesor-publico.js?v=1.2"></script>
     <script src="js/oficinas-aliadas.js?v=1.2"></script>
     <script src="js/oficinas-aliadas-admin.js?v=1.0"></script>
     <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
@@ -2091,7 +2091,7 @@
                         </div>
                     </div>
 
-                    <!-- Plan Asesor Gold (plan medio: más inmuebles + reseñas en sus fichas; sin ventaja de posición) -->
+                    <!-- Plan Asesor Gold (plan medio: más inmuebles + insignia; sin ventaja de posición) -->
                     <div class="plan-gold-card rounded-2xl p-4 sm:p-5 bg-gradient-to-b from-[#2A2110] via-[#1C160A] to-[#0F0C06] border border-amber-400/50 text-white shadow-lg shadow-amber-950/30 hover:shadow-xl hover:shadow-amber-900/30 hover:border-amber-300/70 transition-all duration-200 flex flex-col justify-between relative">
                         <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
                             <div class="absolute -top-16 -right-16 w-44 h-44 rounded-full bg-amber-300/10 blur-2xl"></div>
@@ -2099,7 +2099,7 @@
                         <div class="absolute -top-3 right-5 z-20 pointer-events-none">
                             <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-gradient-to-r from-amber-200 to-amber-400 text-amber-950 text-[9px] font-black uppercase tracking-widest shadow-md border border-white/60">
                                 <i class="ph-fill ph-crown text-[10px]"></i>
-                                Con reseñas
+                                Más inmuebles
                             </span>
                         </div>
 
@@ -2125,14 +2125,6 @@
                                 <li class="flex items-start gap-2">
                                     <i class="ph-fill ph-buildings text-amber-300 text-xs mt-0.5 shrink-0"></i>
                                     <span>Publica hasta <strong class="text-white">7 inmuebles</strong></span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span><strong class="text-white">Reseñas de tus clientes</strong> y calificación de 1 a 5 estrellas</span>
-                                </li>
-                                <li class="flex items-start gap-2">
-                                    <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
-                                    <span>Tus reseñas visibles en la ficha de cada uno de tus inmuebles</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <i class="ph-fill ph-star text-amber-300 text-xs mt-0.5 shrink-0"></i>
@@ -11237,9 +11229,7 @@
             // Nombre real del asesor + su plan (Bronce / Gold / Platinum / Equipo MAXIMUS).
             // Captados de WhatsApp: contacto José Guerrero (el asesor original queda en privado).
             if (window.AsesorPublico) AsesorPublico.aplicar('airbnb', data);
-
-            // Reseñas: beneficio de Gold y Platinum, igual para todos (no cambia el orden de nada)
-            if (typeof pintarResenasEnFicha === 'function') pintarResenasEnFicha(data);
+            // La calificación del asesor (★ 5.0 · N reseñas) la pinta AsesorPublico.aplicar
 
             // 4. Especificaciones Rápidas
             const elHab = document.getElementById('airbnb-spec-hab');
@@ -11424,6 +11414,8 @@
             const msg = encodeURIComponent(`Hola ${currentInmuebleAirbnb.asesor.nombre}, te contacto desde la plataforma MAXIMUS por la propiedad:\n\n🏡 *${currentInmuebleAirbnb.titulo}*\n📌 Código: ${currentInmuebleAirbnb.codigo}\n💰 Precio: ${currentInmuebleAirbnb.precio} ${currentInmuebleAirbnb.moneda}\n\nMe gustaría recibir más información y coordinar una visita.`);
             const tel = currentInmuebleAirbnb.asesor.telefono.replace(/[^0-9]/g, '');
             window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+            // Queda registrado el contacto: con eso el cliente podrá calificar al asesor
+            if (window.AsesorPublico) AsesorPublico.registrarContacto(currentInmuebleAirbnb.id, 'whatsapp');
         }
 
         
@@ -14834,33 +14826,18 @@
             abrirDetalleInmuebleAirbnb(String(inm.id));
         }
 
-        // Enlace "★ 4.9 · 12 reseñas" en la ficha del inmueble, si su asesor es Gold o Platinum
-        async function pintarResenasEnFicha(inm) {
-            const btn = document.getElementById('airbnb-asesor-resenas');
-            if (!btn) return;
-            btn.classList.add('hidden'); btn.classList.remove('inline-flex');
-            if (!inm) return;
-            const idFicha = String(inm.id);
-            pintarResenasEnFicha.actual = idFicha;
-            await cargarAsesoresPlatinum().catch(() => null);
-            if (pintarResenasEnFicha.actual !== idFicha) return; // el usuario ya abrió otra ficha
-            const a = (ASESORES_PLATINUM_DATA || []).find(x => inmuebleEsDeAsesorPlatinum(inm, x));
-            if (!a) return;
-            const est = Number(a.estrellas || 5);
-            const n = Number(a.total_resenas || 0);
-            document.getElementById('airbnb-asesor-resenas-estrellas').innerHTML = estrellasHTMLPlatinum(est, 'text-[11px]');
-            document.getElementById('airbnb-asesor-resenas-texto').textContent = `${est.toFixed(1)} · ${n > 0 ? `${n} ${n === 1 ? 'reseña' : 'reseñas'}` : 'Ver reseñas'}`;
-            btn.onclick = () => abrirModalResenasAsesor(String(a.auth_id));
-            btn.classList.remove('hidden'); btn.classList.add('inline-flex');
-        }
-
-        // ---------------- Reseñas de asesores Platinum ----------------
+        // ---------------- Reseñas de asesores (todos; solo califica quien lo contactó) ----------------
+        // La línea "★ 5.0 · N reseñas" de la ficha la pinta js/asesor-publico.js
         let resenaAsesorActual = null;
         let resenaEstrellasElegidas = 0;
 
-        async function abrirModalResenasAsesor(authId) {
-            const a = ASESORES_PLATINUM_DATA.find(x => String(x.auth_id) === String(authId));
-            if (!a) return;
+        // Acepta el asesor completo ({auth_id, nombre, avatar_url, estrellas, total_resenas})
+        // o solo su auth_id (lo busca en la lista Gold/Platinum, por compatibilidad)
+        async function abrirModalResenasAsesor(asesorOId) {
+            const a = (asesorOId && typeof asesorOId === 'object')
+                ? asesorOId
+                : ASESORES_PLATINUM_DATA.find(x => String(x.auth_id) === String(asesorOId));
+            if (!a || !a.auth_id) return;
             resenaAsesorActual = a;
             resenaEstrellasElegidas = 0;
             const modal = document.getElementById('modal-resenas-asesor');
@@ -14869,9 +14846,7 @@
             document.getElementById('resenas-asesor-avatar').src = avatarPlatinum(a);
             document.getElementById('resenas-asesor-nombre').textContent = a.nombre || 'Asesor';
             const etiqueta = document.getElementById('resenas-asesor-etiqueta');
-            if (etiqueta) etiqueta.innerHTML = a.plan === 'gold'
-                ? '<i class="ph-fill ph-seal-check"></i> Asesor verificado'
-                : '<i class="ph-fill ph-sparkle"></i> Asesor recomendado';
+            if (etiqueta) etiqueta.innerHTML = '<i class="ph-fill ph-seal-check"></i> Asesor verificado';
             pintarResumenResenas(a);
             document.getElementById('resenas-lista').innerHTML = '<p class="text-xs text-gray-400"><i class="ph-bold ph-spinner ph-spin"></i> Cargando reseñas…</p>';
             document.getElementById('resena-form-box').innerHTML = '';
@@ -14890,7 +14865,7 @@
         function pintarResumenResenas(a) {
             const n = Number(a.total_resenas || 0);
             document.getElementById('resenas-asesor-estrellas').innerHTML = estrellasHTMLPlatinum(a.estrellas || 5);
-            document.getElementById('resenas-asesor-resumen').textContent = `${Number(a.estrellas || 5).toFixed(1)} · ${n} ${n === 1 ? 'reseña' : 'reseñas'}`;
+            document.getElementById('resenas-asesor-resumen').textContent = `${Number(a.estrellas || 5).toFixed(1)} · ${n > 0 ? `${n} ${n === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas aún'}`;
         }
 
         async function sesionSupabasePlatinum() {
@@ -14912,16 +14887,35 @@
                 return;
             }
             if (String(sesion.user.id) === String(a.auth_id)) {
-                box.innerHTML = `<p class="text-xs text-gray-500 bg-gray-50 dark:bg-[#0A241F] rounded-xl px-4 py-3 border border-gray-200 dark:border-emerald-900/50">Este es tu perfil Platinum: aquí ves las reseñas que te dejan tus clientes.</p>`;
+                box.innerHTML = `<p class="text-xs text-gray-500 bg-gray-50 dark:bg-[#0A241F] rounded-xl px-4 py-3 border border-gray-200 dark:border-emerald-900/50">Este es tu perfil: aquí ves las reseñas que te dejan los clientes que te contactaron.</p>`;
                 return;
             }
-            // ¿Ya dejó una reseña? → la puede editar
+            // ¿Ya dejó una reseña? → la puede editar (una sola por cuenta y asesor)
             let mia = null;
             try {
                 const { data } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').select('id, estrellas, comentario')
                     .eq('asesor_auth_id', a.auth_id).eq('autor_auth_id', sesion.user.id).maybeSingle());
                 mia = data;
             } catch (_) {}
+
+            // Sin reseña previa: solo puede calificar si lo contactó desde la plataforma
+            if (!mia) {
+                let contacto = false;
+                try {
+                    const { data, error } = await conLimitePlatinum(sbPlatinum().rpc('contacto_verificado', { p_asesor_auth_id: a.auth_id }));
+                    if (!error) contacto = data === true;
+                } catch (_) {}
+                if (!contacto) {
+                    const primer = escNotif(String(a.nombre || 'este asesor').split(' ')[0]);
+                    box.innerHTML = `<div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-white dark:bg-amber-950/40 text-amber-600 flex items-center justify-center text-lg shrink-0"><i class="ph-fill ph-lock-simple"></i></span>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">Solo califican quienes contactaron a ${primer}</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 mt-0.5">Escríbele por <strong>WhatsApp</strong> o llámalo desde la ficha de uno de sus inmuebles (con tu sesión iniciada). Después podrás dejar tu reseña aquí.</p>
+                        </div></div>`;
+                    return;
+                }
+            }
             resenaEstrellasElegidas = mia ? Number(mia.estrellas) : 0;
 
             box.innerHTML = `
@@ -14984,7 +14978,10 @@
                 await refrescarTrasResena();
             } catch (e) {
                 console.warn('Reseña:', e);
-                err.textContent = 'No pudimos guardar tu reseña. Intenta de nuevo.';
+                const sinPermiso = e && (e.code === '42501' || /row-level security|permission/i.test(e.message || ''));
+                err.textContent = sinPermiso
+                    ? 'Para calificar a este asesor primero contáctalo por WhatsApp o llamada desde uno de sus inmuebles.'
+                    : 'No pudimos guardar tu reseña. Intenta de nuevo.';
                 err.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = original;
@@ -15014,9 +15011,18 @@
 
         async function refrescarTrasResena() {
             const id = resenaAsesorActual && resenaAsesorActual.auth_id;
-            await cargarAsesoresPlatinum(true);
-            const a = ASESORES_PLATINUM_DATA.find(x => String(x.auth_id) === String(id));
-            if (a) { resenaAsesorActual = a; pintarResumenResenas(a); }
+            // Resumen actualizado directo de la tabla (sirve para cualquier asesor)
+            try {
+                const { data } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').select('estrellas').eq('asesor_auth_id', id).eq('oculto', false));
+                const lista = Array.isArray(data) ? data : [];
+                const prom = lista.length ? Math.round(lista.reduce((s, r) => s + Number(r.estrellas || 0), 0) / lista.length * 10) / 10 : 5;
+                if (resenaAsesorActual) {
+                    resenaAsesorActual = Object.assign({}, resenaAsesorActual, { estrellas: prom, total_resenas: lista.length });
+                    pintarResumenResenas(resenaAsesorActual);
+                }
+            } catch (_) {}
+            if (window.AsesorPublico) AsesorPublico.pintarResenas('airbnb', AsesorPublico.inmuebleActual('airbnb'));
+            cargarAsesoresPlatinum(true).catch(() => null);
             await Promise.all([pintarFormularioResena(), pintarListaResenas()]);
             renderAsesoresMaximus();
             renderExclusivasMaximus(filtroAsesorSeleccionado, document.getElementById('buscador-captaciones-vip')?.value || '');
