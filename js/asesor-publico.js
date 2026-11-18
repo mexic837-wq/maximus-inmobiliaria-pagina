@@ -100,6 +100,24 @@
             chip.title = info.es_equipo ? 'Asesor del equipo MAXIMUS' : `Asesor con plan ${et.texto}`;
         }
 
+        // Ventaja Platinum: enlace directo al Instagram. Solo el usuario (validado) y el enlace
+        // lo armamos nosotros, así nunca se abre una dirección ajena. El servidor solo manda
+        // 'instagram' cuando el plan Platinum está vigente.
+        const ig = $('instagram');
+        if (ig) {
+            const usuario = /^[A-Za-z0-9._]{1,30}$/.test(String(info.instagram || '')) ? info.instagram : '';
+            if (usuario) {
+                ig.href = `https://instagram.com/${usuario}`;
+                const t = $('instagram-texto');
+                if (t) t.textContent = '@' + usuario;
+                ig.title = `Instagram de ${info.nombre}`;
+                ig.style.display = 'inline-flex';
+            } else {
+                ig.style.display = 'none';
+                ig.removeAttribute('href');
+            }
+        }
+
         const av = $('avatar');
         if (av) {
             const fallback = svgIniciales(info.nombre);

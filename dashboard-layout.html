@@ -62,11 +62,11 @@
     <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
-    <script src="js/services.js?v=3.0"></script>
+    <script src="js/services.js?v=3.3"></script>
     <script src="js/auth.js?v=4.5"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
-    <script src="js/asesor-publico.js?v=1.2"></script>
+    <script src="js/asesor-publico.js?v=1.3"></script>
     <script src="js/oficinas-aliadas.js?v=1.2"></script>
     <script src="js/oficinas-aliadas-admin.js?v=1.0"></script>
     <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
@@ -5563,11 +5563,15 @@
                                             <span id="airbnb-asesor-plan" class="text-[8px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">Verificado</span>
                                         </h3>
                                         <p id="airbnb-asesor-cargo" class="text-[10px] sm:text-[11px] font-semibold text-gray-500 truncate">Director & Captador Principal MAXIMUS</p>
-                                        <!-- Reseñas del asesor (planes Gold y Platinum): se muestra solo si el inmueble es suyo -->
+                                        <!-- Calificación del asesor (la pinta js/asesor-publico.js) -->
                                         <button type="button" id="airbnb-asesor-resenas" class="hidden mt-0.5 items-center gap-1 text-[10px] sm:text-[11px] font-bold text-gray-700 hover:text-emerald-700 cursor-pointer group/res">
                                             <span id="airbnb-asesor-resenas-estrellas" class="flex items-center text-amber-400"></span>
                                             <span id="airbnb-asesor-resenas-texto" class="group-hover/res:underline"></span>
                                         </button>
+                                        <!-- Ventaja Platinum: enlace directo al Instagram del asesor -->
+                                        <a id="airbnb-asesor-instagram" href="#" target="_blank" rel="noopener noreferrer" style="display:none" class="mt-1 items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-fuchsia-50 to-orange-50 border border-pink-200 text-[10px] sm:text-[11px] font-extrabold text-pink-700 hover:from-fuchsia-100 hover:to-orange-100 transition-colors w-fit">
+                                            <i class="ph-bold ph-instagram-logo text-xs"></i><span id="airbnb-asesor-instagram-texto"></span>
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="flex sm:flex-col gap-1.5 shrink-0 w-full sm:w-auto">
@@ -6260,6 +6264,75 @@
                             <label class="block text-[13px] font-semibold text-gray-700 dark:text-gray-200 mb-1.5">Biografía & Slogan de Presentación</label>
                             <textarea id="perfil-input-bio" rows="4" placeholder="Describe brevemente tu trayectoria y especialidad para las presentaciones de propiedades..." class="w-full p-4 rounded-2xl bg-gray-50/70 dark:bg-emerald-950/20 border border-gray-200/80 dark:border-emerald-900/50 text-sm leading-relaxed text-gray-900 dark:text-white focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all resize-none"></textarea>
                             <span class="text-[11px] text-gray-400 mt-1.5 block">Se mostrará en la sección "Sobre mí" de tu catálogo público de propiedades.</span>
+                        </div>
+
+                        <!-- Instagram: ventaja del plan Platinum (enlace directo en la tarjeta de tus inmuebles) -->
+                        <div id="perfil-box-instagram" class="pt-2 staff-only">
+                            <label for="perfil-input-instagram" class="block text-[13px] font-semibold text-gray-700 dark:text-gray-200 mb-1.5 flex items-center gap-2">
+                                Instagram
+                                <span class="px-2 py-0.5 rounded-full bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider inline-flex items-center gap-1"><i class="ph-fill ph-diamond"></i> Platinum</span>
+                            </label>
+                            <!-- Con Platinum: campo editable -->
+                            <div id="perfil-instagram-activo" class="hidden">
+                                <div class="relative">
+                                    <i class="ph ph-instagram-logo absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                                    <input type="text" id="perfil-input-instagram" maxlength="60" placeholder="@tuusuario o instagram.com/tuusuario" autocomplete="off" class="w-full pl-11 pr-4 h-12 rounded-xl bg-gray-50/70 dark:bg-emerald-950/20 border border-gray-200/80 dark:border-emerald-900/50 text-sm font-semibold text-gray-900 dark:text-white focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none transition-all">
+                                </div>
+                                <span class="text-[11px] text-gray-400 mt-1.5 block">Los clientes verán tu nombre y un enlace directo a tu Instagram en la tarjeta de cada uno de tus inmuebles.</span>
+                            </div>
+                            <!-- Sin Platinum: invitación -->
+                            <div id="perfil-instagram-bloqueado" class="hidden p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-start gap-3 min-w-0">
+                                    <span class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 text-slate-500 flex items-center justify-center text-xl shrink-0"><i class="ph-fill ph-lock-simple"></i></span>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">Con el plan <strong>Platinum</strong> tu Instagram aparece como enlace directo junto a tu nombre en la ficha de cada inmueble, para que los clientes te conozcan y te sigan.</p>
+                                </div>
+                                <button type="button" onclick="abrirModalSuscripcionPro('platinum')" class="shrink-0 h-10 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-extrabold cursor-pointer">Ver Platinum</button>
+                            </div>
+                        </div>
+
+                        <!-- Tarjeta digital con QR: ventaja del plan Platinum -->
+                        <div id="perfil-box-tarjeta" class="pt-2 staff-only">
+                            <label class="block text-[13px] font-semibold text-gray-700 dark:text-gray-200 mb-1.5 flex items-center gap-2">
+                                Tarjeta digital con QR
+                                <span class="px-2 py-0.5 rounded-full bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider inline-flex items-center gap-1"><i class="ph-fill ph-diamond"></i> Platinum</span>
+                            </label>
+
+                            <div id="tarjeta-cargando" class="hidden h-28 rounded-2xl bg-gray-100 dark:bg-emerald-950/30 animate-pulse"></div>
+
+                            <!-- Con Platinum -->
+                            <div id="tarjeta-activa" class="hidden p-4 sm:p-5 rounded-2xl border border-gray-200 dark:border-emerald-900/50 bg-white dark:bg-emerald-950/20 flex flex-col sm:flex-row gap-5">
+                                <div class="shrink-0 mx-auto sm:mx-0 text-center">
+                                    <div id="tarjeta-qr" class="w-[148px] h-[148px] p-2 bg-white rounded-2xl border border-gray-200 flex items-center justify-center overflow-hidden"></div>
+                                    <button type="button" onclick="descargarQrTarjeta()" class="mt-2.5 w-full h-9 rounded-xl bg-slate-900 hover:bg-black text-white text-[11px] font-extrabold flex items-center justify-center gap-1.5 cursor-pointer"><i class="ph-bold ph-download-simple"></i> Descargar QR</button>
+                                </div>
+                                <div class="min-w-0 flex-1 space-y-3">
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">Tu enlace y tu QR llevan a una página con tu foto, WhatsApp, Instagram, reseñas e inmuebles. Ponlos en volantes, letreros, tu firma de correo o tus historias.</p>
+                                    <div class="flex items-center gap-2 px-3 h-11 rounded-xl bg-gray-50 dark:bg-emerald-950/40 border border-gray-200/80 dark:border-emerald-900/50">
+                                        <i class="ph-bold ph-link text-gray-400"></i>
+                                        <span id="tarjeta-url" class="truncate font-mono text-[12px] font-semibold text-gray-800 dark:text-gray-100"></span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button type="button" onclick="copiarEnlaceTarjeta()" id="tarjeta-btn-copiar" class="h-10 px-3.5 rounded-xl border border-gray-200 dark:border-emerald-900/50 hover:bg-gray-50 dark:hover:bg-emerald-950/40 text-gray-800 dark:text-gray-100 text-xs font-bold flex items-center gap-1.5 cursor-pointer"><i class="ph-bold ph-copy"></i> Copiar enlace</button>
+                                        <a id="tarjeta-btn-abrir" href="#" target="_blank" rel="noopener" class="h-10 px-3.5 rounded-xl border border-gray-200 dark:border-emerald-900/50 hover:bg-gray-50 dark:hover:bg-emerald-950/40 text-gray-800 dark:text-gray-100 text-xs font-bold flex items-center gap-1.5"><i class="ph-bold ph-arrow-square-out"></i> Ver mi tarjeta</a>
+                                        <button type="button" onclick="compartirTarjetaWhatsApp()" class="h-10 px-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5A] text-white text-xs font-extrabold flex items-center gap-1.5 cursor-pointer"><i class="ph-fill ph-whatsapp-logo text-base"></i> Compartir</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Platinum sin conexión a la función todavía -->
+                            <div id="tarjeta-no-disponible" class="hidden p-4 rounded-2xl border border-dashed border-gray-300 dark:border-emerald-900/50 text-xs text-gray-500 flex items-start gap-3">
+                                <i class="ph-fill ph-clock text-xl text-gray-400 shrink-0"></i>
+                                <p>Tu tarjeta digital aún no está disponible. Estamos terminando de activarla; vuelve a entrar en un rato.</p>
+                            </div>
+
+                            <!-- Sin Platinum: invitación -->
+                            <div id="tarjeta-bloqueada" class="hidden p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-start gap-3 min-w-0">
+                                    <span class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 text-slate-500 flex items-center justify-center text-xl shrink-0"><i class="ph-fill ph-qr-code"></i></span>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">Con <strong>Platinum</strong> recibes una tarjeta digital propia con un enlace corto y un <strong>QR descargable</strong> para imprimir en volantes y letreros: tus datos, reseñas e inmuebles en un solo lugar.</p>
+                                </div>
+                                <button type="button" onclick="abrirModalSuscripcionPro('platinum')" class="shrink-0 h-10 px-4 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-extrabold cursor-pointer">Ver Platinum</button>
+                            </div>
                         </div>
 
                         <!-- Botón de Acción Inferior -->
@@ -17156,6 +17229,20 @@
             const inputBio = document.getElementById('perfil-input-bio');
             if (inputBio) inputBio.value = p.bio || '';
 
+            // Instagram (ventaja Platinum): editable solo con plan Platinum
+            let planIg = p.plan;
+            if (!planIg) { try { planIg = (JSON.parse(localStorage.getItem('maximus_user') || '{}') || {}).plan; } catch (_) {} }
+            const esPlatinumIg = planIg === 'platinum';
+            const igActivo = document.getElementById('perfil-instagram-activo');
+            const igBloq = document.getElementById('perfil-instagram-bloqueado');
+            if (igActivo) igActivo.classList.toggle('hidden', !esPlatinumIg);
+            if (igBloq) igBloq.classList.toggle('hidden', esPlatinumIg);
+            const inputIg = document.getElementById('perfil-input-instagram');
+            if (inputIg) inputIg.value = p.instagram ? '@' + p.instagram : '';
+
+            // Tarjeta digital con QR (ventaja Platinum)
+            pintarTarjetaDigital(esPlatinumIg);
+
             // Enlace real al Catálogo Público del Asesor
             const nombreAsesor = p.name || 'Asesor MAXIMUS';
             const linkCatalogo = document.getElementById('perfil-link-catalogo');
@@ -17967,6 +18054,139 @@
             }
         }
 
+        // ==========================================
+        // TARJETA DIGITAL CON QR (ventaja Platinum)
+        // El enlace lo crea el servidor (asegurar_tarjeta_asesor, Parte 10 del SQL) y la
+        // página pública es /asesor/<enlace> (tarjeta-asesor.html).
+        // ==========================================
+        let tarjetaUrlActual = '';
+        let tarjetaSlugActual = '';
+
+        // En la app instalada (capacitor://) no hay dominio: se usa el público
+        function urlBaseTarjeta() {
+            return /^https?:$/.test(location.protocol) ? location.origin : 'https://maximusinmobiliaria.tech';
+        }
+
+        function cargarLibreriaQr() {
+            if (window.QRCode) return Promise.resolve();
+            if (cargarLibreriaQr._p) return cargarLibreriaQr._p;
+            cargarLibreriaQr._p = new Promise((ok, fallo) => {
+                const s = document.createElement('script');
+                s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+                s.onload = ok;
+                s.onerror = () => { cargarLibreriaQr._p = null; fallo(new Error('No se pudo cargar el generador de QR')); };
+                document.head.appendChild(s);
+            });
+            return cargarLibreriaQr._p;
+        }
+
+        function dibujarQr(contenedor, texto, tam) {
+            contenedor.innerHTML = '';
+            return new QRCode(contenedor, { text: texto, width: tam, height: tam, colorDark: '#0B2B25', colorLight: '#FFFFFF', correctLevel: QRCode.CorrectLevel.H });
+        }
+
+        async function pintarTarjetaDigital(esPlat) {
+            const mostrar = (k) => ['activa', 'cargando', 'no-disponible', 'bloqueada'].forEach(i => {
+                const el = document.getElementById('tarjeta-' + i);
+                if (el) el.classList.toggle('hidden', i !== k);
+            });
+            if (!document.getElementById('perfil-box-tarjeta')) return;
+            if (!esPlat) return mostrar('bloqueada');
+
+            mostrar('cargando');
+            let slug = null;
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (!sb) throw new Error('sin conexión');
+                const { data, error } = await sb.rpc('asegurar_tarjeta_asesor');
+                if (error) throw error;
+                slug = data || null;
+            } catch (e) {
+                console.warn('Tarjeta digital: no disponible (¿falta ejecutar la Parte 10 del SQL?)', e);
+            }
+            if (!slug) return mostrar('no-disponible');
+
+            tarjetaSlugActual = slug;
+            tarjetaUrlActual = `${urlBaseTarjeta()}/asesor/${slug}`;
+            document.getElementById('tarjeta-url').textContent = tarjetaUrlActual.replace(/^https?:\/\//, '');
+            const abrir = document.getElementById('tarjeta-btn-abrir');
+            if (abrir) abrir.href = tarjetaUrlActual;
+            mostrar('activa');
+            try {
+                await cargarLibreriaQr();
+                dibujarQr(document.getElementById('tarjeta-qr'), tarjetaUrlActual, 128);
+            } catch (e) {
+                document.getElementById('tarjeta-qr').innerHTML = '<span class="text-[11px] text-gray-400 px-2">No se pudo generar el QR. Revisa tu conexión.</span>';
+            }
+        }
+
+        async function copiarEnlaceTarjeta() {
+            if (!tarjetaUrlActual) return;
+            const btn = document.getElementById('tarjeta-btn-copiar');
+            const original = btn ? btn.innerHTML : '';
+            try {
+                await navigator.clipboard.writeText(tarjetaUrlActual);
+                if (btn) { btn.innerHTML = '<i class="ph-bold ph-check text-emerald-600"></i> ¡Copiado!'; setTimeout(() => { btn.innerHTML = original; }, 2000); }
+            } catch (_) { window.prompt('Copia tu enlace:', tarjetaUrlActual); }
+        }
+
+        function compartirTarjetaWhatsApp() {
+            if (!tarjetaUrlActual) return;
+            const nombre = (currentUserProfile && currentUserProfile.name) || 'tu asesor';
+            const msg = `Hola, soy ${nombre}, asesor inmobiliario en MAXIMUS. Aquí está mi tarjeta con mis datos e inmuebles:\n${tarjetaUrlActual}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Cartel descargable (PNG) con el QR grande, listo para imprimir
+        async function descargarQrTarjeta() {
+            if (!tarjetaUrlActual) return;
+            try {
+                await cargarLibreriaQr();
+                if (document.fonts && document.fonts.load) { try { await document.fonts.load('800 40px "Plus Jakarta Sans"'); } catch (_) {} }
+                const caja = document.createElement('div');
+                const qr = dibujarQr(caja, tarjetaUrlActual, 640);
+                const lienzoQr = caja.querySelector('canvas');
+                if (!lienzoQr) throw new Error('sin lienzo');
+
+                const W = 900, H = 1120;
+                const c = document.createElement('canvas'); c.width = W; c.height = H;
+                const g = c.getContext('2d');
+                const fuente = '"Plus Jakarta Sans", Arial, sans-serif';
+                g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, H);
+                // Banda superior
+                const grad = g.createLinearGradient(0, 0, W, 220);
+                grad.addColorStop(0, '#0B2B25'); grad.addColorStop(1, '#0B4A3F');
+                g.fillStyle = grad; g.fillRect(0, 0, W, 190);
+                g.font = `800 64px ${fuente}`; g.textAlign = 'left';
+                const ancho1 = g.measureText('MAXIMUS').width, ancho2 = g.measureText('.').width;
+                const x0 = (W - (ancho1 + ancho2)) / 2;
+                g.fillStyle = '#FFFFFF'; g.fillText('MAXIMUS', x0, 118);
+                g.fillStyle = '#10B981'; g.fillText('.', x0 + ancho1, 118);
+                g.textAlign = 'center';
+                // QR
+                g.fillStyle = '#FFFFFF';
+                g.strokeStyle = '#E5E7EB'; g.lineWidth = 3;
+                g.beginPath(); g.roundRect(110, 250, 680, 680, 36); g.fill(); g.stroke();
+                g.drawImage(lienzoQr, 130, 270, 640, 640);
+                // Textos
+                const nombre = (currentUserProfile && currentUserProfile.name) || 'Asesor MAXIMUS';
+                g.fillStyle = '#0B2B25'; g.font = `800 50px ${fuente}`;
+                g.fillText('Escanea y contáctame', W / 2, 1000);
+                g.fillStyle = '#374151'; g.font = `700 36px ${fuente}`;
+                g.fillText(nombre, W / 2, 1052);
+                g.fillStyle = '#9CA3AF'; g.font = `600 26px ${fuente}`;
+                g.fillText(tarjetaUrlActual.replace(/^https?:\/\//, ''), W / 2, 1094);
+
+                const a = document.createElement('a');
+                a.href = c.toDataURL('image/png');
+                a.download = `qr-${tarjetaSlugActual || 'tarjeta'}.png`;
+                document.body.appendChild(a); a.click(); a.remove();
+            } catch (e) {
+                console.warn('QR:', e);
+                if (typeof mostrarToastNotificacion === 'function') mostrarToastNotificacion('⚠️ No se pudo generar el QR. Revisa tu conexión e intenta de nuevo.');
+            }
+        }
+
         async function guardarCambiosPerfil() {
             const name = document.getElementById('perfil-input-nombre')?.value.trim();
             const telefono = document.getElementById('perfil-input-telefono')?.value.trim();
@@ -17978,6 +18198,20 @@
             if (!name) {
                 mostrarToastNotificacion('⚠️ El nombre del asesor no puede estar vacío');
                 return;
+            }
+
+            // Instagram: se guarda solo el usuario (acepta @usuario o el enlace completo)
+            let instagram;
+            const igCampo = document.getElementById('perfil-input-instagram');
+            const igVisible = igCampo && !igCampo.closest('#perfil-instagram-activo')?.classList.contains('hidden');
+            if (igVisible) {
+                const norm = window.PerfilService && PerfilService._normalizarInstagram(igCampo.value);
+                if (norm === null) {
+                    mostrarToastNotificacion('⚠️ Escribe solo tu usuario de Instagram, por ejemplo @maximusinmobiliaria_ve');
+                    igCampo.focus();
+                    return;
+                }
+                instagram = norm || '';
             }
 
             const two_factor_enabled = !!document.getElementById('perfil-toggle-2fa')?.checked;
@@ -17995,6 +18229,7 @@
                 licencia_inmobiliaria: licencia,
                 avatar: avatar || currentUserProfile?.avatar,
                 bio,
+                ...(instagram !== undefined ? { instagram } : {}),
                 two_factor_enabled,
                 two_factor_method,
                 two_factor_phone: telefono,

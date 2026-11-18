@@ -1,7 +1,7 @@
-# Pendiente del VPS (cambios del chat del 16 y 17 nov 2026)
+# Pendiente del VPS (cambios del chat del 16, 17 y 18 nov 2026)
 
-> Última actualización: 17 nov 2026 · Parte 7 (oficinas aliadas) ajustada: se administran desde el panel
-> (Sitio web → Oficinas aliadas) y la landing solo muestra sus logos.
+> Última actualización: 18 nov 2026 · Partes 8 (reseñas con contacto verificado), 9 (Instagram Platinum) y 10 (tarjeta digital con QR).
+> (17 nov: Parte 7, oficinas aliadas, se administran desde el panel: Sitio web → Oficinas aliadas.)
 
 Todo lo que hay que subir a Supabase y n8n cuando el VPS vuelva a estar disponible.
 El código de la web (landing, panel, ficha del inmueble) **no** está aquí: ese se publica con GitHub como siempre.
@@ -38,6 +38,9 @@ pendiente-vps/
 | 5 | Tabla de la tasa BCV para Pago Móvil (caché, respaldo e historial). |
 | 6 | Inmuebles captados de WhatsApp: contacto público José Guerrero, asesor original en privado, lista de avisos y traspaso al pagar. |
 | 7 | Oficinas aliadas: el admin las agrega, sube su logo, las publica u oculta desde el panel. También recibe las solicitudes de "¿Inmobiliaria? Regístrate aquí" del panel. La landing muestra los logos publicados. |
+| 8 | Reseñas de asesores: cualquier asesor puede recibirlas, pero solo de quien lo contactó (WhatsApp o Llamar desde la ficha, con sesión). Una reseña por cuenta y asesor; sin reseñas se muestra 5.0. Crea la tabla `contactos_asesor` y las funciones `registrar_contacto_asesor`, `asesor_auth_de_inmueble`, `contacto_verificado` y `resumen_resenas_inmueble`. Sin esta parte, la ficha no muestra la calificación. |
+| 9 | Ventaja Platinum: Instagram del asesor. Agrega la columna `usuarios.instagram` (solo el usuario, validado) y hace que la ficha del inmueble muestre el enlace únicamente si el asesor tiene Platinum vigente. Sin esta parte, el perfil se sigue guardando pero el Instagram no se guarda ni se muestra. |
+| 10 | Ventaja Platinum: tarjeta digital con QR. Agrega `usuarios.tarjeta_slug` (enlace propio, protegido para que nadie escoja el de otro) y las funciones `asegurar_tarjeta_asesor` y `tarjeta_asesor`. La página pública `/asesor/<enlace>` solo responde si el plan Platinum está vigente. Sin esta parte, el perfil muestra "tarjeta aún no disponible" y el enlace dice que no existe. |
 
 **Antes de nada, confirma que ya están ejecutados** `sql/migration-pagos-suscripcion.sql` y `sql/migration-plan-platinum.sql`.
 Si alguno nunca se ejecutó, ejecútalo primero.

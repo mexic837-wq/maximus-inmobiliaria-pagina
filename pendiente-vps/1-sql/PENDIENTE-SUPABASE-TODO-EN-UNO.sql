@@ -34,6 +34,12 @@
 --             ficha), para TODOS los asesores; una por cuenta; 5.0 sin reseñas
 --             (tabla contactos_asesor; funciones registrar_contacto_asesor,
 --              asesor_auth_de_inmueble, contacto_verificado, resumen_resenas_inmueble)
+--   PARTE 9 · Ventaja Platinum: enlace directo al Instagram del asesor en la tarjeta
+--             de la ficha (columna usuarios.instagram, validada; solo se muestra si el
+--             asesor tiene plan Platinum vigente: lo decide asesor_publico_inmueble)
+--   PARTE 10 · Ventaja Platinum: tarjeta digital con QR (/asesor/<enlace>): enlace propio
+--             protegido (usuarios.tarjeta_slug), asegurar_tarjeta_asesor() y la lectura
+--             pública tarjeta_asesor(), solo para Platinum vigente
 --
 -- DESPUÉS DE EJECUTAR, además:
 --   · Volver a desplegar las Edge Functions: pagos, stripe-webhook, confirmar-pago,
@@ -52,6 +58,9 @@
 --   2026-11-17  Parte 7 ajustada: el admin crea/edita/oculta/borra oficinas desde el panel
 --               (estado 'oculta', responsable y WhatsApp opcionales, permisos de admin)
 --   2026-11-18  Parte 8: reseñas solo con contacto verificado, para todos los asesores
+--   2026-11-18  Parte 9: Instagram del asesor Platinum en la ficha (+ asesor_publico_inmueble
+--               devuelve 'instagram' solo para Platinum)
+--   2026-11-18  Parte 10: tarjeta digital con QR para asesores Platinum
 -- =====================================================================
 
 
@@ -1035,6 +1044,9 @@ BEGIN
             'cargo', 'Asesor Inmobiliario ' || CASE v_u.plan WHEN 'platinum' THEN 'Platinum' WHEN 'gold' THEN 'Gold' ELSE 'Bronce' END,
             'whatsapp', COALESCE(NULLIF(v_tel, ''), regexp_replace(COALESCE(v_i.asesor_telefono, ''), '[^0-9]', '', 'g')),
             'avatar_url', COALESCE(NULLIF(v_u.avatar_url, ''), NULLIF(v_u.avatar, '')),
+            -- Ventaja Platinum: enlace directo a su Instagram (Parte 9). to_jsonb evita
+            -- depender de que la columna ya exista cuando se crea esta función.
+            'instagram', CASE WHEN v_u.plan = 'platinum' THEN NULLIF(to_jsonb(v_u) ->> 'instagram', '') END,
             'es_equipo', false);
     END IF;
 
@@ -1638,5 +1650,206 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.resumen_resenas_inmueble(TEXT) TO anon, authenticated;
+
+NOTIFY pgrst, 'reload schema';
+
+
+-- #####################################################################
+-- PARTE 9 · VENTAJA PLATINUM: INSTAGRAM DEL ASESOR EN LA FICHA
+-- #####################################################################
+-- · Se guarda SOLO el usuario de Instagram (sin @ ni URL): letras, números,
+--   punto y guion bajo, máximo 30. Así nadie puede guardar un enlace raro
+--   (la web arma el enlace https://instagram.com/<usuario> por su cuenta).
+-- · Cualquier asesor puede guardarlo en su perfil, pero la ficha del inmueble
+--   solo lo muestra si su plan Platinum está vigente: lo decide el servidor en
+--   asesor_publico_inmueble (Parte 6.7), que devuelve 'instagram' únicamente
+--   para Platinum.
+-- =====================================================================
+ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS instagram TEXT;
+
+-- Limpia lo que ya hubiera (por si acaso) y valida de aquí en adelante
+UPDATE public.usuarios
+   SET instagram = NULL
+ WHERE instagram IS NOT NULL AND instagram !~ '^[A-Za-z0-9._]{1,30}$';
+
+ALTER TABLE public.usuarios DROP CONSTRAINT IF EXISTS usuarios_instagram_formato;
+ALTER TABLE public.usuarios ADD CONSTRAINT usuarios_instagram_formato
+    CHECK (instagram IS NULL OR instagram ~ '^[A-Za-z0-9._]{1,30}$');
+
+NOTIFY pgrst, 'reload schema';
+
+
+-- #####################################################################
+-- PARTE 10 · VENTAJA PLATINUM: TARJETA DIGITAL CON QR  (/asesor/<enlace>)
+-- #####################################################################
+-- · Cada asesor Platinum tiene un enlace propio y corto, p. ej. /asesor/laura-mendez
+--   (se crea una sola vez con asegurar_tarjeta_asesor()).
+-- · La página pública lee todo con tarjeta_asesor(enlace): foto, contacto, Instagram,
+--   calificación e inmuebles disponibles. Solo responde si el asesor tiene Platinum
+--   vigente; si el plan vence, la tarjeta deja de estar disponible sola.
+-- · Nadie puede escoger su propio enlace a mano (así no se apropian de nombres ajenos):
+--   un trigger conserva el valor y solo lo asigna la función del servidor.
+-- =====================================================================
+ALTER TABLE public.usuarios ADD COLUMN IF NOT EXISTS tarjeta_slug TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_tarjeta_slug
+    ON public.usuarios (tarjeta_slug) WHERE tarjeta_slug IS NOT NULL;
+
+ALTER TABLE public.usuarios DROP CONSTRAINT IF EXISTS usuarios_tarjeta_slug_formato;
+ALTER TABLE public.usuarios ADD CONSTRAINT usuarios_tarjeta_slug_formato
+    CHECK (tarjeta_slug IS NULL
+           OR (tarjeta_slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$' AND char_length(tarjeta_slug) <= 60));
+
+-- 10.1 Protege el enlace: solo lo cambian el servidor, el admin o el SQL Editor
+CREATE OR REPLACE FUNCTION public.usuarios_tarjeta_slug_guard()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    -- SQL Editor / servicio (sin usuario) o la función asegurar_tarjeta_asesor()
+    IF auth.uid() IS NULL OR COALESCE(current_setting('maximus.tarjeta_slug_ok', true), '') = 'on' THEN
+        RETURN NEW;
+    END IF;
+    IF EXISTS (SELECT 1 FROM public.usuarios u WHERE u.auth_id = auth.uid() AND u.rol = 'admin') THEN
+        RETURN NEW;
+    END IF;
+    IF TG_OP = 'INSERT' THEN
+        NEW.tarjeta_slug := NULL;
+    ELSIF NEW.tarjeta_slug IS DISTINCT FROM OLD.tarjeta_slug THEN
+        NEW.tarjeta_slug := OLD.tarjeta_slug;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_usuarios_tarjeta_slug ON public.usuarios;
+CREATE TRIGGER trg_usuarios_tarjeta_slug
+    BEFORE INSERT OR UPDATE ON public.usuarios
+    FOR EACH ROW EXECUTE FUNCTION public.usuarios_tarjeta_slug_guard();
+
+-- 10.2 Crea (una vez) y devuelve el enlace del asesor que llama. Solo con Platinum vigente.
+CREATE OR REPLACE FUNCTION public.asegurar_tarjeta_asesor()
+RETURNS TEXT
+LANGUAGE plpgsql
+VOLATILE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_u    public.usuarios%ROWTYPE;
+    v_base TEXT;
+    v_slug TEXT;
+    v_n    INT := 0;
+BEGIN
+    IF auth.uid() IS NULL THEN RETURN NULL; END IF;
+    SELECT * INTO v_u FROM public.usuarios WHERE auth_id = auth.uid();
+    IF NOT FOUND THEN RETURN NULL; END IF;
+
+    IF NOT (v_u.plan = 'platinum' AND COALESCE(v_u.activo, true)
+            AND (v_u.plan_vence_at IS NULL OR v_u.plan_vence_at > now())) THEN
+        RETURN NULL;
+    END IF;
+    IF v_u.tarjeta_slug IS NOT NULL THEN RETURN v_u.tarjeta_slug; END IF;
+
+    -- "María Pérez Ñandú" → "maria-perez-nandu"
+    v_base := lower(regexp_replace(
+                  translate(COALESCE(NULLIF(trim(v_u.nombre_completo), ''), 'asesor'),
+                            'áéíóúüñÁÉÍÓÚÜÑ', 'aeiouunAEIOUUN'),
+                  '[^a-zA-Z0-9]+', '-', 'g'));
+    v_base := trim(both '-' from left(trim(both '-' from v_base), 40));
+    IF v_base = '' THEN v_base := 'asesor'; END IF;
+
+    LOOP
+        v_slug := CASE WHEN v_n = 0 THEN v_base ELSE v_base || '-' || (v_n + 1) END;
+        EXIT WHEN NOT EXISTS (SELECT 1 FROM public.usuarios WHERE tarjeta_slug = v_slug);
+        v_n := v_n + 1;
+    END LOOP;
+
+    PERFORM set_config('maximus.tarjeta_slug_ok', 'on', true);
+    UPDATE public.usuarios SET tarjeta_slug = v_slug WHERE id = v_u.id;
+    RETURN v_slug;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.asegurar_tarjeta_asesor() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.asegurar_tarjeta_asesor() TO authenticated;
+
+-- 10.3 Datos públicos de la tarjeta. Uso: POST /rest/v1/rpc/tarjeta_asesor { "p_slug": "laura-mendez" }
+CREATE OR REPLACE FUNCTION public.tarjeta_asesor(p_slug TEXT)
+RETURNS JSONB
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_u      public.usuarios%ROWTYPE;
+    v_total  INT;
+    v_prom   NUMERIC;
+    v_inms   JSONB;
+    v_cuenta INT;
+BEGIN
+    SELECT * INTO v_u
+      FROM public.usuarios u
+     WHERE u.tarjeta_slug = lower(trim(COALESCE(p_slug, '')))
+       AND u.plan = 'platinum'
+       AND COALESCE(u.activo, true)
+       AND (u.plan_vence_at IS NULL OR u.plan_vence_at > now());
+    IF NOT FOUND THEN RETURN NULL; END IF;
+
+    SELECT COUNT(*)::INT, ROUND(AVG(r.estrellas)::NUMERIC, 1)
+      INTO v_total, v_prom
+      FROM public.resenas_asesores r
+     WHERE r.asesor_auth_id = v_u.auth_id AND r.oculto = false;
+
+    SELECT COUNT(*)::INT INTO v_cuenta
+      FROM public.inmuebles i
+     WHERE COALESCE(i.estatus, 'disponible') = 'disponible'
+       AND (i.agente_id = v_u.id OR i.asesor_id = v_u.id::TEXT OR i.asesor_id = v_u.auth_id::TEXT);
+
+    SELECT COALESCE(jsonb_agg(x ORDER BY x_fecha DESC), '[]'::JSONB) INTO v_inms
+      FROM (
+        SELECT jsonb_build_object(
+                   'id',               i.id,
+                   'titulo',           i.titulo,
+                   'precio',           i.precio,
+                   'moneda',           COALESCE(NULLIF(to_jsonb(i) ->> 'moneda', ''), 'USD'),
+                   'operacion',        i.operacion,
+                   'tipo',             i.tipo,
+                   'sector',           COALESCE(NULLIF(i.sector_nombre, ''), i.ubicacion),
+                   'habitaciones',     i.habitaciones,
+                   'banos',            i.banos,
+                   'metros_cuadrados', i.metros_cuadrados,
+                   'foto',             COALESCE(i.fotos[2], i.fotos[1], i.foto_principal)
+               ) AS x,
+               i.created_at AS x_fecha
+          FROM public.inmuebles i
+         WHERE COALESCE(i.estatus, 'disponible') = 'disponible'
+           AND (i.agente_id = v_u.id OR i.asesor_id = v_u.id::TEXT OR i.asesor_id = v_u.auth_id::TEXT)
+         ORDER BY i.created_at DESC
+         LIMIT 12
+      ) t;
+
+    RETURN jsonb_build_object(
+        'slug',            v_u.tarjeta_slug,
+        'nombre',          v_u.nombre_completo,
+        'titulo',          COALESCE(NULLIF(v_u.titulo, ''), 'Asesor Inmobiliario'),
+        'avatar_url',      COALESCE(NULLIF(v_u.avatar_url, ''), NULLIF(v_u.avatar, '')),
+        'bio',             NULLIF(v_u.bio, ''),
+        'especialidad',    NULLIF(v_u.especialidad, ''),
+        'zona',            COALESCE(NULLIF(v_u.zona, ''), NULLIF(v_u.estado, '')),
+        'whatsapp',        public.normalizar_tel_ve(COALESCE(NULLIF(v_u.whatsapp, ''), NULLIF(v_u.telefono_e164, ''), v_u.telefono)),
+        'instagram',       NULLIF(to_jsonb(v_u) ->> 'instagram', ''),
+        'estrellas',       CASE WHEN v_total = 0 THEN 5.0 ELSE v_prom END,
+        'total_resenas',   v_total,
+        'total_inmuebles', v_cuenta,
+        'inmuebles',       v_inms
+    );
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.tarjeta_asesor(TEXT) TO anon, authenticated;
 
 NOTIFY pgrst, 'reload schema';

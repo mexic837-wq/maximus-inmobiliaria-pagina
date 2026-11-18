@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="robots" content="noindex">
+    <title>Tarjeta de asesor | MAXIMUS Inmobiliaria</title>
+    <meta property="og:site_name" content="MAXIMUS Inmobiliaria">
+    <meta property="og:type" content="profile">
+    <meta property="og:title" id="og-title" content="Asesor inmobiliario | MAXIMUS Inmobiliaria">
+    <meta property="og:description" id="og-desc" content="Contacta directo a tu asesor inmobiliario en Táchira.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { 'maximus-dark': '#0B4A3F', 'maximus-accent': '#10B981' },
+                fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] }
+            } }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="/js/config.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #EEF3F1; }
+        .fila { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .fila::-webkit-scrollbar { display: none; }
+        @keyframes aparece { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .aparece { animation: aparece .45s ease-out both; }
+        @media (prefers-reduced-motion: reduce) { .aparece { animation: none; } }
+    </style>
+</head>
+<body class="min-h-screen text-gray-900 antialiased">
+    <main class="max-w-md mx-auto min-h-screen bg-white sm:my-6 sm:min-h-0 sm:rounded-[32px] sm:shadow-2xl sm:shadow-emerald-950/10 overflow-hidden">
+
+        <!-- Cargando -->
+        <div id="estado-cargando" class="p-6 space-y-5 animate-pulse">
+            <div class="h-40 rounded-3xl bg-gray-100"></div>
+            <div class="h-6 w-2/3 mx-auto rounded bg-gray-100"></div>
+            <div class="h-12 rounded-2xl bg-gray-100"></div>
+            <div class="h-12 rounded-2xl bg-gray-100"></div>
+        </div>
+
+        <!-- No disponible -->
+        <div id="estado-no-disponible" class="hidden px-8 py-20 text-center">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center text-3xl"><i class="ph-fill ph-identification-card"></i></div>
+            <h1 class="mt-5 text-xl font-black">Esta tarjeta no está disponible</h1>
+            <p class="mt-2 text-sm text-gray-500">El enlace puede estar mal escrito o la tarjeta ya no está activa.</p>
+            <a href="/inicio" class="mt-6 inline-flex h-12 items-center px-6 rounded-2xl bg-maximus-dark text-white text-sm font-extrabold">Ir a MAXIMUS</a>
+        </div>
+
+        <!-- Tarjeta -->
+        <article id="tarjeta" class="hidden aparece">
+            <!-- Portada -->
+            <header class="relative bg-gradient-to-br from-[#0B2B25] via-[#0B4A3F] to-[#06231D] text-white px-6 pt-8 pb-16">
+                <div class="absolute -top-16 -right-10 w-52 h-52 rounded-full bg-emerald-300/10 blur-3xl"></div>
+                <div class="absolute inset-0 opacity-[0.06]" style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 20px 20px;"></div>
+                <div class="relative flex items-center justify-between">
+                    <a href="/inicio" class="text-[15px] font-black tracking-tight">MAXIMUS<span class="text-maximus-accent">.</span></a>
+                    <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-100/80 bg-white/10 border border-white/10 rounded-full px-2.5 py-1"><i class="ph-fill ph-seal-check text-sky-300"></i> Asesor verificado</span>
+                </div>
+            </header>
+
+            <!-- Identidad -->
+            <section class="relative px-6 -mt-12 text-center">
+                <img id="t-avatar" alt="" class="w-24 h-24 rounded-3xl object-cover mx-auto ring-4 ring-white shadow-lg bg-gray-100">
+                <h1 id="t-nombre" class="mt-3 text-2xl font-black tracking-tight leading-tight"></h1>
+                <p id="t-titulo" class="text-sm font-semibold text-gray-500"></p>
+                <div class="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs font-bold">
+                    <span id="t-estrellas" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-100"></span>
+                    <span id="t-zona" class="hidden inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-100"></span>
+                </div>
+            </section>
+
+            <!-- Acciones -->
+            <section class="px-6 mt-6 space-y-2.5">
+                <a id="t-whatsapp" href="#" target="_blank" rel="noopener" class="hidden h-14 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5A] text-white text-[15px] font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-colors">
+                    <i class="ph-fill ph-whatsapp-logo text-2xl"></i> Escribir por WhatsApp
+                </a>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <a id="t-llamar" href="#" class="hidden h-12 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-bold flex items-center justify-center gap-2 transition-colors"><i class="ph-bold ph-phone text-lg"></i> Llamar</a>
+                    <a id="t-instagram" href="#" target="_blank" rel="noopener noreferrer" class="hidden h-12 rounded-2xl text-white text-sm font-bold flex items-center justify-center gap-2 transition-opacity hover:opacity-90" style="background:linear-gradient(135deg,#F58529,#DD2A7B 55%,#8134AF);"><i class="ph-bold ph-instagram-logo text-lg"></i> Instagram</a>
+                    <button type="button" id="t-guardar" class="h-12 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"><i class="ph-bold ph-user-plus text-lg"></i> Guardar contacto</button>
+                    <button type="button" id="t-compartir" class="h-12 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"><i class="ph-bold ph-share-network text-lg"></i> Compartir</button>
+                </div>
+            </section>
+
+            <!-- Sobre mí -->
+            <section id="t-bloque-bio" class="hidden px-6 mt-8">
+                <h2 class="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Sobre mí</h2>
+                <p id="t-bio" class="mt-2 text-sm leading-relaxed text-gray-700 whitespace-pre-line"></p>
+                <p id="t-especialidad" class="hidden mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 text-xs font-bold text-gray-700"><i class="ph-fill ph-briefcase"></i><span></span></p>
+            </section>
+
+            <!-- Inmuebles -->
+            <section id="t-bloque-inmuebles" class="hidden mt-8">
+                <div class="px-6 flex items-end justify-between">
+                    <h2 class="text-[11px] font-black uppercase tracking-[0.16em] text-gray-400">Mis inmuebles</h2>
+                    <span id="t-total-inmuebles" class="text-xs font-bold text-gray-500"></span>
+                </div>
+                <div id="t-inmuebles" class="fila mt-3 flex gap-3 overflow-x-auto snap-x snap-mandatory px-6 pb-2"></div>
+            </section>
+
+            <footer class="px-6 mt-10 pb-8 text-center">
+                <a href="/inicio" class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-maximus-dark transition-colors"><i class="ph-fill ph-seal-check text-sky-500"></i> Asesor verificado en MAXIMUS Inmobiliaria</a>
+            </footer>
+        </article>
+    </main>
+
+<script>
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const digitos = (t) => String(t || '').replace(/\D/g, '');
+    const slug = decodeURIComponent((location.pathname.match(/^\/asesor\/([^/]+)/i) || [])[1] || '').toLowerCase();
+    let datos = null;
+
+    function mostrar(id) { ['estado-cargando', 'estado-no-disponible', 'tarjeta'].forEach(x => $(x).classList.toggle('hidden', x !== id)); }
+
+    async function cargar() {
+        if (!slug) return mostrar('estado-no-disponible');
+        try {
+            const url = (window.APP_CONFIG && APP_CONFIG.SUPABASE_URL || '').replace(/\/$/, '');
+            const key = window.APP_CONFIG && APP_CONFIG.SUPABASE_ANON_KEY;
+            if (!url || !key) throw new Error('sin configuración');
+            const r = await fetch(url + '/rest/v1/rpc/tarjeta_asesor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', apikey: key, Authorization: 'Bearer ' + key },
+                body: JSON.stringify({ p_slug: slug })
+            });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            datos = await r.json();
+        } catch (e) { console.warn('Tarjeta:', e); datos = null; }
+        if (!datos || !datos.nombre) return mostrar('estado-no-disponible');
+        pintar(datos);
+        mostrar('tarjeta');
+    }
+
+    function iniciales(n) { return String(n || 'M').split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase() || 'M'; }
+    function avatarSvg(n) {
+        return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><rect width='200' height='200' fill='%230B4A3F'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-family='sans-serif' font-weight='800' font-size='80'>${encodeURIComponent(iniciales(n))}</text></svg>`;
+    }
+    function estrellas(v) {
+        let h = '';
+        for (let i = 1; i <= 5; i++) h += `<i class="ph-fill ${v >= i ? 'ph-star' : (v >= i - 0.5 ? 'ph-star-half' : 'ph-star')}" style="${v >= i - 0.5 ? '' : 'opacity:.3'}"></i>`;
+        return h;
+    }
+
+    function pintar(d) {
+        document.title = `${d.nombre} · Asesor inmobiliario | MAXIMUS`;
+        $('og-title').content = `${d.nombre} · Asesor inmobiliario`;
+        $('og-desc').content = `${d.titulo || 'Asesor Inmobiliario'}${d.zona ? ' en ' + d.zona : ''}. Contáctame directo por WhatsApp.`;
+
+        const av = $('t-avatar');
+        av.onerror = function () { this.onerror = null; this.src = avatarSvg(d.nombre); };
+        av.src = d.avatar_url || avatarSvg(d.nombre);
+        av.alt = d.nombre;
+        $('t-nombre').textContent = d.nombre;
+        $('t-titulo').textContent = d.titulo || 'Asesor Inmobiliario';
+
+        const est = Number(d.estrellas || 5), n = Number(d.total_resenas || 0);
+        $('t-estrellas').innerHTML = `<span class="text-amber-500 inline-flex">${estrellas(est)}</span> ${est.toFixed(1)} <span class="font-semibold text-amber-700/80">· ${n > 0 ? `${n} ${n === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas aún'}</span>`;
+        if (d.zona) { const z = $('t-zona'); z.innerHTML = `<i class="ph-fill ph-map-pin"></i> ${esc(d.zona)}`; z.classList.remove('hidden'); }
+
+        const wa = digitos(d.whatsapp);
+        if (wa) {
+            const msg = `Hola ${String(d.nombre).split(' ')[0]}, vi tu tarjeta en MAXIMUS y me gustaría conversar sobre un inmueble.`;
+            const b = $('t-whatsapp'); b.href = `https://wa.me/${wa}?text=${encodeURIComponent(msg)}`; b.classList.remove('hidden');
+            const l = $('t-llamar'); l.href = `tel:+${wa}`; l.classList.remove('hidden');
+        }
+        if (/^[A-Za-z0-9._]{1,30}$/.test(String(d.instagram || ''))) {
+            const i = $('t-instagram'); i.href = `https://instagram.com/${d.instagram}`; i.classList.remove('hidden');
+        }
+
+        if (d.bio || d.especialidad) {
+            $('t-bloque-bio').classList.remove('hidden');
+            if (d.bio) $('t-bio').textContent = d.bio; else $('t-bio').classList.add('hidden');
+            if (d.especialidad) { const e = $('t-especialidad'); e.querySelector('span').textContent = d.especialidad; e.classList.remove('hidden'); }
+        }
+
+        const lista = Array.isArray(d.inmuebles) ? d.inmuebles : [];
+        if (lista.length) {
+            $('t-bloque-inmuebles').classList.remove('hidden');
+            const total = Number(d.total_inmuebles || lista.length);
+            $('t-total-inmuebles').textContent = `${total} ${total === 1 ? 'disponible' : 'disponibles'}`;
+            $('t-inmuebles').innerHTML = lista.map(tarjetaInmueble).join('') + '<span class="shrink-0 w-3"></span>';
+        }
+    }
+
+    function tarjetaInmueble(i) {
+        const precio = Number(i.precio) > 0 ? `${(i.moneda && i.moneda !== 'USD') ? esc(i.moneda) + ' ' : '$'}${Number(i.precio).toLocaleString('en-US')}` : '';
+        const specs = [
+            Number(i.habitaciones) > 0 ? `<span><i class="ph ph-bed"></i> ${esc(i.habitaciones)}</span>` : '',
+            Number(i.banos) > 0 ? `<span><i class="ph ph-bathtub"></i> ${esc(i.banos)}</span>` : '',
+            Number(i.metros_cuadrados) > 0 ? `<span><i class="ph ph-ruler"></i> ${esc(i.metros_cuadrados)} m²</span>` : ''
+        ].join('');
+        const foto = i.foto ? `<img src="${esc(i.foto)}" alt="" loading="lazy" class="w-full h-full object-cover">` : '';
+        return `
+            <a href="/detalle-propiedad?id=${encodeURIComponent(i.id)}" class="snap-start shrink-0 w-[68%] rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div class="relative aspect-[4/3] bg-gray-100">${foto}
+                    <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-white/95 text-[9px] font-black uppercase tracking-widest">${esc(i.operacion || 'venta')}</span>
+                </div>
+                <div class="p-3">
+                    <p class="text-lg font-black leading-none text-maximus-dark">${precio}</p>
+                    <p class="mt-1.5 text-[13px] font-bold leading-snug line-clamp-1">${esc(i.titulo)}</p>
+                    <p class="mt-0.5 text-[11px] text-gray-500 truncate"><i class="ph-fill ph-map-pin text-emerald-600"></i> ${esc(i.sector || 'Táchira')}</p>
+                    ${specs ? `<div class="mt-2 pt-2 border-t border-gray-100 flex items-center gap-3 text-[11px] font-semibold text-gray-500">${specs}</div>` : ''}
+                </div>
+            </a>`;
+    }
+
+    // ---- Guardar contacto (.vcf) ----
+    function vcardTexto(d) {
+        const lim = (s) => String(s || '').replace(/[\r\n;,\\]/g, ' ').trim();
+        const wa = digitos(d.whatsapp);
+        const l = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${lim(d.nombre)}`, 'ORG:MAXIMUS Inmobiliaria', `TITLE:${lim(d.titulo || 'Asesor Inmobiliario')}`];
+        if (wa) l.push(`TEL;TYPE=CELL:+${wa}`);
+        l.push(`URL:${location.href.split('#')[0]}`);
+        if (/^[A-Za-z0-9._]{1,30}$/.test(String(d.instagram || ''))) l.push(`X-SOCIALPROFILE;TYPE=instagram:https://instagram.com/${d.instagram}`);
+        l.push('END:VCARD');
+        return l.join('\r\n');
+    }
+    $('t-guardar').addEventListener('click', () => {
+        if (!datos) return;
+        const blob = new Blob([vcardTexto(datos)], { type: 'text/vcard;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = (datos.slug || 'contacto') + '.vcf';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    });
+
+    // ---- Compartir ----
+    $('t-compartir').addEventListener('click', async () => {
+        if (!datos) return;
+        const url = location.href.split('#')[0];
+        const texto = `${datos.nombre} · Asesor inmobiliario en MAXIMUS`;
+        try {
+            if (navigator.share) { await navigator.share({ title: texto, text: texto, url }); return; }
+        } catch (e) { if (e && e.name === 'AbortError') return; }
+        try { await navigator.clipboard.writeText(url); $('t-compartir').innerHTML = '<i class="ph-bold ph-check text-lg"></i> Enlace copiado'; setTimeout(() => { $('t-compartir').innerHTML = '<i class="ph-bold ph-share-network text-lg"></i> Compartir'; }, 2200); }
+        catch (_) { window.prompt('Copia este enlace:', url); }
+    });
+
+    cargar();
+})();
+</script>
+</body>
+</html>

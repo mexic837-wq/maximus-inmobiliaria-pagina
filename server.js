@@ -63,6 +63,19 @@ const server = http.createServer((req, res) => {
     return res.end();
   }
 
+  // Tarjeta digital del asesor Platinum: /asesor/<enlace> (la página lee el enlace de la URL)
+  if (/^\/asesor\/[a-z0-9-]{1,60}\/?$/i.test(pathname)) {
+    const tarjeta = path.join(BASE_DIR, 'tarjeta-asesor.html');
+    if (fs.existsSync(tarjeta)) {
+      res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'X-Robots-Tag': 'noindex'
+      });
+      return fs.createReadStream(tarjeta).pipe(res);
+    }
+  }
+
   // Verificar si la ruta tiene un alias directo
   if (ROUTE_ALIASES[pathname]) {
     const targetFile = path.join(BASE_DIR, ROUTE_ALIASES[pathname]);

@@ -1798,6 +1798,8 @@ const PerfilService = {
                 avatar: data.avatar_url || defaults.avatar,
                 bio: data.bio || defaults.bio,
                 licencia_inmobiliaria: data.licencia_inmobiliaria || defaults.licencia_inmobiliaria,
+                instagram: data.instagram || '',
+                plan: data.plan || cached?.plan || null,
                 two_factor_enabled: data.two_factor_enabled !== undefined ? data.two_factor_enabled : defaults.two_factor_enabled,
                 two_factor_method: data.two_factor_method || defaults.two_factor_method,
                 two_factor_phone: data.two_factor_phone || defaults.two_factor_phone,
@@ -1811,6 +1813,18 @@ const PerfilService = {
         } catch(e) {
             return { data: defaults, error: null };
         }
+    },
+
+    /**
+     * "@usuario", "instagram.com/usuario/" o "https://www.instagram.com/usuario?igsh=…" → "usuario".
+     * Devuelve '' si está vacío, null si no es un usuario válido (letras, números, . y _; máx. 30).
+     */
+    _normalizarInstagram(valor) {
+        let t = String(valor == null ? '' : valor).trim();
+        if (!t) return '';
+        t = t.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^(www\.)?instagram\.com\//i, '');
+        t = t.split(/[/?#]/)[0].replace(/^@/, '');
+        return /^[A-Za-z0-9._]{1,30}$/.test(t) ? t : null;
     },
 
     /**
@@ -1854,7 +1868,18 @@ const PerfilService = {
                 updated_at: new Date().toISOString()
             };
 
-            const { data, error } = await sb.from(APP_CONFIG.TABLES.USUARIOS).update(dbPayload).eq('auth_id', updatedUser.id).select().single();
+            // Instagram (ventaja Platinum): solo el usuario, sin @ ni URL. Se envía únicamente si
+            // hay algo que guardar; si la columna aún no existe en la base, se reintenta sin ella
+            // para que el resto del perfil se guarde igual.
+            const ig = this._normalizarInstagram(updatedUser.instagram);
+            const conIg = ig !== null && (ig !== '' || (cached.instagram || '') !== '');
+            const payloadFinal = conIg ? { ...dbPayload, instagram: ig || null } : dbPayload;
+
+            let { data, error } = await sb.from(APP_CONFIG.TABLES.USUARIOS).update(payloadFinal).eq('auth_id', updatedUser.id).select().single();
+            if (error && conIg && /instagram|column|schema cache/i.test(error.message || '')) {
+                console.warn('Instagram no se guardó (¿falta ejecutar la Parte 9 del SQL?):', error.message);
+                ({ data, error } = await sb.from(APP_CONFIG.TABLES.USUARIOS).update(dbPayload).eq('auth_id', updatedUser.id).select().single());
+            }
             return { data: updatedUser, error };
         } catch(err) {
             return { data: updatedUser, error: null };
