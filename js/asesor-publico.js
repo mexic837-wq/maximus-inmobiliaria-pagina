@@ -127,17 +127,131 @@
         }
     }
 
+    // ------------------------------------------------------------------
+    // Contactos y reseñas (sql/PENDIENTE-SUPABASE-TODO-EN-UNO.sql, Parte 8)
+    //   · Al tocar WhatsApp / Llamar con sesión iniciada se registra el contacto.
+    //     El servidor decide quién es el asesor a partir del inmueble.
+    //   · Solo quien contactó puede calificar (lo exige la base de datos).
+    //   · La ficha muestra "★ 5.0 · Sin reseñas aún" o "★ 4.8 · 7 reseñas".
+    // ------------------------------------------------------------------
+    const actuales = {};   // prefijo → inmueble en pantalla
+
+    function cliente() {
+        return (typeof window.getSupabase === 'function') ? window.getSupabase() : null;
+    }
+
+    async function rpc(nombre, params) {
+        const sb = cliente();
+        if (sb) {
+            const { data, error } = await sb.rpc(nombre, params);
+            if (error) throw error;
+            return data;
+        }
+        const url = window.APP_CONFIG && APP_CONFIG.SUPABASE_URL;
+        const key = window.APP_CONFIG && APP_CONFIG.SUPABASE_ANON_KEY;
+        if (!url || !key) throw new Error('Supabase no configurado');
+        const r = await fetch(url.replace(/\/$/, '') + '/rest/v1/rpc/' + nombre, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', apikey: key, Authorization: 'Bearer ' + key },
+            body: JSON.stringify(params)
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    }
+
+    async function haySesion() {
+        const sb = cliente();
+        if (!sb) return false;
+        try { const { data } = await sb.auth.getSession(); return !!(data && data.session); } catch (_) { return false; }
+    }
+
+    // Registra el contacto (sin bloquear la apertura de WhatsApp o de la llamada)
+    async function registrarContacto(inmuebleId, canal) {
+        if (!inmuebleId || /^inm-/i.test(String(inmuebleId))) return false;
+        if (!(await haySesion())) return false;
+        try {
+            const ok = await rpc('registrar_contacto_asesor', { p_inmueble_id: String(inmuebleId), p_canal: canal });
+            if (ok) {
+                Object.keys(actuales).forEach(p => {
+                    if (actuales[p] && String(actuales[p].id) === String(inmuebleId)) pintarResenas(p, actuales[p]);
+                });
+            }
+            return !!ok;
+        } catch (_) { return false; } // p. ej. el SQL aún no se ejecutó
+    }
+
+    function estrellasHTML(v) {
+        let h = '';
+        for (let i = 1; i <= 5; i++) {
+            const ic = v >= i ? 'ph-fill ph-star' : (v >= i - 0.5 ? 'ph-fill ph-star-half' : 'ph ph-star');
+            h += `<i class="${ic}"></i>`;
+        }
+        return h;
+    }
+
+    // Línea de calificación bajo el nombre del asesor
+    async function pintarResenas(prefijo, inm) {
+        const btn = document.getElementById(`${prefijo}-asesor-resenas`);
+        if (!btn || !inm || !inm.id) return;
+        const id = String(inm.id);
+        pintarResenas._marca = pintarResenas._marca || {};
+        pintarResenas._marca[prefijo] = id;
+        let r = null;
+        try { r = /^inm-/i.test(id) ? null : await rpc('resumen_resenas_inmueble', { p_inmueble_id: id }); } catch (_) { r = null; }
+        if (pintarResenas._marca[prefijo] !== id) return; // ya se abrió otra ficha
+        if (!r || !r.asesor_auth_id) { btn.classList.add('hidden'); btn.classList.remove('inline-flex'); btn._resumen = null; return; }
+
+        const est = Number(r.estrellas || 5);
+        const n = Number(r.total_resenas || 0);
+        const e = document.getElementById(`${prefijo}-asesor-resenas-estrellas`);
+        const t = document.getElementById(`${prefijo}-asesor-resenas-texto`);
+        if (e) e.innerHTML = estrellasHTML(est);
+        if (t) t.textContent = `${est.toFixed(1)} · ${n > 0 ? `${n} ${n === 1 ? 'reseña' : 'reseñas'}` : 'Sin reseñas aún'}`;
+        btn._resumen = r;
+        btn.title = r.ya_reseno ? 'Ver o editar tu reseña' : (r.contacto ? 'Califica a este asesor' : 'Ver reseñas');
+        btn.onclick = () => {
+            if (typeof window.abrirModalResenasAsesor === 'function') {
+                window.abrirModalResenasAsesor({
+                    auth_id: r.asesor_auth_id,
+                    nombre: r.nombre || (inm.asesor && inm.asesor.nombre) || 'Asesor',
+                    avatar_url: r.avatar_url,
+                    estrellas: est,
+                    total_resenas: n,
+                    plan: inm.asesor && inm.asesor.plan,
+                    contacto: !!r.contacto
+                });
+            }
+        };
+        btn.classList.remove('hidden'); btn.classList.add('inline-flex');
+    }
+
+    // Registra el contacto al tocar los botones de la tarjeta del asesor (una sola vez por botón)
+    function enlazarContacto(prefijo) {
+        [['whatsapp-btn', 'whatsapp'], ['tel-btn', 'llamada']].forEach(([sufijo, canal]) => {
+            const el = document.getElementById(`${prefijo}-asesor-${sufijo}`);
+            if (!el || el._mxContacto) return;
+            el._mxContacto = true;
+            el.addEventListener('click', () => { const inm = actuales[prefijo]; if (inm) registrarContacto(inm.id, canal); });
+        });
+    }
+
     async function aplicar(prefijo, inm) {
         const id = inm && inm.id;
         // Marca qué inmueble se está pintando (evita que una respuesta lenta pise a otra ficha)
         const marca = `${prefijo}:${id}:${Date.now()}`;
         aplicar._ultimo = aplicar._ultimo || {};
         aplicar._ultimo[prefijo] = marca;
+        actuales[prefijo] = inm;
+        enlazarContacto(prefijo);
+        pintarResenas(prefijo, inm);
 
         pintar(prefijo, desdeLocal(inm), inm);          // inmediato, con datos locales
         const remoto = await desdeBase(id);              // luego, la verdad de la base
         if (remoto && aplicar._ultimo[prefijo] === marca) pintar(prefijo, remoto, inm);
     }
 
-    window.AsesorPublico = { aplicar, desdeLocal, EQUIPO };
+    window.AsesorPublico = {
+        aplicar, desdeLocal, EQUIPO, registrarContacto, pintarResenas,
+        inmuebleActual: (prefijo) => actuales[prefijo] || null
+    };
 })();

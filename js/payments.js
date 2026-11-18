@@ -460,7 +460,7 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
                 <p class="text-xs sm:text-sm text-gray-500 max-w-sm mx-auto leading-relaxed">${planId === 'platinum'
                     ? 'Ya eres <strong>Asesor Inmobiliario Platinum</strong>: publicas inmuebles ilimitados y entras en la cola que recibe a los propietarios que publican desde la web.'
                     : planId === 'gold'
-                    ? 'Ya eres <strong>Asesor Inmobiliario Gold</strong>: puedes publicar hasta 7 inmuebles y tus reseñas se muestran en la ficha de cada uno.'
+                    ? 'Ya eres <strong>Asesor Inmobiliario Gold</strong>: puedes publicar hasta 7 inmuebles y llevas la insignia Gold en tu perfil.'
                     : 'Tu cuenta ya tiene permisos de <strong>Asesor Inmobiliario Bronce</strong>: catálogo, CRM y cotizador.'}</p>
                 ${primerPago ? '<p style="margin:0;font-size:12px;color:#064E3B;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:14px;padding:8px 12px;max-width:24rem;margin-left:auto;margin-right:auto;">🎁 <strong>Tu primer pago incluye 1 mes de regalo:</strong> tu membresía dura 2 meses.</p>' : ''}
                 <div class="p-3.5 rounded-2xl bg-gray-50 text-xs font-mono text-gray-700 max-w-xs mx-auto border border-gray-200/80">Ref: <strong>${esc(pagoActual.codigo)}</strong></div>
