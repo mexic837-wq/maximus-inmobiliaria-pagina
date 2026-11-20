@@ -25,10 +25,10 @@
 
     // Colores de la etiqueta del plan (estilos en línea: la ficha pública usa CSS compilado)
     const ETIQUETAS = {
-        bronce:   { texto: 'Bronce',         icono: 'ph-medal',      estilo: 'background:#FFEDD5;color:#9A3412;' },
-        gold:     { texto: 'Gold',           icono: 'ph-crown',      estilo: 'background:#FEF3C7;color:#92400E;' },
-        platinum: { texto: 'Platinum',       icono: 'ph-diamond',    estilo: 'background:#E2E8F0;color:#1E293B;' },
-        equipo:   { texto: 'Equipo MAXIMUS', icono: 'ph-seal-check', estilo: 'background:#D1FAE5;color:#065F46;' },
+        bronce:   { texto: 'MAXIMUS',        icono: 'ph-seal-check', estilo: 'background:#D1FAE5;color:#065F46;' }, // Fase 4: sin planes
+        gold:     { texto: 'MAXIMUS',        icono: 'ph-seal-check', estilo: 'background:#D1FAE5;color:#065F46;' },
+        platinum: { texto: 'MAXIMUS',        icono: 'ph-seal-check', estilo: 'background:#D1FAE5;color:#065F46;' },
+        equipo:   { texto: 'MAXIMUS', icono: 'ph-seal-check', estilo: 'background:#D1FAE5;color:#065F46;' },
         ninguno:  { texto: 'Verificado',     icono: 'ph-check',      estilo: 'background:#D1FAE5;color:#065F46;' }
     };
 
@@ -91,13 +91,13 @@
         const n = $('nombre');
         if (n) n.textContent = info.nombre;
         const c = $('cargo');
-        if (c) c.textContent = info.cargo;
+        if (c) c.textContent = String(info.cargo || '').replace(/\s+(Bronce|Gold|Platinum|Pro)\s*$/i, ' MAXIMUS');
 
         const chip = $('plan');
         if (chip) {
             chip.style.cssText = et.estilo + 'display:inline-flex;align-items:center;gap:3px;';
             chip.innerHTML = `<i class="ph-fill ${et.icono}"></i>${et.texto}`;
-            chip.title = info.es_equipo ? 'Asesor del equipo MAXIMUS' : `Asesor con plan ${et.texto}`;
+            chip.title = 'Asesor del equipo MAXIMUS';
         }
 
         // Ventaja Platinum: enlace directo al Instagram. Solo el usuario (validado) y el enlace

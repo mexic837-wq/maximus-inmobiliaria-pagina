@@ -63,10 +63,10 @@
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
     <script src="js/services.js?v=3.4"></script>
-    <script src="js/auth.js?v=4.5"></script>
+    <script src="js/auth.js?v=4.6"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
-    <script src="js/asesor-publico.js?v=1.3"></script>
+    <script src="js/asesor-publico.js?v=1.4"></script>
     <script src="js/oficinas-aliadas.js?v=1.2"></script>
     <script src="js/oficinas-aliadas-admin.js?v=1.0"></script>
     <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
@@ -1133,7 +1133,8 @@
     <!-- MAXIMUS uso interno (Fase 1): sin planes, membresías ni pagos en el panel.
          Para restaurarlo, borra este bloque y la redirección marcada "Fase 1" en el enrutador de vistas. -->
     <style id="maximus-interno">
-        .nav-planes, [data-target="view-planes"], [data-target="view-pagos"], #banner-pro-cliente { display: none !important; }
+        .nav-planes, [data-target="view-planes"], [data-target="view-pagos"], #banner-pro-cliente,
+        [onclick*="abrirModalSuscripcionPro"], #cta-hazte-platinum { display: none !important; }
     </style>
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
@@ -1608,15 +1609,6 @@
                         <div class="p-2 space-y-1 bg-white dark:bg-[#0A1F1B] overflow-y-auto flex-1 scrollbar-none">
                             <button onclick="activateTab('view-perfil'); toggleProfileMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 hover:text-maximus-accent transition-colors flex items-center gap-3 cursor-pointer">
                                 <i class="ph-fill ph-user-circle text-lg text-emerald-600"></i> Mi Perfil
-                            </button>
-
-                            <!-- Opción Upgrade a Cuenta Bronce (Visible para Clientes) -->
-                            <button data-app-hide onclick="abrirModalSuscripcionPro('mensual'); toggleProfileMenu();" class="cliente-only w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 hover:text-maximus-accent transition-colors flex items-center justify-between group cursor-pointer">
-                                <div class="flex items-center gap-3">
-                                    <i class="ph-fill ph-crown text-lg text-amber-500 group-hover:scale-110 transition-transform"></i>
-                                    <span>Activar Cuenta Bronce</span>
-                                </div>
-                                <span class="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 text-[10px] font-bold">Bronce</span>
                             </button>
 
                             <!-- Subir Reseña (Usuarios Normales) -->
@@ -2471,54 +2463,6 @@
 
             <!-- B. VISTA: INMUEBLES (Ajustada, Compacta y con 4 Columnas) -->
             <section id="view-inmuebles" class="view-section max-w-[1550px] mx-auto space-y-3.5 pb-6">
-                <!-- Banner segmentado para cuentas gratuitas: Vendedor (captación MAXIMUS) / Asesor (Membresía Bronce). Dismissible -->
-                <div id="banner-pro-cliente" class="cliente-only relative rounded-2xl bg-gradient-to-r from-[#06241E] via-[#0A3D33] to-[#06241E] text-white shadow-md overflow-hidden">
-                    <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-emerald-400/10 blur-2xl pointer-events-none"></div>
-                    <button type="button" onclick="document.getElementById('banner-pro-cliente').style.display='none'; localStorage.setItem('maximus_banner_pro_dismissed', 'true');" class="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white/60 hover:text-white flex items-center justify-center text-xs transition cursor-pointer" title="Cerrar aviso">
-                        <i class="ph-bold ph-x"></i>
-                    </button>
-                    <div class="relative grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 divide-y md:divide-y-0 xl:divide-x divide-white/10">
-                        <!-- Opción 1: Propietario que quiere vender (lead de captación para MAXIMUS) -->
-                        <div class="flex items-center gap-3 p-3 sm:p-4 pr-11 md:pr-4">
-                            <div class="w-10 h-10 rounded-xl bg-amber-400/15 text-amber-300 ring-1 ring-amber-300/30 flex items-center justify-center text-lg shrink-0">
-                                <i class="ph-fill ph-house-line"></i>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[13px] font-bold leading-tight"><span class="sm:hidden">¿Vendes o alquilas tu inmueble?</span><span class="hidden sm:inline">¿Quieres vender o alquilar tu inmueble?</span></p>
-                                <p class="hidden sm:block text-[11px] text-white/60 mt-0.5">Valoración gratuita y publicación con asesores MAXIMUS.</p>
-                            </div>
-                            <button type="button" onclick="solicitarValoracionInmueble()" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-gray-950 text-xs font-bold transition cursor-pointer">
-                                Valorar gratis
-                            </button>
-                        </div>
-                        <!-- Opción 2: Asesor que quiere publicar (Membresía Bronce) -->
-                        <div data-app-hide class="flex items-center gap-3 p-3 sm:p-4 md:pr-12 xl:pr-4 md:border-l xl:border-l-0 md:border-white/10">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-300/30 flex items-center justify-center text-lg shrink-0">
-                                <i class="ph-fill ph-briefcase"></i>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[13px] font-bold leading-tight flex items-center gap-1.5 flex-wrap">¿Eres asesor inmobiliario? <span class="px-1.5 py-px rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">Bronce</span></p>
-                                <p class="hidden sm:block text-[11px] text-white/60 mt-0.5">Publica en este catálogo, usa el CRM y el cotizador.</p>
-                            </div>
-                            <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 text-xs font-bold transition cursor-pointer">
-                                Ver planes
-                            </button>
-                        </div>
-                        <!-- Opción 3: Inmobiliaria que quiere sumarse a la red de oficinas aliadas -->
-                        <div class="flex items-center gap-3 p-3 sm:p-4 md:col-span-2 xl:col-span-1 md:border-t xl:border-t-0 md:border-white/10 xl:pr-12">
-                            <div class="w-10 h-10 rounded-xl bg-sky-400/15 text-sky-300 ring-1 ring-sky-300/30 flex items-center justify-center text-lg shrink-0">
-                                <i class="ph-fill ph-buildings"></i>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[13px] font-bold leading-tight flex items-center gap-1.5 flex-wrap">¿Inmobiliaria? <span class="px-1.5 py-px rounded-full bg-sky-400/20 text-sky-300 text-[9px] font-bold uppercase tracking-wider">Aliados</span></p>
-                                <p class="hidden sm:block text-[11px] text-white/60 mt-0.5">Súmate a la red de oficinas aliadas de MAXIMUS.</p>
-                            </div>
-                            <button type="button" onclick="abrirRegistroInmobiliaria('panel-banner')" class="shrink-0 px-3.5 py-1.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-gray-950 text-xs font-bold transition cursor-pointer">
-                                Regístrate aquí
-                            </button>
-                        </div>
-                    </div>
-                </div>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                     <div>
                         <h2 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark tracking-tight">
@@ -6156,7 +6100,7 @@
                     
                 </div>
 
-                <!-- Tarjetas para cuentas gratuitas: reseña y paso a Asesor Bronce -->
+                <!-- Tarjetas para cuentas de cliente: reseña -->
                 <div class="cliente-only grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="p-5 rounded-2xl bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 shadow-sm flex items-center gap-4">
                         <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-500 flex items-center justify-center shrink-0">
@@ -6168,20 +6112,6 @@
                         </div>
                         <button type="button" onclick="abrirModalDejarResena()" class="shrink-0 h-9 px-3.5 rounded-xl bg-gray-50 hover:bg-gray-100 dark:bg-emerald-950/50 border border-gray-200 dark:border-emerald-900/60 text-maximus-dark dark:text-emerald-200 text-xs font-bold transition-all cursor-pointer">
                             Escribir reseña
-                        </button>
-                    </div>
-
-                    <div data-app-hide class="relative p-5 rounded-2xl bg-gradient-to-br from-[#06241E] to-[#0A3D33] text-white shadow-sm flex items-center gap-4 overflow-hidden">
-                        <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-emerald-400/10 blur-2xl pointer-events-none"></div>
-                        <div class="relative w-11 h-11 rounded-xl bg-white/10 text-emerald-300 flex items-center justify-center shrink-0">
-                            <i class="ph-fill ph-briefcase text-xl"></i>
-                        </div>
-                        <div class="relative min-w-0 flex-1">
-                            <h4 class="text-sm font-bold">¿Eres asesor inmobiliario?</h4>
-                            <p class="text-xs text-white/60 mt-0.5">Publica inmuebles, usa el CRM y el cotizador.</p>
-                        </div>
-                        <button type="button" onclick="abrirModalSuscripcionPro('mensual')" class="relative shrink-0 h-9 px-3.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-gray-950 text-xs font-bold transition-all cursor-pointer">
-                            Ver planes
                         </button>
                     </div>
                 </div>
@@ -6323,7 +6253,7 @@
                         <div id="perfil-box-instagram" class="pt-2 staff-only">
                             <label for="perfil-input-instagram" class="block text-[13px] font-semibold text-gray-700 dark:text-gray-200 mb-1.5 flex items-center gap-2">
                                 Instagram
-                                <span class="px-2 py-0.5 rounded-full bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider inline-flex items-center gap-1"><i class="ph-fill ph-diamond"></i> Platinum</span>
+                                
                             </label>
                             <!-- Con Platinum: campo editable -->
                             <div id="perfil-instagram-activo" class="hidden">
@@ -6347,7 +6277,7 @@
                         <div id="perfil-box-tarjeta" class="pt-2 staff-only">
                             <label class="block text-[13px] font-semibold text-gray-700 dark:text-gray-200 mb-1.5 flex items-center gap-2">
                                 Tarjeta digital con QR
-                                <span class="px-2 py-0.5 rounded-full bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider inline-flex items-center gap-1"><i class="ph-fill ph-diamond"></i> Platinum</span>
+                                
                             </label>
 
                             <div id="tarjeta-cargando" class="hidden h-28 rounded-2xl bg-gray-100 dark:bg-emerald-950/30 animate-pulse"></div>
@@ -8107,11 +8037,9 @@
                 if (document.getElementById('userAvatar')) document.getElementById('userAvatar').src = avatarFinalUrl;
                 const esPlatinumUser = (user.plan === 'platinum');
                 const esGoldUser = (user.plan === 'gold');
-                const tituloAsesorPlan = esPlatinumUser ? 'Asesor Inmobiliario Platinum' : (esGoldUser ? 'Asesor Inmobiliario Gold' : 'Asesor Inmobiliario Bronce');
-                const CLASE_BADGE_PLAN = esPlatinumUser ? 'bg-gradient-to-r from-slate-200 to-slate-300 text-slate-900 border border-slate-400'
-                    : esGoldUser ? 'bg-gradient-to-r from-amber-200 to-amber-300 text-amber-950 border border-amber-400'
-                    : 'bg-emerald-600 text-white border border-emerald-700';
-                if (user.title && /externo/i.test(user.title)) user.title = tituloAsesorPlan; // títulos antiguos
+                const tituloAsesorPlan = 'Asesor Inmobiliario MAXIMUS'; // Fase 4: sin Bronce/Gold/Platinum
+                const CLASE_BADGE_PLAN = 'bg-emerald-100 text-emerald-900 border border-emerald-300';
+                if (user.title && /externo|bronce|gold|platinum|inmobiliario pro/i.test(user.title)) user.title = tituloAsesorPlan; // títulos antiguos
                 if (user.title && document.getElementById('userTitle')) {
                     document.getElementById('userTitle').textContent = user.title;
                 } else if (userRole === 'cliente') {
@@ -8147,11 +8075,11 @@
                     }
                 } else if (userRole === 'asesor_externo') {
                     if (roleBadge) {
-                        roleBadge.textContent = esPlatinumUser ? 'PLATINUM' : (esGoldUser ? 'GOLD' : 'BRONCE');
+                        roleBadge.textContent = 'MAXIMUS';
                         roleBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ' + CLASE_BADGE_PLAN;
                     }
                     if (dropBadge) {
-                        dropBadge.textContent = esPlatinumUser ? 'Asesor Platinum' : (esGoldUser ? 'Asesor Gold' : 'Asesor Bronce');
+                        dropBadge.textContent = 'Asesor MAXIMUS';
                         dropBadge.className = 'text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ' + CLASE_BADGE_PLAN;
                     }
                 } else {
@@ -14145,12 +14073,12 @@
                 inm.asesor = Object.assign({}, inm.asesor || {}, {
                     id: a.auth_id,
                     nombre: a.nombre,
-                    cargo: a.plan === 'gold' ? 'Asesor Inmobiliario Gold' : 'Asesor Inmobiliario Platinum',
+                    cargo: 'Asesor Inmobiliario MAXIMUS',
                     telefono: wa ? '+' + wa : (inm.asesor && inm.asesor.telefono) || '',
                     whatsapp: wa || (inm.asesor && inm.asesor.whatsapp) || '',
                     avatar: avatarPlatinum(a),
                     rating: Number(a.estrellas || 5).toFixed(1),
-                    experiencia: a.plan === 'gold' ? 'Asesor Inmobiliario Gold' : 'Asesor Inmobiliario Platinum',
+                    experiencia: 'Asesor Inmobiliario MAXIMUS',
                     tipo: 'platinum'
                 });
                 inm._destacado = a;
@@ -17236,12 +17164,8 @@
                     if (!planPerfil) { try { planPerfil = (JSON.parse(localStorage.getItem('maximus_user') || '{}') || {}).plan; } catch (_) {} }
                     const esPlatPerfil = planPerfil === 'platinum';
                     const esGoldPerfil = planPerfil === 'gold';
-                    cardRolBadge.textContent = esPlatPerfil ? 'ASESOR INMOBILIARIO PLATINUM' : (esGoldPerfil ? 'ASESOR INMOBILIARIO GOLD' : 'ASESOR INMOBILIARIO BRONCE');
-                    cardRolBadge.className = esPlatPerfil
-                        ? 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-800 text-slate-900 dark:text-slate-100 border border-slate-400 dark:border-slate-500'
-                        : esGoldPerfil
-                        ? 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gradient-to-r from-amber-100 to-amber-300 text-amber-950 border border-amber-400'
-                        : 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white border border-emerald-700';
+                    cardRolBadge.textContent = 'ASESOR INMOBILIARIO MAXIMUS';
+                    cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-300';
                 } else {
                     cardRolBadge.textContent = 'ASESOR MAXIMUS';
                     cardRolBadge.className = 'px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800';
@@ -17307,7 +17231,10 @@
             // Instagram (ventaja Platinum): editable solo con plan Platinum
             let planIg = p.plan;
             if (!planIg) { try { planIg = (JSON.parse(localStorage.getItem('maximus_user') || '{}') || {}).plan; } catch (_) {} }
-            const esPlatinumIg = planIg === 'platinum';
+            // Fase 4 (uso interno): Instagram y tarjeta con QR son para todo el equipo, sin plan
+            let rolIg = p.role || '';
+            if (!rolIg) { try { rolIg = (JSON.parse(localStorage.getItem('maximus_user') || sessionStorage.getItem('maximus_user') || '{}') || {}).role || ''; } catch (_) {} }
+            const esPlatinumIg = rolIg !== 'cliente' && rolIg !== 'usuario';
             const igActivo = document.getElementById('perfil-instagram-activo');
             const igBloq = document.getElementById('perfil-instagram-bloqueado');
             if (igActivo) igActivo.classList.toggle('hidden', !esPlatinumIg);
