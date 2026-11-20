@@ -42,6 +42,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- MAXIMUS uso interno (Fase 1): se esconden planes y crear cuenta. Para restaurarlo, borra este bloque. -->
+    <style id="maximus-interno">
+        a[href*="#planes"], a[href*="register"] { display: none !important; }
+    </style>
 </head>
 <body class="bg-[#F4F7F6] font-sans text-maximus-black min-h-screen flex flex-col antialiased">
 
@@ -426,9 +430,9 @@
                     <i id="auth-modal-icono" class="ph-fill ph-crown"></i>
                 </div>
                 <div class="text-[10px] font-black uppercase tracking-widest text-emerald-300" id="auth-modal-badge">CLUB MAXIMUS</div>
-                <h3 class="text-xl font-extrabold mt-1" id="auth-modal-title">Inicia Sesión o Crea tu Cuenta</h3>
+                <h3 class="text-xl font-extrabold mt-1" id="auth-modal-title">Inicia Sesión</h3>
                 <p class="text-xs text-gray-300 mt-1" id="auth-modal-subtitle">
-                    Crea tu cuenta gratis en 15 segundos para contactar directamente por WhatsApp al asesor asignado y guardar inmuebles en tus favoritos.
+                    Inicia sesión para contactar directamente por WhatsApp al asesor asignado y guardar inmuebles en tus favoritos.
                 </p>
             </div>
             <div class="p-6 space-y-3">
@@ -666,7 +670,7 @@
             if (icon) icon.className = 'ph-fill ph-whatsapp-logo text-emerald-400';
             if (badge) badge.textContent = 'CLUB MAXIMUS · ATENCIÓN EXCLUSIVA';
             if (title) title.textContent = 'Contacta al Asesor Asignado';
-            if (sub) sub.textContent = 'Crea tu cuenta gratis en 15 segundos para contactar directamente por WhatsApp al asesor inmobiliario asignado a esta propiedad y agendar tu visita privada.';
+            if (sub) sub.textContent = 'Inicia sesión para contactar directamente por WhatsApp al asesor inmobiliario asignado a esta propiedad y agendar tu visita privada.';
             if (modal) modal.classList.remove('hidden');
         }
 
@@ -680,7 +684,7 @@
             if (icon) icon.className = 'ph-fill ph-heart text-red-400';
             if (badge) badge.textContent = 'CLUB MAXIMUS · MIS FAVORITOS';
             if (title) title.textContent = 'Guarda tus Propiedades Favoritas';
-            if (sub) sub.textContent = 'Inicia sesión o crea tu cuenta gratis para guardar esta propiedad en tus favoritos y acceder a ella cuando desees desde tu panel personal.';
+            if (sub) sub.textContent = 'Inicia sesión para guardar esta propiedad en tus favoritos y acceder a ella cuando desees desde tu panel personal.';
             if (modal) modal.classList.remove('hidden');
         }
 
@@ -1227,6 +1231,22 @@
                 console.error('Error cargando detalle sincronizado de propiedad:', err);
             }
         });
+    </script>
+    <!-- Fase 3: si se llegó escaneando el QR del letrero (?qr=1), se suma un escaneo
+         (sin datos personales) y se quita el parámetro para no contar dos veces al recargar. -->
+    <script>
+        (function () {
+            const q = new URLSearchParams(location.search);
+            if (q.get('qr') !== '1') return;
+            const id = (q.get('id') || '').slice(0, 100);
+            q.delete('qr');
+            try { history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); } catch (_) {}
+            if (!id) return;
+            try {
+                const sb = typeof window.getSupabase === 'function' ? window.getSupabase() : null;
+                if (sb) sb.rpc('registrar_escaneo_qr', { p_tipo: 'inmueble', p_ref: id }).then(() => {}, () => {});
+            } catch (_) {}
+        })();
     </script>
 </body>
 </html>

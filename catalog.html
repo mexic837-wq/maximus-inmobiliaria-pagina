@@ -75,6 +75,11 @@
             animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
+    <!-- MAXIMUS uso interno (Fase 1): se esconden planes, crear cuenta y el banner Club MAXIMUS.
+         Para restaurarlo, borra este bloque y los atributos data-solo-publico. -->
+    <style id="maximus-interno">
+        a[href*="#planes"], a[href*="register"], [data-solo-publico] { display: none !important; }
+    </style>
 </head>
 <body class="bg-[#F8FAFC] font-sans text-maximus-black antialiased min-h-screen flex flex-col">
 
@@ -344,7 +349,7 @@
         <!-- ========================================================
              BANNER INTERMEDIO: CLUB DE INVERSIONISTAS VIP
              ======================================================== -->
-        <section class="mt-14 sm:mt-18 rounded-3xl overflow-hidden shadow-xl border border-emerald-900/20 bg-gradient-to-br from-[#071714] via-[#0B4A3F] to-[#041210] p-8 sm:p-12 text-white relative">
+        <section data-solo-publico class="mt-14 sm:mt-18 rounded-3xl overflow-hidden shadow-xl border border-emerald-900/20 bg-gradient-to-br from-[#071714] via-[#0B4A3F] to-[#041210] p-8 sm:p-12 text-white relative">
             <div class="absolute -right-12 -bottom-12 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"></div>
             
             <div class="max-w-3xl relative z-10 space-y-4">
@@ -388,7 +393,7 @@
                 <div class="text-[10px] font-black uppercase tracking-widest text-emerald-300">BENEFICIO EXCLUSIVO</div>
                 <h3 id="modalVipTitulo" class="text-xl font-extrabold mt-1">Acceso Club MAXIMUS</h3>
                 <p id="modalVipSubtitulo" class="text-xs text-gray-300 mt-1">
-                    Crea tu cuenta gratuita en 15 segundos para desbloquear esta función y acceder al portafolio completo.
+                    Inicia sesión con la cuenta que te dio tu asesor MAXIMUS para usar esta función.
                 </p>
             </div>
 
@@ -1088,7 +1093,7 @@
             if (event) event.stopPropagation();
             const isAuth = window.AuthService ? AuthService.isAuthenticated() : Boolean(localStorage.getItem('maximus_user'));
             if (!isAuth) {
-                abrirModalVip('Consulta con un Asesor MAXIMUS', 'Inicia sesión o crea tu cuenta gratuita para contactar directamente al asesor asignado a esta propiedad por WhatsApp.');
+                abrirModalVip('Consulta con un Asesor MAXIMUS', 'Inicia sesión para contactar directamente al asesor asignado a esta propiedad por WhatsApp.');
                 return;
             }
             const titulo = decodeURIComponent(encodedTitulo || 'Propiedad');
@@ -1103,7 +1108,7 @@
 
             const isAuth = window.AuthService ? AuthService.isAuthenticated() : Boolean(localStorage.getItem('maximus_user'));
             if (!isAuth) {
-                abrirModalVip('Guarda tus Propiedades Favoritas', 'Crea tu cuenta gratuita para guardar y comparar inmuebles en tu portafolio personal.');
+                abrirModalVip('Guarda tus Propiedades Favoritas', 'Inicia sesión para guardar y comparar inmuebles en tu portafolio personal.');
                 return;
             }
 
@@ -1123,7 +1128,7 @@
         function abrirFichaVipPDF(inmuebleId, titulo) {
             const isAuth = window.AuthService ? AuthService.isAuthenticated() : Boolean(localStorage.getItem('maximus_user'));
             if (!isAuth) {
-                abrirModalVip(`Descargar Ficha Técnica (${titulo})`, 'Crea tu cuenta gratuita para descargar el dossier ejecutivo en PDF con planos y desglose legal.');
+                abrirModalVip(`Descargar Ficha Técnica (${titulo})`, 'Inicia sesión para descargar el dossier ejecutivo en PDF con planos y desglose legal.');
                 return;
             }
 

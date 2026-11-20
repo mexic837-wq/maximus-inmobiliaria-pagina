@@ -34,7 +34,8 @@ const ROUTE_ALIASES = {
   '/dashboard-layout': 'dashboard-layout.html',
   '/detalle-propiedad': 'property-detail.html',
   '/propiedad': 'property-detail.html',
-  '/property-detail': 'property-detail.html'
+  '/property-detail': 'property-detail.html',
+  '/llegada': 'llegada.html' // Fase 3: QR de llegada a la visita
 };
 
 const LEGACY_REDIRECTS = {

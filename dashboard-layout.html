@@ -62,7 +62,7 @@
     <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
-    <script src="js/services.js?v=3.3"></script>
+    <script src="js/services.js?v=3.4"></script>
     <script src="js/auth.js?v=4.5"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
@@ -71,6 +71,8 @@
     <script src="js/oficinas-aliadas-admin.js?v=1.0"></script>
     <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
     <script src="js/busqueda-voz.js?v=1.0"></script>
+    <script src="js/mi-asesor.js?v=1.0"></script>
+    <script src="js/qr-maximus.js?v=1.2"></script>
     
     <style>
         .view-section { display: none; }
@@ -1128,6 +1130,11 @@
         .descubre-fila::-webkit-scrollbar { display: none; }
         @media (prefers-reduced-motion: reduce) { .spotlight-fade { animation: none; } }
     </style>
+    <!-- MAXIMUS uso interno (Fase 1): sin planes, membresías ni pagos en el panel.
+         Para restaurarlo, borra este bloque y la redirección marcada "Fase 1" en el enrutador de vistas. -->
+    <style id="maximus-interno">
+        .nav-planes, [data-target="view-planes"], [data-target="view-pagos"], #banner-pro-cliente { display: none !important; }
+    </style>
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
 
@@ -1243,6 +1250,13 @@
                     <i class="ph-fill ph-compass text-xl text-maximus-accent flex-shrink-0"></i>
                     <span class="sidebar-label">Descubre</span>
                     <span class="sidebar-tooltip">Descubre</span>
+                </a>
+
+                <!-- Mi asesor (Fase 2: exclusivo clientes MAXIMUS) -->
+                <a href="#" data-target="view-mi-asesor" class="nav-link cliente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Mi asesor">
+                    <i class="ph ph-handshake text-xl text-emerald-600 flex-shrink-0"></i>
+                    <span class="sidebar-label">Mi asesor</span>
+                    <span class="sidebar-tooltip">Mi asesor</span>
                 </a>
 
                 <!-- Reseñas (Exclusivo Clientes / Usuarios Normales) -->
@@ -1451,6 +1465,10 @@
                     <a href="#" data-target="view-exclusivas-maximus" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
                         <i class="ph-fill ph-compass text-base text-maximus-accent"></i>
                         <span>Descubre</span>
+                    </a>
+                    <a href="#" data-target="view-mi-asesor" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
+                        <i class="ph ph-handshake text-base text-emerald-600"></i>
+                        <span>Mi asesor</span>
                     </a>
                     <a href="#" data-target="view-perfil" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
@@ -5477,6 +5495,10 @@
                     </div>
 
                     <div class="flex items-center gap-1.5 shrink-0">
+                        <!-- Fase 3: QR del letrero (solo equipo) -->
+                        <button type="button" onclick="QrMaximus.inmueble()" class="staff-only flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer" title="QR para el letrero">
+                            <i class="ph-bold ph-qr-code text-sm text-emerald-600"></i> <span class="hidden sm:inline">QR letrero</span>
+                        </button>
                         <button id="btn-favorito-modal" onclick="toggleFavoritoModal(this)" class="flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 hover:text-red-500 px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer" title="Guardar">
                             <i class="ph ph-heart text-sm"></i> <span class="hidden sm:inline">Guardar</span>
                         </button>
@@ -6005,6 +6027,37 @@
                     <div id="crm-tabla-empty" class="hidden text-center py-12">
                         <i class="ph-bold ph-user-circle text-4xl text-gray-300 dark:text-gray-600 mb-2"></i>
                         <p class="text-xs font-bold text-gray-500 dark:text-gray-400">No se encontraron clientes con los filtros seleccionados.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 L0. VISTA "MI ASESOR" (Fase 2: solo clientes). Lógica en js/mi-asesor.js
+                 ========================================== -->
+            <section id="view-mi-asesor" class="view-section max-w-5xl mx-auto space-y-5 pb-24 sm:pb-12">
+                <div>
+                    <h1 id="mi-asesor-saludo" class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Mi asesor</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Tu asesor, tus visitas y cómo va tu operación con MAXIMUS.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="space-y-5">
+                        <div id="mi-asesor-card" class="bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/70 dark:border-emerald-950/60 shadow-sm p-5">
+                            <p class="text-sm text-gray-400">Cargando…</p>
+                        </div>
+                        <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/70 dark:border-emerald-950/60 shadow-sm p-5">
+                            <h2 class="text-sm font-extrabold text-maximus-dark dark:text-white mb-3">Estado de tu operación</h2>
+                            <div id="mi-asesor-estado"><p class="text-sm text-gray-400">Cargando…</p></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 space-y-5">
+                        <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/70 dark:border-emerald-950/60 shadow-sm p-5">
+                            <h2 class="text-sm font-extrabold text-maximus-dark dark:text-white mb-3">Próximas visitas</h2>
+                            <div id="mi-asesor-citas" class="space-y-2"><p class="text-sm text-gray-400">Cargando…</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/70 dark:border-emerald-950/60 shadow-sm p-5">
+                            <h2 class="text-sm font-extrabold text-maximus-dark dark:text-white mb-3">Inmuebles que tu asesor eligió para ti</h2>
+                            <div id="mi-asesor-colecciones" class="space-y-3"><p class="text-sm text-gray-400">Cargando…</p></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -7157,6 +7210,12 @@
                     <button onclick="enviarDossierDesdeFicha360()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/60 hover:bg-gray-100 dark:hover:bg-[#0D2822] text-maximus-dark dark:text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-envelope-simple text-emerald-600 dark:text-emerald-400"></i>
                         <span>Enviar Dossier VIP (n8n)</span>
+                    </button>
+
+                    <!-- Fase 3: Invitar al portal con QR -->
+                    <button onclick="QrMaximus.invitarLead()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/60 hover:bg-gray-100 dark:hover:bg-[#0D2822] text-xs font-bold text-gray-700 dark:text-gray-200 flex items-center gap-1.5 transition-all">
+                        <i class="ph-bold ph-qr-code text-emerald-600 dark:text-emerald-400"></i>
+                        <span>Invitar al portal</span>
                     </button>
 
                     <!-- Agendar Visita -->
@@ -9262,6 +9321,9 @@
                             <div class="mt-2.5 flex flex-wrap items-center gap-2">
                                 ${wa ? `<a href="https://wa.me/${wa}?text=${msg}" target="_blank" rel="noopener" class="h-8 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-1.5 transition-colors"><i class="ph-fill ph-whatsapp-logo text-emerald-600"></i> Confirmar</a>` : ''}
                                 ${tieneInm ? `<button type="button" onclick="abrirDetalleInmuebleAirbnb('${esc(c.inmueble_id)}')" class="h-8 px-3 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"><i class="ph-bold ph-house-line"></i> Ver inmueble</button>` : ''}
+                                ${!pasada ? (c.llegada_at
+                                    ? `<span class="h-8 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1.5"><i class="ph-fill ph-check-circle"></i> Llegó</span>`
+                                    : `<button type="button" onclick="QrMaximus.llegadaCita('${esc(c.id)}')" class="h-8 px-3 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-semibold flex items-center gap-1.5"><i class="ph-bold ph-qr-code text-emerald-600"></i> QR de llegada</button>`) : ''}
                                 <button type="button" onclick="cancelarCitaAgenda('${esc(c.id)}')" class="h-8 px-3 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ml-auto"><i class="ph-bold ph-x"></i> Cancelar</button>
                             </div>
                         </div>
@@ -9457,6 +9519,15 @@
                 targetId = 'view-resumen';
             }
 
+            // MAXIMUS uso interno (Fase 1): Planes y Pagos están apagados para todos
+            if (targetId === 'view-planes' || targetId === 'view-pagos') {
+                targetId = currentUserRole === 'cliente' ? 'view-inmuebles' : 'view-resumen';
+            }
+            // Fase 2: "Mi asesor" es solo para clientes
+            if (targetId === 'view-mi-asesor' && currentUserRole !== 'cliente') {
+                targetId = 'view-resumen';
+            }
+
             if (currentUserRole === 'cliente' && vistasRestringidasCliente.includes(targetId)) {
                 targetId = 'view-inmuebles';
             } else if ((currentUserRole === 'asesor_maximus' || currentUserRole === 'admin') && targetId === 'view-planes') {
@@ -9598,6 +9669,7 @@
             if (targetId === 'view-perfil') {
                 if (typeof cargarDatosVistaPerfil === 'function') cargarDatosVistaPerfil();
             }
+            if (targetId === 'view-mi-asesor' && window.MiAsesor) MiAsesor.cargar();
             if (targetId === 'view-admin-usuarios') {
                 if (typeof inicializarAdminUsuarios === 'function') inicializarAdminUsuarios();
             }
@@ -12064,6 +12136,9 @@
                         </button>
                         <button onclick="enviarDossierColeccionCorreo('${col.id}')" class="py-2.5 px-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1 transition-all hover:scale-105 cursor-pointer" title="Enviar Dossier por Correo (n8n)">
                             <i class="ph-bold ph-envelope-simple text-emerald-300 text-sm"></i>
+                        </button>
+                        <button onclick="QrMaximus.coleccion('${col.id}')" class="py-2.5 px-3 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-extrabold text-xs shadow-xs flex items-center justify-center" title="QR para el cliente">
+                            <i class="ph-bold ph-qr-code text-emerald-600 text-sm"></i>
                         </button>
                         <button onclick="compartirColeccionWhatsApp('${col.id}')" class="py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all hover:scale-105 cursor-pointer" title="Compartir Dossier por WhatsApp">
                             <i class="ph-fill ph-whatsapp-logo text-base"></i>

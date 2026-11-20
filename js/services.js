@@ -391,7 +391,15 @@ const LeadService = {
                         delete payloadSb.id; // Permite que Supabase genere su UUID nativo
                     }
                     delete payloadSb.actividades;
-                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb).select().single();
+                    let sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb).select().single();
+                    // Formularios públicos (visitante o cliente): con los permisos de la Fase 2 pueden
+                    // crear el lead pero no leerlo de vuelta; si falló, se guarda sin pedir la fila.
+                    if (sbRes && sbRes.error) {
+                        const soloInsert = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb);
+                        if (soloInsert && soloInsert.error) {
+                            console.warn('LeadService.create: Supabase no guardó el lead (' + (soloInsert.error.message || soloInsert.error.code) + ').');
+                        }
+                    }
                     if (sbRes && !sbRes.error && sbRes.data) {
                         res = sbRes;
                         const idx = leads.findIndex(l => l.id === nuevo.id);

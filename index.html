@@ -391,6 +391,13 @@
         }
         .nav-cta-brillo { animation: navCtaBrillo 6s ease-in-out infinite; animation-delay: 2.5s; }
     </style>
+    <!-- MAXIMUS uso interno (Fase 1): se esconde lo dirigido al público (planes, "Publica tu inmueble",
+         crear cuenta, oficinas aliadas). Para restaurarlo, borra este bloque y los atributos data-solo-publico. -->
+    <style id="maximus-interno">
+        #planes, #oficinas-aliadas, #menu-link-oficinas, #hero-cta-publicar,
+        a[href*="#planes"], a[href*="register"], [onclick*="abrirPublicaInmueble"],
+        [data-solo-publico] { display: none !important; }
+    </style>
 </head>
 <body class="font-sans text-maximus-black antialiased bg-gray-50">
 
@@ -421,7 +428,7 @@
                         </span>
                         <span class="relative">Publica tu inmueble</span>
                     </button>
-                    <span class="hidden xl:block w-px h-6 bg-gray-200"></span>
+                    <span data-solo-publico class="hidden xl:block w-px h-6 bg-gray-200"></span>
                     <a href="/login#register" class="text-xs uppercase tracking-wider font-bold text-gray-700 hover:text-maximus-accent transition">Crear Cuenta</a>
                     <a href="/login" data-sesion="nav" class="bg-maximus-dark hover:bg-maximus-dark/90 text-white px-5 py-2.5 rounded-full text-xs uppercase tracking-wider font-bold transition shadow-lg shadow-maximus-dark/30 hover:scale-105">Iniciar Sesión</a>
                 </div>
@@ -684,7 +691,7 @@
                     <i id="btn-val-icon" class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </form>
-            <p class="mt-5 text-sm text-gray-300">
+            <p data-solo-publico class="mt-5 text-sm text-gray-300">
                 ¿Prefieres que un asesor te llame por WhatsApp?
                 <button type="button" onclick="abrirPublicaInmueble('valoracion')" class="font-bold text-emerald-300 hover:text-white underline decoration-emerald-400/50 underline-offset-4 cursor-pointer">Publica tu inmueble</button>
             </p>

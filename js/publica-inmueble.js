@@ -510,6 +510,7 @@
     // Enlace directo: /inicio#publicar o /inicio?publicar=1
     document.addEventListener('DOMContentLoaded', () => {
         const q = new URLSearchParams(location.search);
-        if (location.hash === '#publicar' || q.get('publicar') === '1') setTimeout(() => abrir('enlace'), 400);
+        // MAXIMUS uso interno (Fase 1): el enlace directo queda desactivado. Para reactivarlo, quita "false &&".
+        if (false && (location.hash === '#publicar' || q.get('publicar') === '1')) setTimeout(() => abrir('enlace'), 400);
     });
 })();
