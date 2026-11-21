@@ -350,8 +350,8 @@
                     <!-- ================= VISTA 2: CREAR CUENTA GRATUITA ================= -->
                     <div id="registerView" class="lx-view hidden">
                         <div class="mb-5">
-                            <h2 class="text-[24px] md:text-[28px] font-bold text-gray-900 tracking-tight leading-tight">Crea tu cuenta</h2>
-                            <p class="text-gray-500 text-[14px] mt-1">Gratis y para siempre.</p>
+                            <h2 class="text-[24px] md:text-[28px] font-bold text-gray-900 tracking-tight leading-tight">Crea tu cuenta de cliente</h2>
+                            <p class="text-gray-500 text-[14px] mt-1">Gratis. ¿Eres asesor? Pide tu acceso al administrador de MAXIMUS.</p>
                         </div>
 
                         <div class="space-y-2.5">
@@ -431,8 +431,8 @@
                     </div>
 
                     <!-- Alternar login / registro -->
-                    <!-- MAXIMUS uso interno (Fase 1): sin registro público; las cuentas las crea el admin. Para restaurarlo, quita "hidden" y pon REGISTRO_PUBLICO = true -->
-                    <p class="hidden mt-4 text-center text-[14px] text-gray-500">
+                    <!-- Registro abierto solo para clientes (el SQL fuerza rol cliente); asesores y admins se crean a mano -->
+                    <p class="mt-4 text-center text-[14px] text-gray-500">
                         <span id="authSwitchPromptText">¿No tienes cuenta?</span>
                         <button type="button" id="authSwitchBtn" onclick="toggleAuthMode()"
                                 class="ml-1 font-semibold text-emerald-700 hover:text-emerald-900 underline-offset-4 hover:underline transition cursor-pointer">
@@ -462,7 +462,7 @@
     <script src="js/mock-data.js?v=3.2"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="js/services.js?v=3.2"></script>
-    <script src="js/auth.js?v=4.6"></script>
+    <script src="js/auth.js?v=4.7"></script>
     <script src="js/payments.js?v=4.7"></script>
 
     <!-- Script para interactividad y auth -->
@@ -589,8 +589,9 @@
         }
         window.toggleAuthMode = toggleAuthMode;
 
-        // MAXIMUS uso interno (Fase 1): el registro público está apagado.
-        const REGISTRO_PUBLICO = false;
+        // Registro público abierto, pero solo crea cuentas de CLIENTE (lo garantiza la base de datos:
+        // handle_new_user siempre pone rol 'cliente'). Asesores y admins se crean a mano.
+        const REGISTRO_PUBLICO = true;
 
         function switchAuthTab(tab) {
             if (tab === 'register' && !REGISTRO_PUBLICO && !invitacionValida) tab = 'login';

@@ -42,10 +42,11 @@
     <script src="js/supabase-client.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/services.js"></script>
-    <script src="js/auth.js?v=4.5"></script>
+    <script src="js/auth.js?v=4.7"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/publica-inmueble.js?v=2.2" defer></script>
     <script src="js/oficinas-aliadas.js?v=1.2" defer></script>
+    <script src="js/equipo-landing.js?v=1.1" defer></script>
 
     <style>
         /* Smooth Scroll Nativo de Alto Rendimiento (60/120 FPS) */
@@ -395,7 +396,7 @@
          crear cuenta, oficinas aliadas). Para restaurarlo, borra este bloque y los atributos data-solo-publico. -->
     <style id="maximus-interno">
         #planes, #oficinas-aliadas, #menu-link-oficinas, #hero-cta-publicar,
-        a[href*="#planes"], a[href*="register"], [onclick*="abrirPublicaInmueble"],
+        a[href*="#planes"], [onclick*="abrirPublicaInmueble"],
         [data-solo-publico] { display: none !important; }
     </style>
 </head>
@@ -417,6 +418,7 @@
                     <a href="#" class="text-gray-700 hover:text-maximus-accent font-medium transition">Inicio</a>
                     <a href="#propiedades" class="text-gray-700 hover:text-maximus-accent font-medium transition">Propiedades</a>
                     <a href="#nosotros" class="text-gray-700 hover:text-maximus-accent font-medium transition">Nosotros</a>
+                    <a href="#asesores" data-enlace-asesores class="hidden text-gray-700 hover:text-maximus-accent font-medium transition">Asesores</a>
                     <a href="#planes" class="text-gray-700 hover:text-maximus-accent font-medium transition">Planes</a>
                 </div>
                 <div class="hidden md:flex items-center gap-4">
@@ -469,6 +471,9 @@
             </a>
             <a href="#nosotros" onclick="toggleMobileMenu(false)" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-star text-sm"></i></span> Nosotros
+            </a>
+            <a href="#asesores" data-enlace-asesores onclick="toggleMobileMenu(false)" class="hidden flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
+                <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-user-tie text-sm"></i></span> Asesores
             </a>
             <a href="#oficinas-aliadas" id="menu-link-oficinas" onclick="toggleMobileMenu(false)" class="hidden flex items-center gap-3 px-4 py-3.5 rounded-2xl text-gray-800 font-semibold active:bg-gray-50">
                 <span class="w-9 h-9 rounded-xl bg-emerald-50 text-maximus-accent flex items-center justify-center"><i class="fas fa-handshake text-sm"></i></span> Oficinas aliadas
@@ -1324,7 +1329,25 @@
 </div>
     </section>
 
-    <!-- Equipo de Agentes -->
+    <!-- ========================================================
+         NUESTROS ASESORES: todo el equipo MAXIMUS con foto y WhatsApp.
+         Datos: RPC listar_equipo_maximus (js/equipo-landing.js). Sin datos, no se muestra.
+         ======================================================== -->
+    <section id="asesores" class="hidden py-20 sm:py-24 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden scroll-mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-extrabold uppercase tracking-widest border border-emerald-200 mb-3">
+                        <i class="fas fa-user-tie text-maximus-accent"></i> Equipo MAXIMUS
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-bold text-maximus-dark">Nuestros asesores</h2>
+                    <p class="text-gray-500 mt-3 max-w-2xl text-sm sm:text-base">Escríbele directo por WhatsApp al asesor que prefieras. Te acompaña desde la primera visita hasta la firma.</p>
+                </div>
+                <span id="asesores-total" class="shrink-0 self-start md:self-auto text-xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-full px-3 py-1.5"></span>
+            </div>
+            <div id="grid-asesores" class="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+        </div>
+    </section>
 
         <!-- Testimonios / Reseñas de Clientes (Sincronizado con Supabase y Marquee Continuo) -->
     <section id="testimonios" class="py-24 bg-white overflow-hidden relative">

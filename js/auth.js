@@ -197,9 +197,9 @@ const AuthService = {
                 } catch (_) {}
 
                 const emailClean = (authUser.email || '').toLowerCase().trim();
-                const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
+                const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
-                const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
+                const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || 'cliente');
                 const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : ((perfil?.titulo && !/externo/i.test(perfil.titulo) ? String(perfil.titulo).replace(/Inmobiliario (Pro|Bronce|Gold|Platinum)$/i, 'Inmobiliario MAXIMUS') : null) || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario MAXIMUS' : 'Usuario Registrado'))));
 
                 const appUser = {
@@ -531,9 +531,9 @@ const AuthService = {
 
                         const meta = session.user.user_metadata || {};
                         const emailClean = (session.user.email || '').toLowerCase().trim();
-                        const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
+                        const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
-                        const rolFinal = esDirectorOAdmin ? 'admin' : (perfil ? perfil.rol : (meta.rol || 'cliente'));
+                        const rolFinal = esDirectorOAdmin ? 'admin' : (perfil ? perfil.rol : 'cliente');
                         const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : ((perfil?.titulo && !/externo/i.test(perfil.titulo) ? String(perfil.titulo).replace(/Inmobiliario (Pro|Bronce|Gold|Platinum)$/i, 'Inmobiliario MAXIMUS') : null) || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario MAXIMUS' : 'Usuario Registrado'))));
                         const nombre = perfil ? perfil.nombre_completo : (meta.full_name || meta.name || session.user.email.split('@')[0]);
                         const avatar = perfil ? perfil.avatar_url : (meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.email)}&background=0B4A3F&color=fff&bold=true`);
@@ -981,9 +981,9 @@ const AuthService = {
 
             const emailClean = (data.user.email || '').toLowerCase().trim();
             const meta = data.user.user_metadata || {};
-            const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (meta.cargo && /director|ceo|admin/i.test(meta.cargo)) || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
+            const esDirectorOAdmin = (emailClean === 'guerreroja87@gmail.com' || emailClean === 'admin@maximus.com' || (perfil?.titulo && /director|ceo|admin/i.test(perfil.titulo)));
 
-            const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || meta.rol || 'cliente');
+            const rolFinal = esDirectorOAdmin ? 'admin' : (perfil?.rol || 'cliente');
             const tituloFinal = esDirectorOAdmin ? 'Director / Administrador' : ((perfil?.titulo && !/externo/i.test(perfil.titulo) ? String(perfil.titulo).replace(/Inmobiliario (Pro|Bronce|Gold|Platinum)$/i, 'Inmobiliario MAXIMUS') : null) || (rolFinal === 'admin' ? 'Director' : (rolFinal === 'asesor_maximus' ? 'Asesor MAXIMUS' : (rolFinal === 'asesor_externo' ? 'Asesor Inmobiliario MAXIMUS' : 'Usuario Registrado'))));
 
             const user = {
