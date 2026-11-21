@@ -49,25 +49,25 @@
             ?`<img src="${esc(a.avatar_url)}" alt="${esc(nombre)}" loading="lazy" class="w-full h-full object-cover" onerror="this.remove()">`
             : '';
         return `
-        <article class="group relative rounded-[28px] overflow-hidden bg-white/[0.07] border border-white/15 backdrop-blur-sm shadow-2xl shadow-black/30 hover:-translate-y-2 hover:border-emerald-300/60 transition-all duration-300 flex flex-col">
-            <div class="relative aspect-[4/5] bg-gradient-to-br from-emerald-500 via-emerald-700 to-[#06241E] overflow-hidden">
-                <span class="absolute inset-0 flex items-center justify-center text-7xl font-black text-white/25 tracking-tighter select-none">${esc(iniciales(nombre))}</span>
+        <article class="group relative rounded-3xl overflow-hidden bg-white/[0.07] border border-white/15 backdrop-blur-sm shadow-xl shadow-black/25 hover:-translate-y-1.5 hover:border-emerald-300/60 hover:shadow-emerald-900/40 transition-all duration-300 flex flex-col">
+            <div class="relative aspect-square bg-gradient-to-br from-emerald-500 via-emerald-700 to-[#06241E] overflow-hidden">
+                <span class="absolute inset-0 flex items-center justify-center pb-10 text-6xl font-black text-white/25 tracking-tighter select-none">${esc(iniciales(nombre))}</span>
                 ${foto ? `<div class="absolute inset-0 transition-transform duration-700 group-hover:scale-105">${foto}</div>` : ''}
-                <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#041713] via-[#041713]/70 to-transparent"></div>
-                <span class="absolute left-4 top-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 text-maximus-dark text-[10px] font-extrabold uppercase tracking-wider shadow">
+                <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#041713] via-[#041713]/60 to-transparent"></div>
+                <span class="absolute left-3 top-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/95 text-maximus-dark text-[9px] font-extrabold uppercase tracking-wider shadow">
                     <i class="fas fa-circle-check text-maximus-accent"></i> MAXIMUS
                 </span>
-                <div class="absolute inset-x-0 bottom-0 p-5">
-                    <h3 class="text-xl font-extrabold text-white leading-tight">${esc(nombre)}</h3>
-                    <p class="text-xs font-semibold text-emerald-300 mt-1">${esc(titulo(a.titulo))}</p>
-                    ${a.especialidad ? `<p class="text-xs text-white/60 mt-1 line-clamp-2">${esc(a.especialidad)}</p>` : ''}
+                <div class="absolute inset-x-0 bottom-0 px-4 pb-3">
+                    <h3 class="text-lg font-extrabold text-white leading-tight truncate">${esc(nombre)}</h3>
+                    <p class="text-[11px] font-semibold text-emerald-300 mt-0.5 truncate">${esc(titulo(a.titulo))}</p>
                 </div>
             </div>
-            <div class="p-4">
+            <div class="p-3">
                 <a href="https://wa.me/${esc(destino)}?text=${msg}" target="_blank" rel="noopener"
-                   class="w-full h-12 rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-300 hover:to-emerald-400 text-[#041713] text-sm font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition"
+                   class="relative overflow-hidden w-full h-11 rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-300 hover:to-emerald-400 text-[#041713] text-[13px] font-extrabold flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition"
                    aria-label="Escribir por WhatsApp a ${esc(nombre)}">
-                    <i class="fab fa-whatsapp text-xl"></i> Escribir por WhatsApp
+                    <span class="asesor-wa-brillo absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></span>
+                    <i class="fab fa-whatsapp text-lg relative"></i> <span class="relative">WhatsApp</span>
                 </a>
             </div>
         </article>`;
@@ -77,7 +77,7 @@
     // para que el bucle no tenga saltos (igual que el carrusel de propiedades).
     function pintarCarrusel(grid, equipo) {
         const ancho = Math.max(grid.clientWidth || 0, window.innerWidth || 0, 1280);
-        const porVuelta = equipo.length * (300 + 16);
+        const porVuelta = equipo.length * (250 + 16);
         const repeticiones = Math.max(1, Math.ceil(ancho / porVuelta));
         const lista = [];
         for (let i = 0; i < repeticiones; i++) equipo.forEach(a => lista.push({ a, repetido: i > 0 }));
@@ -88,6 +88,15 @@
         grid.innerHTML =
             `<div class="asesores-pista" style="--dur:${dur}s">${html}</div>` +
             `<div class="asesores-pista" aria-hidden="true" inert style="--dur:${dur}s">${html}</div>`;
+
+        // Entrada en cascada cuando la sección aparece en pantalla (solo la primera vez)
+        grid.querySelectorAll('.asesores-pista').forEach(p =>
+            p.querySelectorAll('article').forEach((art, i) => art.style.setProperty('--i', Math.min(i, 7))));
+        if (!('IntersectionObserver' in window)) { grid.classList.add('asesores-entrando'); return; }
+        const io = new IntersectionObserver((entradas) => {
+            if (entradas.some(e => e.isIntersecting)) { grid.classList.add('asesores-entrando'); io.disconnect(); }
+        }, { threshold: 0.2 });
+        io.observe(grid);
     }
 
     async function leerEquipo() {

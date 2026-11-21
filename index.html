@@ -83,7 +83,21 @@
         }
         .asesores-carrusel:hover .asesores-pista,
         .asesores-carrusel:focus-within .asesores-pista { animation-play-state: paused; }
-        .asesores-pista > article { width: 300px; flex-shrink: 0; }
+        .asesores-pista > article { width: 250px; flex-shrink: 0; }
+        /* Entrada de las tarjetas de asesores: suben y aparecen en cascada al llegar a la sección.
+           fill-mode "backwards" para no pisar el efecto hover después de la animación. */
+        @keyframes asesorEntra {
+            from { opacity: 0; transform: translate3d(0, 46px, 0) scale(.94); }
+            to   { opacity: 1; transform: none; }
+        }
+        .asesores-carrusel:not(.asesores-entrando) .asesores-pista > article { opacity: 0; }
+        .asesores-carrusel.asesores-entrando .asesores-pista > article {
+            animation: asesorEntra .8s cubic-bezier(.2, .8, .2, 1) backwards;
+            animation-delay: calc(var(--i, 0) * 110ms);
+        }
+        /* Brillo que cruza el botón de WhatsApp cada pocos segundos */
+        @keyframes asesorBrillo { 0%, 70% { transform: translateX(-120%) skewX(-20deg); } 100% { transform: translateX(320%) skewX(-20deg); } }
+        .asesor-wa-brillo { animation: asesorBrillo 4.5s ease-in-out infinite; }
         @media (max-width: 767px) {
             .asesores-carrusel { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; -webkit-mask-image: none; mask-image: none; }
             .asesores-carrusel::-webkit-scrollbar { display: none; }
@@ -96,6 +110,8 @@
             .asesores-carrusel { overflow-x: auto; scrollbar-width: none; }
             .asesores-pista { animation: none !important; }
             .asesores-pista[aria-hidden="true"] { display: none; }
+            .asesores-carrusel.asesores-entrando .asesores-pista > article, .asesor-wa-brillo { animation: none !important; }
+            .asesores-carrusel .asesores-pista > article { opacity: 1 !important; }
         }
 
 
@@ -1333,20 +1349,19 @@
          NUESTROS ASESORES: todo el equipo MAXIMUS con foto y WhatsApp.
          Datos: RPC listar_equipo_maximus (js/equipo-landing.js). Sin datos, no se muestra.
          ======================================================== -->
-    <section id="asesores" class="hidden py-20 sm:py-28 bg-gradient-to-br from-[#06241E] via-[#0B4A3F] to-[#041713] relative overflow-hidden scroll-mt-20">
+    <section id="asesores" class="hidden pt-36 pb-32 sm:pt-44 sm:pb-40 bg-gradient-to-br from-[#06241E] via-[#0B4A3F] to-[#041713] relative overflow-hidden scroll-mt-10">
+        <!-- Transición suave desde y hacia las secciones blancas (sin corte brusco) -->
+        <div class="absolute inset-x-0 top-0 h-32 sm:h-40 bg-gradient-to-b from-white via-white/60 to-transparent pointer-events-none z-[1]"></div>
+        <div class="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-t from-white via-white/60 to-transparent pointer-events-none z-[1]"></div>
         <!-- Luces decorativas -->
         <div class="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-emerald-400/15 blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-32 -right-24 w-[480px] h-[480px] rounded-full bg-teal-300/10 blur-3xl pointer-events-none"></div>
         <img src="assest/maximus-logo-icon.svg" alt="" class="absolute right-[-60px] top-6 w-[360px] opacity-[0.05] pointer-events-none select-none rotate-12 hidden md:block">
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center max-w-3xl mx-auto mb-12">
-                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-emerald-300 text-[11px] font-extrabold uppercase tracking-[0.2em] backdrop-blur mb-4">
-                    <span class="relative flex w-2 h-2"><span class="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span><span class="relative inline-flex w-2 h-2 rounded-full bg-emerald-400"></span></span>
-                    Equipo MAXIMUS · <span id="asesores-total">En línea</span>
-                </span>
-                <h2 class="text-4xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.05]">Conoce a quienes<br><span class="text-emerald-300">te acompañan</span></h2>
-                <p class="text-emerald-50/70 mt-5 text-sm sm:text-lg leading-relaxed">Elige a tu asesor y escríbele directo por WhatsApp. Te guía desde la primera visita hasta la firma.</p>
+            <div id="asesores-encabezado" class="text-center max-w-3xl mx-auto mb-10">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.08]">Conoce a quienes<br><span class="text-emerald-300">te acompañan</span></h2>
+                <p class="text-emerald-50/70 mt-4 text-sm sm:text-base leading-relaxed">Elige a tu asesor y escríbele directo por WhatsApp. Te guía desde la primera visita hasta la firma.</p>
             </div>
         </div>
 
@@ -1583,6 +1598,8 @@
                     ['#planes .planes-toggle-container', 'zoom', 80],
                     ['#planes .pricing-card', 'up', 140],
                     ['#planes .planes-faq', 'up', 80],
+                    ['#asesores-encabezado h2', 'up', 0],
+                    ['#asesores-encabezado p', 'up', 60],
                     ['#testimonios .inline-flex', 'down', 0],
                     ['#testimonios h2', 'up', 0],
                     ['#testimonios p', 'up', 60],
