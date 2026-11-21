@@ -1349,10 +1349,9 @@
          NUESTROS ASESORES: todo el equipo MAXIMUS con foto y WhatsApp.
          Datos: RPC listar_equipo_maximus (js/equipo-landing.js). Sin datos, no se muestra.
          ======================================================== -->
-    <section id="asesores" class="hidden pt-36 pb-32 sm:pt-44 sm:pb-40 bg-gradient-to-br from-[#06241E] via-[#0B4A3F] to-[#041713] relative overflow-hidden scroll-mt-10">
-        <!-- Transición suave desde y hacia las secciones blancas (sin corte brusco) -->
-        <div class="absolute inset-x-0 top-0 h-32 sm:h-40 bg-gradient-to-b from-white via-white/60 to-transparent pointer-events-none z-[1]"></div>
-        <div class="absolute inset-x-0 bottom-0 h-28 sm:h-36 bg-gradient-to-t from-white via-white/60 to-transparent pointer-events-none z-[1]"></div>
+    <section id="asesores" class="hidden bg-white px-3 sm:px-6 pt-6 sm:pt-10 pb-14 sm:pb-20 scroll-mt-10">
+      <!-- "Hoja" verde con esquinas redondeadas y sombra suave: separa las secciones sin degradados -->
+      <div id="asesores-hoja" class="relative overflow-hidden rounded-[32px] sm:rounded-[56px] bg-gradient-to-br from-[#06241E] via-[#0B4A3F] to-[#041713] pt-16 pb-14 sm:pt-24 sm:pb-20 shadow-[0_22px_44px_-26px_rgba(11,74,63,0.55)] max-w-[1600px] mx-auto">
         <!-- Luces decorativas -->
         <div class="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-emerald-400/15 blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-32 -right-24 w-[480px] h-[480px] rounded-full bg-teal-300/10 blur-3xl pointer-events-none"></div>
@@ -1367,6 +1366,7 @@
 
         <!-- Carrusel que se desliza solo (se pausa al pasar el cursor; en el celular se desliza con el dedo) -->
         <div id="grid-asesores" class="asesores-carrusel relative z-10"></div>
+      </div>
     </section>
 
         <!-- Testimonios / Reseñas de Clientes (Sincronizado con Supabase y Marquee Continuo) -->
