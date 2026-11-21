@@ -68,7 +68,6 @@
     <script src="js/limites-inmuebles.js?v=1.2"></script>
     <script src="js/asesor-publico.js?v=1.4"></script>
     <script src="js/oficinas-aliadas.js?v=1.2"></script>
-    <script src="js/oficinas-aliadas-admin.js?v=1.0"></script>
     <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
     <script src="js/busqueda-voz.js?v=1.0"></script>
     <script src="js/mi-asesor.js?v=1.0"></script>
@@ -1342,25 +1341,6 @@
                 <!-- Contenido público de la página web -->
                 <p class="sidebar-category admin-only text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Sitio web</p>
                 <div class="sidebar-collapsed-divider admin-only"></div>
-
-                <a href="#" id="nav-admin-equipo-web" data-target="view-admin-equipo-web" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Equipo en Web (Landing)">
-                    <i class="ph ph-identification-badge text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Equipo</span>
-                    <span class="sidebar-tooltip">Equipo en Web</span>
-                </a>
-
-                <a href="#" id="nav-admin-oficinas" data-target="view-admin-oficinas" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Oficinas aliadas (Landing)">
-                    <i class="ph ph-buildings text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Oficinas aliadas</span>
-                    <span id="badge-oficinas-pendientes" class="hidden sidebar-label ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700" title="Solicitudes por revisar">0</span>
-                    <span class="sidebar-tooltip">Oficinas aliadas</span>
-                </a>
-
-                <a href="#" id="nav-admin-faqs" data-target="view-admin-faqs" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Preguntas Frecuentes (Landing)">
-                    <i class="ph ph-chats-circle text-xl text-maximus-accent flex-shrink-0"></i>
-                    <span class="sidebar-label">Preguntas frecuentes</span>
-                    <span class="sidebar-tooltip">Preguntas Frecuentes</span>
-                </a>
 
                 <a href="#" id="nav-admin-tutoriales" data-target="view-admin-tutoriales" class="nav-link admin-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Subir Material">
                     <i class="ph-fill ph-file-arrow-up text-xl text-maximus-accent flex-shrink-0"></i>
@@ -9492,6 +9472,9 @@
             }
             // Fase 5: "Descubre" se reemplazó por Favoritos y comparador
             if (targetId === 'view-exclusivas-maximus') targetId = 'view-favoritos';
+            // Equipo, Oficinas aliadas y Preguntas frecuentes salieron del panel
+            // (el equipo de la portada sale solo de los asesores del sistema)
+            if (['view-admin-equipo-web', 'view-admin-oficinas', 'view-admin-faqs'].includes(targetId)) targetId = 'view-resumen';
             // Fase 2: "Mi asesor" es solo para clientes
             if (targetId === 'view-mi-asesor' && currentUserRole !== 'cliente') {
                 targetId = 'view-resumen';
