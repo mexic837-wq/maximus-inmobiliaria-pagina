@@ -12,6 +12,27 @@ window.maximusFavKey = function () {
     return id ? 'maximus_favoritos:' + id : 'maximus_favoritos_anonimo';
 };
 
+// Miniaturas: las fotos de Storage pesan ~220 KB; en tarjetas basta una versión reducida (~35 KB)
+// que genera el propio Supabase (/render/image). Solo toca URLs de nuestro Storage.
+window.maximusMiniatura = function (url, ancho) {
+    const u = String(url || '');
+    if (!/\/storage\/v1\/object\/public\//.test(u) || /\.(gif|svg)(\?|$)/i.test(u)) return u;
+    const base = u.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/');
+    return base + (base.includes('?') ? '&' : '?') + 'width=' + (ancho || 640) + '&quality=70';
+};
+// Si una miniatura falla, volver a la foto original antes de que actúe el onerror de la tarjeta
+if (typeof document !== 'undefined') {
+    document.addEventListener('error', function (e) {
+        const img = e.target;
+        if (!img || img.tagName !== 'IMG' || img.dataset.mxOrig === '1') return;
+        const src = img.getAttribute('src') || '';
+        if (!src.includes('/storage/v1/render/image/public/')) return;
+        e.stopPropagation(); // fase de captura: el onerror propio de la imagen no se ejecuta
+        img.dataset.mxOrig = '1';
+        img.src = src.replace('/storage/v1/render/image/public/', '/storage/v1/object/public/').replace(/[?&]width=\d+&quality=\d+$/, '');
+    }, true);
+}
+
 /**
  * ============================================
  * MAXIMUS - Capa de Servicios de Datos

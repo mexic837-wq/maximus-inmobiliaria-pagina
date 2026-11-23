@@ -15,37 +15,18 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'maximus-dark': '#0B4A3F',
-                        'maximus-accent': '#10B981',
-                        'maximus-silver': '#D1D5DB',
-                        'maximus-black': '#111827',
-                        'maximus-bg': '#F4F7F6',
-                    },
-                    fontFamily: {
-                        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'premium': '0 10px 30px -5px rgba(11, 74, 63, 0.08), 0 4px 12px -2px rgba(11, 74, 63, 0.04)',
-                        'premium-hover': '0 20px 35px -5px rgba(11, 74, 63, 0.15), 0 10px 15px -5px rgba(11, 74, 63, 0.08)'
-                    }
-                }
-            }
-        }
-    </script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/light/style.css">
     <!-- MAXIMUS uso interno (Fase 1): se esconden planes y crear cuenta. Para restaurarlo, borra este bloque. -->
     <style id="maximus-interno">
         a[href*="#planes"] { display: none !important; }
     </style>
+    <!-- Tailwind compilado (antes cdn.tailwindcss.com compilaba en el navegador). Recompilar: npm run build:css -->
+    <link rel="stylesheet" href="assets/css/publico.css?v=1">
 </head>
 <body class="bg-[#F4F7F6] font-sans text-maximus-black min-h-screen flex flex-col antialiased">
 

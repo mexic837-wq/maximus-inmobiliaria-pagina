@@ -12,7 +12,7 @@
         "cap:add:android": "npx cap add android",
         "cap:add:ios": "npx cap add ios",
         "build:apk": "npm run build:app && npx cap sync android && cd android && .\\\\gradlew.bat assembleDebug && cd .. && copy android\\\\app\\\\build\\\\outputs\\\\apk\\\\debug\\\\app-debug.apk MAXIMUS_Inmobiliaria.apk",
-        "build:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind.input.css -o assets/css/landing.css --minify",
+        "build:css": "tailwindcss -c tailwind.config.js -i assets/css/tailwind.input.css -o assets/css/landing.css --minify && tailwindcss -c tailwind.panel.config.js -i assets/css/tailwind.input.css -o assets/css/panel.css --minify && tailwindcss -c tailwind.publico.config.js -i assets/css/publico.input.css -o assets/css/publico.css --minify",
         "build:aab": "npm run build:app && npx cap sync android && cd android && .\\gradlew.bat bundleRelease"
     },
     "keywords": [],

@@ -15,31 +15,14 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'maximus-dark': '#0B4A3F',
-                        'maximus-accent': '#10B981',
-                        'maximus-silver': '#D1D5DB',
-                        'maximus-black': '#111827',
-                        'maximus-bg': '#F4F7F6',
-                    },
-                    fontFamily: {
-                        sans: ['Montserrat', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     
     <!-- Fuentes y Fuentes de Iconos -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/light/style.css">
 
     <!-- Arquitectura Backend / Supabase & Servicios -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,6 +63,8 @@
     <style id="maximus-interno">
         a[href*="#planes"], [data-solo-publico] { display: none !important; }
     </style>
+    <!-- Tailwind compilado (antes cdn.tailwindcss.com compilaba en el navegador). Recompilar: npm run build:css -->
+    <link rel="stylesheet" href="assets/css/publico.css?v=1">
 </head>
 <body class="bg-[#F8FAFC] font-sans text-maximus-black antialiased min-h-screen flex flex-col">
 
@@ -999,7 +984,7 @@
                         
                         <!-- Contenedor Imagen y Badges -->
                         <div class="relative ${esPortada ? 'aspect-[16/10]' : 'h-60'} overflow-hidden bg-gray-100">
-                            <img src="${foto}" alt="${item.titulo}" class="w-full h-full object-cover ${esPortada ? 'group-hover:scale-[1.03]' : 'group-hover:scale-105'} transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
+                            <img src="${maximusMiniatura(foto)}" decoding="async" alt="${item.titulo}" class="w-full h-full object-cover ${esPortada ? 'group-hover:scale-[1.03]' : 'group-hover:scale-105'} transition-transform duration-700 ease-out" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'">
                             ${esPortada ? '' : `<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>`}
 
                             <!-- Badges Superiores Izquierda (la portada MAXIMUS ya los trae impresos) -->
