@@ -372,6 +372,43 @@ const LeadService = {
         return this.getAll({ asesor_id: asesorId });
     },
 
+    // Solo las columnas que existen en public.leads. Antes se mandaban campos extra
+    // (mensaje, codigo, titulo…) o un inmueble_interes_id vacío y Supabase rechazaba el
+    // lead entero sin que nadie se enterara: el contacto quedaba solo en ese navegador.
+    _COLUMNAS_LEADS: ['nombre', 'telefono', 'email', 'inmueble_interes_id', 'inmueble_interes_titulo',
+        'inmueble_interes_precio', 'origen', 'estatus', 'temperatura', 'operacion', 'tipo_inmueble',
+        'presupuesto', 'presupuesto_min', 'presupuesto_max', 'moneda', 'zonas_interes', 'requisitos',
+        'asesor_id', 'asesor_nombre', 'agente_id', 'notas', 'primera_respuesta_at'],
+
+    _payloadParaSupabase(lead) {
+        const esUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+        const extra = { ...lead };
+        // Formularios que usan otros nombres (ficha del inmueble)
+        if (!extra.inmueble_interes_id && esUuid(extra.inmueble_id)) extra.inmueble_interes_id = extra.inmueble_id;
+        if (!extra.inmueble_interes_titulo && extra.titulo) {
+            extra.inmueble_interes_titulo = [extra.codigo, extra.titulo].filter(Boolean).join(' · ');
+        }
+        if (extra.mensaje && !String(extra.notas || '').includes(extra.mensaje)) {
+            extra.notas = [extra.mensaje, extra.notas].filter(Boolean).join(' | ');
+        }
+        const out = {};
+        this._COLUMNAS_LEADS.forEach(k => {
+            if (extra[k] !== undefined && extra[k] !== '') out[k] = extra[k];
+        });
+        if (!esUuid(out.inmueble_interes_id)) delete out.inmueble_interes_id;
+        if (!esUuid(out.agente_id)) delete out.agente_id;
+        if (esUuid(lead.id)) out.id = lead.id;
+        return out;
+    },
+
+    // La bandeja de leads mide el tiempo hasta este momento (solo se guarda la primera vez)
+    async marcarRespondido(id) {
+        const leads = this._getStoredLeads();
+        const l = leads.find(x => String(x.id) === String(id));
+        if (l && l.primera_respuesta_at) return { data: l, error: null };
+        return this.updateDetalles(id, { primera_respuesta_at: new Date().toISOString() });
+    },
+
     async create(leadData) {
         let res;
         const nuevo = {
@@ -421,11 +458,7 @@ const LeadService = {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
                 if (sb) {
-                    const payloadSb = { ...nuevo };
-                    if (String(payloadSb.id || '').startsWith('lead-')) {
-                        delete payloadSb.id; // Permite que Supabase genere su UUID nativo
-                    }
-                    delete payloadSb.actividades;
+                    const payloadSb = this._payloadParaSupabase(nuevo);
                     let sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb).select().single();
                     // Formularios públicos (visitante o cliente): con los permisos de la Fase 2 pueden
                     // crear el lead pero no leerlo de vuelta; si falló, se guarda sin pedir la fila.
@@ -545,6 +578,11 @@ const LeadService = {
             fecha: actividad.fecha || new Date().toISOString(),
             autor: actividad.autor || 'Asesor CRM'
         };
+
+        // Llamar, escribir o visitar cuenta como primera respuesta para la bandeja de leads
+        if (['llamada', 'whatsapp', 'email', 'visita', 'propuesta'].includes(itemActividad.tipo)) {
+            this.marcarRespondido(leadId).catch(() => {});
+        }
 
         const leads = this._getStoredLeads();
         const lead = leads.find(l => String(l.id) === String(leadId));

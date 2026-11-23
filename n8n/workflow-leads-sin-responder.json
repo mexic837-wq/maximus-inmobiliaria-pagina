@@ -1,0 +1,146 @@
+{
+  "name": "MAXIMUS Inmobiliaria - Leads sin responder (avisos 5 y 30 min)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. Ejecuta antes `sql/migration-bandeja-leads.sql` en Supabase.\n2. **Supabase**: el nodo *Tomar avisos* usa tu credencial **Supabase API** (la misma de Alertas de búsqueda, con la service_role).\n3. **WhatsApp (Evolution API)**: en *Armar mensajes* revisa `WA_API_URL` y `WA_INSTANCIA`, y asigna la credencial **Evolution API** (Header Auth `apikey`) al nodo *WhatsApp*.\n4. Activa el workflow. Corre cada minuto.\n\nQué hace: a los **5 min** sin respuesta avisa al asesor asignado; a los **30 min**, a cada admin. Cada aviso sale una sola vez. Además Supabase deja una notificación dentro del panel, aunque WhatsApp falle.\nEl asesor que desactivó *notif_whatsapp_leads* en su perfil solo recibe la notificación del panel.",
+        "height": 340,
+        "width": 520
+      },
+      "id": "lsr-nota",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "lsr-cron",
+      "name": "Cada minuto",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://db.maximusinmobiliaria.tech/rest/v1/rpc/tomar_leads_para_avisar",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "id": "lsr-tomar",
+      "name": "Tomar avisos (Supabase)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        240
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "CREAR_EN_N8N",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== CONFIGURA AQUÍ =====\nconst WA_API_URL = 'https://evolution.maximusinmobiliaria.tech'; // URL de tu Evolution API (sin / al final)\nconst WA_INSTANCIA = 'maximus';                                   // nombre de la instancia conectada\nconst URL_BANDEJA = 'https://maximusinmobiliaria.tech/dashboard#view-bandeja-leads';\n// ==========================\n// Supabase devuelve una fila por aviso pendiente (o nada). Cada lead se avisa una sola vez por nivel.\nconst digitos = (t) => { let d = String(t || '').replace(/\\D/g, ''); if (d.startsWith('0')) d = '58' + d.slice(1); return d; };\nreturn $input.all().map(i => i.json).filter(a => a && a.lead_id && digitos(a.destino_whatsapp).length >= 10).map(a => {\n  const tel = digitos(a.cliente_telefono);\n  const lineas = a.tipo === 'direccion'\n    ? [\n        '🚨 *Lead sin responder: ' + a.minutos + ' min*',\n        '',\n        '👤 *Cliente:* ' + a.cliente,\n        '🧑‍💼 *Asesor:* ' + a.asesor_nombre,\n        a.inmueble ? '🏠 *Inmueble:* ' + a.inmueble : null,\n        '📍 *Origen:* ' + (a.origen || 'web'),\n        '',\n        'Revisa o reasígnalo: ' + URL_BANDEJA\n      ]\n    : [\n        '⏱️ *' + String(a.destino_nombre || '').split(' ')[0] + ', tienes un lead esperando (' + a.minutos + ' min)*',\n        '',\n        '👤 *Cliente:* ' + a.cliente,\n        a.inmueble ? '🏠 *Inmueble:* ' + a.inmueble : null,\n        tel ? '📱 *Escríbele:* https://wa.me/' + tel : null,\n        '',\n        'Bandeja: ' + URL_BANDEJA\n      ];\n  return { json: {\n    wa_url_envio: WA_API_URL + '/message/sendText/' + WA_INSTANCIA,\n    numero: digitos(a.destino_whatsapp),\n    texto: lineas.filter(l => l !== null).join('\\n')\n  } };\n});"
+      },
+      "id": "lsr-armar",
+      "name": "Armar mensajes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.wa_url_envio }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.numero, text: $json.texto }) }}",
+        "options": {}
+      },
+      "id": "lsr-wa",
+      "name": "WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "Evolution API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cada minuto": {
+      "main": [
+        [
+          {
+            "node": "Tomar avisos (Supabase)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tomar avisos (Supabase)": {
+      "main": [
+        [
+          {
+            "node": "Armar mensajes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Armar mensajes": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}
