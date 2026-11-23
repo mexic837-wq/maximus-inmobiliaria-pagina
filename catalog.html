@@ -631,14 +631,14 @@
         // Cargar favoritos locales
         function cargarFavoritosLocal() {
             try {
-                const favs = localStorage.getItem('maximus_favoritos');
-                if (favs) favoritosUsuario = JSON.parse(favs);
+                const favs = localStorage.getItem(window.maximusFavKey());
+                favoritosUsuario = favs ? JSON.parse(favs) : [];
             } catch(e) {}
         }
 
         function guardarFavoritosLocal() {
             try {
-                localStorage.setItem('maximus_favoritos', JSON.stringify(favoritosUsuario));
+                localStorage.setItem(window.maximusFavKey(), JSON.stringify(favoritosUsuario));
             } catch(e) {}
 
             // Sincronizar en tiempo real con Supabase si el usuario ha iniciado sesión
