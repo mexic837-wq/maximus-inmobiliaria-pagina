@@ -41,7 +41,7 @@
     <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
-    <script src="js/services.js?v=3.6"></script>
+    <script src="js/services.js?v=3.8"></script>
     <script src="js/auth.js?v=4.7"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
@@ -13794,19 +13794,24 @@
                 notas
             };
 
+            let resGuardado = null;
             if (id) {
                 // Actualizar
                 if (window.LeadService) {
-                    await LeadService.updateDetalles(id, payload);
+                    resGuardado = await LeadService.updateDetalles(id, payload);
                 }
-                mostrarToastNotificacion(`✅ Cliente ${nombre} actualizado`);
             } else {
                 // Crear
                 if (window.LeadService) {
-                    await LeadService.create(payload);
+                    resGuardado = await LeadService.create(payload);
                 }
-                mostrarToastNotificacion(`✅ ${nombre} agregado a tu cartera`);
             }
+            if (resGuardado && resGuardado.noGuardadoEnServidor) {
+                // No decir "guardado" si el servidor lo rechazó: el asesor debe saberlo
+                mostrarToastNotificacion(`⚠️ ${nombre} no se pudo guardar en el servidor. Revisa tu conexión e inténtalo de nuevo.`);
+                return;
+            }
+            mostrarToastNotificacion(id ? `✅ Cliente ${nombre} actualizado` : `✅ ${nombre} agregado a tu cartera`);
 
             const agregarOtro = !!window._crmAgregarOtro && !id;
             window._crmAgregarOtro = false;
