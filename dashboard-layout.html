@@ -42,7 +42,7 @@
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
     <script src="js/services.js?v=3.8"></script>
-    <script src="js/auth.js?v=4.7"></script>
+    <script src="js/auth.js?v=4.9"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
     <script src="js/asesor-publico.js?v=1.4"></script>
@@ -54,7 +54,7 @@
     <script src="js/favoritos.js?v=1.2"></script>
     <script src="js/bandeja-leads.js?v=1.1"></script>
     <script src="js/crm-rapido.js?v=1.0"></script>
-    <script src="js/aviso-demo.js?v=1.0"></script>
+    <script src="js/aviso-demo.js?v=1.2"></script>
     
     <style>
         .view-section { display: none; }
@@ -4056,18 +4056,13 @@
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Email</label>
                                 <input type="email" id="edit-asesor-email" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent">
                             </div>
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 flex items-center justify-between">
-                                    <span>Contraseña de Acceso</span>
-                                    <span class="text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md font-extrabold lowercase">visible para admin</span>
-                                </label>
-                                <div class="relative">
-                                    <input type="text" id="edit-asesor-password" placeholder="Contraseña de acceso" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold outline-none focus:border-maximus-accent pr-11 font-mono tracking-wider text-maximus-dark">
-                                    <button type="button" onclick="togglePasswordVisibility('edit-asesor-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-maximus-dark transition-colors p-1" title="Ocultar / Mostrar Contraseña">
-                                        <i class="ph-bold ph-eye text-base"></i>
-                                    </button>
-                                </div>
-                                <p class="text-[11px] text-gray-400 mt-1">Como Administrador puedes ver y modificar la contraseña con la que este asesor ingresa al portal.</p>
+                            <div class="sm:col-span-2 rounded-xl border border-gray-200 dark:border-emerald-900/50 bg-gray-50/70 dark:bg-[#071714] p-3.5">
+                                <span class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Contraseña de acceso</span>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">La contraseña real está cifrada en Supabase: no se puede ver ni cambiar desde aquí. Si este asesor no logra entrar, envíale un enlace para crear una nueva.</p>
+                                <button type="button" onclick="enviarRecuperacionAsesor()" class="mt-2.5 h-9 px-4 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-bold flex items-center gap-1.5 cursor-pointer">
+                                    <i class="ph-bold ph-envelope-simple"></i> Enviar enlace para crear nueva contraseña
+                                </button>
+                                <input type="hidden" id="edit-asesor-password">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Trayectoria / Bio</label>
@@ -15683,7 +15678,14 @@
                 
                 const bio = document.getElementById('asesor-bio')?.value.trim() || '';
                 const correo = document.getElementById('asesor-correo').value.trim();
-                const password = document.getElementById('asesor-password')?.value.trim() || 'Maximus2026!';
+                const password = document.getElementById('asesor-password')?.value.trim() || '';
+                let avisoCuentaSupabase = '';
+                // Sin contraseña por defecto: la clave fija anterior hacía que nadie supiera cuál era la real
+                if (password.length < 6) {
+                    mostrarToastNotificacion('⚠️ Escribe una contraseña temporal de al menos 6 caracteres.');
+                    document.getElementById('asesor-password')?.focus();
+                    return;
+                }
                 const tipoCuenta = document.querySelector('input[name="nuevo_tipo_cuenta"]:checked')?.value || 'maximus';
                 const splitComision = tipoCuenta === 'maximus' ? '70%' : '50%';
                 const rating = 5.0; // Valor estándar inicial
@@ -15752,7 +15754,7 @@
                             const esAdminOProp = cleanCorreo === 'guerreroja87@gmail.com' || cleanCorreo === 'admin@maximus.com' || /director|ceo|admin/i.test(cargo);
                             const signupUrl = (APP_CONFIG.SUPABASE_URL || 'https://db.maximusinmobiliaria.tech') + '/auth/v1/signup';
                             const apiKey = APP_CONFIG.SUPABASE_ANON_KEY;
-                            await fetch(signupUrl, {
+                            const respSignup = await fetch(signupUrl, {
                                 method: 'POST',
                                 headers: {
                                     'apikey': apiKey,
@@ -15772,8 +15774,18 @@
                                     }
                                 })
                             });
+                            // Antes no se miraba la respuesta: aunque Supabase la rechazara o la cuenta ya
+                            // existiera (con otra contraseña), el panel decía "registrado con éxito".
+                            const datosSignup = await respSignup.json().catch(() => ({}));
+                            const yaExistia = respSignup.ok && datosSignup && ((datosSignup.user || datosSignup).identities || []).length === 0;
+                            if (!respSignup.ok) {
+                                avisoCuentaSupabase = '⚠️ El asesor quedó guardado en el panel, pero Supabase NO creó su cuenta de acceso: ' + (datosSignup.msg || datosSignup.error_description || datosSignup.message || ('error ' + respSignup.status)) + '.';
+                            } else if (yaExistia) {
+                                avisoCuentaSupabase = '⚠️ Ese correo ya tenía cuenta en Supabase: su contraseña NO cambió. Si no la recuerda, usa "¿La olvidaste?" en el login o restablécela en Supabase.';
+                            }
                         } catch (errAuth) {
                             console.warn('Aviso aprovisionamiento Supabase Auth para asesor:', errAuth);
+                            avisoCuentaSupabase = '⚠️ No se pudo contactar a Supabase para crear la cuenta de acceso del asesor.';
                         }
                     }
                 }
@@ -15801,7 +15813,7 @@
                     } catch(e) {}
                 }
 
-                mostrarToastNotificacion(`✅ Asesor ${nombre} registrado con éxito y sincronizado.`);
+                mostrarToastNotificacion(avisoCuentaSupabase || `✅ Asesor ${nombre} registrado. Entra con el correo y la contraseña que escribiste.`);
                 document.getElementById('form-crear-asesor').reset();
                 cambiarTabAdminAsesores('lista');
                 await inicializarGestionAsesoresAdmin();
@@ -15853,8 +15865,7 @@
                         if (regUsers[em] && regUsers[em].password) pass = regUsers[em].password;
                     } catch(e) {}
                 }
-                passInput.value = pass || '1234567';
-                passInput.type = 'text'; // Visible para el admin
+                passInput.value = pass || '';   // solo se conserva lo guardado en este navegador; nunca una clave inventada
             }
 
             const modal = document.getElementById('modal-admin-editar-asesor');
@@ -15863,6 +15874,19 @@
                 modal.classList.add('flex');
             }
         }
+
+        // Manda al asesor el correo para crear una contraseña nueva (Supabase Auth + n8n)
+        async function enviarRecuperacionAsesor() {
+            const correo = (document.getElementById('edit-asesor-email')?.value || '').trim().toLowerCase();
+            if (!correo) { mostrarToastNotificacion('⚠️ Este asesor no tiene correo registrado.'); return; }
+            try {
+                const r = await AuthService.resetPassword(correo, true);
+                mostrarToastNotificacion(r && r.success ? '📧 Enlace enviado a ' + correo + '. Dile que revise también la carpeta de spam.' : ('⚠️ ' + ((r && r.error) || 'No se pudo enviar el enlace.')));
+            } catch (e) {
+                mostrarToastNotificacion('⚠️ No se pudo enviar el enlace de recuperación.');
+            }
+        }
+        window.enviarRecuperacionAsesor = enviarRecuperacionAsesor;
 
         function cerrarModalEditarAsesor() {
             const modal = document.getElementById('modal-admin-editar-asesor');
@@ -15883,7 +15907,7 @@
                 numTel = numTel.replace(/^(\+?58|\+?57)/, '').replace(/^0+/, '').trim();
                 const telefono = numTel ? `${prefijo} ${numTel}` : '';
 
-                const password = document.getElementById('edit-asesor-password')?.value.trim() || '1234567';
+                const password = document.getElementById('edit-asesor-password')?.value.trim() || '';
                 const updates = {
                     nombre: document.getElementById('edit-asesor-nombre').value.trim(),
                     cargo: document.getElementById('edit-asesor-cargo').value.trim(),
@@ -15891,9 +15915,9 @@
                     telefono: telefono,
                     whatsapp: telefono.replace(/\D/g, ''),
                     email: document.getElementById('edit-asesor-email').value.trim(),
-                    bio: document.getElementById('edit-asesor-bio').value.trim(),
-                    password: password
+                    bio: document.getElementById('edit-asesor-bio').value.trim()
                 };
+                if (password) updates.password = password;
 
                 const avatarUrl = asesorActual.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.nombre)}&background=0B4A3F&color=fff&bold=true`;
 
@@ -15903,7 +15927,7 @@
                     try {
                         let regUsers = JSON.parse(localStorage.getItem('maximus_registered_users')) || {};
                         regUsers[cleanEm] = {
-                            password: password,
+                            password: password || (regUsers[cleanEm] && regUsers[cleanEm].password) || '',
                             user: {
                                 id: id,
                                 name: updates.nombre,

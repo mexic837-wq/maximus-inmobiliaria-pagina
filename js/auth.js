@@ -54,6 +54,7 @@ const AuthService = {
             const demoRes = this._mockLogin(cleanEmail, password);
             if (demoRes.success) {
                 demoRes.user._demo = true;
+                demoRes.user._cuentaDemo = true;   // cuenta de demostración de fábrica
                 this._saveSession(demoRes.user, cleanEmail, rememberDevice);
                 return demoRes;
             }
@@ -78,6 +79,8 @@ const AuthService = {
             : { success: false, error: (result && result.error) || 'Credenciales inválidas. Verifique su correo y contraseña.' };
         if (fallbackRes.success) {
             fallbackRes.user._demo = true;
+            // Por qué Supabase no dejó entrar: lo muestra el aviso del panel (js/aviso-demo.js)
+            fallbackRes.user._motivoLocal = String((result && result.error) || 'sin respuesta de Supabase');
             this._saveSession(fallbackRes.user, cleanEmail, rememberDevice);
             return fallbackRes;
         }
@@ -294,6 +297,7 @@ const AuthService = {
             const demoRes = this._mockLogin(cleanEmail, password);
             if (demoRes.success) {
                 demoRes.user._demo = true;
+                demoRes.user._cuentaDemo = true;
                 return demoRes;
             }
         }
@@ -313,6 +317,7 @@ const AuthService = {
             const fallbackRes = this._mockLogin(cleanEmail, password);
             if (fallbackRes.success) {
                 fallbackRes.user._demo = true;
+                fallbackRes.user._motivoLocal = String((result && result.error) || 'sin respuesta de Supabase');
                 return fallbackRes;
             }
         }
@@ -826,40 +831,15 @@ const AuthService = {
             });
         }
 
-        // Acceso directo garantizado para cuenta asesor configurada
-        if (cleanEmail === 'mexic837@gmail.com') {
-            const passExpected = registeredUsers[cleanEmail]?.password || '1234567';
-            if (password === passExpected || password === '1234567' || password === 'Maximus2026!') {
-                const userObj = {
-                    id: 'asesor-miguel-durantt',
-                    name: 'Miguel Durantt',
-                    email: 'mexic837@gmail.com',
-                    telefono: '+58 424 1601592',
-                    role: APP_CONFIG.ROLES.ASESOR_MAXIMUS,
-                    tipo_asesor: 'maximus',
-                    title: 'Especialista en Inversiones',
-                    avatar: 'https://ui-avatars.com/api/?name=Miguel+Durantt&background=0B4A3F&color=fff&bold=true'
-                };
-                registeredUsers[cleanEmail] = { password: password, user: userObj };
-                try {
-                    localStorage.setItem('maximus_registered_users', JSON.stringify(registeredUsers));
-                } catch(e) {}
-                return { success: true, user: userObj };
-            }
-        }
-
+        // Ya no hay cuentas ni contraseñas maestras escritas en el código: antes cualquiera podía
+        // entrar a un asesor de este navegador con "1234567" o "Maximus2026!", y eso ocultaba que
+        // la contraseña real de Supabase era otra.
         const asesorEncontrado = asesoresOficiales.find(a => (a.email || '').toLowerCase().trim() === cleanEmail);
         if (asesorEncontrado) {
             const asesorPass = asesorEncontrado.password || asesorEncontrado.password_temporal || (registeredUsers[cleanEmail] ? registeredUsers[cleanEmail].password : null);
-            
-            // Si el asesor no tenía contraseña fijada aún, o si coincide con la clave estándar:
-            if (!asesorPass || asesorPass === password || password === '1234567' || password === 'Maximus2026!') {
-                if (!asesorEncontrado.password) {
-                    asesorEncontrado.password = password;
-                    try {
-                        localStorage.setItem('maximus_asesores_oficiales_data', JSON.stringify(asesoresOficiales));
-                    } catch(e) {}
-                }
+
+            // Solo entra con la contraseña guardada para ese asesor en este navegador
+            if (asesorPass && asesorPass === password) {
                 const role = APP_CONFIG.ROLES.ASESOR_MAXIMUS;
 
                 const userObj = {
