@@ -315,7 +315,7 @@ const LeadService = {
                     query = query.order('created_at', { ascending: false });
                     const res = await query;
                     if (res && !res.error && Array.isArray(res.data)) {
-                        sbData = res.data;
+                        sbData = res.data.map(l => this._normalizarLead(l));
                         this._saveStoredLeads(sbData);
                     } else if (res && res.error) {
                         console.warn('MAXIMUS LeadService: Supabase notice (' + (res.error.message || res.error.code) + ').');
@@ -358,7 +358,7 @@ const LeadService = {
                 if (sb) {
                     const res = await sb.from(APP_CONFIG.TABLES.LEADS).select('*').eq('id', id).single();
                     if (res && !res.error && res.data) {
-                        return res;
+                        return { ...res, data: this._normalizarLead(res.data) };
                     }
                 }
             } catch (err) {}
@@ -378,11 +378,20 @@ const LeadService = {
     _COLUMNAS_LEADS: ['nombre', 'telefono', 'email', 'inmueble_interes_id', 'inmueble_interes_titulo',
         'inmueble_interes_precio', 'origen', 'estatus', 'temperatura', 'operacion', 'tipo_inmueble',
         'presupuesto', 'presupuesto_min', 'presupuesto_max', 'moneda', 'zonas_interes', 'requisitos',
-        'asesor_id', 'asesor_nombre', 'agente_id', 'notas', 'primera_respuesta_at'],
+        'asesor_id', 'asesor_nombre', 'agente_id', 'notas', 'primera_respuesta_at',
+        // Nombres del esquema original de la tabla (siguen siendo los únicos en algunas bases)
+        'tipo_operacion', 'tipo_inmueble_interes', 'requisitos_indispensables'],
 
-    _payloadParaSupabase(lead) {
+    // parcial = true para actualizar: un campo vaciado se guarda como null en vez de ignorarse
+    _payloadParaSupabase(lead, parcial) {
         const esUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
         const extra = { ...lead };
+        // Mismo dato con el nombre del esquema original
+        if (['compra', 'venta', 'alquiler'].includes(extra.operacion) && extra.tipo_operacion === undefined) extra.tipo_operacion = extra.operacion;
+        if (extra.tipo_inmueble && extra.tipo_inmueble_interes === undefined) extra.tipo_inmueble_interes = extra.tipo_inmueble;
+        if (typeof extra.requisitos === 'string' && extra.requisitos_indispensables === undefined) {
+            extra.requisitos_indispensables = extra.requisitos.split(',').map(s => s.trim()).filter(Boolean);
+        }
         // Formularios que usan otros nombres (ficha del inmueble)
         if (!extra.inmueble_interes_id && esUuid(extra.inmueble_id)) extra.inmueble_interes_id = extra.inmueble_id;
         if (!extra.inmueble_interes_titulo && extra.titulo) {
@@ -392,13 +401,54 @@ const LeadService = {
             extra.notas = [extra.mensaje, extra.notas].filter(Boolean).join(' | ');
         }
         const out = {};
+        const sinColumna = this._sinColumnas();
         this._COLUMNAS_LEADS.forEach(k => {
-            if (extra[k] !== undefined && extra[k] !== '') out[k] = extra[k];
+            if (extra[k] === undefined || sinColumna.has(k)) return;
+            if (extra[k] === '') { if (parcial) out[k] = null; return; }
+            out[k] = extra[k];
         });
-        if (!esUuid(out.inmueble_interes_id)) delete out.inmueble_interes_id;
-        if (!esUuid(out.agente_id)) delete out.agente_id;
-        if (esUuid(lead.id)) out.id = lead.id;
+        ['inmueble_interes_id', 'agente_id'].forEach(k => {
+            if (out[k] !== undefined && out[k] !== null && !esUuid(out[k])) delete out[k];
+        });
+        if (!parcial && esUuid(lead.id)) out.id = lead.id;
         return out;
+    },
+
+    // Si la tabla no tiene alguna columna, Supabase rechaza la fila entera. Aquí se quita esa
+    // columna y se reintenta, para que el cliente se guarde igual con el resto de los datos.
+    async _conColumnasTolerantes(payload, operacion) {
+        let res;
+        for (let intento = 0; intento < 12; intento++) {
+            res = await operacion(payload);
+            const err = res && res.error;
+            if (!err) return res;
+            const txt = String(err.message || '') + ' ' + String(err.details || '');
+            const m = txt.match(/'([a-z0-9_]+)' column/i) || txt.match(/column "?(?:[a-z_]+\.)?([a-z0-9_]+)"? (?:of relation|does not exist)/i);
+            if (!m || !(m[1] in payload)) return res;
+            console.warn('LeadService: la tabla leads no tiene la columna "' + m[1] + '"; se guarda sin ella.');
+            delete payload[m[1]];
+            this._recordarSinColumna(m[1]);
+        }
+        return res;
+    },
+
+    // Las columnas que faltan se recuerdan durante la sesión: solo el primer guardado reintenta
+    _sinColumnas() {
+        try { return new Set(JSON.parse(sessionStorage.getItem('maximus_leads_sin_columnas') || '[]')); } catch (_) { return new Set(); }
+    },
+    _recordarSinColumna(col) {
+        try { const s = this._sinColumnas(); s.add(col); sessionStorage.setItem('maximus_leads_sin_columnas', JSON.stringify([...s])); } catch (_) {}
+    },
+
+    // Filas con el esquema original: se completan los nombres que usa el panel
+    _normalizarLead(l) {
+        if (!l || typeof l !== 'object') return l;
+        if (!l.operacion && l.tipo_operacion) l.operacion = l.tipo_operacion;
+        if (!l.tipo_inmueble && l.tipo_inmueble_interes) l.tipo_inmueble = l.tipo_inmueble_interes;
+        if (!l.requisitos && Array.isArray(l.requisitos_indispensables) && l.requisitos_indispensables.length) {
+            l.requisitos = l.requisitos_indispensables.join(', ');
+        }
+        return l;
     },
 
     // La bandeja de leads mide el tiempo hasta este momento (solo se guarda la primera vez)
@@ -459,17 +509,19 @@ const LeadService = {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
                 if (sb) {
                     const payloadSb = this._payloadParaSupabase(nuevo);
-                    let sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb).select().single();
+                    const tabla = () => sb.from(APP_CONFIG.TABLES.LEADS);
+                    let sbRes = await this._conColumnasTolerantes(payloadSb, p => tabla().insert(p).select().single());
                     // Formularios públicos (visitante o cliente): con los permisos de la Fase 2 pueden
                     // crear el lead pero no leerlo de vuelta; si falló, se guarda sin pedir la fila.
                     if (sbRes && sbRes.error) {
-                        const soloInsert = await sb.from(APP_CONFIG.TABLES.LEADS).insert(payloadSb);
+                        const soloInsert = await this._conColumnasTolerantes(payloadSb, p => tabla().insert(p));
                         if (soloInsert && soloInsert.error) {
                             console.warn('LeadService.create: Supabase no guardó el lead (' + (soloInsert.error.message || soloInsert.error.code) + ').');
+                            res.noGuardadoEnServidor = true;   // el CRM avisa al asesor
                         }
                     }
                     if (sbRes && !sbRes.error && sbRes.data) {
-                        res = sbRes;
+                        res = { ...sbRes, data: this._normalizarLead(sbRes.data) };
                         const idx = leads.findIndex(l => l.id === nuevo.id);
                         if (idx !== -1) {
                             leads[idx] = sbRes.data;
@@ -559,9 +611,14 @@ const LeadService = {
             try {
                 const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
                 if (sb) {
-                    const sbRes = await sb.from(APP_CONFIG.TABLES.LEADS).update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+                    const payloadSb = { ...this._payloadParaSupabase(updates, true), updated_at: new Date().toISOString() };
+                    const sbRes = await this._conColumnasTolerantes(payloadSb,
+                        p => sb.from(APP_CONFIG.TABLES.LEADS).update(p).eq('id', id).select().single());
                     if (sbRes && !sbRes.error && sbRes.data) {
-                        res = sbRes;
+                        res = { ...sbRes, data: this._normalizarLead(sbRes.data) };
+                    } else if (sbRes && sbRes.error) {
+                        console.warn('LeadService.updateDetalles: Supabase no guardó el cambio (' + (sbRes.error.message || sbRes.error.code) + ').');
+                        res.noGuardadoEnServidor = true;
                     }
                 }
             } catch (err) {}
