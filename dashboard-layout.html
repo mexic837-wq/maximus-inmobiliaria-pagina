@@ -64,6 +64,7 @@
         .tarjeta-inmueble { content-visibility: auto; contain-intrinsic-size: auto 380px; }
         /* Skeleton de transición entre secciones */
         .view-section.has-skeleton { position: relative; }
+        .view-section > .sk-overlay { margin: 0 !important; }
         .sk-overlay { position: absolute; inset: 0; z-index: 40; overflow: hidden; background: var(--sk-bg, #F4F8F7); pointer-events: none; transition: opacity .28s ease; }
         .sk-overlay.sk-out { opacity: 0; }
         .sk-overlay .sk-wrap { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
@@ -9411,7 +9412,9 @@
                     <div class="sk-grid">${card.repeat(4)}</div>
                 </div>`;
                 view.classList.add('has-skeleton');
-                view.prepend(ov);
+                // Al final (no al principio): como primer hijo, el space-y de la sección
+                // empujaba el contenido real hacia abajo y saltaba al quitar el skeleton.
+                view.append(ov);
                 setTimeout(() => {
                     ov.classList.add('sk-out');
                     setTimeout(() => { ov.remove(); view.classList.remove('has-skeleton'); }, 300);
