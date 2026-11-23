@@ -13732,7 +13732,7 @@
             const origen = document.getElementById('crm-input-origen').value;
             const operacion = document.getElementById('crm-input-operacion').value;
             const tipo_inmueble = document.getElementById('crm-input-tipo-inmueble').value;
-            const asesor_id = document.getElementById('crm-input-asesor').value;
+            let asesor_id = document.getElementById('crm-input-asesor').value;   // let: un asesor (no admin) queda asignado a sí mismo más abajo
             const presupuesto = Number(document.getElementById('crm-input-presupuesto').value) || 0;
             const estatus = document.getElementById('crm-input-estatus').value;
             const zonasStr = document.getElementById('crm-input-zonas').value.trim();
