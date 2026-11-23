@@ -45,8 +45,9 @@
     <script src="js/supabase-client.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/services.js"></script>
-    <script src="js/auth.js?v=4.9"></script>
-    <script src="js/payments.js?v=4.7"></script>
+    <script src="js/dialogo.js?v=1.2"></script>
+    <script src="js/auth.js?v=5.0"></script>
+    <script src="js/payments.js?v=4.8"></script>
     <script src="js/publica-inmueble.js?v=2.2" defer></script>
     <script src="js/oficinas-aliadas.js?v=1.2" defer></script>
     <script src="js/equipo-landing.js?v=1.1" defer></script>
@@ -821,7 +822,7 @@
 
                     } catch (error) {
                         console.error('Error procesando valoración y webhook n8n:', error);
-                        alert('No se pudo enviar la solicitud. Por favor intenta de nuevo.');
+                        (window.MaxDialog ? MaxDialog.alert({ tono: 'error', titulo: 'No se pudo enviar', mensaje: 'No se pudo enviar la solicitud. Por favor intenta de nuevo.' }) : alert('No se pudo enviar la solicitud. Por favor intenta de nuevo.'));
                     } finally {
                         // Restaurar botón
                         btn.disabled = false;

@@ -173,7 +173,8 @@
 
     async function eliminar(id) {
         const o = lista.find(x => x.id === id);
-        if (!o || !confirm(`¿Eliminar "${o.nombre}" de las oficinas aliadas?\n\nEsta acción no se puede deshacer. Si solo quieres que no salga en la web, usa "Ocultar".`)) return;
+        if (!o) return;
+        if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-buildings', titulo: '¿Eliminar "' + o.nombre + '"?', mensaje: 'Se quita de las oficinas aliadas y no se puede deshacer.\nSi solo quieres que no salga en la web, usa "Ocultar".', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
         try {
             const { error } = await sb().from('oficinas_aliadas').delete().eq('id', id);
             if (error) throw error;
