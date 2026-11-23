@@ -74,7 +74,7 @@
         return `
         <article class="fav-card bg-white dark:bg-[#0A1F1B] rounded-2xl border ${marcado ? 'border-emerald-500 ring-2 ring-emerald-200 dark:ring-emerald-900' : 'border-gray-200/70 dark:border-emerald-950/60'} shadow-sm overflow-hidden flex flex-col">
             <button type="button" data-ver="${id}" class="relative block w-full aspect-[4/3] bg-gray-100 dark:bg-[#0D2822] text-left" aria-label="Ver ${esc(d.titulo)}">
-                ${img ? `<img src="${esc(img)}" alt="" loading="lazy" class="absolute inset-0 w-full h-full object-cover">` : '<span class="absolute inset-0 flex items-center justify-center text-3xl text-gray-300"><i class="ph ph-house-line"></i></span>'}
+                ${img ? `<img src="${esc(window.maximusMiniatura ? maximusMiniatura(img) : img)}" alt="" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover">` : '<span class="absolute inset-0 flex items-center justify-center text-3xl text-gray-300"><i class="ph ph-house-line"></i></span>'}
                 <span class="absolute left-2 top-2 px-2 py-0.5 rounded-full bg-black/60 text-white text-[10px] font-bold uppercase">${esc(d.operacion || '')}</span>
             </button>
             <div class="p-3.5 flex-1 flex flex-col gap-1.5">

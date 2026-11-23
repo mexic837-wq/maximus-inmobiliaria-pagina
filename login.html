@@ -11,34 +11,8 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'maximus-dark': '#0B4A3F',
-                        'maximus-accent': '#10B981',
-                        'maximus-silver': '#D1D5DB',
-                        'maximus-black': '#111827',
-                    },
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style type="text/tailwindcss">
-        .mx-label   { @apply block text-[13px] font-medium text-gray-700 mb-1; }
-        .mx-icon    { @apply absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 text-[13px]; }
-        .mx-input   { @apply block w-full h-11 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 text-base md:text-sm outline-none transition hover:border-gray-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10; }
-        .mx-social  { @apply w-full h-11 flex items-center justify-center gap-2.5 px-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 text-gray-800 font-medium text-[15px] md:text-sm transition active:scale-[0.99] cursor-pointer; }
-        .mx-primary { @apply w-full h-11 flex items-center justify-center gap-2 px-5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-semibold text-[15px] md:text-sm shadow-lg shadow-maximus-dark/25 transition active:scale-[0.99] cursor-pointer disabled:opacity-80 disabled:cursor-wait; }
-        .mx-chip    { @apply px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 text-[12px] font-medium transition cursor-pointer; }
-    </style>
     <style>
         /* Autocompletado del navegador sin el fondo azul */
         input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
@@ -87,6 +61,8 @@
             .lx-tab.is-active .lx-fill { animation: none; width: 100%; }
         }
     </style>
+    <!-- Tailwind compilado (antes cdn.tailwindcss.com compilaba en el navegador). Recompilar: npm run build:css -->
+    <link rel="stylesheet" href="assets/css/publico.css?v=1">
 </head>
 <body class="font-sans text-maximus-black antialiased bg-white md:bg-[#06241D] min-h-[100dvh] overflow-x-hidden selection:bg-maximus-accent selection:text-white">
 
@@ -460,7 +436,10 @@
     <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.2"></script>
     <script src="js/mock-data.js?v=3.2"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/light/style.css">
     <script src="js/services.js?v=3.2"></script>
     <script src="js/auth.js?v=4.7"></script>
     <script src="js/payments.js?v=4.7"></script>

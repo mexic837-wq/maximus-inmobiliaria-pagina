@@ -46,6 +46,69 @@ const LEGACY_REDIRECTS = {
   '/property-detail.html': '/detalle-propiedad'
 };
 
+
+// ---------- Envío optimizado: compresión (brotli/gzip), ETag/304 y caché ----------
+// Antes cada visita bajaba ~1.4 MB sin comprimir y sin caché (el panel pesa eso solo en HTML).
+const zlib = require('zlib');
+const COMPRIMIBLES = new Set(['.html', '.css', '.js', '.json', '.svg', '.txt', '.xml', '.ico']);
+const CACHE_LARGA = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.woff', '.woff2', '.ttf', '.mp4', '.ico']);
+const cacheComprimidos = new Map(); // clave: ruta|mtime|tamaño|codificación -> Buffer
+
+function enviarArchivo(req, res, filePath, extraHeaders = {}) {
+  let stat;
+  try { stat = fs.statSync(filePath); } catch (_) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('No encontrado');
+  }
+  const ext = path.extname(filePath).toLowerCase();
+  const etag = 'W/"' + stat.size.toString(16) + '-' + Math.floor(stat.mtimeMs).toString(16) + '"';
+  const headers = {
+    'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
+    'Access-Control-Allow-Origin': '*',
+    'ETag': etag,
+    'Last-Modified': stat.mtime.toUTCString(),
+    'Vary': 'Accept-Encoding',
+    // HTML/JS/CSS: el navegador guarda copia pero pregunta si cambió (304 sin cuerpo) -> despliegues al instante.
+    // Imágenes y fuentes: 7 días sin preguntar.
+    'Cache-Control': CACHE_LARGA.has(ext) ? 'public, max-age=604800' : 'no-cache',
+    ...extraHeaders
+  };
+
+  if (req.headers['if-none-match'] === etag) {
+    res.writeHead(304, headers);
+    return res.end();
+  }
+
+  const acepta = String(req.headers['accept-encoding'] || '');
+  const codif = !COMPRIMIBLES.has(ext) || stat.size < 1024 ? null
+    : /\bbr\b/.test(acepta) ? 'br' : /\bgzip\b/.test(acepta) ? 'gzip' : null;
+
+  if (!codif) {
+    headers['Content-Length'] = stat.size;
+    res.writeHead(200, headers);
+    if (req.method === 'HEAD') return res.end();
+    return fs.createReadStream(filePath).pipe(res);
+  }
+
+  const clave = filePath + '|' + stat.mtimeMs + '|' + stat.size + '|' + codif;
+  let cuerpo = cacheComprimidos.get(clave);
+  if (!cuerpo) {
+    const crudo = fs.readFileSync(filePath);
+    cuerpo = codif === 'br'
+      ? zlib.brotliCompressSync(crudo, { params: { [zlib.constants.BROTLI_PARAM_QUALITY]: 9, [zlib.constants.BROTLI_PARAM_SIZE_HINT]: crudo.length } })
+      : zlib.gzipSync(crudo, { level: 9 });
+    // Descartar versiones anteriores del mismo archivo (tras un despliegue)
+    for (const k of cacheComprimidos.keys()) {
+      if (k.startsWith(filePath + '|') && k.endsWith('|' + codif)) cacheComprimidos.delete(k);
+    }
+    cacheComprimidos.set(clave, cuerpo);
+  }
+  headers['Content-Encoding'] = codif;
+  headers['Content-Length'] = cuerpo.length;
+  res.writeHead(200, headers);
+  res.end(req.method === 'HEAD' ? undefined : cuerpo);
+}
+
 const server = http.createServer((req, res) => {
   let urlObj;
   try {
@@ -68,12 +131,7 @@ const server = http.createServer((req, res) => {
   if (/^\/asesor\/[a-z0-9-]{1,60}\/?$/i.test(pathname)) {
     const tarjeta = path.join(BASE_DIR, 'tarjeta-asesor.html');
     if (fs.existsSync(tarjeta)) {
-      res.writeHead(200, {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Access-Control-Allow-Origin': '*',
-        'X-Robots-Tag': 'noindex'
-      });
-      return fs.createReadStream(tarjeta).pipe(res);
+      return enviarArchivo(req, res, tarjeta, { 'X-Robots-Tag': 'noindex' });
     }
   }
 
@@ -81,11 +139,7 @@ const server = http.createServer((req, res) => {
   if (ROUTE_ALIASES[pathname]) {
     const targetFile = path.join(BASE_DIR, ROUTE_ALIASES[pathname]);
     if (fs.existsSync(targetFile)) {
-      res.writeHead(200, {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Access-Control-Allow-Origin': '*'
-      });
-      return fs.createReadStream(targetFile).pipe(res);
+      return enviarArchivo(req, res, targetFile);
     }
   }
 
@@ -115,16 +169,7 @@ const server = http.createServer((req, res) => {
     return res.end('<h1>404 - Página no encontrada</h1><p><a href="/inicio">Ir al inicio</a></p>');
   }
 
-  const ext = path.extname(filePath).toLowerCase();
-  const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
-  res.writeHead(200, {
-    'Content-Type': contentType,
-    'Access-Control-Allow-Origin': '*'
-  });
-
-  const stream = fs.createReadStream(filePath);
-  stream.pipe(res);
+  return enviarArchivo(req, res, filePath);
 });
 
 server.listen(PORT, () => {

@@ -26,35 +26,14 @@
             }
         } catch (e) {}
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        'maximus-dark': '#0B4A3F',
-                        'maximus-accent': '#10B981',
-                        'maximus-silver': '#D1D5DB',
-                        'maximus-black': '#111827',
-                        'maximus-bg': '#F4F7F6',
-                    },
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    },
-                    boxShadow: {
-                        'premium': '0 4px 20px -2px rgba(11, 74, 63, 0.05)',
-                        'premium-hover': '0 10px 30px -5px rgba(11, 74, 63, 0.1)',
-                    }
-                }
-            }
-        }
-    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/fill/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/light/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/security.js"></script>
@@ -62,7 +41,7 @@
     <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
-    <script src="js/services.js?v=3.4"></script>
+    <script src="js/services.js?v=3.5"></script>
     <script src="js/auth.js?v=4.7"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
@@ -72,7 +51,7 @@
     <script src="js/busqueda-voz.js?v=1.0"></script>
     <script src="js/mi-asesor.js?v=1.0"></script>
     <script src="js/qr-maximus.js?v=1.2"></script>
-    <script src="js/favoritos.js?v=1.1"></script>
+    <script src="js/favoritos.js?v=1.2"></script>
     
     <style>
         .view-section { display: none; }
@@ -1154,6 +1133,8 @@
         .nav-planes, [data-target="view-planes"], [data-target="view-pagos"], #banner-pro-cliente,
         [onclick*="abrirModalSuscripcionPro"], #cta-hazte-platinum { display: none !important; }
     </style>
+    <!-- Tailwind compilado (antes cdn.tailwindcss.com compilaba en el navegador). Recompilar: npm run build:css -->
+    <link rel="stylesheet" href="assets/css/panel.css?v=1">
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
 
@@ -13902,7 +13883,7 @@
                         <!-- Las portadas "Editorial MAXIMUS" son 16:10 y ya traen precio y operación impresos:
                              el recuadro respeta esa proporción y solo se superponen etiquetas en fotos normales -->
                         <div class="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">
-                            <img src="${imgUrl}" alt="${escNotif(inm.titulo)}" loading="lazy" onload="mxCoverLoaded(this)" onerror="mxCoverLoaded(this, true)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
+                            <img src="${maximusMiniatura(imgUrl)}" alt="${escNotif(inm.titulo)}" loading="lazy" decoding="async" onload="mxCoverLoaded(this)" onerror="mxCoverLoaded(this, true)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out">
                             <div class="mx-cover-ov hidden">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                                 <div class="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5">
@@ -14588,7 +14569,7 @@
                 if (vistaGeneral && inm._grande) {
                     return `
                     <div class="sm:col-span-2 relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer min-h-[300px] lg:min-h-[340px] bg-gray-900" onclick="abrirDetalleInmuebleAirbnb('${escNotif(inm.id)}')">
-                        <img src="${escNotif((inm.fotos && inm.fotos[1]) || imgUrl)}" alt="${escNotif(inm.titulo)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <img src="${escNotif(maximusMiniatura((inm.fotos && inm.fotos[1]) || imgUrl))}" decoding="async" alt="${escNotif(inm.titulo)}" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10"></div>
                         <div class="absolute top-3.5 left-3.5 flex items-center gap-1.5">
                             <span class="bg-white/95 text-gray-900 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow">${escNotif(inm.operacion || 'Venta')}</span>
@@ -14612,7 +14593,7 @@
                 return `
                     <div class="bg-white dark:bg-[#0A1F1B] border border-gray-100 dark:border-emerald-950/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group cursor-pointer" onclick="abrirDetalleInmuebleAirbnb('${escNotif(inm.id)}')">
                         <div class="relative w-full aspect-[16/10] overflow-hidden bg-gray-100">
-                            <img src="${escNotif(imgUrl)}" alt="${escNotif(inm.titulo)}" loading="lazy" onload="mxCoverLoaded(this)" onerror="mxCoverLoaded(this, true)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <img src="${escNotif(maximusMiniatura(imgUrl))}" alt="${escNotif(inm.titulo)}" loading="lazy" decoding="async" onload="mxCoverLoaded(this)" onerror="mxCoverLoaded(this, true)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                             <div class="mx-cover-ov hidden">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                                 <span class="absolute top-2.5 left-2.5 bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full shadow">${escNotif(inm.operacion || 'VENTA')}</span>
