@@ -53,6 +53,7 @@
     <script src="js/qr-maximus.js?v=1.2"></script>
     <script src="js/favoritos.js?v=1.2"></script>
     <script src="js/bandeja-leads.js?v=1.1"></script>
+    <script src="js/crm-rapido.js?v=1.0"></script>
     
     <style>
         .view-section { display: none; }
@@ -63,6 +64,28 @@
         @media (prefers-reduced-motion: reduce) { .view-section.sec-in { animation: none; } }
         /* Las tarjetas fuera de pantalla no se pintan hasta que se acercan (listas largas en gama baja) */
         .tarjeta-inmueble { content-visibility: auto; contain-intrinsic-size: auto 380px; }
+        /* CRM · formulario rápido y filtros */
+        .crm-label { display:block; margin-bottom:5px; font-size:11px; font-weight:700; letter-spacing:.02em; color:#6b7280; }
+        .crm-input { width:100%; padding:10px 14px; border-radius:12px; background:#f9fafb; border:1px solid #e5e7eb; color:#0B4A3F; font-size:14px; font-weight:600; outline:none; transition:border-color .15s, box-shadow .15s; }
+        .crm-input:focus { border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.14); background:#fff; }
+        .crm-input::placeholder { color:#9ca3af; font-weight:500; }
+        .crm-chip { display:inline-flex; align-items:center; gap:6px; padding:8px 13px; border-radius:12px; border:1px solid #e5e7eb; background:#fff; font-size:12px; font-weight:700; color:#4b5563; cursor:pointer; transition:all .15s; }
+        .crm-chip small { font-size:10px; font-weight:600; color:#9ca3af; }
+        .crm-chip:hover { border-color:#10b981; }
+        .crm-chip[aria-pressed="true"] { background:#ecfdf5; border-color:#10b981; color:#065f46; box-shadow:0 0 0 3px rgba(16,185,129,.12); }
+        .crm-chip[data-v="caliente"][aria-pressed="true"] { background:#fff1f2; border-color:#f43f5e; color:#9f1239; box-shadow:0 0 0 3px rgba(244,63,94,.12); }
+        .crm-chip[data-v="tibio"][aria-pressed="true"] { background:#fffbeb; border-color:#f59e0b; color:#92400e; box-shadow:0 0 0 3px rgba(245,158,11,.14); }
+        .crm-chip[data-v="frio"][aria-pressed="true"] { background:#f0f9ff; border-color:#0ea5e9; color:#075985; box-shadow:0 0 0 3px rgba(14,165,233,.14); }
+        .crm-chip-mini { padding:5px 10px; border-radius:999px; font-size:11px; }
+        .crm-chip .crm-n { min-width:18px; padding:0 5px; border-radius:999px; background:#f3f4f6; color:#6b7280; font-size:10px; font-weight:800; text-align:center; }
+        .crm-chip[aria-pressed="true"] .crm-n { background:#a7f3d0; color:#065f46; }
+        html.dark .crm-label { color:#9fb3ad; }
+        html.dark .crm-input { background:#071714; border-color:rgba(6,78,59,.6); color:#fff; }
+        html.dark .crm-input:focus { background:#0A1F1B; }
+        html.dark .crm-chip { background:#071714; border-color:rgba(6,78,59,.6); color:#cbd5d1; }
+        html.dark .crm-chip[aria-pressed="true"] { background:#0E352C; border-color:#10b981; color:#a7f3d0; }
+        html.dark .crm-chip .crm-n { background:#0E352C; color:#9fb3ad; }
+        @media (max-width: 640px) { .crm-input { font-size:16px; } }
         /* Skeleton de transición entre secciones */
         .view-section.has-skeleton { position: relative; }
         .view-section > .sk-overlay { margin: 0 !important; }
@@ -1136,7 +1159,7 @@
         [onclick*="abrirModalSuscripcionPro"], #cta-hazte-platinum { display: none !important; }
     </style>
     <!-- Tailwind compilado (antes cdn.tailwindcss.com compilaba en el navegador). Recompilar: npm run build:css -->
-    <link rel="stylesheet" href="assets/css/panel.css?v=2">
+    <link rel="stylesheet" href="assets/css/panel.css?v=3">
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
 
@@ -5832,6 +5855,15 @@
                     </div>
                 </div>
 
+                <!-- Filtros rápidos: lo que más se busca, a un toque -->
+                <div id="crm-barra-rapida" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtros rápidos">
+                    <button type="button" class="crm-chip" data-crm-quick="todos" aria-pressed="true" onclick="setCRMQuick('todos')">Todos <span class="crm-n" data-crm-quick-n="todos">0</span></button>
+                    <button type="button" class="crm-chip" data-crm-quick="calientes" aria-pressed="false" onclick="setCRMQuick('calientes')">🔥 Calientes <span class="crm-n" data-crm-quick-n="calientes">0</span></button>
+                    <button type="button" class="crm-chip" data-crm-quick="sincontacto" aria-pressed="false" onclick="setCRMQuick('sincontacto')" title="Clientes abiertos sin actividad en 7 días o más">⏰ Sin contacto 7+ días <span class="crm-n" data-crm-quick-n="sincontacto">0</span></button>
+                    <button type="button" class="crm-chip" data-crm-quick="visitas" aria-pressed="false" onclick="setCRMQuick('visitas')">📅 Con visita <span class="crm-n" data-crm-quick-n="visitas">0</span></button>
+                    <button type="button" class="crm-chip" data-crm-quick="nuevos" aria-pressed="false" onclick="setCRMQuick('nuevos')" title="Aún en Prospección: nadie los ha contactado">🆕 Por contactar <span class="crm-n" data-crm-quick-n="nuevos">0</span></button>
+                </div>
+
                 <!-- Barra de Filtros y Búsqueda -->
                 <div id="crm-barra-filtros" class="bg-white dark:bg-[#0A1F1B] rounded-2xl shadow-xs p-3 sm:p-4 border border-gray-100 dark:border-emerald-900/40 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                     <!-- Buscador -->
@@ -5882,7 +5914,7 @@
                 <div id="crm-empty-state" class="hidden bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-100 dark:border-emerald-900/40 shadow-sm px-6 py-14 text-center">
                     <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center mx-auto text-2xl"><i class="ph-fill ph-users-three"></i></div>
                     <h3 class="mt-4 text-xl font-extrabold text-maximus-dark dark:text-white">Tu cartera está vacía</h3>
-                    <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">Registra a tu primer cliente y sigue cada oportunidad por etapas: prospección, visita, negociación y firma.</p>
+                    <p class="mt-1.5 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">Registra a tu primer cliente en segundos: pega el mensaje de WhatsApp y los datos se acomodan solos. Luego sigue cada oportunidad por etapas hasta la firma.</p>
                     <div class="mt-5 flex flex-wrap items-center justify-center gap-2.5">
                         <button type="button" onclick="abrirModalNuevoClienteCRM()" class="h-10 px-5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-semibold text-[13px] shadow-sm transition-all flex items-center gap-2 cursor-pointer">
                             <i class="ph-bold ph-user-plus"></i> Agregar mi primer cliente
@@ -7363,132 +7395,179 @@
 
     <!-- 2. MODAL NUEVO / EDITAR CLIENTE CRM -->
     <div id="modalNuevoClienteCRM" class="fixed inset-0 hidden items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-md transition-all duration-300" style="display: none; z-index: 999999;" onclick="if(event.target === this) cerrarModalNuevoClienteCRM()">
-        <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
+        <div class="bg-white dark:bg-[#0A1F1B] rounded-[28px] max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-100 dark:border-emerald-900/40 overflow-hidden">
             <!-- Header -->
             <div class="px-6 py-4 border-b border-gray-100 dark:border-emerald-900/40 bg-gradient-to-r from-gray-50/90 to-emerald-50/30 dark:from-[#08221D] dark:to-[#071714] flex items-center justify-between">
                 <div>
                     <span class="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-2.5 py-0.5 rounded-full">
                         CRM Inmobiliario MAXIMUS
                     </span>
-                    <h3 id="modalNuevoClienteCRMTitulo" class="text-xl font-black text-maximus-dark dark:text-white mt-1">Registrar Nuevo Cliente</h3>
+                    <h3 id="modalNuevoClienteCRMTitulo" class="text-xl font-black text-maximus-dark dark:text-white mt-1">Nuevo cliente</h3>
+                    <p id="modalNuevoClienteCRMSub" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Lo básico en 10 segundos; el resto lo completas después.</p>
                 </div>
                 <button onclick="cerrarModalNuevoClienteCRM()" class="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#0D2822] hover:bg-gray-200 dark:hover:bg-[#123830] text-gray-500 dark:text-gray-300 flex items-center justify-center transition-all cursor-pointer">
                     <i class="ph-bold ph-x text-base"></i>
                 </button>
             </div>
 
-            <!-- Formulario Scrollable -->
-            <form id="form-nuevo-cliente-crm" onsubmit="event.preventDefault(); guardarClienteCRM();" class="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
+            <!-- Formulario: lo básico arriba, el resto recogido en "Más detalles" -->
+            <form id="form-nuevo-cliente-crm" onsubmit="event.preventDefault(); guardarClienteCRM();" class="overflow-y-auto flex-1 flex flex-col">
                 <input type="hidden" id="crm-input-id">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Nombre Completo *</label>
-                        <input type="text" id="crm-input-nombre" required placeholder="Ej: Dr. Roberto Méndez" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Correo Electrónico *</label>
-                        <input type="email" id="crm-input-email" required placeholder="cliente@email.com" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
-                    </div>
-                </div>
+                <div class="p-5 sm:p-6 space-y-5 flex-1">
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Teléfono / WhatsApp *</label>
-                        <input type="text" id="crm-input-telefono" required placeholder="+58 424-1234567" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
+                    <!-- Escribir o pegar: rellena el resto solo (js/crm-rapido.js) -->
+                    <div id="crm-rapido-caja" class="rounded-2xl border border-dashed border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 p-3.5">
+                        <label for="crm-rapido-texto" class="crm-label flex items-center gap-1.5" style="color:#047857"><i class="ph-fill ph-lightning"></i> Escribe o pega los datos y los acomodamos solos</label>
+                        <textarea id="crm-rapido-texto" rows="2" class="crm-input resize-none" placeholder="Ej: María Pérez 0414-1234567 busca casa en Pueblo Nuevo hasta $80.000"></textarea>
+                        <div id="crm-rapido-resumen" class="mt-2 text-xs leading-relaxed"></div>
                     </div>
+
+                    <!-- Lo esencial -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label for="crm-input-nombre" class="crm-label">Nombre <span class="text-rose-500">*</span></label>
+                            <input type="text" id="crm-input-nombre" required autocomplete="off" placeholder="Ej: María Pérez" class="crm-input">
+                        </div>
+                        <div>
+                            <label for="crm-input-telefono" class="crm-label">WhatsApp / teléfono <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="crm-input-telefono" required autocomplete="off" inputmode="tel" placeholder="0414-1234567" class="crm-input">
+                        </div>
+                    </div>
+                    <div id="crm-aviso-repetido" class="hidden -mt-2 flex items-start gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 px-3 py-2 text-xs text-amber-800 dark:text-amber-200"></div>
+
                     <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Interés / Temperatura *</label>
-                        <select id="crm-input-temperatura" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="caliente">🔥 Caliente (Listo para comprar)</option>
-                            <option value="tibio" selected>⚡ Tibio (Evaluando opciones)</option>
-                            <option value="frio">❄️ Frío (Prospección a futuro)</option>
+                        <span class="crm-label">¿Qué tan interesado está?</span>
+                        <div class="flex flex-wrap gap-2" data-crm-opciones="crm-input-temperatura">
+                            <button type="button" class="crm-chip" data-v="caliente">🔥 Caliente <small>listo ya</small></button>
+                            <button type="button" class="crm-chip" data-v="tibio">⚡ Tibio <small>evaluando</small></button>
+                            <button type="button" class="crm-chip" data-v="frio">❄️ Frío <small>a futuro</small></button>
+                        </div>
+                        <select id="crm-input-temperatura" class="hidden" tabindex="-1" aria-hidden="true">
+                            <option value="caliente">Caliente</option>
+                            <option value="tibio" selected>Tibio</option>
+                            <option value="frio">Frío</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Origen del Lead</label>
-                        <select id="crm-input-origen" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="whatsapp">WhatsApp</option>
-                            <option value="web">Página Web MAXIMUS</option>
-                            <option value="meta_ads">Meta Ads (Instagram/FB)</option>
-                            <option value="referido">Referido VIP</option>
-                            <option value="llamada">Llamada Directa</option>
-                            <option value="portal">Portal Inmobiliario</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Operación *</label>
-                        <select id="crm-input-operacion" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="compra">Compra</option>
+                        <span class="crm-label">¿Qué busca?</span>
+                        <div class="flex flex-wrap gap-2 mb-3" data-crm-opciones="crm-input-operacion">
+                            <button type="button" class="crm-chip" data-v="compra">Comprar</button>
+                            <button type="button" class="crm-chip" data-v="alquiler">Alquilar</button>
+                            <button type="button" class="crm-chip" data-v="venta">Vender su inmueble</button>
+                        </div>
+                        <select id="crm-input-operacion" class="hidden" tabindex="-1" aria-hidden="true">
+                            <option value="compra" selected>Compra</option>
                             <option value="alquiler">Alquiler</option>
                             <option value="venta">Venta (Captación)</option>
                         </select>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                                <label for="crm-input-tipo-inmueble" class="crm-label">Tipo de inmueble</label>
+                                <select id="crm-input-tipo-inmueble" class="crm-input cursor-pointer">
+                                    <option value="casa">Casa</option>
+                                    <option value="departamento">Apartamento</option>
+                                    <option value="casa_de_campo">Casa de campo</option>
+                                    <option value="fincas">Finca</option>
+                                    <option value="galpones">Galpón</option>
+                                    <option value="local">Local comercial</option>
+                                    <option value="terreno">Terreno</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="crm-input-zonas" class="crm-label">Zona de interés <span class="font-medium normal-case text-gray-400">(opcional)</span></label>
+                                <input type="text" id="crm-input-zonas" placeholder="Ej: Pueblo Nuevo, Pirineos" class="crm-input">
+                            </div>
+                        </div>
                     </div>
+
                     <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Tipo de Inmueble</label>
-                        <select id="crm-input-tipo-inmueble" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="casa">Casa</option>
-                            <option value="departamento">Departamento</option>
-                            <option value="casa_de_campo">Casa de campo</option>
-                            <option value="fincas">Fincas</option>
-                            <option value="galpones">Galpones</option>
-                            <option value="local">Local Comercial</option>
-                        </select>
+                        <label for="crm-input-presupuesto" class="crm-label">Presupuesto en USD <span class="font-medium normal-case text-gray-400">(opcional)</span></label>
+                        <input type="number" id="crm-input-presupuesto" min="0" step="any" inputmode="numeric" placeholder="Ej: 80000" class="crm-input">
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <button type="button" class="crm-chip crm-chip-mini" data-crm-presupuesto="50000">$50 mil</button>
+                            <button type="button" class="crm-chip crm-chip-mini" data-crm-presupuesto="100000">$100 mil</button>
+                            <button type="button" class="crm-chip crm-chip-mini" data-crm-presupuesto="150000">$150 mil</button>
+                            <button type="button" class="crm-chip crm-chip-mini" data-crm-presupuesto="250000">$250 mil</button>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Asesor Asignado *</label>
-                        <select id="crm-input-asesor" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="asesor-1">José Guerrero</option>
-                            <option value="asesor-2">Valeria Méndez</option>
-                            <option value="asesor-3">Carlos Santander</option>
-                            <option value="asesor-4">Andrea Colmenares</option>
-                        </select>
-                    </div>
+
+                    <!-- Todo lo demás, recogido -->
+                    <details id="crm-mas-detalles" class="group rounded-2xl border border-gray-200 dark:border-emerald-900/50">
+                        <summary class="cursor-pointer select-none list-none px-4 py-3 text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                            <i class="ph-bold ph-caret-right transition-transform group-open:rotate-90"></i>
+                            Más detalles <span class="font-medium text-gray-400">(correo, origen, etapa, notas…)</span>
+                        </summary>
+                        <div class="px-4 pb-4 space-y-4">
+                            <div>
+                                <label for="crm-input-email" class="crm-label">Correo electrónico</label>
+                                <input type="email" id="crm-input-email" autocomplete="off" placeholder="cliente@email.com" class="crm-input">
+                            </div>
+                            <div>
+                                <span class="crm-label">¿Cómo llegó?</span>
+                                <div class="flex flex-wrap gap-2" data-crm-opciones="crm-input-origen">
+                                    <button type="button" class="crm-chip crm-chip-mini" data-v="whatsapp">WhatsApp</button>
+                                    <button type="button" class="crm-chip crm-chip-mini" data-v="meta_ads">Instagram / Facebook</button>
+                                    <button type="button" class="crm-chip crm-chip-mini" data-v="referido">Referido</button>
+                                    <button type="button" class="crm-chip crm-chip-mini" data-v="llamada">Llamada</button>
+                                    <button type="button" class="crm-chip crm-chip-mini" data-v="web">Página web</button>
+                                    <button type="button" class="crm-chip crm-chip-mini" data-v="portal">Portal</button>
+                                </div>
+                                <select id="crm-input-origen" class="hidden" tabindex="-1" aria-hidden="true">
+                                    <option value="whatsapp" selected>WhatsApp</option>
+                                    <option value="web">Página Web MAXIMUS</option>
+                                    <option value="meta_ads">Meta Ads (Instagram/FB)</option>
+                                    <option value="referido">Referido VIP</option>
+                                    <option value="llamada">Llamada Directa</option>
+                                    <option value="portal">Portal Inmobiliario</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <div>
+                                    <label for="crm-input-estatus" class="crm-label">Etapa inicial</label>
+                                    <select id="crm-input-estatus" class="crm-input cursor-pointer">
+                                        <option value="nuevo">1. Prospección / Nuevo</option>
+                                        <option value="contactado">2. Contactado / Calificación</option>
+                                        <option value="visita_agendada">3. Búsqueda / Visita agendada</option>
+                                        <option value="en_negociacion">4. En negociación / Propuesta</option>
+                                        <option value="en_tramite">5. En trámite / Notaría</option>
+                                        <option value="cerrado">6. Cerrado / Ganado</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="crm-input-asesor" class="crm-label">Asesor asignado</label>
+                                    <select id="crm-input-asesor" class="crm-input cursor-pointer">
+                                        <option value="asesor-1">José Guerrero</option>
+                                        <option value="asesor-2">Valeria Méndez</option>
+                                        <option value="asesor-3">Carlos Santander</option>
+                                        <option value="asesor-4">Andrea Colmenares</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="crm-input-requisitos" class="crm-label">Requisitos que no negocia</label>
+                                <textarea id="crm-input-requisitos" rows="2" placeholder="Ej: mínimo 4 habitaciones, planta eléctrica, piscina…" class="crm-input resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label for="crm-input-notas" class="crm-label">Notas</label>
+                                <textarea id="crm-input-notas" rows="2" placeholder="Algo que debas recordar de la conversación…" class="crm-input resize-none"></textarea>
+                            </div>
+                        </div>
+                    </details>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Presupuesto Estimado ($ USD) *</label>
-                        <input type="number" id="crm-input-presupuesto" required placeholder="Ej: 250000" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Etapa Inicial en Embudo</label>
-                        <select id="crm-input-estatus" class="w-full px-3 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-bold text-maximus-dark dark:text-white outline-none focus:border-emerald-500 cursor-pointer">
-                            <option value="nuevo">1. Prospección / Nuevo</option>
-                            <option value="contactado">2. Contactado / Calificación</option>
-                            <option value="visita_agendada">3. Búsqueda / Visita Agendada</option>
-                            <option value="en_negociacion">4. En Negociación / Propuesta</option>
-                            <option value="en_tramite">5. En Trámite / Notaría</option>
-                            <option value="cerrado">6. Cerrado / Ganado</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Zonas de Interés (Separadas por comas)</label>
-                    <input type="text" id="crm-input-zonas" placeholder="Ej: Pueblo Nuevo, Urb. Guaparo, Pirineos" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Requisitos Específicos & Criterios</label>
-                    <textarea id="crm-input-requisitos" rows="2" placeholder="Ej: Mínimo 4 habitaciones, piscina privada, planta eléctrica 100%..." class="w-full px-3.5 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500"></textarea>
-                </div>
-
-                <div>
-                    <label class="block font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider text-[10px]">Notas Comerciales & Bitácora Inicial</label>
-                    <textarea id="crm-input-notas" rows="2" placeholder="Detalles de la conversación inicial o requerimientos particulares..." class="w-full px-3.5 py-2 rounded-xl bg-gray-50/90 dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/50 text-xs font-medium text-maximus-dark dark:text-white outline-none focus:border-emerald-500"></textarea>
-                </div>
-
-                <div class="pt-3 border-t border-gray-100 dark:border-emerald-900/40 flex items-center justify-end gap-2.5">
-                    <button type="button" onclick="cerrarModalNuevoClienteCRM()" class="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-emerald-900/60 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#0D2822] transition-colors cursor-pointer">
+                <!-- Acciones: quedan fijas abajo aunque el formulario sea largo -->
+                <div class="sticky bottom-0 px-5 sm:px-6 py-3.5 border-t border-gray-100 dark:border-emerald-900/40 bg-white/95 dark:bg-[#0A1F1B]/95 backdrop-blur flex flex-wrap items-center justify-end gap-2.5">
+                    <button type="button" onclick="cerrarModalNuevoClienteCRM()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#0D2822] transition-colors cursor-pointer">
                         Cancelar
                     </button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-floppy-disk text-base"></i>
-                        <span>Guardar Cliente & Notificar n8n</span>
+                    <button type="submit" id="crm-btn-guardar-otro" onclick="window._crmAgregarOtro = true" class="px-4 py-2.5 rounded-xl border border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                        <i class="ph-bold ph-plus"></i> Guardar y agregar otro
+                    </button>
+                    <button type="submit" id="crm-btn-guardar" onclick="window._crmAgregarOtro = false" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-check text-base"></i>
+                        <span>Guardar cliente</span>
                     </button>
                 </div>
             </form>
@@ -12736,6 +12815,13 @@
             return '<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200/80 dark:border-sky-900/50 shrink-0">❄️ Frío</span>';
         }
 
+        let crmQuickFiltro = 'todos';
+        function setCRMQuick(k) {
+            crmQuickFiltro = (crmQuickFiltro === k && k !== 'todos') ? 'todos' : k;   // un segundo toque lo quita
+            filtrarCRMEnVivo();
+        }
+        window.setCRMQuick = setCRMQuick;
+
         function filtrarCRMEnVivo() {
             const user = getUsuarioActualCRM();
             const esAdmin = esUsuarioAdminCRM();
@@ -12745,7 +12831,7 @@
             const fTemp = document.getElementById('crm-filtro-temperatura')?.value || 'todos';
             const fOperacion = document.getElementById('crm-filtro-operacion')?.value || 'todos';
 
-            const leadsFiltrados = crmLeadsList.filter(l => {
+            const leadsBase = crmLeadsList.filter(l => {
                 // Control de Acceso por Rol:
                 // Si NO es admin, SOLO ve los clientes asignados a su cuenta
                 if (!esAdmin && user) {
@@ -12767,11 +12853,29 @@
                 return true;
             });
 
+            // Filtros rápidos: cada botón muestra cuántos clientes tiene; el elegido recorta la lista
+            const R = window.CRMRapido;
+            const abierto = (l) => !(R ? R.etapaCerrada(l) : false);
+            const quick = {
+                todos: () => true,
+                calientes: (l) => abierto(l) && l.temperatura === 'caliente',
+                sincontacto: (l) => abierto(l) && R && R.diasSinContacto(l) >= 7,
+                visitas: (l) => l.estatus === 'visita_agendada',
+                nuevos: (l) => l.estatus === 'nuevo'
+            };
+            Object.keys(quick).forEach(k => {
+                const n = document.querySelector('[data-crm-quick-n="' + k + '"]');
+                if (n) n.textContent = leadsBase.filter(quick[k]).length;
+            });
+            if (!quick[crmQuickFiltro]) crmQuickFiltro = 'todos';
+            document.querySelectorAll('[data-crm-quick]').forEach(b => b.setAttribute('aria-pressed', String(b.getAttribute('data-crm-quick') === crmQuickFiltro)));
+            const leadsFiltrados = leadsBase.filter(quick[crmQuickFiltro]);
+
             // Estado vacío: sin clientes propios no tiene sentido mostrar filtros ni columnas
             const totalPropios = crmLeadsList.filter(l => esAdmin || !user || leadPerteneceAUsuarioCRM(l, user)).length;
             const sinClientes = totalPropios === 0;
             document.getElementById('crm-empty-state')?.classList.toggle('hidden', !sinClientes);
-            ['crm-barra-filtros', 'crm-vista-kanban', 'crm-vista-tabla'].forEach(id => {
+            ['crm-barra-rapida', 'crm-barra-filtros', 'crm-vista-kanban', 'crm-vista-tabla'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.display = sinClientes ? 'none' : '';
             });
@@ -12805,6 +12909,16 @@
             if (elActivos) elActivos.textContent = activos;
             if (elRatio) elRatio.textContent = ratio + '%';
             if (elVolumen) elVolumen.textContent = '$' + volumenTotal.toLocaleString('en-US');
+        }
+
+        // "Hace 9 días" en las tarjetas: ámbar desde 7 días sin actividad, rojo desde 14
+        function etiquetaContactoCRM(lead) {
+            const R = window.CRMRapido;
+            if (!R || R.etapaCerrada(lead)) return '';
+            const d = R.diasSinContacto(lead);
+            if (d < 3) return '<span class="ml-auto shrink-0 text-[9px] font-bold text-emerald-600">Al día</span>';
+            const cls = d >= 14 ? 'text-red-600 bg-red-50 dark:bg-red-950/40' : d >= 7 ? 'text-amber-700 bg-amber-50 dark:bg-amber-950/40' : 'text-gray-500 bg-gray-100 dark:bg-[#071714]';
+            return '<span class="ml-auto shrink-0 px-1.5 py-0.5 rounded-md text-[9px] font-bold ' + cls + '" title="Última actividad con este cliente">Hace ' + d + ' d</span>';
         }
 
         function renderCRMTableroKanban(leads) {
@@ -12871,6 +12985,7 @@
                         <div class="text-[10px] text-gray-500 dark:text-gray-400 line-clamp-1 flex items-center gap-1 truncate">
                             <i class="ph-fill ph-house-line text-emerald-600 shrink-0"></i>
                             <span class="truncate">${lead.inmueble_interes_titulo || (lead.zonas_interes && lead.zonas_interes[0]) || 'Interés general'}</span>
+                            ${etiquetaContactoCRM(lead)}
                         </div>
 
                         <div class="pt-2 border-t border-gray-100 dark:border-emerald-900/30 flex items-center justify-between text-[10px] gap-1">
@@ -13004,6 +13119,7 @@
         }
 
         function limpiarFiltrosCRM() {
+            crmQuickFiltro = 'todos';
             const inputBusqueda = document.getElementById('crm-filtro-busqueda');
             const selectAsesor = document.getElementById('crm-filtro-asesor');
             const selectTemp = document.getElementById('crm-filtro-temperatura');
@@ -13547,12 +13663,16 @@
             } catch (_) {}
 
             const titleEl = document.getElementById('modalNuevoClienteCRMTitulo');
+            const subEl = document.getElementById('modalNuevoClienteCRMSub');
             const hiddenId = document.getElementById('crm-input-id');
+            let editando = false;
 
             if (leadId) {
                 const lead = (crmLeadsList || []).find(l => l && l.id === leadId);
                 if (lead) {
-                    if (titleEl) titleEl.textContent = 'Editar Cliente CRM';
+                    editando = true;
+                    if (subEl) subEl.textContent = 'Cambia lo que haga falta; se guarda en su ficha.';
+                    if (titleEl) titleEl.textContent = 'Editar cliente';
                     if (hiddenId) hiddenId.value = lead.id;
                     const setVal = (id, val) => {
                         const el = document.getElementById(id);
@@ -13572,8 +13692,10 @@
                     setVal('crm-input-requisitos', lead.requisitos);
                     setVal('crm-input-notas', lead.notas);
                 }
-            } else {
-                if (titleEl) titleEl.textContent = 'Registrar Nuevo Cliente';
+            }
+            if (!editando) {
+                if (titleEl) titleEl.textContent = 'Nuevo cliente';
+                if (subEl) subEl.textContent = 'Lo básico en 10 segundos; el resto lo completas después.';
                 if (hiddenId) hiddenId.value = '';
             }
 
@@ -13585,6 +13707,7 @@
                 modal.style.setProperty('z-index', '999999', 'important');
                 document.body.style.overflow = 'hidden';
             }
+            if (window.CRMRapido && typeof CRMRapido.alAbrirFormulario === 'function') CRMRapido.alAbrirFormulario(editando);
         }
 
         function cerrarModalNuevoClienteCRM() {
@@ -13615,6 +13738,14 @@
             const zonasStr = document.getElementById('crm-input-zonas').value.trim();
             const requisitos = document.getElementById('crm-input-requisitos').value.trim();
             const notas = document.getElementById('crm-input-notas').value.trim();
+
+            // Solo se pide lo imprescindible: nombre y un teléfono con dígitos suficientes
+            if (!nombre) { document.getElementById('crm-input-nombre').focus(); return; }
+            if (telefono.replace(/\D/g, '').length < 10) {
+                mostrarToastNotificacion('📱 Escribe el teléfono completo (con código, ej. 0414-1234567)');
+                document.getElementById('crm-input-telefono').focus();
+                return;
+            }
 
             const user = getUsuarioActualCRM();
             const esAdmin = esUsuarioAdminCRM();
@@ -13659,17 +13790,20 @@
                 if (window.LeadService) {
                     await LeadService.create(payload);
                 }
-                mostrarToastNotificacion(`✅ Cliente ${nombre} creado y notificado a n8n`);
+                mostrarToastNotificacion(`✅ ${nombre} agregado a tu cartera`);
             }
 
+            const agregarOtro = !!window._crmAgregarOtro && !id;
+            window._crmAgregarOtro = false;
             cerrarModalNuevoClienteCRM();
-            
+
             // Recargar
             if (window.LeadService) {
                 const res = await LeadService.getAll();
                 if (res && res.data) crmLeadsList = res.data;
             }
             filtrarCRMEnVivo();
+            if (agregarOtro) abrirModalNuevoClienteCRM();
         }
 
         async function eliminarClienteCRM(leadId) {
