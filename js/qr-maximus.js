@@ -163,13 +163,13 @@
         }
         cuerpo.querySelector('[data-descargar]').addEventListener('click', async (e) => {
             const b = e.currentTarget; b.disabled = true;
-            try { await descargarCartel(url, cartel, archivo); } catch (err) { alert('No se pudo generar el cartel: ' + err.message); }
+            try { await descargarCartel(url, cartel, archivo); } catch (err) { MaxDialog.alert({ tono: 'error', titulo: 'No se pudo generar el cartel', mensaje: err.message }); }
             b.disabled = false;
         });
         cuerpo.querySelector('[data-copiar]').addEventListener('click', async (e) => {
             const span = e.currentTarget.querySelector('span');
             try { await navigator.clipboard.writeText(url); span.textContent = '¡Copiado!'; }
-            catch (_) { prompt('Copia este enlace:', url); }
+            catch (_) { MaxDialog.copiar({ titulo: 'Copia este enlace', texto: url }); }
             setTimeout(() => { span.textContent = 'Copiar enlace'; }, 1800);
         });
     }
@@ -182,7 +182,7 @@
     // ---------- 1. Letrero del inmueble ----------
     async function inmueble() {
         const d = (typeof currentInmuebleAirbnb !== 'undefined') ? currentInmuebleAirbnb : null;
-        if (!d || !d.id) return alert('Abre primero la ficha de un inmueble.');
+        if (!d || !d.id) return MaxDialog.alert({ titulo: 'Abre un inmueble', mensaje: 'Abre primero la ficha de un inmueble para crear su QR.' });
         const cuerpo = abrirModal({ titulo: 'QR para el letrero', subtitulo: d.titulo || 'Inmueble' });
         const url = `${origen()}/detalle-propiedad?id=${encodeURIComponent(d.id)}&qr=1`;
         let extra = '';
@@ -208,13 +208,27 @@
     }
 
     // ---------- 2 y 3. Invitación del cliente (CRM o colección) ----------
-    async function invitar({ email, nombre, telefono, destino, titulo, subtitulo, cartelTitulo }) {
-        const cuerpo = abrirModal({ titulo, subtitulo, cargando: 'Creando la invitación…' });
+    async function invitar({ email, nombre, telefono, destino, titulo, subtitulo, cartelTitulo, lead }) {
         email = String(email || '').trim().toLowerCase();
         if (!email) {
-            email = String(prompt(`Correo de ${nombre || 'tu cliente'} (con él creará su cuenta):`, '') || '').trim().toLowerCase();
-            if (!email) return cerrar();
+            const escrito = await MaxDialog.prompt({
+                icono: 'correo',
+                titulo: '¿A qué correo lo invitamos?',
+                mensaje: (nombre || 'Tu cliente') + ' crea su cuenta con este correo y queda ligado a ti. Se guarda en su ficha para no pedírtelo otra vez.',
+                etiqueta: 'Correo del cliente',
+                placeholder: 'cliente@correo.com',
+                tipo: 'email',
+                aceptar: 'Crear invitación'
+            });
+            if (!escrito) return;
+            email = escrito.toLowerCase();
+            // Se guarda en la ficha del cliente
+            if (lead && lead.id) {
+                lead.email = email;
+                try { if (window.LeadService) LeadService.updateDetalles(lead.id, { email }); } catch (_) {}
+            }
         }
+        const cuerpo = abrirModal({ titulo, subtitulo, cargando: 'Creando la invitación…' });
         const r = await rpc('crear_invitacion_cliente', { p_email: email, p_nombre: nombre || null, p_destino: destino || 'view-mi-asesor' });
         if (!r || r.error || !r.data) {
             const msg = r && r.error && r.error.message ? r.error.message : '';
@@ -235,10 +249,10 @@
     function invitarLead() {
         const lead = (typeof crmLeadsList !== 'undefined' && typeof crmSelectedLeadId !== 'undefined')
             ? crmLeadsList.find(l => l.id === crmSelectedLeadId) : null;
-        if (!lead) return alert('Abre primero la ficha de un cliente.');
+        if (!lead) return MaxDialog.alert({ titulo: 'Abre un cliente', mensaje: 'Abre primero la ficha de un cliente para invitarlo al portal.' });
         return invitar({
             email: lead.email, nombre: lead.nombre, telefono: lead.telefono,
-            titulo: 'Invitar al portal', subtitulo: 'Tu cliente crea su cuenta y queda ligado a ti.'
+            titulo: 'Invitar al portal', subtitulo: 'Tu cliente crea su cuenta y queda ligado a ti.', lead
         });
     }
 

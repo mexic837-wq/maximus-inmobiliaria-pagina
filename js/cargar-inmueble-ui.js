@@ -580,8 +580,8 @@
         if (form && !$('aviso-borrador')) form.parentNode.insertBefore(banner, form);
     }
 
-    function limpiar(preguntar) {
-        if (preguntar && !confirm('¿Borrar todo lo que llenaste en este formulario?')) return;
+    async function limpiar(preguntar) {
+        if (preguntar && !(await MaxDialog.confirm({ peligro: true, icono: 'ph-eraser', titulo: '¿Borrar lo que llenaste?', mensaje: 'Se vacía todo el formulario y no se puede recuperar.', aceptar: 'Sí, borrar todo', cancelar: 'Volver' }))) return;
         const form = FORM();
         if (form) form.reset();
         fotos = []; amenidades = []; precioM2Auto = true;

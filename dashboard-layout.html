@@ -42,17 +42,18 @@
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
     <script src="js/services.js?v=3.8"></script>
-    <script src="js/auth.js?v=4.9"></script>
-    <script src="js/payments.js?v=4.7"></script>
+    <script src="js/auth.js?v=5.0"></script>
+    <script src="js/payments.js?v=4.8"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
     <script src="js/asesor-publico.js?v=1.4"></script>
     <script src="js/oficinas-aliadas.js?v=1.2"></script>
-    <script src="js/cargar-inmueble-ui.js?v=1.1"></script>
+    <script src="js/cargar-inmueble-ui.js?v=1.2"></script>
     <script src="js/busqueda-voz.js?v=1.0"></script>
     <script src="js/mi-asesor.js?v=1.0"></script>
-    <script src="js/qr-maximus.js?v=1.2"></script>
+    <script src="js/qr-maximus.js?v=1.3"></script>
     <script src="js/favoritos.js?v=1.2"></script>
     <script src="js/bandeja-leads.js?v=1.1"></script>
+    <script src="js/dialogo.js?v=1.2"></script>
     <script src="js/crm-rapido.js?v=1.0"></script>
     <script src="js/aviso-demo.js?v=1.2"></script>
     
@@ -9391,7 +9392,7 @@
         }
 
         async function cancelarCitaAgenda(id) {
-            if (!confirm('¿Cancelar esta visita? Esta acción no se puede deshacer.')) return;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-calendar-x', titulo: '¿Cancelar esta visita?', mensaje: 'La visita se quita de la agenda. Esta acción no se puede deshacer.', aceptar: 'Sí, cancelar visita', cancelar: 'Volver' }))) return;
             try { await CitaService.delete(id); } catch (e) { console.warn('Cancelar cita:', e); }
             window._agendaCitas = (window._agendaCitas || []).filter(c => String(c.id) !== String(id));
             renderAgenda();
@@ -10074,9 +10075,9 @@
                 `_Cotización generada por MAXIMUS Inmobiliaria Táchira._`;
 
             navigator.clipboard.writeText(mensaje).then(() => {
-                alert('✅ ¡Cotización copiada al portapapeles! Ya puedes pegarla en WhatsApp.');
+                MaxDialog.alert({ tono: 'ok', titulo: '¡Cotización copiada!', mensaje: 'Ya puedes pegarla en WhatsApp.' });
             }).catch(() => {
-                prompt('Copia tu cotización para WhatsApp:', mensaje);
+                MaxDialog.copiar({ titulo: 'Copia tu cotización', mensaje: 'Cópiala y pégala en WhatsApp.', texto: mensaje });
             });
         }
 
@@ -10250,7 +10251,7 @@
         }
 
         async function eliminarZona(id) {
-            if (!confirm('¿Deseas eliminar esta zona del cotizador?')) return;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-trash', titulo: '¿Eliminar esta zona?', mensaje: 'Dejará de aparecer en el cotizador.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
             if (window.CotizadorService && typeof CotizadorService.deleteZona === 'function') {
                 await CotizadorService.deleteZona(id);
             } else {
@@ -11855,7 +11856,7 @@
             const emailInput = document.getElementById('vip-input-email');
             let clienteEmail = emailInput ? emailInput.value.trim() : '';
             if (!clienteEmail) {
-                clienteEmail = prompt('Ingresa el correo electrónico del cliente para enviarle la Ficha Técnica VIP:', '');
+                clienteEmail = await MaxDialog.prompt({ tipo: 'email', icono: 'correo', titulo: '¿A qué correo enviamos la ficha?', mensaje: 'Le llegará la ficha técnica VIP de este inmueble.', etiqueta: 'Correo del cliente', placeholder: 'cliente@correo.com', aceptar: 'Enviar ficha' });
                 if (!clienteEmail) return;
                 if (emailInput) emailInput.value = clienteEmail.trim();
             }
@@ -12528,7 +12529,7 @@
 
             let emailDestino = col.email || col.cliente_email || '';
             if (!emailDestino) {
-                emailDestino = prompt(`Ingresa el correo electrónico de ${col.cliente} para enviarle su Dossier VIP:`, '');
+                emailDestino = await MaxDialog.prompt({ tipo: 'email', icono: 'correo', titulo: '¿A qué correo enviamos el dossier?', mensaje: 'Le llegará la selección de inmuebles de ' + (col.cliente || 'tu cliente') + '.', etiqueta: 'Correo del cliente', placeholder: 'cliente@correo.com', aceptar: 'Enviar dossier' });
                 if (!emailDestino) return;
                 col.email = emailDestino.trim();
                 col.cliente_email = emailDestino.trim();
@@ -12569,7 +12570,7 @@
         }
 
         async function eliminarColeccionVIP(id) {
-            if (!confirm('¿Estás seguro de eliminar esta colección VIP?')) return;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-trash', titulo: '¿Eliminar esta colección?', mensaje: 'El cliente ya no podrá ver esta selección de inmuebles.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
             if (window.ColeccionesVipService) {
                 await ColeccionesVipService.delete(id);
                 const { data } = await ColeccionesVipService.getAll();
@@ -13369,7 +13370,7 @@
             const selectTipo = document.getElementById('crm-nueva-actividad-tipo');
             const texto = (inputTexto?.value || '').trim();
             if (!texto) {
-                alert('Por favor escribe el contenido de la nota o actividad.');
+                MaxDialog.alert({ titulo: 'Falta el texto', mensaje: 'Escribe el contenido de la nota o actividad antes de guardarla.' });
                 return;
             }
 
@@ -13824,7 +13825,7 @@
 
         async function eliminarClienteCRM(leadId) {
             const lead = crmLeadsList.find(l => l.id === leadId);
-            if (!confirm(`¿Estás seguro de eliminar a ${lead ? lead.nombre : 'este cliente'} de la cartera comercial?`)) return;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-user-minus', titulo: '¿Eliminar a ' + (lead ? lead.nombre : 'este cliente') + '?', mensaje: 'Saldrá de tu cartera comercial junto con su historial. No se puede deshacer.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
 
             if (window.LeadService) {
                 await LeadService.delete(leadId);
@@ -15302,13 +15303,13 @@
         }
 
         async function borrarResenaAsesor(id) {
-            if (!confirm('¿Eliminar tu reseña?')) return;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-star', titulo: '¿Eliminar tu reseña?', mensaje: 'Dejará de mostrarse en el perfil del asesor.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
             try {
                 const { error } = await conLimitePlatinum(sbPlatinum().from('resenas_asesores').delete().eq('id', id));
                 if (error) throw error;
                 await refrescarTrasResena();
             } catch (e) {
-                alert('No se pudo eliminar la reseña.');
+                MaxDialog.alert({ tono: 'error', titulo: 'No se pudo eliminar', mensaje: 'No se pudo eliminar la reseña. Inténtalo de nuevo.' });
             }
         }
 
@@ -15318,7 +15319,7 @@
                 if (error) throw error;
                 await refrescarTrasResena();
             } catch (e) {
-                alert('No se pudo actualizar la reseña.');
+                MaxDialog.alert({ tono: 'error', titulo: 'No se pudo actualizar', mensaje: 'No se pudo actualizar la reseña. Inténtalo de nuevo.' });
             }
         }
 
@@ -15981,7 +15982,7 @@
         }
 
         async function eliminarAsesorMaximus(id) {
-            if (!confirm('¿Estás seguro de eliminar este asesor? Las captaciones vinculadas se conservarán.')) return;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-user-minus', titulo: '¿Eliminar este asesor?', mensaje: 'Las captaciones vinculadas se conservan.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
 
             const targetIdStr = String(id || '').trim();
 
@@ -16490,7 +16491,7 @@
                 if (typeof mostrarToastNotificacion === 'function') {
                     mostrarToastNotificacion('⭐ ¡Gracias por tu reseña! Ya está sincronizada con Supabase y visible en el landing page.');
                 } else {
-                    alert('⭐ ¡Gracias por tu reseña! Ya está publicada en la página principal.');
+                    MaxDialog.alert({ tono: 'ok', icono: 'ph-star', titulo: '¡Gracias por tu reseña!', mensaje: 'Ya está publicada en la página principal.' });
                 }
             } catch(err) {
                 console.error('Error al guardar reseña:', err);
@@ -17351,7 +17352,7 @@
         }
 
         async function eliminarCierreHistorico(id) {
-            if (!confirm('¿Está seguro de eliminar este registro histórico? Esta acción afectará los totales de comisiones.')) {
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-trash', titulo: '¿Eliminar este registro?', mensaje: 'Afectará los totales de comisiones y no se puede deshacer.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) {
                 return;
             }
             if (window.CierreVentaService) {
@@ -17367,7 +17368,12 @@
             const item = data ? data.find(c => c.id === id) : null;
             if (!item) return;
 
-            alert(`====================================\nMAXIMUS INMOBILIARIA - COMPROBANTE DE CIERRE\n====================================\nInmueble: ${item.inmueble_titulo}\nUbicación: ${item.ubicacion}\nAsesor: ${item.asesor_nombre} (Asesor Oficial MAXIMUS)\nFecha de Cierre: ${item.fecha_cierre}\nPrecio de Venta: ${formatUSD(item.precio_final)}\n------------------------------------\nComisión Bruta (${item.comision_bruta_porcentaje}%): ${formatUSD(item.comision_bruta_monto)}\nComisión Neta Asesor (${item.asesor_porcentaje_neto}%): ${formatUSD(item.comision_neta_asesor)}\nRetención Agencia MAXIMUS: ${formatUSD(item.comision_oficina_monto)}\nEstado: ${item.estatus_comision.toUpperCase()}\n------------------------------------\nComprador: ${item.cliente_comprador || 'N/D'}\nPropietario: ${item.cliente_vendedor || 'N/D'}\n====================================`);
+            MaxDialog.alert({ tono: 'ok', icono: 'ph-receipt', titulo: 'Comprobante de cierre', aceptar: 'Cerrar', mensaje: `${item.inmueble_titulo}\n${item.ubicacion}\n\n` +
+              `Asesor: ${item.asesor_nombre}\nFecha de cierre: ${item.fecha_cierre}\nPrecio de venta: ${formatUSD(item.precio_final)}\n\n` +
+              `Comisión bruta (${item.comision_bruta_porcentaje}%): ${formatUSD(item.comision_bruta_monto)}\n` +
+              `Comisión neta del asesor (${item.asesor_porcentaje_neto}%): ${formatUSD(item.comision_neta_asesor)}\n` +
+              `Retención MAXIMUS: ${formatUSD(item.comision_oficina_monto)}\nEstado: ${String(item.estatus_comision || '').toUpperCase()}\n\n` +
+              `Comprador: ${item.cliente_comprador || 'N/D'}\nPropietario: ${item.cliente_vendedor || 'N/D'}` });
         }
         // ==========================================
         // 17. GESTIÓN DE PERFIL & SEGURIDAD DEL ASESOR
@@ -17947,13 +17953,13 @@
             }
         }
 
-        function cambiarFotoPerfilPrompt() {
+        async function cambiarFotoPerfilPrompt() {
             const fileInput = document.getElementById('perfil-file-input');
             if (fileInput) {
                 fileInput.click();
             } else {
                 const actual = document.getElementById('perfil-input-avatar')?.value || '';
-                const nueva = prompt('Ingresa la URL de tu nueva foto de perfil profesional (JPG/PNG):', actual);
+                const nueva = await MaxDialog.prompt({ tipo: 'url', icono: 'foto', titulo: 'Foto de perfil', mensaje: 'Pega la dirección de una imagen JPG o PNG.', etiqueta: 'Dirección de la foto', placeholder: 'https://…', valor: actual, aceptar: 'Usar esta foto' });
                 if (nueva && nueva.trim()) {
                     const url = nueva.trim();
                     document.getElementById('perfil-input-avatar').value = url;
@@ -18395,7 +18401,7 @@
             try {
                 await navigator.clipboard.writeText(tarjetaUrlActual);
                 if (btn) { btn.innerHTML = '<i class="ph-bold ph-check text-emerald-600"></i> ¡Copiado!'; setTimeout(() => { btn.innerHTML = original; }, 2000); }
-            } catch (_) { window.prompt('Copia tu enlace:', tarjetaUrlActual); }
+            } catch (_) { MaxDialog.copiar({ titulo: 'Copia tu enlace', texto: tarjetaUrlActual }); }
         }
 
         function compartirTarjetaWhatsApp() {
@@ -18889,7 +18895,7 @@
         }
 
         async function eliminarAsesorWeb(id, nombre) {
-            if (!confirm(`¿Estás seguro de que deseas eliminar a "${nombre}" de la lista pública de la Landing Page?`)) {
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-user-minus', titulo: '¿Quitar a ' + nombre + ' de la página?', mensaje: 'Dejará de aparecer en la lista pública de asesores de la web.', aceptar: 'Sí, quitar', cancelar: 'Volver' }))) {
                 return;
             }
 
@@ -19169,7 +19175,7 @@
         }
 
         async function eliminarFaqWeb(id, pregunta) {
-            if (!confirm(`¿Estás seguro de que deseas eliminar la pregunta "${pregunta}"?`)) {
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-question', titulo: '¿Eliminar esta pregunta?', mensaje: '"' + pregunta + '"', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) {
                 return;
             }
 
@@ -19634,7 +19640,7 @@
             const item = (listaMaterialInformativo || []).find(m => String(m.id) === String(id));
             const titulo = item ? item.titulo : 'este material';
 
-            if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente "${titulo}" de Supabase y del panel de agentes?`)) {
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-trash', titulo: '¿Eliminar este material?', mensaje: '"' + titulo + '" se borra de forma permanente y los asesores dejarán de verlo.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) {
                 return;
             }
 

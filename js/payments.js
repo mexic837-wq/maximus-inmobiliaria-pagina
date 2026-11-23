@@ -492,7 +492,7 @@ if (typeof window !== 'undefined') window.PaymentGatewayService = PaymentGateway
     window.loginConGoogleDesdeModal = async function () {
         if (typeof AuthService !== 'undefined' && typeof AuthService.loginWithGoogle === 'function') {
             const res = await AuthService.loginWithGoogle();
-            if (res && !res.success) alert('No pudimos iniciar sesión con Google. Usa "Iniciar sesión o crear cuenta".');
+            if (res && !res.success) { const m = 'No pudimos iniciar sesión con Google. Usa "Iniciar sesión o crear cuenta".'; if (window.MaxDialog) MaxDialog.alert({ tono: 'error', titulo: 'No se pudo entrar con Google', mensaje: m }); else alert(m); }
         } else {
             window.location.href = 'login.html';
         }

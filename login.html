@@ -441,8 +441,9 @@
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/bold/style.css">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.2/src/light/style.css">
     <script src="js/services.js?v=3.2"></script>
-    <script src="js/auth.js?v=4.9"></script>
-    <script src="js/payments.js?v=4.7"></script>
+    <script src="js/dialogo.js?v=1.2"></script>
+    <script src="js/auth.js?v=5.0"></script>
+    <script src="js/payments.js?v=4.8"></script>
 
     <!-- Script para interactividad y auth -->
     <script>
@@ -505,7 +506,7 @@
             if (e) e.preventDefault();
             let email = emailInput ? emailInput.value.trim() : '';
             if (!email) {
-                email = prompt('Ingresa tu correo electrónico para recuperar tu contraseña:', '');
+                email = await MaxDialog.prompt({ tipo: 'email', icono: 'llave', titulo: 'Recupera tu contraseña', mensaje: 'Te enviaremos un enlace para crear una nueva.', etiqueta: 'Tu correo', placeholder: 'tucorreo@ejemplo.com', aceptar: 'Enviar enlace' });
                 if (!email) return;
                 if (emailInput) emailInput.value = email.trim();
             }

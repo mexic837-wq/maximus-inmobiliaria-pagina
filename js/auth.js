@@ -1110,24 +1110,31 @@ if (typeof window !== 'undefined') {
      * Pide escribir "ELIMINAR" como confirmación explícita.
      */
     window.solicitarEliminacionCuenta = async function (btn) {
-        const confirmacion = window.prompt(
-            'Esta acción eliminará tu cuenta MAXIMUS y tus datos personales de forma permanente. ' +
-            'No se puede deshacer.\n\nEscribe ELIMINAR para confirmar:'
-        );
-        if (confirmacion === null) return;
-        if (confirmacion.trim().toUpperCase() !== 'ELIMINAR') {
-            window.alert('Confirmación incorrecta. Tu cuenta NO fue eliminada.');
-            return;
+        const dlg = window.MaxDialog;
+        const aviso = (m, tono, titulo) => dlg ? dlg.alert({ tono: tono || 'info', titulo, mensaje: m }) : window.alert(m);
+        if (dlg) {
+            const escrito = await dlg.prompt({
+                peligro: true, icono: 'ph-warning-octagon',
+                titulo: '¿Eliminar tu cuenta?',
+                mensaje: 'Se borran tu cuenta MAXIMUS y tus datos personales de forma permanente. No se puede deshacer.',
+                etiqueta: 'Escribe ELIMINAR para confirmar', placeholder: 'ELIMINAR', aceptar: 'Eliminar mi cuenta',
+                validar: (v) => v.trim().toUpperCase() === 'ELIMINAR' ? null : 'Escribe la palabra ELIMINAR para confirmar.'
+            });
+            if (escrito === null) return;
+        } else {
+            const confirmacion = window.prompt('Esta acción eliminará tu cuenta MAXIMUS y tus datos personales de forma permanente. No se puede deshacer.\n\nEscribe ELIMINAR para confirmar:');
+            if (confirmacion === null) return;
+            if (confirmacion.trim().toUpperCase() !== 'ELIMINAR') { window.alert('Confirmación incorrecta. Tu cuenta NO fue eliminada.'); return; }
         }
         const original = btn ? btn.innerHTML : '';
         if (btn) { btn.disabled = true; btn.innerHTML = 'Eliminando cuenta...'; }
         const res = await AuthService.deleteAccount();
         if (res.success) {
-            window.alert('Tu cuenta fue eliminada correctamente. Lamentamos verte partir.');
+            await aviso('Tu cuenta fue eliminada correctamente. Lamentamos verte partir.', 'ok', 'Cuenta eliminada');
             window.location.href = 'index.html';
         } else {
             if (btn) { btn.disabled = false; btn.innerHTML = original; }
-            window.alert(res.error || 'No se pudo eliminar la cuenta. Escríbenos a contacto@maximusinmobiliaria.com');
+            aviso(res.error || 'No se pudo eliminar la cuenta. Escríbenos a contacto@maximusinmobiliaria.com', 'error', 'No se pudo eliminar');
         }
     };
 
@@ -1141,7 +1148,7 @@ if (typeof window !== 'undefined') {
         const res = await AuthService.loginWithApple();
         if (!res.success || !res.redirecting) {
             if (btn) { btn.disabled = false; btn.innerHTML = original; }
-            if (!res.success) window.alert(res.error || 'No se pudo iniciar sesión con Apple.');
+            if (!res.success) { const m = res.error || 'No se pudo iniciar sesión con Apple.'; if (window.MaxDialog) MaxDialog.alert({ tono: 'error', titulo: 'No se pudo entrar con Apple', mensaje: m }); else window.alert(m); }
         }
     };
 }
