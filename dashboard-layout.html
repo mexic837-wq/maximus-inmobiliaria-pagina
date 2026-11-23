@@ -41,7 +41,7 @@
     <script src="js/config.js?v=4.7"></script>
     <script src="js/supabase-client.js?v=3.0"></script>
     <script src="js/mock-data.js?v=3.0"></script>
-    <script src="js/services.js?v=3.5"></script>
+    <script src="js/services.js?v=3.6"></script>
     <script src="js/auth.js?v=4.7"></script>
     <script src="js/payments.js?v=4.7"></script>
     <script src="js/limites-inmuebles.js?v=1.2"></script>
@@ -52,6 +52,7 @@
     <script src="js/mi-asesor.js?v=1.0"></script>
     <script src="js/qr-maximus.js?v=1.2"></script>
     <script src="js/favoritos.js?v=1.2"></script>
+    <script src="js/bandeja-leads.js?v=1.1"></script>
     
     <style>
         .view-section { display: none; }
@@ -1135,7 +1136,7 @@
         [onclick*="abrirModalSuscripcionPro"], #cta-hazte-platinum { display: none !important; }
     </style>
     <!-- Tailwind compilado (antes cdn.tailwindcss.com compilaba en el navegador). Recompilar: npm run build:css -->
-    <link rel="stylesheet" href="assets/css/panel.css?v=1">
+    <link rel="stylesheet" href="assets/css/panel.css?v=2">
 </head>
 <body class="h-full w-full font-sans text-maximus-black flex overflow-hidden antialiased selection:bg-maximus-dark selection:text-white bg-maximus-bg dark:bg-[#071714] transition-colors duration-300">
 
@@ -1272,6 +1273,14 @@
                 <!-- Gestión -->
                 <p class="sidebar-category staff-only text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2 mb-4 mt-8">Gestión Comercial</p>
                 <div class="sidebar-collapsed-divider staff-only"></div>
+
+                <!-- Bandeja de leads: contactos sin responder -->
+                <a href="#" id="nav-bandeja-leads" data-target="view-bandeja-leads" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Bandeja de leads">
+                    <i class="ph ph-tray text-xl flex-shrink-0"></i>
+                    <span class="sidebar-label">Bandeja de leads</span>
+                    <span id="badge-bandeja-leads" class="hidden ml-auto min-w-[22px] h-[22px] px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">0</span>
+                    <span class="sidebar-tooltip">Bandeja de leads</span>
+                </a>
 
                 <!-- Mis Clientes / CRM del Asesor -->
                 <a href="#" id="nav-mis-clientes" data-target="view-mis-clientes" class="nav-link staff-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Mis Clientes / CRM Asesor">
@@ -2865,6 +2874,41 @@
             <!-- ========================================================
                  AGENDA DE VISITAS (asesores)
                  ======================================================== -->
+            <!-- BANDEJA DE LEADS: contactos sin responder con cronómetro (js/bandeja-leads.js) -->
+            <section id="view-bandeja-leads" class="view-section max-w-[1100px] mx-auto space-y-5 pb-10">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Bandeja de leads</h1>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium mt-0.5">Clientes que esperan tu primera respuesta. Contestar en menos de 5 minutos multiplica las visitas.</p>
+                    </div>
+                    <button type="button" id="bandeja-refrescar" class="h-10 px-4 rounded-xl border border-gray-200 dark:border-emerald-900 bg-white dark:bg-[#0A1F1B] text-gray-700 dark:text-gray-200 font-semibold text-[13px] shadow-sm flex items-center gap-2 cursor-pointer self-start sm:self-auto hover:bg-gray-50">
+                        <i class="ph-bold ph-arrows-clockwise"></i> Actualizar
+                    </button>
+                </div>
+
+                <div class="grid gap-3" style="grid-template-columns: repeat(3, minmax(0, 1fr)) !important;">
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-gray-100 dark:border-emerald-950/60 shadow-sm">
+                        <p id="bandeja-kpi-pendientes" class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white leading-none">–</p>
+                        <p class="mt-1.5 text-xs text-gray-500">Esperando respuesta</p>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-gray-100 dark:border-emerald-950/60 shadow-sm">
+                        <p id="bandeja-kpi-5min" class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white leading-none">–</p>
+                        <p class="mt-1.5 text-xs text-gray-500">Respondidos en &lt; 5 min (7 días)</p>
+                    </div>
+                    <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl p-4 border border-gray-100 dark:border-emerald-950/60 shadow-sm">
+                        <p id="bandeja-kpi-mediana" class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white leading-none">–</p>
+                        <p class="mt-1.5 text-xs text-gray-500">Tiempo típico de respuesta</p>
+                    </div>
+                </div>
+
+                <div id="bandeja-lista" class="space-y-3"></div>
+
+                <div class="space-y-2">
+                    <h2 class="text-sm font-extrabold text-gray-700 dark:text-gray-200 px-1">Respondidos hoy</h2>
+                    <div id="bandeja-respondidos" class="grid gap-2 sm:grid-cols-2"></div>
+                </div>
+            </section>
+
             <section id="view-agenda" class="view-section max-w-[1000px] mx-auto space-y-5 pb-10">
                 <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
@@ -9453,7 +9497,7 @@
                 'view-colecciones', 'view-vendidos', 'view-cotizador', 
                 'view-admin-cargar-inmueble', 'view-admin-cotizador', 
                 'view-admin-config', 'view-admin-equipo-web', 'view-admin-oficinas', 'view-admin-faqs', 'view-tutoriales', 'view-admin-tutoriales',
-                'view-mis-clientes',
+                'view-mis-clientes', 'view-bandeja-leads',
                 'view-admin-usuarios'
             ];
 
@@ -9637,6 +9681,7 @@
                 if (typeof cargarDatosVistaPerfil === 'function') cargarDatosVistaPerfil();
             }
             if (targetId === 'view-mi-asesor' && window.MiAsesor) MiAsesor.cargar();
+            if (targetId === 'view-bandeja-leads' && window.BandejaLeads) BandejaLeads.cargar();
             if (targetId === 'view-favoritos' && window.FavoritosComparador) FavoritosComparador.cargar();
             if (targetId === 'view-admin-usuarios') {
                 if (typeof inicializarAdminUsuarios === 'function') inicializarAdminUsuarios();
