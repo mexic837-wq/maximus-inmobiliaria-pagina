@@ -737,7 +737,7 @@
 
             let favs = [];
             try {
-                const raw = localStorage.getItem('maximus_favoritos');
+                const raw = localStorage.getItem(window.maximusFavKey());
                 if (raw) favs = JSON.parse(raw);
             } catch(e) {}
 
@@ -750,7 +750,7 @@
                 mostrarToastNotificacion('Propiedad removida de favoritos');
             }
 
-            localStorage.setItem('maximus_favoritos', JSON.stringify(favs));
+            localStorage.setItem(window.maximusFavKey(), JSON.stringify(favs));
             actualizarEstadoBotonGuardar();
 
             // Sincronizar favorito con Supabase en tiempo real si el usuario inició sesión
@@ -789,7 +789,7 @@
 
             let favs = [];
             try {
-                const raw = localStorage.getItem('maximus_favoritos');
+                const raw = localStorage.getItem(window.maximusFavKey());
                 if (raw) favs = JSON.parse(raw);
             } catch(e) {}
 

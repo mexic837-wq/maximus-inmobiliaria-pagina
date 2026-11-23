@@ -1,3 +1,17 @@
+// Clave de favoritos POR CUENTA (antes era una sola 'maximus_favoritos' compartida por todas las cuentas del navegador)
+window.maximusFavKey = function () {
+    let id = '';
+    try {
+        const raw = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('maximus_user')) ||
+                    (typeof localStorage !== 'undefined' && localStorage.getItem('maximus_user'));
+        if (raw) {
+            const u = JSON.parse(raw) || {};
+            id = String(u.email || u.id || u.auth_id || '').toLowerCase().trim();
+        }
+    } catch (_) {}
+    return id ? 'maximus_favoritos:' + id : 'maximus_favoritos_anonimo';
+};
+
 /**
  * ============================================
  * MAXIMUS - Capa de Servicios de Datos
@@ -3058,7 +3072,7 @@ const UsuarioAdminService = {
         if (usersMap.size === 0) {
             try {
                 const regUsers = (typeof localStorage !== 'undefined' && localStorage.getItem('maximus_registered_users')) ? JSON.parse(localStorage.getItem('maximus_registered_users')) || {} : {};
-                const favsGlobal = (typeof localStorage !== 'undefined' && localStorage.getItem('maximus_favoritos')) ? JSON.parse(localStorage.getItem('maximus_favoritos')) || [] : [];
+                const favsGlobal = [];
 
                 Object.entries(regUsers).forEach(([email, data]) => {
                     const cleanEmail = email.toLowerCase().trim();

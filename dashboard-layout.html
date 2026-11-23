@@ -77,6 +77,18 @@
     <style>
         .view-section { display: none; }
         .view-section.active { display: block; }
+        /* Skeleton de transición entre secciones */
+        .view-section.has-skeleton { position: relative; }
+        .sk-overlay { position: absolute; inset: 0; z-index: 40; overflow: hidden; background: var(--sk-bg, #F4F8F7); pointer-events: none; transition: opacity .28s ease; }
+        .sk-overlay.sk-out { opacity: 0; }
+        .sk-overlay .sk-wrap { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+        .sk-block { position: relative; overflow: hidden; border-radius: 14px; background: #E3ECE9; }
+        .sk-block::after { content: ''; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.65), transparent); animation: sk-shimmer 1.2s infinite; }
+        html.dark .sk-block { background: #0F2B26; }
+        html.dark .sk-block::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent); }
+        .sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+        @keyframes sk-shimmer { 100% { transform: translateX(100%); } }
+        @media (prefers-reduced-motion: reduce) { .sk-block::after { animation: none; } }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
@@ -9418,6 +9430,33 @@
         window.renderBienvenidaAsesor = renderBienvenidaAsesor;
         window.addEventListener('load', () => setTimeout(() => renderBienvenidaAsesor(), 1200));
 
+        // Skeleton breve sobre la sección que se abre, para que el cambio no sea brusco
+        function mostrarSkeletonSeccion(view) {
+            if (!view || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            try {
+                const viejo = view.querySelector(':scope > .sk-overlay');
+                if (viejo) viejo.remove();
+                const bg = getComputedStyle(document.body).backgroundColor;
+                const card = '<div class="sk-block" style="height:230px"></div>';
+                const ov = document.createElement('div');
+                ov.className = 'sk-overlay';
+                ov.setAttribute('aria-hidden', 'true');
+                ov.style.setProperty('--sk-bg', bg);
+                ov.innerHTML = `<div class="sk-wrap">
+                    <div class="sk-block" style="height:34px;width:min(320px,60%)"></div>
+                    <div class="sk-block" style="height:16px;width:min(460px,80%)"></div>
+                    <div class="sk-block" style="height:52px"></div>
+                    <div class="sk-grid">${card.repeat(8)}</div>
+                </div>`;
+                view.classList.add('has-skeleton');
+                view.prepend(ov);
+                setTimeout(() => {
+                    ov.classList.add('sk-out');
+                    setTimeout(() => { ov.remove(); view.classList.remove('has-skeleton'); }, 300);
+                }, 380);
+            } catch (e) {}
+        }
+
         function activateTab(targetId, animate = true) {
             // Verificar restricciones para usuarios normales
             let currentUserRole = 'asesor_maximus';
@@ -9503,6 +9542,7 @@
             }
 
             // 3. Ocultar todas las vistas
+            const vistaPrevia = Array.from(views).find(v => v.classList.contains('active'));
             views.forEach(view => view.classList.remove('active'));
 
             // 4. Mostrar vista seleccionada
@@ -9512,6 +9552,11 @@
                 if (animate) {
                     animateSection(targetView);
                 }
+                // Después de animateSection, para que el overlay no entre en esa animación
+                if (animate && vistaPrevia && vistaPrevia !== targetView && window.__maximusTabListo) {
+                    mostrarSkeletonSeccion(targetView);
+                }
+                window.__maximusTabListo = true;
             }
 
             // Registrar la última vista válida para volver exactamente a donde estaba el usuario
@@ -19928,7 +19973,7 @@
         // ========================================================
         function getFavoritosDashboard() {
             try {
-                const raw = localStorage.getItem('maximus_favoritos');
+                const raw = localStorage.getItem(window.maximusFavKey());
                 if (raw) return JSON.parse(raw);
             } catch(e) {}
             return [];
@@ -19961,7 +20006,7 @@
             }
 
             try {
-                localStorage.setItem('maximus_favoritos', JSON.stringify(favs));
+                localStorage.setItem(window.maximusFavKey(), JSON.stringify(favs));
             } catch(e) {}
 
             actualizarContadoresFavoritosDashboard();
