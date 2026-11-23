@@ -77,6 +77,12 @@
     <style>
         .view-section { display: none; }
         .view-section.active { display: block; }
+        /* Entrada de sección: un solo fundido ligero (sin fill-mode final, para no dejar transform activo) */
+        .view-section.sec-in { animation: sec-in .18s ease-out backwards; }
+        @keyframes sec-in { from { opacity: 0; transform: translateY(6px); } }
+        @media (prefers-reduced-motion: reduce) { .view-section.sec-in { animation: none; } }
+        /* Las tarjetas fuera de pantalla no se pintan hasta que se acercan (listas largas en gama baja) */
+        .tarjeta-inmueble { content-visibility: auto; contain-intrinsic-size: auto 380px; }
         /* Skeleton de transición entre secciones */
         .view-section.has-skeleton { position: relative; }
         .sk-overlay { position: absolute; inset: 0; z-index: 40; overflow: hidden; background: var(--sk-bg, #F4F8F7); pointer-events: none; transition: opacity .28s ease; }
@@ -8628,38 +8634,13 @@
         // 7. ANIMACIÓN FLUIDA DE SECCIÓN (GSAP)
         // ==========================================
         function animateSection(targetView) {
-            if (!targetView || !window.gsap) return;
-
-            // Colectar los elementos internos para animarlos en cascada (stagger)
-            const elementsToAnimate = [];
-            const directChildren = Array.from(targetView.children);
-
-            directChildren.forEach(child => {
-                // Si el contenedor es una grilla (como las tarjetas de inmuebles o KPIs), animar cada tarjeta individualmente
-                if (child.classList.contains('grid') && child.children.length > 0) {
-                    elementsToAnimate.push(...Array.from(child.children));
-                } else {
-                    elementsToAnimate.push(child);
-                }
-            });
-
-            if (elementsToAnimate.length === 0) return;
-
-            // Animación limpia, ultra nítida y fluida (Sin blur pesado, 60fps suave)
-            gsap.fromTo(elementsToAnimate,
-                {
-                    opacity: 0,
-                    y: 14,
-                },
-                {
-                    opacity: 1,
-                    y: 0,
-                    duration: 0.32,
-                    stagger: 0.035,
-                    ease: 'power2.out',
-                    clearProps: 'transform,opacity'
-                }
-            );
+            if (!targetView) return;
+            // Un solo fundido CSS (opacity + transform, acelerado por GPU) sobre toda la sección.
+            // Antes se animaba cada tarjeta con GSAP y un escalonado: con cientos de tarjetas las
+            // últimas tardaban segundos en aparecer y se sentía lento.
+            targetView.classList.remove('sec-in');
+            void targetView.offsetWidth;
+            targetView.classList.add('sec-in');
         }
 
         // ==========================================
@@ -9446,14 +9427,14 @@
                     <div class="sk-block" style="height:34px;width:min(320px,60%)"></div>
                     <div class="sk-block" style="height:16px;width:min(460px,80%)"></div>
                     <div class="sk-block" style="height:52px"></div>
-                    <div class="sk-grid">${card.repeat(8)}</div>
+                    <div class="sk-grid">${card.repeat(4)}</div>
                 </div>`;
                 view.classList.add('has-skeleton');
                 view.prepend(ov);
                 setTimeout(() => {
                     ov.classList.add('sk-out');
                     setTimeout(() => { ov.remove(); view.classList.remove('has-skeleton'); }, 300);
-                }, 380);
+                }, 260);
             } catch (e) {}
         }
 
@@ -9648,7 +9629,12 @@
                 }
             }
 
-            // Lógica específica para cada vista
+            // Lógica específica para cada vista.
+            // Se difiere un fotograma: así el menú y el skeleton se pintan al instante y el
+            // trabajo pesado de la vista no bloquea el clic (clave en dispositivos de gama baja).
+            const tokTab = (window.__tabTok = (window.__tabTok || 0) + 1);
+            const iniciarVista = () => {
+            if (tokTab !== window.__tabTok) return; // el usuario ya cambió de sección
             if (targetId === 'view-resumen' && typeof renderBienvenidaAsesor === 'function') renderBienvenidaAsesor();
             if (targetId === 'view-agenda' && typeof inicializarAgenda === 'function') inicializarAgenda();
             if (targetId === 'view-exclusivas-maximus') {
@@ -9707,6 +9693,8 @@
                     abrirDetalleInmuebleAirbnb(lastInmId);
                 }
             }
+            };
+            requestAnimationFrame(() => setTimeout(iniciarVista, 0));
         }
 
         // Listener de clic en los enlaces del menú lateral
