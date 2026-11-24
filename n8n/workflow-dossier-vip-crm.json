@@ -1,0 +1,162 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 05b. Dossier VIP por correo desde el CRM",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. **Gmail**: en el nodo *Email al cliente* elige tu credencial *Gmail OAuth2* (la misma de tus otros flujos).\n2. Revisa las constantes de *Preparar datos* (logo, catálogo, WhatsApp de la oficina).\n3. **Publica** el flujo.\n\nUsa la dirección `/webhook/dossier-vip-crm` (el panel ya apunta ahí). No choca con el flujo viejo «05. Envío de Dossier…», que puedes dejar activo para la *Ficha VIP*.\nSi el cliente no tiene un correo válido el flujo no envía nada (el panel pide el correo antes de enviar).\nEnvía hasta 8 inmuebles con foto, precio y datos.",
+        "width": 460,
+        "height": 360,
+        "color": 4
+      },
+      "id": "setup",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dossier-vip-crm",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 200,
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "dv-webhook",
+      "name": "Webhook Dossier VIP",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ],
+      "webhookId": "maximus-dossier-vip-crm"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lo envía el CRM (Enviar Dossier VIP) con la selección de inmuebles para el cliente.\n// ===== CONFIGURA AQUÍ =====\nconst URL_LOGO = 'https://maximusinmobiliaria.tech/assets/email/logo-maximus-email.png';\nconst URL_CATALOGO = 'https://maximusinmobiliaria.tech/catalog.html';\nconst WHATSAPP_OFICINA = '584247835697';\n// ==========================\nconst b = $input.first().json.body || $input.first().json;\nconst esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst aWa = (t) => { const d = String(t || '').replace(/\\D/g, ''); if (!d) return ''; if (d.startsWith('58')) return d; return '58' + d.replace(/^0/, ''); };\nconst urlSegura = (u) => /^https?:\\/\\//i.test(String(u || '')) ? esc(u) : '';\n\nconst objetos = (a) => Array.isArray(a) ? a.filter(x => x && typeof x === 'object') : [];\nlet lista = objetos(b.inmuebles_detalle);\nif (!lista.length) lista = objetos(b.inmuebles);\n\nconst cliente = String(b.cliente || b.cliente_nombre || 'Cliente').trim();\nconst email = String(b.cliente_email || b.email || '').trim();\nconst asesor = String(b.asesor || b.asesor_nombre || 'Asesor MAXIMUS').trim();\nconst telAsesor = aWa(b.asesor_telefono) || WHATSAPP_OFICINA;\nconst titulo = String(b.titulo || 'Portafolio Exclusivo MAXIMUS').trim();\nconst nota = String(b.nota || '').trim();\n\nconst precioTxt = (p) => {\n  const s = String(p == null ? '' : p).trim();\n  if (!s) return 'Consultar';\n  return /^\\d+(\\.\\d+)?\\s*(USD)?$/i.test(s) ? 'US$ ' + Number(s.replace(/[^\\d.]/g, '')).toLocaleString('en-US') : s.replace(/\\s*USD$/i, '').replace(/^/, 'US$ ');\n};\n\nconst tarjetas = lista.slice(0, 8).map(p => {\n  const foto = urlSegura(p.foto);\n  const datos = [p.habitaciones ? esc(p.habitaciones) + ' hab.' : '', p.banos ? esc(p.banos) + ' baños' : '', p.m2 ? esc(p.m2) + ' m²' : ''].filter(Boolean).join(' · ');\n  return '<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;margin:0 0 14px 0;background:#FFFFFF;\">'\n    + (foto ? '<tr><td><img src=\"' + foto + '\" width=\"528\" alt=\"\" style=\"display:block;width:100%;height:auto;max-height:230px;object-fit:cover;border:0;\"></td></tr>' : '')\n    + '<tr><td style=\"padding:14px 18px;\">'\n    + '<p style=\"margin:0 0 4px 0;font-size:10px;font-weight:800;letter-spacing:1.5px;color:#059669;text-transform:uppercase;\">' + esc(p.codigo || '#MAX') + '</p>'\n    + '<p style=\"margin:0 0 6px 0;font-size:15px;font-weight:800;color:#0F172A;line-height:1.35;\">' + esc(p.titulo || 'Inmueble MAXIMUS') + '</p>'\n    + '<p style=\"margin:0 0 6px 0;font-size:17px;font-weight:800;color:#0B4A3F;\">' + esc(precioTxt(p.precio)) + '</p>'\n    + (p.ubicacion ? '<p style=\"margin:0 0 4px 0;font-size:12px;color:#64748B;\">📍 ' + esc(p.ubicacion) + '</p>' : '')\n    + (datos ? '<p style=\"margin:0;font-size:12px;color:#475569;\">' + datos + '</p>' : '')\n    + '</td></tr></table>';\n}).join('');\n\nreturn [{ json: {\n  cliente: esc(cliente), primer_nombre: esc(cliente.split(/\\s+/)[0]), email,\n  tiene_email: /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email),\n  titulo: esc(titulo), nota: esc(nota), asesor: esc(asesor),\n  asesor_email: String(b.asesor_email || '').trim(),\n  cantidad: lista.length,\n  propiedades_html: tarjetas || '<p style=\"margin:0 0 18px 0;font-size:14px;color:#475569;line-height:1.6;\">Tu asesor te compartirá la selección de inmuebles en los próximos minutos. Mientras tanto, puedes ver todo nuestro catálogo.</p>',\n  url_catalogo: URL_CATALOGO, logo_url: URL_LOGO,\n  url_whatsapp_asesor: 'https://wa.me/' + telAsesor,\n} }];"
+      },
+      "id": "dv-preparar",
+      "name": "Preparar datos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "dv-if-c",
+              "leftValue": "={{ $json.tiene_email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "dv-if",
+      "name": "¿Tiene correo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        740,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "=✨ {{ $json.titulo }} · MAXIMUS Inmobiliaria",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"color-scheme\" content=\"light only\"><title>{{ $json.titulo }}</title></head>\n<body style=\"margin:0;padding:0;background-color:#F4F7F6;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;\">\n<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6;padding:32px 16px;\"><tr><td align=\"center\">\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px;width:100%;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E2E8F0;\">\n<tr><td style=\"height:6px;background:linear-gradient(90deg,#0B4A3F 0%,#10B981 50%,#CBD5E1 100%);\"></td></tr>\n<tr><td align=\"center\" style=\"background:linear-gradient(135deg,#071714 0%,#0B4A3F 100%);padding:30px 32px 24px 32px;border-bottom:2px solid #10B981;\">\n<img src=\"{{ $json.logo_url }}\" width=\"64\" alt=\"MAXIMUS\" style=\"display:block;width:64px;height:auto;margin:0 auto 12px auto;border:0;font-size:14px;font-weight:800;color:#F8FAFC;\">\n<h1 style=\"margin:0;font-size:22px;font-weight:800;letter-spacing:2px;color:#F8FAFC;text-transform:uppercase;\">MAXIMUS<span style=\"color:#10B981;\">.</span></h1>\n<p style=\"margin:4px 0 0 0;font-size:11px;font-weight:700;letter-spacing:4px;color:#CBD5E1;text-transform:uppercase;\">INMOBILIARIA</p></td></tr>\n<tr><td style=\"padding:34px 36px 28px 36px;\">\n<span style=\"display:inline-block;background-color:#ECFDF5;border:1px solid #A7F3D0;color:#059669;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;\">✨ Selección privada VIP</span>\n<h2 style=\"margin:16px 0 10px 0;font-size:22px;font-weight:800;color:#0F172A;line-height:1.3;\">{{ $json.titulo }}</h2>\n<p style=\"margin:0 0 22px 0;font-size:15px;line-height:1.65;color:#475569;\">Hola <strong style=\"color:#0F172A;\">{{ $json.primer_nombre }}</strong>, tu asesor <strong style=\"color:#0B4A3F;\">{{ $json.asesor }}</strong> preparó esta selección pensando en lo que buscas.{{ $json.nota ? ' ' + $json.nota : '' }}</p>\n{{ $json.propiedades_html }}\n<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin:22px auto 0 auto;\"><tr><td align=\"center\"><a href=\"{{ $json.url_whatsapp_asesor }}\" style=\"display:inline-block;background-color:#0B4A3F;color:#FFFFFF;text-decoration:none;padding:14px 30px;border-radius:12px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;\">Hablar con mi asesor →</a></td></tr></table>\n<p style=\"margin:18px 0 0 0;font-size:12px;line-height:1.6;color:#64748B;text-align:center;\">¿Quieres ver más opciones? <a href=\"{{ $json.url_catalogo }}\" style=\"color:#059669;font-weight:700;text-decoration:none;\">Explora el catálogo completo</a>.</p>\n</td></tr>\n<tr><td style=\"background-color:#111827;padding:22px 32px;border-top:3px solid #10B981;text-align:center;\">\n<p style=\"margin:0 0 4px 0;font-size:13px;font-weight:800;color:#F8FAFC;letter-spacing:1.5px;\">MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500;font-size:11px;color:#CBD5E1;letter-spacing:2px;\">INMOBILIARIA</span></p>\n<p style=\"margin:0;font-size:11px;color:#94A3B8;line-height:1.5;\">Experiencia, exclusividad y respaldo legal en cada inversión.<br>San Cristóbal, Estado Táchira · Venezuela</p></td></tr>\n</table></td></tr></table></body></html>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria",
+          "replyTo": "={{ $json.asesor_email }}"
+        }
+      },
+      "id": "dv-mail",
+      "name": "Email al cliente",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        980,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Dossier VIP": {
+      "main": [
+        [
+          {
+            "node": "Preparar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar datos": {
+      "main": [
+        [
+          {
+            "node": "¿Tiene correo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Tiene correo?": {
+      "main": [
+        [
+          {
+            "node": "Email al cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false
+}
