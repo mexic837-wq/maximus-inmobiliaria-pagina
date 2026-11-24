@@ -1,0 +1,278 @@
+{
+  "name": "MAXIMUS Inmobiliaria - 06. Confirmación de visita desde el CRM",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ Configuración (una sola vez)\n1. **Desactiva** el flujo viejo «06. Confirmación de Cita y Visita Inmobiliaria»: usa la misma dirección `/webhook/nueva-cita` y no deben estar activos los dos.\n2. **Gmail**: en los 2 nodos de correo elige tu credencial *Gmail OAuth2* (la misma de tus otros flujos).\n3. **WhatsApp**: en el nodo *WhatsApp al cliente* elige la credencial *Evolution API* (Header Auth con la `apikey`), la misma de *Leads sin responder*.\n4. Revisa las constantes de *Preparar datos* (correo admin, instancia de WhatsApp, logo).\n5. **Publica** el flujo.\n\nResponde al instante al CRM y luego avisa: si falla un canal, los demás se envían igual (revisa *Executions*).\nEl cliente solo recibe correo si tiene uno; solo recibe WhatsApp si tiene teléfono.",
+        "width": 480,
+        "height": 440,
+        "color": 4
+      },
+      "id": "setup",
+      "name": "Nota setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "nueva-cita",
+        "responseMode": "onReceived",
+        "options": {
+          "responseCode": 200,
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "nc-webhook",
+      "name": "Webhook Nueva Cita",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ],
+      "webhookId": "maximus-nueva-cita"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lo envía el CRM (botón \"Confirmar Cita & Notificar\") al agendar una visita.\n// ===== CONFIGURA AQUÍ =====\nconst CORREO_ADMIN = 'maximusinmobiliariars@gmail.com';\nconst URL_LOGO = 'https://maximusinmobiliaria.tech/assets/email/logo-maximus-email.png';\nconst WA_API_URL = 'https://evolution.maximusinmobiliaria.tech';\nconst WA_INSTANCIA = 'maximus';\nconst WHATSAPP_OFICINA = '584247835697';\n// ==========================\nconst b = $input.first().json.body || $input.first().json;\nconst esc = (s) => String(s == null ? '' : s).replace(/[&<>\"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' }[c]));\nconst aWa = (t) => { const d = String(t || '').replace(/\\D/g, ''); if (!d) return ''; if (d.startsWith('58')) return d; return '58' + d.replace(/^0/, ''); };\n\nlet fechaTxt = String(b.fecha || 'Por confirmar');\nconst m = fechaTxt.match(/^(\\d{4})-(\\d{2})-(\\d{2})/);\nif (m) {\n  const f = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));\n  fechaTxt = f.toLocaleDateString('es-VE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });\n  fechaTxt = fechaTxt.charAt(0).toUpperCase() + fechaTxt.slice(1);\n}\nlet horaTxt = String(b.hora || '').trim();\nconst h = horaTxt.match(/^(\\d{1,2}):(\\d{2})/);\nif (h && !/am|pm/i.test(horaTxt)) {\n  const hh = Number(h[1]);\n  horaTxt = ((hh % 12) || 12) + ':' + h[2] + ' ' + (hh >= 12 ? 'PM' : 'AM');\n}\nif (!horaTxt) horaTxt = 'Por confirmar';\n\nconst cliente = String(b.cliente_nombre || b.cliente || 'Cliente').trim();\nconst primerNombre = cliente.split(/\\s+/)[0];\nconst inmueble = String(b.inmueble_titulo || b.inmueble_nombre || b.propiedad || 'Inmueble MAXIMUS').trim();\nconst lugar = String(b.ubicacion || '').trim();\nconst asesor = String(b.asesor_nombre || b.asesor || 'Asesor MAXIMUS').trim();\nconst email = String(b.cliente_email || b.email || '').trim();\nconst telCliente = aWa(b.cliente_telefono || b.telefono);\nconst telAsesor = aWa(b.asesor_telefono) || WHATSAPP_OFICINA;\nconst notas = String(b.notas || '').trim();\n\nconst lineas = [\n  'Hola ' + primerNombre + ' 👋, te escribe ' + asesor + ' de *MAXIMUS Inmobiliaria*.',\n  '',\n  '📅 Tu visita quedó confirmada:',\n  '🏠 ' + inmueble,\n  '🗓️ ' + fechaTxt + ' · ' + horaTxt,\n];\nif (lugar) lineas.push('📍 ' + lugar);\nlineas.push('', 'Si necesitas reprogramar, respóndeme por aquí. ¡Te esperamos!');\n\nreturn [{ json: {\n  cliente: esc(cliente), primer_nombre: esc(primerNombre), inmueble: esc(inmueble),\n  fecha: esc(fechaTxt), hora: esc(horaTxt), lugar: esc(lugar || 'Por coordinar con tu asesor'),\n  notas: esc(notas), asesor: esc(asesor),\n  email, tiene_email: /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email),\n  telefono_cliente: telCliente, tiene_whatsapp: telCliente.length >= 11,\n  texto_whatsapp: lineas.join('\\n'),\n  wa_url_envio: WA_API_URL + '/message/sendText/' + WA_INSTANCIA,\n  correo_admin: CORREO_ADMIN, logo_url: URL_LOGO,\n  url_whatsapp_asesor: 'https://wa.me/' + telAsesor,\n  url_whatsapp_cliente: telCliente ? 'https://wa.me/' + telCliente : 'https://wa.me/' + WHATSAPP_OFICINA,\n} }];"
+      },
+      "id": "nc-preparar",
+      "name": "Preparar datos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "nc-if-mail-c",
+              "leftValue": "={{ $json.tiene_email }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "nc-if-mail",
+      "name": "¿Tiene correo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        760,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "nc-if-wa-c",
+              "leftValue": "={{ $json.tiene_whatsapp }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "nc-if-wa",
+      "name": "¿Tiene WhatsApp?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "=📅 Visita confirmada: {{ $json.inmueble }} · {{ $json.fecha }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"color-scheme\" content=\"light only\"><title>Tu visita está confirmada</title></head>\n<body style=\"margin:0;padding:0;background-color:#F4F7F6;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;\">\n<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6;padding:32px 16px;\"><tr><td align=\"center\">\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px;width:100%;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E2E8F0;\">\n<tr><td style=\"height:6px;background:linear-gradient(90deg,#0B4A3F 0%,#10B981 50%,#CBD5E1 100%);\"></td></tr>\n<tr><td align=\"center\" style=\"background:linear-gradient(135deg,#071714 0%,#0B4A3F 100%);padding:30px 32px 24px 32px;border-bottom:2px solid #10B981;\">\n<img src=\"{{ $json.logo_url }}\" width=\"64\" alt=\"MAXIMUS\" style=\"display:block;width:64px;height:auto;margin:0 auto 12px auto;border:0;font-size:14px;font-weight:800;color:#F8FAFC;\">\n<h1 style=\"margin:0;font-size:22px;font-weight:800;letter-spacing:2px;color:#F8FAFC;text-transform:uppercase;\">MAXIMUS<span style=\"color:#10B981;\">.</span></h1>\n<p style=\"margin:4px 0 0 0;font-size:11px;font-weight:700;letter-spacing:4px;color:#CBD5E1;text-transform:uppercase;\">INMOBILIARIA</p></td></tr>\n<tr><td style=\"padding:34px 36px 28px 36px;\">\n<span style=\"display:inline-block;background-color:#ECFDF5;border:1px solid #A7F3D0;color:#059669;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;\">📅 Visita confirmada</span>\n<h2 style=\"margin:16px 0 10px 0;font-size:22px;font-weight:800;color:#0F172A;line-height:1.3;\">Tu visita está confirmada, {{ $json.primer_nombre }}</h2>\n<p style=\"margin:0;font-size:15px;line-height:1.65;color:#475569;\">Tu asesor <strong style=\"color:#0B4A3F;\">{{ $json.asesor }}</strong> te espera en <strong style=\"color:#0B4A3F;\">MAXIMUS Inmobiliaria</strong>. Estos son los detalles:</p><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC;border:1px solid #E2E8F0;border-left:4px solid #10B981;border-radius:14px;margin:18px 0 22px 0;\"><tr><td style=\"padding:18px 22px;\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Inmueble</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.inmueble }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Fecha</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.fecha }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Hora</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.hora }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Punto de encuentro</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.lugar }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;\">Asesor</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;\">{{ $json.asesor }}</td></tr></table></td></tr></table>{{ $json.notas ? '<p style=\"margin:0 0 22px 0;font-size:13px;line-height:1.6;color:#475569;\"><strong style=\"color:#0B4A3F;\">Indicaciones:</strong> ' + $json.notas + '</p>' : '' }}<table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin:0 auto;\"><tr><td align=\"center\"><a href=\"{{ $json.url_whatsapp_asesor }}\" style=\"display:inline-block;background-color:#0B4A3F;color:#FFFFFF;text-decoration:none;padding:14px 30px;border-radius:12px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;\">Escribir a mi asesor →</a></td></tr></table>\n</td></tr>\n<tr><td style=\"background-color:#111827;padding:22px 32px;border-top:3px solid #10B981;text-align:center;\">\n<p style=\"margin:0 0 4px 0;font-size:13px;font-weight:800;color:#F8FAFC;letter-spacing:1.5px;\">MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500;font-size:11px;color:#CBD5E1;letter-spacing:2px;\">INMOBILIARIA</span></p>\n<p style=\"margin:0;font-size:11px;color:#94A3B8;line-height:1.5;\">Experiencia, exclusividad y respaldo legal en cada inversión.<br>San Cristóbal, Estado Táchira · Venezuela</p></td></tr>\n</table></td></tr></table></body></html>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "nc-mail-cliente",
+      "name": "Email al cliente",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1000,
+        120
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.wa_url_envio }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $json.telefono_cliente, text: $json.texto_whatsapp }) }}",
+        "options": {}
+      },
+      "id": "nc-wa-cliente",
+      "name": "WhatsApp al cliente",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1000,
+        300
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CREAR_EN_N8N",
+          "name": "Evolution API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.correo_admin }}",
+        "subject": "=📅 Visita agendada · {{ $json.cliente }} · {{ $json.fecha }} {{ $json.hora }}",
+        "emailType": "html",
+        "message": "=<!DOCTYPE html>\n<html lang=\"es\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"color-scheme\" content=\"light only\"><title>Visita agendada</title></head>\n<body style=\"margin:0;padding:0;background-color:#F4F7F6;font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#111827;\">\n<table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F4F7F6;padding:32px 16px;\"><tr><td align=\"center\">\n<table role=\"presentation\" width=\"600\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"max-width:600px;width:100%;background-color:#FFFFFF;border-radius:20px;overflow:hidden;border:1px solid #E2E8F0;\">\n<tr><td style=\"height:6px;background:linear-gradient(90deg,#0B4A3F 0%,#10B981 50%,#CBD5E1 100%);\"></td></tr>\n<tr><td align=\"center\" style=\"background:linear-gradient(135deg,#071714 0%,#0B4A3F 100%);padding:30px 32px 24px 32px;border-bottom:2px solid #10B981;\">\n<img src=\"{{ $json.logo_url }}\" width=\"64\" alt=\"MAXIMUS\" style=\"display:block;width:64px;height:auto;margin:0 auto 12px auto;border:0;font-size:14px;font-weight:800;color:#F8FAFC;\">\n<h1 style=\"margin:0;font-size:22px;font-weight:800;letter-spacing:2px;color:#F8FAFC;text-transform:uppercase;\">MAXIMUS<span style=\"color:#10B981;\">.</span></h1>\n<p style=\"margin:4px 0 0 0;font-size:11px;font-weight:700;letter-spacing:4px;color:#CBD5E1;text-transform:uppercase;\">INMOBILIARIA</p></td></tr>\n<tr><td style=\"padding:34px 36px 28px 36px;\">\n<span style=\"display:inline-block;background-color:#ECFDF5;border:1px solid #A7F3D0;color:#059669;border-radius:999px;padding:6px 14px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;\">📅 Visita agendada</span>\n<h2 style=\"margin:16px 0 10px 0;font-size:20px;font-weight:800;color:#0F172A;line-height:1.3;\">{{ $json.asesor }} agendó una visita con {{ $json.cliente }}</h2>\n<p style=\"margin:0;font-size:14px;line-height:1.6;color:#475569;\">Desde el CRM se confirmó esta visita. {{ $json.tiene_whatsapp ? 'Al cliente se le envió el aviso por WhatsApp.' : 'El cliente no tiene teléfono válido: avísale por otro medio.' }}{{ $json.tiene_email ? ' También recibió un correo.' : '' }}</p><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"background-color:#F8FAFC;border:1px solid #E2E8F0;border-left:4px solid #10B981;border-radius:14px;margin:18px 0 22px 0;\"><tr><td style=\"padding:18px 22px;\"><table role=\"presentation\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Cliente</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.cliente }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Teléfono</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.telefono_cliente || \"N/D\" }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Inmueble</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.inmueble }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Fecha</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.fecha }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Hora</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.hora }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;border-bottom:1px solid #E2E8F0;\">Punto de encuentro</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;border-bottom:1px solid #E2E8F0;\">{{ $json.lugar }}</td></tr><tr><td style=\"padding:7px 0;font-size:13px;color:#64748B;width:34%;\">Notas</td><td style=\"padding:7px 0;font-size:13px;font-weight:700;color:#0F172A;\">{{ $json.notas || \"—\" }}</td></tr></table></td></tr></table><table role=\"presentation\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin:0 auto;\"><tr><td align=\"center\"><a href=\"{{ $json.url_whatsapp_cliente }}\" style=\"display:inline-block;background-color:#0B4A3F;color:#FFFFFF;text-decoration:none;padding:14px 30px;border-radius:12px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;\">Escribirle al cliente →</a></td></tr></table>\n</td></tr>\n<tr><td style=\"background-color:#111827;padding:22px 32px;border-top:3px solid #10B981;text-align:center;\">\n<p style=\"margin:0 0 4px 0;font-size:13px;font-weight:800;color:#F8FAFC;letter-spacing:1.5px;\">MAXIMUS<span style=\"color:#10B981;\">.</span> <span style=\"font-weight:500;font-size:11px;color:#CBD5E1;letter-spacing:2px;\">INMOBILIARIA</span></p>\n<p style=\"margin:0;font-size:11px;color:#94A3B8;line-height:1.5;\">Aviso interno · generado automáticamente por el CRM MAXIMUS</p></td></tr>\n</table></td></tr></table></body></html>",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "MAXIMUS Inmobiliaria"
+        }
+      },
+      "id": "nc-mail-interno",
+      "name": "Aviso interno",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1000,
+        480
+      ],
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREAR_EN_N8N",
+          "name": "Gmail MAXIMUS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook Nueva Cita": {
+      "main": [
+        [
+          {
+            "node": "Preparar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar datos": {
+      "main": [
+        [
+          {
+            "node": "¿Tiene correo?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "¿Tiene WhatsApp?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aviso interno",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Tiene correo?": {
+      "main": [
+        [
+          {
+            "node": "Email al cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "¿Tiene WhatsApp?": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp al cliente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "active": false
+}
