@@ -659,7 +659,8 @@ const LeadService = {
                         descripcion: itemActividad.descripcion || itemActividad.titulo,
                         metadata: { titulo: itemActividad.titulo, autor: itemActividad.autor, tipo: itemActividad.tipo }
                     };
-                    if (esUuid(actividad.agente_id)) fila.agente_id = actividad.agente_id;
+                    // No se envía agente_id: el id del usuario conectado no siempre coincide con
+                    // usuarios.id y la clave foránea rechazaba la fila. El autor va en metadata.
                     const sbRes = await sb.from('lead_actividades').insert(fila).select().single();
                     if (sbRes && sbRes.error) {
                         console.warn('LeadService.addActividad: Supabase no guardó la actividad (' + (sbRes.error.message || sbRes.error.code) + ').');
