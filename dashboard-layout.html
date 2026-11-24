@@ -7147,7 +7147,7 @@
                     </button>
                     <button onclick="enviarDossierColeccionCorreo()" class="px-4 py-2.5 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-envelope-simple text-emerald-300 text-sm"></i>
-                        <span>Enviar Dossier por Correo (n8n)</span>
+                        <span>Enviar Dossier por Correo</span>
                     </button>
                     <button onclick="compartirDossierWhatsApp()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="ph-fill ph-whatsapp-logo text-base"></i>
@@ -7231,7 +7231,7 @@
                     <!-- Enviar Dossier VIP por Correo -->
                     <button onclick="enviarDossierDesdeFicha360()" class="px-3 py-1.5 rounded-xl bg-white dark:bg-[#071714] border border-gray-200 dark:border-emerald-900/60 hover:bg-gray-100 dark:hover:bg-[#0D2822] text-maximus-dark dark:text-white font-bold text-xs shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-envelope-simple text-emerald-600 dark:text-emerald-400"></i>
-                        <span>Enviar Dossier VIP (n8n)</span>
+                        <span>Enviar Dossier VIP</span>
                     </button>
 
                     <!-- Fase 3: Invitar al portal con QR -->
@@ -7630,7 +7630,7 @@
                     </button>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-calendar-check text-base"></i>
-                        <span>Confirmar Cita & Notificar (n8n)</span>
+                        <span>Confirmar Cita & Notificar</span>
                     </button>
                 </div>
             </form>
@@ -12227,7 +12227,7 @@
                             <i class="ph-bold ph-eye text-sm text-emerald-600"></i>
                             <span>Ver Dossier</span>
                         </button>
-                        <button onclick="enviarDossierColeccionCorreo('${col.id}')" class="py-2.5 px-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1 transition-all hover:scale-105 cursor-pointer" title="Enviar Dossier por Correo (n8n)">
+                        <button onclick="enviarDossierColeccionCorreo('${col.id}')" class="py-2.5 px-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white font-extrabold text-xs shadow-sm flex items-center justify-center gap-1 transition-all hover:scale-105 cursor-pointer" title="Enviar Dossier por Correo">
                             <i class="ph-bold ph-envelope-simple text-emerald-300 text-sm"></i>
                         </button>
                         <button onclick="QrMaximus.coleccion('${col.id}')" class="py-2.5 px-3 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-extrabold text-xs shadow-xs flex items-center justify-center" title="QR para el cliente">
@@ -12332,11 +12332,12 @@
                     id: p.id,
                     codigo: p.codigo,
                     titulo: p.titulo,
-                    precio: `${p.precio} ${p.moneda || 'USD'}`,
+                    precio: `${(Number(p.precio) || 0).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
                     ubicacion: p.ubicacion,
                     m2: p.m2,
                     habitaciones: p.habitaciones,
-                    banos: p.banos
+                    banos: p.banos,
+                    foto: (p.fotos && p.fotos[0]) || p.foto_principal || ''
                 };
             }).filter(Boolean);
 
@@ -12542,11 +12543,12 @@
                     id: p.id,
                     codigo: p.codigo,
                     titulo: p.titulo,
-                    precio: `${p.precio} ${p.moneda || 'USD'}`,
+                    precio: `${(Number(p.precio) || 0).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
                     ubicacion: p.ubicacion,
                     m2: p.m2,
                     habitaciones: p.habitaciones,
-                    banos: p.banos
+                    banos: p.banos,
+                    foto: (p.fotos && p.fotos[0]) || p.foto_principal || ''
                 };
             }).filter(Boolean);
 
@@ -12558,7 +12560,7 @@
                 });
             }
 
-            mostrarToastNotificacion(`✉️ Dossier VIP enviado a ${emailDestino} vía n8n`);
+            mostrarToastNotificacion(`✉️ Dossier VIP enviado a ${emailDestino}`);
         }
 
         function copiarTextoDossier(id) {
@@ -13272,6 +13274,7 @@
 
             scoredProps.sort((a, b) => b.score - a.score);
             const topMatches = scoredProps.slice(0, 3);
+            window._fichaMatchesActuales = topMatches.map(m => m.prop);   // el dossier envía estas propiedades
 
             if (counter) counter.textContent = `${topMatches.length} Compatibles`;
 
@@ -13491,29 +13494,64 @@
             const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
             if (!lead) return;
 
+            // Sin correo: se pide en una ventana y se guarda en la ficha del cliente
+            let correo = String(lead.email || '').trim();
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) {
+                const ingresado = await MaxDialog.prompt({
+                    tipo: 'email', icono: 'correo',
+                    titulo: 'Este cliente no tiene correo',
+                    mensaje: `Escribe el correo de ${lead.nombre} para enviarle el dossier. Quedará guardado en su ficha.`,
+                    etiqueta: 'Correo del cliente', placeholder: 'cliente@correo.com', aceptar: 'Guardar y enviar'
+                });
+                if (!ingresado) return;
+                correo = String(ingresado).trim();
+                if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) {
+                    MaxDialog.alert({ titulo: 'Correo no válido', mensaje: 'Revisa que el correo esté bien escrito, por ejemplo cliente@correo.com.' });
+                    return;
+                }
+                lead.email = correo;
+                if (window.LeadService) await LeadService.updateDetalles(lead.id, { email: correo });
+                const emailEl = document.getElementById('ficha360-email');
+                if (emailEl) emailEl.innerHTML = `<i class="ph-bold ph-envelope text-emerald-600"></i> ${correo}`;
+            }
+
+            const props = (window._fichaMatchesActuales || []).map(p => ({
+                id: p.id,
+                codigo: p.codigo,
+                titulo: p.titulo,
+                precio: `${(Number(p.precio) || 0).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
+                ubicacion: p.ubicacion,
+                m2: p.m2,
+                habitaciones: p.habitaciones,
+                banos: p.banos,
+                foto: (p.fotos && p.fotos[0]) || p.foto_principal || ''
+            }));
+
             if (typeof N8nService !== 'undefined') {
                 await N8nService.enviarDossierVip({
                     cliente: lead.nombre,
-                    cliente_email: lead.email,
+                    cliente_email: correo,
                     telefono: lead.telefono,
                     titulo: `Portafolio Exclusivo para ${lead.nombre}`,
                     nota: `Selección curada para presupuesto ${formatMontoUSD(lead.presupuesto)}.`,
-                    asesor: lead.asesor_nombre || 'Asesor MAXIMUS'
+                    asesor: lead.asesor_nombre || 'Asesor MAXIMUS',
+                    inmuebles_detalle: props,
+                    inmuebles: props
                 });
             }
 
             if (window.LeadService) {
                 await LeadService.addActividad(lead.id, {
                     tipo: 'email',
-                    titulo: 'Dossier VIP Enviado vía n8n',
-                    descripcion: `Se disparó la automatización de correo VIP con la colección curada al correo ${lead.email}.`,
+                    titulo: 'Dossier VIP Enviado',
+                    descripcion: `Se envió el dossier VIP con ${props.length} inmueble(s) compatibles al correo ${correo}.`,
                     autor: lead.asesor_nombre || 'Asesor CRM'
                 });
                 const updated = await LeadService.getById(lead.id);
                 if (updated && updated.data) renderTimelineBitacoraFicha(updated.data);
             }
 
-            mostrarToastNotificacion(`📧 Dossier VIP enviado con éxito a ${lead.email} vía n8n`);
+            mostrarToastNotificacion(`📧 Dossier VIP enviado con éxito a ${correo}`);
         }
 
         function abrirModalAgendarVisitaDesdeFicha() {
@@ -13588,7 +13626,7 @@
             }
 
             cerrarModalAgendarVisitaCRM();
-            mostrarToastNotificacion(`📅 Cita agendada para el ${fecha} ${hora} y notificada en n8n`);
+            mostrarToastNotificacion(`📅 Cita agendada para el ${fecha} ${hora} y notificada al cliente`);
             
             // Recargar datos y timeline
             const res = await LeadService.getAll();

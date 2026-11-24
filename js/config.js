@@ -37,7 +37,7 @@ const APP_CONFIG = {
         CONTACTAR_WHATSAPP:      '/webhook/contactar-whatsapp',
         NUEVO_INMUEBLE:          '/webhook/nuevo-inmueble',
         CIERRE_REGISTRADO:       '/webhook/cierre-registrado',
-        ENVIAR_DOSSIER_VIP:      '/webhook/enviar-dossier-vip',
+        ENVIAR_DOSSIER_VIP:      '/webhook/dossier-vip-crm',
         ENVIAR_FICHA_VIP:        '/webhook/enviar-ficha-vip',
         NUEVA_CITA:              '/webhook/nueva-cita',
         BIENVENIDA_ASESOR:       '/webhook/bienvenida-asesor',
