@@ -7630,7 +7630,7 @@
                     </button>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="ph-bold ph-calendar-check text-base"></i>
-                        <span>Confirmar Cita & Notificar (n8n)</span>
+                        <span>Confirmar Cita & Notificar</span>
                     </button>
                 </div>
             </form>
@@ -13588,7 +13588,7 @@
             }
 
             cerrarModalAgendarVisitaCRM();
-            mostrarToastNotificacion(`📅 Cita agendada para el ${fecha} ${hora} y notificada en n8n`);
+            mostrarToastNotificacion(`📅 Cita agendada para el ${fecha} ${hora} y notificada al cliente`);
             
             // Recargar datos y timeline
             const res = await LeadService.getAll();
