@@ -13198,8 +13198,15 @@
             // Bloque 3: Matching Engine
             renderMatchingEngineFicha(lead);
 
-            // Bloque 4: Bitácora & Timeline
+            // Bloque 4: Bitácora & Timeline (se completa con lo guardado en Supabase)
             renderTimelineBitacoraFicha(lead);
+            if (window.LeadService && typeof LeadService.getActividades === 'function') {
+                LeadService.getActividades(leadId).then(acts => {
+                    if (crmSelectedLeadId !== leadId) return;
+                    lead.actividades = acts;
+                    renderTimelineBitacoraFicha(lead);
+                }).catch(() => {});
+            }
 
             const modal = document.getElementById('modalFichaCliente360');
             if (modal) {
@@ -13353,7 +13360,7 @@
                             <span class="text-[10px] font-bold text-gray-400 shrink-0">${fechaStr}</span>
                         </div>
                         <p class="text-xs text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed font-medium">
-                            ${act.descripcion || ''}
+                            ${String(act.descripcion || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))}
                         </p>
                         <span class="text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block mt-1">
                             ${act.autor || 'Asesor CRM'}
@@ -13383,15 +13390,18 @@
                 propuesta: 'Propuesta / Contraoferta Formal'
             };
 
+            const yo = getUsuarioActualCRM() || {};
             const actividad = {
                 tipo,
                 titulo: titulos[tipo] || 'Actividad Comercial',
                 descripcion: texto,
-                autor: 'José Guerrero (Asesor)'
+                autor: yo.name || yo.nombre_completo || yo.nombre || 'Asesor CRM',
+                agente_id: yo.id
             };
 
+            let guardada = null;
             if (window.LeadService) {
-                await LeadService.addActividad(crmSelectedLeadId, actividad);
+                guardada = await LeadService.addActividad(crmSelectedLeadId, actividad);
                 const res = await LeadService.getById(crmSelectedLeadId);
                 if (res && res.data) {
                     renderTimelineBitacoraFicha(res.data);
@@ -13402,7 +13412,11 @@
             }
 
             inputTexto.value = '';
-            mostrarToastNotificacion('📝 Actividad guardada en bitácora');
+            if (guardada && guardada.noGuardadoEnServidor) {
+                MaxDialog.alert({ titulo: 'Nota guardada solo en este equipo', mensaje: 'Supabase no aceptó la actividad. Revisa la consola del navegador para ver el motivo.' });
+            } else {
+                mostrarToastNotificacion('📝 Actividad guardada en bitácora');
+            }
         }
 
         async function cambiarTemperaturaClienteFicha(nuevaTemp) {

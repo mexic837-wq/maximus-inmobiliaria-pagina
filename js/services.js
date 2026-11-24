@@ -358,7 +358,9 @@ const LeadService = {
                 if (sb) {
                     const res = await sb.from(APP_CONFIG.TABLES.LEADS).select('*').eq('id', id).single();
                     if (res && !res.error && res.data) {
-                        return { ...res, data: this._normalizarLead(res.data) };
+                        const data = this._normalizarLead(res.data);
+                        data.actividades = await this.getActividades(id);
+                        return { ...res, data };
                     }
                 }
             } catch (err) {}
@@ -641,6 +643,39 @@ const LeadService = {
             this.marcarRespondido(leadId).catch(() => {});
         }
 
+        let noGuardadoEnServidor = false;
+        const esUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+
+        // Antes la bitácora solo vivía en este navegador: al recargar la ficha desde
+        // Supabase la nota desaparecía. Ahora se guarda en public.lead_actividades.
+        if (!APP_CONFIG.USE_MOCK_DATA && esUuid(leadId)) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (sb) {
+                    const TIPOS_DB = ['nota', 'llamada', 'whatsapp', 'visita', 'email', 'cambio_etapa', 'propuesta', 'cierre'];
+                    const fila = {
+                        lead_id: leadId,
+                        tipo: TIPOS_DB.includes(itemActividad.tipo) ? itemActividad.tipo : 'nota',
+                        descripcion: itemActividad.descripcion || itemActividad.titulo,
+                        metadata: { titulo: itemActividad.titulo, autor: itemActividad.autor, tipo: itemActividad.tipo }
+                    };
+                    if (esUuid(actividad.agente_id)) fila.agente_id = actividad.agente_id;
+                    const sbRes = await sb.from('lead_actividades').insert(fila).select().single();
+                    if (sbRes && sbRes.error) {
+                        console.warn('LeadService.addActividad: Supabase no guardó la actividad (' + (sbRes.error.message || sbRes.error.code) + ').');
+                        noGuardadoEnServidor = true;
+                    } else if (sbRes && sbRes.data) {
+                        itemActividad.id = sbRes.data.id;
+                        itemActividad.fecha = sbRes.data.created_at || itemActividad.fecha;
+                    }
+                }
+            } catch (err) {
+                console.warn('LeadService.addActividad: error de conexión', err);
+                noGuardadoEnServidor = true;
+            }
+        }
+        if (noGuardadoEnServidor) itemActividad._local = true;
+
         const leads = this._getStoredLeads();
         const lead = leads.find(l => String(l.id) === String(leadId));
         if (lead) {
@@ -648,9 +683,35 @@ const LeadService = {
             lead.actividades.unshift(itemActividad);
             lead.updated_at = new Date().toISOString();
             this._saveStoredLeads(leads);
-            return { data: itemActividad, lead, error: null };
         }
-        return { data: itemActividad, error: null };
+        return { data: itemActividad, lead, error: null, noGuardadoEnServidor };
+    },
+
+    // Bitácora del lead desde public.lead_actividades (más las que no llegaron al servidor)
+    async getActividades(leadId) {
+        const local = (this._getStoredLeads().find(l => String(l.id) === String(leadId)) || {}).actividades || [];
+        if (APP_CONFIG.USE_MOCK_DATA) return local;
+        try {
+            const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (!sb) return local;
+            const res = await sb.from('lead_actividades').select('*').eq('lead_id', leadId).order('created_at', { ascending: false });
+            if (!res || res.error || !Array.isArray(res.data)) return local;
+            const delServidor = res.data.map(a => {
+                const meta = a.metadata || {};
+                return {
+                    id: a.id,
+                    tipo: meta.tipo || a.tipo,
+                    titulo: meta.titulo || 'Actividad Comercial',
+                    descripcion: a.descripcion,
+                    fecha: a.created_at,
+                    autor: meta.autor || 'Asesor CRM'
+                };
+            });
+            const pendientes = local.filter(a => a && a._local);
+            return [...pendientes, ...delServidor].sort((x, y) => new Date(y.fecha || 0) - new Date(x.fecha || 0));
+        } catch (_) {
+            return local;
+        }
     },
 
     async delete(id) {
