@@ -3172,6 +3172,12 @@
                                 </button>
                             </div>
 
+                            <!-- Exportar lo que se está viendo -->
+                            <button onclick="exportarHistoricoCSV()" title="Descargar estas transacciones en CSV (Excel)" class="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-[11px] font-bold rounded-full transition-colors cursor-pointer border border-gray-200/60">
+                                <i class="ph-bold ph-download-simple text-emerald-700"></i>
+                                <span>Exportar</span>
+                            </button>
+
                             <!-- Botón Filtros Avanzados (con Panel Flotante Animado idéntico a Inmuebles) -->
                             <div class="relative" id="filtrosHistoricoDropdownWrapper">
                                 <button onclick="toggleFiltrosHistoricoDropdown()" class="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-maximus-dark text-[11px] font-bold rounded-full transition-colors relative z-10 cursor-pointer border border-gray-200/60">
@@ -3190,6 +3196,18 @@
                                     </div>
                                     
                                     <div class="space-y-3">
+                                        <!-- Periodo -->
+                                        <div>
+                                            <label class="block text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Periodo</label>
+                                            <select id="filtro-historico-periodo" onchange="filtrarHistoricoCierres()" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-xl px-3 py-2 outline-none focus:border-maximus-accent font-medium">
+                                                <option value="todo">Todo el historial</option>
+                                                <option value="mes">Este mes</option>
+                                                <option value="mes_anterior">Mes anterior</option>
+                                                <option value="trimestre">Últimos 3 meses</option>
+                                                <option value="anio">Este año</option>
+                                            </select>
+                                        </div>
+
                                         <!-- Asesor Responsable -->
                                         <div>
                                             <label class="block text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-1">Asesor Responsable</label>
@@ -3252,6 +3270,9 @@
                         <span id="contador-resultados-historico" class="ml-auto text-xs font-bold text-gray-400 hidden sm:inline-block">8 transacciones</span>
                     </div>
                 </div>
+
+                <!-- Aviso de conexión / cierres que quedaron solo en este equipo -->
+                <div id="historico-aviso" class="hidden"></div>
 
                 <!-- 3. Sub-Vista A: Grid de Ranking & Productividad por Asesor (Predeterminada) -->
                 <div id="contenedor-subvista-ranking" class="space-y-3.5 sm:space-y-4">
@@ -3337,6 +3358,15 @@
                                     <option value="alquiler">Alquiler Comercial / Residencial</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <!-- Inmueble del catálogo (relación real con la tabla inmuebles) -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Inmueble del Catálogo</label>
+                            <select id="cierre-inmueble-select" onchange="elegirInmuebleCierre()" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent focus:bg-white transition">
+                                <option value="">Otro inmueble (escribir los datos abajo)</option>
+                            </select>
+                            <p class="text-[10px] text-gray-400 mt-1">Al elegirlo se llenan título, ubicación, precio y tipo de operación.</p>
                         </div>
 
                         <!-- Inmueble Título y Ubicación -->
@@ -13643,17 +13673,22 @@
             }
         }
 
-        function abrirCierreDesdeFicha360() {
+        async function abrirCierreDesdeFicha360() {
             const lead = crmLeadsList.find(l => l.id === crmSelectedLeadId);
             cerrarModalFichaCliente360();
 
             if (typeof abrirModalNuevoCierre === 'function') {
                 abrirModalNuevoCierre();
+                await popularFiltrosAsesoresHistorico();
                 // Prellenar datos en el formulario de cierre existente
-                const compInput = document.getElementById('cierre-comprador');
+                window._cierreLeadId = lead ? lead.id : null;   // el cierre queda ligado a este cliente del CRM
+                const compInput = document.getElementById('cierre-cliente-comprador');
                 if (compInput && lead) compInput.value = lead.nombre;
                 const asesorSelect = document.getElementById('cierre-asesor-id');
-                if (asesorSelect && lead && lead.asesor_id) asesorSelect.value = lead.asesor_id;
+                if (asesorSelect && lead && lead.asesor_id && [...asesorSelect.options].some(o => o.value === String(lead.asesor_id))) {
+                    asesorSelect.value = lead.asesor_id;
+                    actualizarPorcentajeSegunAsesor();
+                }
                 mostrarToastNotificacion(`🤝 Formulario de Cierre listo para ${lead ? lead.nombre : 'el cliente'}`);
             }
         }
@@ -16887,41 +16922,59 @@
         let subVistaHistoricoActual = 'ranking';
 
         async function inicializarHistoricoAsesores() {
-            popularFiltrosAsesoresHistorico();
+            await popularFiltrosAsesoresHistorico();
             cambiarSubVistaHistorico('ranking');
             await filtrarHistoricoCierres();
         }
 
-        function popularFiltrosAsesoresHistorico() {
-            const selectFiltro = document.getElementById('filtro-historico-asesor');
-            const listaAsesores = (window.MOCK_DATA && window.MOCK_DATA.asesores) 
-                ? window.MOCK_DATA.asesores 
-                : (typeof ASESORES_MAXIMUS_DATA !== 'undefined' ? ASESORES_MAXIMUS_DATA : []);
+        const ROLES_ASESOR_ETIQUETA = { admin: 'Administrador', asesor_maximus: 'Asesor MAXIMUS', asesor_externo: 'Asesor externo', agente: 'Agente' };
 
-            // Poblado del Filtro en la barra de búsqueda
+        // Asesores reales desde la tabla usuarios de Supabase (antes salían de una lista de prueba)
+        async function popularFiltrosAsesoresHistorico() {
+            const selectFiltro = document.getElementById('filtro-historico-asesor');
+            const selectModal = document.getElementById('cierre-asesor-id');
+            let listaAsesores = [];
+            if (window.CierreVentaService) {
+                const r = await window.CierreVentaService.getAsesores();
+                listaAsesores = r.data || [];
+            }
+
             if (selectFiltro) {
+                const actual = selectFiltro.value || 'todos';
                 selectFiltro.innerHTML = '<option value="todos">Todos los Asesores</option>';
                 listaAsesores.forEach(a => {
                     const opt = document.createElement('option');
                     opt.value = a.id;
-                    opt.textContent = `${a.nombre} (Oficial MAXIMUS)`;
+                    opt.textContent = `${a.nombre_completo} (${ROLES_ASESOR_ETIQUETA[a.rol] || a.rol})`;
                     selectFiltro.appendChild(opt);
                 });
+                selectFiltro.value = [...selectFiltro.options].some(o => o.value === actual) ? actual : 'todos';
             }
 
-            // Poblado del Modal (si existe)
-            const selectModal = document.getElementById('cierre-asesor-id');
             if (selectModal) {
+                const actualModal = selectModal.value;
                 selectModal.innerHTML = '<option value="" disabled selected>Seleccione un asesor...</option>';
                 listaAsesores.forEach(a => {
                     const opt = document.createElement('option');
                     opt.value = a.id;
-                    opt.textContent = `${a.nombre} - ${a.cargo} (Asesor MAXIMUS)`;
-                    opt.dataset.tipo = a.tipo || 'maximus';
-                    opt.dataset.split = a.comision_porcentaje_split || 70;
+                    opt.textContent = `${a.nombre_completo} - ${ROLES_ASESOR_ETIQUETA[a.rol] || a.rol}`;
+                    opt.dataset.tipo = a.rol === 'asesor_externo' ? 'externo' : 'maximus';
+                    opt.dataset.split = a.porcentaje_comision_default || 70;
                     selectModal.appendChild(opt);
                 });
+                if (actualModal && [...selectModal.options].some(o => o.value === actualModal)) selectModal.value = actualModal;
             }
+        }
+
+        // Fechas (AAAA-MM-DD) según el periodo elegido
+        function rangoPeriodoHistorico(periodo) {
+            const hoy = new Date();
+            const f = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            if (periodo === 'mes') return { desde: f(new Date(hoy.getFullYear(), hoy.getMonth(), 1)), hasta: f(hoy) };
+            if (periodo === 'mes_anterior') return { desde: f(new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1)), hasta: f(new Date(hoy.getFullYear(), hoy.getMonth(), 0)) };
+            if (periodo === 'trimestre') return { desde: f(new Date(hoy.getFullYear(), hoy.getMonth() - 2, 1)), hasta: f(hoy) };
+            if (periodo === 'anio') return { desde: f(new Date(hoy.getFullYear(), 0, 1)), hasta: f(hoy) };
+            return {};
         }
 
         let filtroRapidoHistoricoActivo = 'todos';
@@ -16957,7 +17010,8 @@
             const operacion = document.getElementById('filtro-historico-tipo')?.value;
             const estatus = document.getElementById('filtro-historico-estatus')?.value;
 
-            const hayFiltros = (asesor && asesor !== 'todos') || (operacion && operacion !== 'todas') || (estatus && estatus !== 'todas');
+            const periodo = document.getElementById('filtro-historico-periodo')?.value;
+            const hayFiltros = (asesor && asesor !== 'todos') || (operacion && operacion !== 'todas') || (estatus && estatus !== 'todas') || (periodo && periodo !== 'todo');
             if (badge) {
                 if (hayFiltros) badge.classList.remove('hidden');
                 else badge.classList.add('hidden');
@@ -17011,6 +17065,8 @@
             if (selectAsesor) selectAsesor.value = 'todos';
             if (selectOperacion) selectOperacion.value = 'todas';
             if (selectEstatus) selectEstatus.value = 'todas';
+            const selectPeriodo = document.getElementById('filtro-historico-periodo');
+            if (selectPeriodo) selectPeriodo.value = 'todo';
 
             actualizarEstilosPillsHistorico('todos');
             actualizarBadgeFiltrosActivosHistorico();
@@ -17052,14 +17108,17 @@
 
             actualizarBadgeFiltrosActivosHistorico();
 
-            const filtros = { busqueda, asesor_id, tipo_operacion, estatus_comision };
-            const [{ data: cierres }, metricas] = await Promise.all([
-                window.CierreVentaService.getAll(filtros),
-                window.CierreVentaService.getMetricas(filtros)
-            ]);
+            const periodo = document.getElementById('filtro-historico-periodo')?.value || 'todo';
+            const filtros = { busqueda, asesor_id, tipo_operacion, estatus_comision, ...rangoPeriodoHistorico(periodo) };
+            // Una sola consulta a Supabase: la tabla y los totales salen de la misma lista
+            const resCierres = await window.CierreVentaService.getAll(filtros);
+            const cierres = resCierres.data || [];
+            const metricas = calcularMetricasCierres(cierres);
+            window._historicoActual = cierres;
 
+            renderAvisoHistorico(resCierres);
             renderMetricasHistorico(metricas);
-            renderTablaCierres(cierres || []);
+            renderTablaCierres(cierres);
             renderRankingAsesores(metricas.ranking_asesores || []);
 
             const contadorRes = document.getElementById('contador-resultados-historico');
@@ -17085,7 +17144,110 @@
             if (elSubAlquileres) elSubAlquileres.innerHTML = `<i class="ph-bold ph-calendar-check"></i> <span>${m.alquileres_count || 0} Alquileres (${formatUSD(m.volumen_alquileres || 0)})</span>`;
 
             if (elBruta) elBruta.textContent = formatUSD(m.comision_bruta_total || 0);
-            if (elSubBruta) elSubBruta.textContent = `${m.liquidadas_count || 0} liquidadas • ${m.pendientes_count || 0} en trámite`;
+            if (elSubBruta) {
+                elSubBruta.innerHTML = `${m.liquidadas_count || 0} liquidadas • ${m.pendientes_count || 0} en trámite` +
+                    `<span class="block mt-1 text-[11px] text-gray-400">Asesores ${formatUSD(m.comision_neta_asesores || 0)} · Oficina ${formatUSD(m.comision_oficina_total || 0)}` +
+                    `${m.comision_por_cobrar ? ` · <b class="text-amber-600">Por cobrar ${formatUSD(m.comision_por_cobrar)}</b>` : ''}</span>`;
+            }
+        }
+
+        function escHist(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function calcularMetricasCierres(lista) {
+            return window.CierreVentaService.calcularMetricas(lista);
+        }
+
+        // Aviso arriba de la tabla: sin conexión, o cierres de pruebas anteriores guardados solo en este equipo
+        function renderAvisoHistorico(resCierres) {
+            const box = document.getElementById('historico-aviso');
+            if (!box) return;
+            const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            const partes = [];
+            if (resCierres && resCierres.sinConexion) {
+                const motivo = resCierres.error && resCierres.error.message ? ` (${esc(resCierres.error.message)})` : '';
+                partes.push(`<div class="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold"><i class="ph-fill ph-warning-circle text-lg shrink-0"></i><span>No se pudieron cargar los cierres desde Supabase${motivo}. No se muestran datos de prueba. Revisa tu conexión o que tu rol tenga permiso para ver el histórico.</span></div>`);
+            }
+            const locales = (window.CierreVentaService && !APP_CONFIG.USE_MOCK_DATA) ? window.CierreVentaService.getLocales() : [];
+            if (locales.length) {
+                partes.push(`<div class="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold"><i class="ph-fill ph-hard-drives text-lg shrink-0"></i><span class="flex-1">Hay <b>${locales.length}</b> cierre(s) guardados solo en este equipo (no están en Supabase). No cuentan en los totales.</span><span class="flex gap-2"><button onclick="subirCierresLocales()" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold cursor-pointer">Subirlos a Supabase</button><button onclick="descartarCierresLocales()" class="px-3 py-1.5 rounded-lg bg-white border border-amber-300 hover:bg-amber-100 font-bold cursor-pointer">Descartarlos</button></span></div>`);
+            }
+            box.innerHTML = partes.join('<div class="h-2"></div>');
+            box.classList.toggle('hidden', partes.length === 0);
+        }
+
+        async function subirCierresLocales() {
+            const n = window.CierreVentaService.getLocales().length;
+            if (!(await MaxDialog.confirm({ icono: 'ph-cloud-arrow-up', titulo: '¿Subir ' + n + ' cierre(s) a Supabase?', mensaje: 'Se registrarán en el histórico real, ligando al asesor por su nombre cuando coincida con un usuario. No se enviarán avisos a nadie.', aceptar: 'Sí, subirlos', cancelar: 'Cancelar' }))) return;
+            const r = await window.CierreVentaService.subirLocales();
+            mostrarToastNotificacion(r.fallos ? `Se subieron ${r.ok}; ${r.fallos} fallaron (revisa permisos).` : `✅ ${r.ok} cierre(s) subidos a Supabase`);
+            await filtrarHistoricoCierres();
+        }
+
+        async function descartarCierresLocales() {
+            const n = window.CierreVentaService.getLocales().length;
+            if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-trash', titulo: '¿Descartar ' + n + ' cierre(s) de este equipo?', mensaje: 'Eran datos que nunca llegaron a Supabase (pruebas). Se borrarán de este navegador y no se pueden recuperar.', aceptar: 'Sí, descartarlos', cancelar: 'Volver' }))) return;
+            window.CierreVentaService.descartarLocales();
+            await filtrarHistoricoCierres();
+        }
+
+        async function liquidarCierreHistorico(id) {
+            if (!(await MaxDialog.confirm({ icono: 'ph-check-circle', titulo: '¿Marcar como liquidada?', mensaje: 'La comisión queda registrada como cobrada hoy.', aceptar: 'Sí, liquidar', cancelar: 'Volver' }))) return;
+            const r = await window.CierreVentaService.updateEstatus(id, 'liquidada');
+            if (r && r.error) {
+                MaxDialog.alert({ titulo: 'No se pudo actualizar', mensaje: (r.error.message || String(r.error)) });
+                return;
+            }
+            mostrarToastNotificacion('✅ Comisión marcada como liquidada');
+            await filtrarHistoricoCierres();
+        }
+
+        // Descarga lo que se está viendo (respeta periodo, asesor y filtros) como CSV para Excel
+        function exportarHistoricoCSV() {
+            const lista = window._historicoActual || [];
+            if (!lista.length) {
+                mostrarToastNotificacion('No hay transacciones para exportar con estos filtros');
+                return;
+            }
+            const cols = [
+                ['Fecha', c => c.fecha_cierre], ['Inmueble', c => c.inmueble_titulo], ['Ubicación', c => c.ubicacion],
+                ['Asesor', c => c.asesor_nombre], ['Operación', c => c.tipo_operacion], ['Precio final (USD)', c => c.precio_final],
+                ['% Comisión bruta', c => c.comision_bruta_porcentaje], ['Comisión bruta', c => c.comision_bruta_monto],
+                ['% Asesor', c => c.asesor_porcentaje_neto], ['Comisión neta asesor', c => c.comision_neta_asesor],
+                ['Oficina MAXIMUS', c => c.comision_oficina_monto], ['Estado', c => c.estatus_comision],
+                ['Comprador', c => c.cliente_comprador], ['Propietario', c => c.cliente_vendedor], ['Notas', c => c.notas]
+            ];
+            const celda = (v) => { const s = String(v == null ? '' : v); return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+            const csv = '﻿' + [cols.map(c => c[0]).join(';'), ...lista.map(r => cols.map(c => celda(c[1](r))).join(';'))].join('\r\n');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+            a.download = 'maximus-cierres-' + new Date().toISOString().slice(0, 10) + '.csv';
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+            mostrarToastNotificacion(`📥 ${lista.length} transacciones exportadas`);
+        }
+
+        // Al elegir un inmueble del catálogo se llenan los datos del cierre
+        function elegirInmuebleCierre() {
+            const id = document.getElementById('cierre-inmueble-select')?.value;
+            const p = id && typeof INMUEBLES_DETALLE_DATA !== 'undefined' ? INMUEBLES_DETALLE_DATA[id] : null;
+            if (!p) return;
+            const set = (el, v) => { const n = document.getElementById(el); if (n && v != null) n.value = v; };
+            set('cierre-inmueble-titulo', p.titulo);
+            set('cierre-ubicacion', p.ubicacion);
+            if (p.precio) set('cierre-precio', Number(p.precio) || '');
+            const op = String(p.operacion || '').toLowerCase();
+            if (op === 'venta' || op === 'alquiler') set('cierre-tipo-operacion', op);
+            calcularComisionesEnVivoModal();
+        }
+
+        function poblarInmueblesCierre() {
+            const sel = document.getElementById('cierre-inmueble-select');
+            if (!sel || typeof INMUEBLES_DETALLE_DATA === 'undefined') return;
+            const lista = Object.values(INMUEBLES_DETALLE_DATA).filter(p => p && p.id && p.titulo);
+            sel.innerHTML = '<option value="">Otro inmueble (escribir los datos abajo)</option>' +
+                lista.map(p => `<option value="${String(p.id).replace(/"/g, '&quot;')}">${String(p.codigo || '').replace(/[<>&"]/g, '')} ${String(p.titulo).replace(/[<>&"]/g, '')}</option>`).join('');
         }
 
         function renderTablaCierres(lista) {
@@ -17124,7 +17286,10 @@
                     ? '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">Venta</span>'
                     : '<span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">Alquiler</span>';
 
-                const asesorTipoBadge = '<span class="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-md">Oficial</span>';
+                const asesorTipoBadge = c.asesor_tipo === 'externo'
+                    ? '<span class="text-[9px] font-bold text-blue-800 bg-blue-100 px-1.5 py-0.2 rounded-md">Externo</span>'
+                    : '<span class="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded-md">Oficial</span>';
+                const puedeGestionar = currentUser && ['admin', 'asesor_maximus'].includes(currentUser.role);
 
                 const estatusBadge = c.estatus_comision === 'liquidada'
                     ? '<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="ph-bold ph-check text-emerald-600"></i> Liquidada</span>'
@@ -17136,9 +17301,9 @@
                         <div class="flex items-center gap-3">
                             <img src="${c.foto || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=200&q=80'}" class="w-11 h-11 rounded-xl object-cover shrink-0 shadow-xs border border-gray-100">
                             <div class="min-w-0 max-w-[240px]">
-                                <p class="font-extrabold text-maximus-dark text-xs sm:text-sm truncate" title="${c.inmueble_titulo}">${c.inmueble_titulo}</p>
+                                <p class="font-extrabold text-maximus-dark text-xs sm:text-sm truncate" title="${escHist(c.inmueble_titulo)}">${escHist(c.inmueble_titulo)}</p>
                                 <p class="text-[11px] text-gray-400 font-medium truncate flex items-center gap-1">
-                                    <i class="ph-fill ph-map-pin text-emerald-600"></i> ${c.ubicacion || 'San Cristóbal'}
+                                    <i class="ph-fill ph-map-pin text-emerald-600"></i> ${escHist(c.ubicacion || 'San Cristóbal')}
                                 </p>
                             </div>
                         </div>
@@ -17147,7 +17312,7 @@
                         <div class="flex items-center gap-2">
                             <img src="${c.asesor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.asesor_nombre)}&background=0B4A3F&color=fff&bold=true`}" class="w-7 h-7 rounded-full object-cover shrink-0">
                             <div>
-                                <p class="font-bold text-maximus-dark text-xs leading-tight">${c.asesor_nombre}</p>
+                                <p class="font-bold text-maximus-dark text-xs leading-tight">${escHist(c.asesor_nombre)}</p>
                                 ${asesorTipoBadge}
                             </div>
                         </div>
@@ -17169,6 +17334,11 @@
                     <td class="py-4 px-6 text-center whitespace-nowrap">${estatusBadge}</td>
                     <td class="py-4 px-6 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-1.5">
+                            ${puedeGestionar && c.estatus_comision !== 'liquidada' ? `
+                            <button onclick="liquidarCierreHistorico('${c.id}')" title="Marcar comisión como liquidada" class="w-8 h-8 rounded-lg bg-amber-50 hover:bg-emerald-50 text-amber-600 hover:text-emerald-700 flex items-center justify-center transition cursor-pointer">
+                                <i class="ph-bold ph-check-circle text-base"></i>
+                            </button>
+                            ` : ''}
                             <button onclick="verComprobanteCierre('${c.id}')" title="Ver Detalle y Recibo" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-emerald-50 text-gray-600 hover:text-emerald-700 flex items-center justify-center transition cursor-pointer">
                                 <i class="ph-bold ph-file-text text-base"></i>
                             </button>
@@ -17217,7 +17387,7 @@
                         <div>
                             <h4 class="font-extrabold text-base text-maximus-dark leading-tight">${a.asesor_nombre}</h4>
                             <span class="inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                Asesor Oficial MAXIMUS
+                                ${a.asesor_tipo === 'externo' ? 'Asesor Externo' : 'Asesor Oficial MAXIMUS'}
                             </span>
                         </div>
                     </div>
@@ -17290,6 +17460,9 @@
             const modal = document.getElementById('modalNuevoCierre');
             if (!modal) return;
             modal.classList.remove('hidden');
+            // Asesores reales e inmuebles del catálogo (el modal también se abre desde la Ficha 360°)
+            popularFiltrosAsesoresHistorico();
+            poblarInmueblesCierre();
 
             // Set default date to today
             const elFecha = document.getElementById('cierre-fecha');
@@ -17302,6 +17475,7 @@
         function cerrarModalNuevoCierre() {
             const modal = document.getElementById('modalNuevoCierre');
             if (modal) modal.classList.add('hidden');
+            window._cierreLeadId = null;
         }
 
         function actualizarPorcentajeSegunAsesor() {
@@ -17344,14 +17518,16 @@
 
             const asesorId = selectAsesor.value;
             const asesorTipo = opt.dataset.tipo || 'maximus';
-            
-            // Buscar nombre del asesor
-            const listaAsesores = (window.MOCK_DATA && window.MOCK_DATA.asesores) 
-                ? window.MOCK_DATA.asesores 
-                : (typeof ASESORES_MAXIMUS_DATA !== 'undefined' ? ASESORES_MAXIMUS_DATA : []);
-            const aEncontrado = listaAsesores.find(item => item.id === asesorId);
-            const asesorNombre = aEncontrado ? aEncontrado.nombre : opt.textContent.split(' - ')[0];
-            const asesorAvatar = aEncontrado ? aEncontrado.avatar : null;
+
+            // Asesor real (tabla usuarios)
+            const listaAsesores = ((await window.CierreVentaService.getAsesores()).data) || [];
+            const aEncontrado = listaAsesores.find(item => String(item.id) === String(asesorId));
+            const asesorNombre = aEncontrado ? aEncontrado.nombre_completo : opt.textContent.split(' - ')[0];
+            const asesorAvatar = aEncontrado ? aEncontrado.avatar_url : null;
+            const yo = (typeof getUsuarioActualCRM === 'function' ? getUsuarioActualCRM() : null) || {};
+            const inmuebleCatalogo = document.getElementById('cierre-inmueble-select')?.value || '';
+            const fotoCatalogo = (inmuebleCatalogo && typeof INMUEBLES_DETALLE_DATA !== 'undefined' && INMUEBLES_DETALLE_DATA[inmuebleCatalogo])
+                ? ((INMUEBLES_DETALLE_DATA[inmuebleCatalogo].fotos || [])[0] || INMUEBLES_DETALLE_DATA[inmuebleCatalogo].foto_principal || null) : null;
 
             const tipo_operacion = document.getElementById('cierre-tipo-operacion').value;
             const inmueble_titulo = document.getElementById('cierre-inmueble-titulo').value.trim();
@@ -17386,17 +17562,29 @@
                 cliente_vendedor,
                 estatus_comision,
                 notas,
-                foto: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'
+                inmueble_id: inmuebleCatalogo || null,
+                lead_id: window._cierreLeadId || null,
+                registrado_por: yo.id || null,
+                foto: fotoCatalogo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'
             };
 
             if (window.CierreVentaService) {
                 const res = await window.CierreVentaService.create(cierreData);
                 if (res && res.error) {
-                    mostrarToastNotificacion('Error al guardar el cierre: ' + res.error, 'error');
+                    // Ya no se guarda "a medias" en el navegador: si Supabase lo rechaza, se avisa con el motivo
+                    MaxDialog.alert({ titulo: 'No se pudo guardar el cierre', mensaje: 'Supabase respondió: ' + (res.error.message || res.error.code || String(res.error)) + '\n\nNo se registró nada. Revisa que tu rol pueda registrar cierres y que el SQL del histórico esté aplicado.' });
                     return;
+                }
+                // Si el cierre viene de un cliente del CRM, el cliente pasa a "Cerrado" con su nota en la bitácora
+                if (window._cierreLeadId && window.LeadService) {
+                    try {
+                        await LeadService.addActividad(window._cierreLeadId, { tipo: 'nota', titulo: 'Cierre registrado', descripcion: `${tipo_operacion === 'alquiler' ? 'Alquiler' : 'Venta'} de "${inmueble_titulo}" por ${formatUSD(precio_final)}.`, autor: yo.name || yo.nombre_completo || 'Asesor' });
+                        await LeadService.updateEstatus(window._cierreLeadId, 'cerrado');
+                    } catch (_) {}
                 }
             }
 
+            window._cierreLeadId = null;
             cerrarModalNuevoCierre();
             document.getElementById('form-nuevo-cierre').reset();
             mostrarToastNotificacion(`Cierre registrado y comisión calculada para ${asesorNombre}`);
@@ -17408,7 +17596,11 @@
                 return;
             }
             if (window.CierreVentaService) {
-                await window.CierreVentaService.delete(id);
+                const r = await window.CierreVentaService.delete(id);
+                if (r && r.error) {
+                    MaxDialog.alert({ titulo: 'No se pudo eliminar', mensaje: r.error.message || String(r.error) });
+                    return;
+                }
                 mostrarToastNotificacion('Registro de cierre eliminado correctamente.');
                 await filtrarHistoricoCierres();
             }

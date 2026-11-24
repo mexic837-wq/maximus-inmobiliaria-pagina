@@ -1485,54 +1485,110 @@ const CierreVentaService = {
         }
 
         // ---- SUPABASE REAL ----
+        // Antes, si Supabase devolvía 0 filas o un error, se mostraban datos de prueba guardados en el
+        // navegador como si fueran reales. Ahora solo se muestra lo que hay en la base de datos.
+        try {
+            const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (!sb) return { data: [], error: { message: 'Sin conexión con la base de datos' }, sinConexion: true };
+
+            let query = sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).select('*');
+            if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
+            if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') query = query.eq('tipo_operacion', filtros.tipo_operacion);
+            if (filtros.estatus_comision === 'liquidada') query = query.eq('estatus_comision', 'liquidada');
+            else if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') query = query.in('estatus_comision', ['en_tramite', 'pendiente']);
+            if (filtros.desde) query = query.gte('fecha_cierre', filtros.desde);
+            if (filtros.hasta) query = query.lte('fecha_cierre', filtros.hasta);
+            if (filtros.busqueda) {
+                const q = String(filtros.busqueda).replace(/[%,()*]/g, ' ').trim();
+                if (q) query = query.or(`inmueble_titulo.ilike.%${q}%,asesor_nombre.ilike.%${q}%,ubicacion.ilike.%${q}%,cliente_comprador.ilike.%${q}%`);
+            }
+            query = query.order('fecha_cierre', { ascending: false }).order('created_at', { ascending: false });
+
+            const res = await query;
+            if (res && res.error) {
+                console.warn('⚠️ MAXIMUS CierreVentaService: Supabase no devolvió los cierres (' + (res.error.message || res.error.code) + ').');
+                return { data: [], error: res.error, sinConexion: true };
+            }
+
+            // Foto y nombre actuales del asesor, desde la tabla usuarios
+            const { data: asesores } = await this.getAsesores();
+            const porId = new Map(asesores.map(a => [String(a.id), a]));
+            const data = (res.data || []).map(c => {
+                const a = porId.get(String(c.asesor_id));
+                if (!a) return c;
+                return { ...c, asesor_nombre: a.nombre_completo || c.asesor_nombre, asesor_avatar: a.avatar_url || null,
+                         asesor_tipo: c.asesor_tipo || (a.rol === 'asesor_externo' ? 'externo' : 'maximus') };
+            });
+            return { data, error: null };
+        } catch (err) {
+            console.warn('⚠️ MAXIMUS CierreVentaService: error de conexión con Supabase:', err);
+            return { data: [], error: err, sinConexion: true };
+        }
+    },
+
+    // Asesores reales (tabla usuarios) para los filtros y el formulario de cierres
+    _asesoresCache: null,
+    async getAsesores(forzar) {
+        if (this._asesoresCache && !forzar) return this._asesoresCache;
+        let data = [];
         try {
             const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
             if (sb) {
-                let query = sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).select('*');
-                if (filtros.asesor_id && filtros.asesor_id !== 'todos') query = query.eq('asesor_id', filtros.asesor_id);
-                if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') query = query.eq('tipo_operacion', filtros.tipo_operacion);
-                if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') query = query.eq('estatus_comision', filtros.estatus_comision);
-                if (filtros.busqueda) query = query.ilike('inmueble_titulo', `%${filtros.busqueda}%`);
-                query = query.order('fecha_cierre', { ascending: false });
-                const res = await query;
-                if (res && !res.error && Array.isArray(res.data) && res.data.length > 0) {
-                    return res;
-                }
-                if (res && res.error) {
-                    console.warn('⚠️ MAXIMUS CierreVentaService: Supabase error o no autorizado. Usando respaldo local:', res.error);
-                }
+                const res = await sb.from(APP_CONFIG.TABLES.USUARIOS || 'usuarios')
+                    .select('id, nombre_completo, avatar_url, rol, tipo_asesor, porcentaje_comision_default, activo')
+                    .in('rol', ['admin', 'asesor_maximus', 'asesor_externo', 'agente'])
+                    .order('nombre_completo');
+                if (res && !res.error && Array.isArray(res.data)) data = res.data.filter(u => u.activo !== false);
             }
-        } catch (err) {
-            console.warn('⚠️ MAXIMUS CierreVentaService: Excepción al conectar con Supabase. Usando respaldo local:', err);
-        }
+        } catch (_) {}
+        if (data.length) this._asesoresCache = { data };
+        return { data };
+    },
 
-        // ---- RESPALDO LOCAL / MOCK DATA ----
-        let data = this._getStoredCierres();
-        if (filtros.asesor_id && filtros.asesor_id !== 'todos') {
-            data = data.filter(c => c.asesor_id === filtros.asesor_id);
+    // Cierres que solo quedaron guardados en este navegador (de cuando el guardado fallaba en silencio)
+    _leerLocales() {
+        try {
+            const a = JSON.parse(localStorage.getItem('maximus_cierres_ventas') || '[]');
+            return Array.isArray(a) ? a : [];
+        } catch (_) { return []; }
+    },
+    getLocales() { return this._leerLocales(); },
+    descartarLocales() { try { localStorage.removeItem('maximus_cierres_ventas'); } catch (_) {} },
+    async subirLocales() {
+        const locales = this._leerLocales();
+        const { data: asesores } = await this.getAsesores();
+        const norm = (s) => String(s || '').trim().toLowerCase();
+        let ok = 0, fallos = 0;
+        for (const c of locales) {
+            const a = asesores.find(u => norm(u.nombre_completo) === norm(c.asesor_nombre));
+            const res = await this.create({ ...c, id: undefined, asesor_id: a ? a.id : null, inmueble_id: null, _skipN8n: true });
+            if (res && !res.error) ok++; else fallos++;
         }
-        if (filtros.tipo_operacion && filtros.tipo_operacion !== 'todas') {
-            data = data.filter(c => c.tipo_operacion === filtros.tipo_operacion);
+        if (!fallos) this.descartarLocales();
+        return { ok, fallos };
+    },
+
+    async updateEstatus(id, estatus) {
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const cierres = this._getStoredCierres();
+            const c = cierres.find(x => x.id === id);
+            if (c) { c.estatus_comision = estatus; this._saveStoredCierres(cierres); }
+            return { data: c || null, error: null };
         }
-        if (filtros.estatus_comision && filtros.estatus_comision !== 'todas') {
-            data = data.filter(c => c.estatus_comision === filtros.estatus_comision);
-        }
-        if (filtros.busqueda) {
-            const q = filtros.busqueda.toLowerCase().trim();
-            data = data.filter(c => 
-                (c.inmueble_titulo && c.inmueble_titulo.toLowerCase().includes(q)) ||
-                (c.asesor_nombre && c.asesor_nombre.toLowerCase().includes(q)) ||
-                (c.ubicacion && c.ubicacion.toLowerCase().includes(q)) ||
-                (c.cliente_comprador && c.cliente_comprador.toLowerCase().includes(q))
-            );
-        }
-        data.sort((a, b) => new Date(b.fecha_cierre) - new Date(a.fecha_cierre));
-        return { data, error: null };
+        try {
+            const sb = getSupabase();
+            return await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).update({ estatus_comision: estatus }).eq('id', id).select().single();
+        } catch (err) { return { data: null, error: err }; }
     },
 
     async getMetricas(filtros = {}) {
         const { data: cierres } = await this.getAll(filtros);
-        const lista = cierres || [];
+        return this.calcularMetricas(cierres || []);
+    },
+
+    // Totales y ranking a partir de una lista de cierres ya cargada (sin otra consulta)
+    calcularMetricas(lista) {
+        lista = lista || [];
 
         let totalVendidos = lista.length;
         let volumenTotal = 0;
@@ -1541,6 +1597,7 @@ const CierreVentaService = {
         let comisionOficinaTotal = 0;
         let liquidadasCount = 0;
         let pendientesCount = 0;
+        let comisionPorCobrar = 0;
         let ventasCount = 0;
         let alquileresCount = 0;
         let volumenVentas = 0;
@@ -1568,7 +1625,7 @@ const CierreVentaService = {
             }
 
             if (c.estatus_comision === 'liquidada') liquidadasCount++;
-            else pendientesCount++;
+            else { pendientesCount++; comisionPorCobrar += bruta; }
 
             const aId = c.asesor_id || 'otro';
             if (!asesorMap[aId]) {
@@ -1607,6 +1664,7 @@ const CierreVentaService = {
             comision_promedio_cierre: totalVendidos > 0 ? Math.round(comisionBrutaTotal / totalVendidos) : 0,
             liquidadas_count: liquidadasCount,
             pendientes_count: pendientesCount,
+            comision_por_cobrar: comisionPorCobrar,
             ranking_asesores: rankingAsesores,
         };
     },
@@ -1660,24 +1718,42 @@ const CierreVentaService = {
             }
             res = { data: record, error: null };
         } else {
+            // Antes se mandaba un id inventado ("cierre-123"), el id de un asesor de prueba y una columna que no
+            // existe: Supabase lo rechazaba y el cierre quedaba solo en este navegador sin avisar. Ahora se envían
+            // solo columnas reales (los ids van como UUID) y, si falla, se avisa de verdad.
+            const esUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+            const fila = { ...record };
+            delete fila.id; delete fila.asesor_avatar; delete fila.created_at;
+            fila.asesor_id = esUuid(record.asesor_id) ? record.asesor_id : null;
+            fila.inmueble_id = esUuid(record.inmueble_id) ? record.inmueble_id : null;
+            fila.asesor_tipo = record.asesor_tipo === 'externo' ? 'externo' : 'maximus';
+            if (esUuid(cierreInput.lead_id)) fila.lead_id = cierreInput.lead_id;
+            if (esUuid(cierreInput.registrado_por)) fila.registrado_por = cierreInput.registrado_por;
+            if (!cierreInput.cliente_comprador) fila.cliente_comprador = null;
+            if (!cierreInput.cliente_vendedor) fila.cliente_vendedor = null;
+            if (!cierreInput.referencia_pago) fila.referencia_pago = null;
+
             try {
                 const sb = getSupabase();
-                res = await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).insert(record).select().single();
-                if (res && res.error) {
-                    let cierres = this._getStoredCierres();
-                    cierres.unshift(record);
-                    this._saveStoredCierres(cierres);
-                    res = { data: record, error: null };
+                // Si la base aún no tiene alguna columna nueva (lead_id, registrado_por), se guarda sin ella
+                for (let intento = 0; intento < 4; intento++) {
+                    res = await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).insert(fila).select().single();
+                    const err = res && res.error;
+                    if (!err) break;
+                    const m = (String(err.message || '') + ' ' + String(err.details || '')).match(/'([a-z0-9_]+)' column/i);
+                    if (m && m[1] in fila && ['lead_id', 'registrado_por'].includes(m[1])) { delete fila[m[1]]; continue; }
+                    break;
                 }
             } catch (err) {
-                let cierres = this._getStoredCierres();
-                cierres.unshift(record);
-                this._saveStoredCierres(cierres);
-                res = { data: record, error: null };
+                res = { data: null, error: err };
+            }
+            if (res && res.error) {
+                console.warn('CierreVentaService.create: Supabase no guardó el cierre (' + (res.error.message || res.error.code) + ').');
+                return { data: null, error: res.error };
             }
         }
 
-        if (typeof N8nService !== 'undefined') {
+        if (typeof N8nService !== 'undefined' && !cierreInput._skipN8n) {
             const cierreData = (res && res.data) ? res.data : record;
             N8nService.notificarCierreVenta({
                 ...cierreData,
@@ -1696,8 +1772,15 @@ const CierreVentaService = {
             this._saveStoredCierres(cierres);
             return { error: null };
         }
-        const sb = getSupabase();
-        return await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).delete().eq('id', id);
+        try {
+            const sb = getSupabase();
+            // .select() para detectar si la política de seguridad no dejó borrar nada (0 filas)
+            const res = await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).delete().eq('id', id).select('id');
+            if (res && !res.error && Array.isArray(res.data) && res.data.length === 0) {
+                return { error: { message: 'No tienes permiso para eliminar este cierre (solo el administrador).' } };
+            }
+            return res;
+        } catch (err) { return { error: err }; }
     }
 };
 
