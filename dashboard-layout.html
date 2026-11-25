@@ -78,6 +78,20 @@
             background-size: 200% 100%; animation: kpi-brillo 1.3s ease-in-out infinite;
         }
         [data-kpi-estado="listo"] { font-variant-numeric: tabular-nums; }
+
+        /* Ventanas emergentes con efecto «pop»: el fondo aparece suave y la tarjeta crece con un pequeño rebote.
+           Se aplica con la clase mx-modal-pop (la animación se repite cada vez que la ventana se muestra). */
+        @keyframes mx-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes mx-pop-in {
+            0%   { opacity: 0; transform: scale(.88) translateY(14px); }
+            60%  { opacity: 1; transform: scale(1.025) translateY(0); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .mx-modal-pop:not(.hidden) { animation: mx-fade-in .2s ease-out both; }
+        .mx-modal-pop:not(.hidden) > div { animation: mx-pop-in .38s cubic-bezier(.22, 1, .36, 1) both; transform-origin: center; }
+        @media (prefers-reduced-motion: reduce) {
+            .mx-modal-pop:not(.hidden), .mx-modal-pop:not(.hidden) > div { animation: none; }
+        }
         @media (prefers-reduced-motion: reduce) { [data-kpi-estado="cargando"] { animation: none; } }
         /* Las tarjetas fuera de pantalla no se pintan hasta que se acercan (listas largas en gama baja) */
         .tarjeta-inmueble { content-visibility: auto; contain-intrinsic-size: auto 380px; }
@@ -4076,7 +4090,7 @@
                 </div>
 
                 <!-- MODAL DE EDICIÓN RÁPIDA DE ASESOR -->
-                <div id="modal-admin-editar-asesor" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+                <div id="modal-admin-editar-asesor" class="mx-modal-pop fixed inset-0 z-[130] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4" onclick="if (event.target === this) cerrarModalEditarAsesor()">
                     <div class="bg-white rounded-[28px] max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-gray-100 relative space-y-6 max-h-[90vh] overflow-y-auto">
                         <div class="flex items-center justify-between">
                             <h3 class="font-extrabold text-xl text-maximus-dark flex items-center gap-2">
@@ -16190,6 +16204,22 @@
             }
         }
         window.enviarRecuperacionAsesor = enviarRecuperacionAsesor;
+
+        // Estas ventanas estaban dentro de <main> (z-0): quedaban por detrás del encabezado y su fondo oscuro solo
+        // cubría esa zona. Se pasan al nivel raíz de la página para que ocupen toda la pantalla, encima de todo.
+        (function moverVentanasAdmin() {
+            const mover = () => ['modal-admin-editar-asesor', 'modalEditarZona'].forEach(id => {
+                const m = document.getElementById(id);
+                if (m && m.parentElement !== document.body) document.body.appendChild(m);
+            });
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mover);
+            else mover();
+        })();
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            const m = document.getElementById('modal-admin-editar-asesor');
+            if (m && !m.classList.contains('hidden')) cerrarModalEditarAsesor();
+        });
 
         function cerrarModalEditarAsesor() {
             const modal = document.getElementById('modal-admin-editar-asesor');
