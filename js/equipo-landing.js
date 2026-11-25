@@ -73,6 +73,71 @@
         </article>`;
     }
 
+    // El broker (dirección de la inmobiliaria) se presenta aparte, arriba del carrusel.
+    const RE_BROKER = /broker|director|administrador|direcci[oó]n|\bceo\b|fundador/i;
+    const esBroker = (a) => RE_BROKER.test(String(a.titulo || ''));
+
+    function fotoReal(a) {
+        return a.avatar_url && !/ui-avatars\.com|svg\+xml/i.test(a.avatar_url) ? a.avatar_url : '';
+    }
+
+    function enlaceWa(a, texto) {
+        const nombre = String(a.nombre || '').trim();
+        const tel = telefonoWa(a.whatsapp);
+        return `https://wa.me/${tel || WHATSAPP_OFICINA}?text=${encodeURIComponent(tel ? texto : `Hola, quiero hablar con ${nombre} de MAXIMUS.`)}`;
+    }
+
+    function tarjetaBroker(a) {
+        const nombre = String(a.nombre || '').trim();
+        const primer = nombre.split(/\s+/)[0] || '';
+        const foto = fotoReal(a);
+        const wa = enlaceWa(a, `Hola ${primer}, vi tu perfil en la página de MAXIMUS y quiero asesoría para comprar, vender o invertir en un inmueble.`);
+        return `
+        <article class="broker-card" aria-label="Broker de MAXIMUS: ${esc(nombre)}">
+            <div class="broker-marco">
+                <div class="broker-foto">
+                    <span class="broker-ini">${esc(iniciales(nombre))}</span>
+                    ${foto ? `<img src="${esc(foto)}" alt="${esc(nombre)}, Broker de MAXIMUS Inmobiliaria" loading="lazy" class="relative" onerror="this.remove()">` : ''}
+                </div>
+            </div>
+            <div class="broker-info relative">
+                <span class="broker-insignia broker-paso" style="--p:0"><i class="fas fa-crown"></i> Broker</span>
+                <h3 class="broker-nombre broker-paso" style="--p:1">${esc(nombre)}</h3>
+                <p class="broker-cargo broker-paso" style="--p:2">Director General · MAXIMUS Inmobiliaria</p>
+                <div class="broker-linea"></div>
+                <p class="broker-texto broker-paso" style="--p:3">Dirige el equipo MAXIMUS y acompaña a cada cliente en la compra, venta e inversión de su inmueble, con respaldo legal de principio a fin.</p>
+                <a href="${esc(wa)}" target="_blank" rel="noopener" class="broker-wa broker-paso" style="--p:4" aria-label="Escribir por WhatsApp a ${esc(nombre)}">
+                    <span class="asesor-wa-brillo absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"></span>
+                    <i class="fab fa-whatsapp relative"></i><span class="relative">Hablar con ${esc(primer)}</span>
+                </a>
+            </div>
+        </article>`;
+    }
+
+    function pintarBroker(cont, a) {
+        cont.innerHTML = tarjetaBroker(a);
+        const card = cont.querySelector('.broker-card');
+        const quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (quieto || !('IntersectionObserver' in window)) { card.classList.add('broker-visible'); }
+        else {
+            const io = new IntersectionObserver((e) => {
+                if (e.some(x => x.isIntersecting)) { card.classList.add('broker-visible'); io.disconnect(); }
+            }, { threshold: 0.25 });
+            io.observe(card);
+        }
+        // Inclinación 3D suave de la foto al mover el cursor (solo con mouse)
+        const marco = card.querySelector('.broker-marco');
+        const foto = card.querySelector('.broker-foto');
+        if (quieto || !marco || !(window.matchMedia && window.matchMedia('(pointer: fine)').matches)) return;
+        marco.addEventListener('pointermove', (ev) => {
+            const r = marco.getBoundingClientRect();
+            const x = (ev.clientX - r.left) / r.width - 0.5, y = (ev.clientY - r.top) / r.height - 0.5;
+            foto.style.setProperty('--ry', (x * 10).toFixed(2) + 'deg');
+            foto.style.setProperty('--rx', (-y * 10).toFixed(2) + 'deg');
+        });
+        marco.addEventListener('pointerleave', () => { foto.style.setProperty('--rx', '0deg'); foto.style.setProperty('--ry', '0deg'); });
+    }
+
     // Cinta continua: la lista se repite hasta llenar la pantalla y se duplica la pista
     // para que el bucle no tenga saltos (igual que el carrusel de propiedades).
     function pintarCarrusel(grid, equipo) {
@@ -130,7 +195,17 @@
         const equipo = (await leerEquipo()).filter(a => a && String(a.nombre || '').trim());
         if (!equipo.length) { seccion.classList.add('hidden'); return; }
         seccion.classList.remove('hidden');
-        pintarCarrusel(grid, equipo);
+        // El primer broker va destacado arriba; el resto del equipo, en el carrusel
+        const broker = equipo.find(esBroker);
+        const resto = equipo.filter(a => a !== broker);
+        const contBroker = document.getElementById('asesor-broker');
+        if (broker && contBroker) pintarBroker(contBroker, broker);
+        const usaBroker = !!(broker && contBroker);
+        const lista = usaBroker ? resto : equipo;
+        const sub = document.getElementById('equipo-subtitulo');
+        if (sub) sub.classList.toggle('hidden', !(usaBroker && lista.length));
+        if (lista.length) pintarCarrusel(grid, lista);
+        else grid.classList.add('hidden');
         document.querySelectorAll('[data-enlace-asesores]').forEach(el => el.classList.remove('hidden'));
         const total = document.getElementById('asesores-total');
         if (total) total.textContent = `${equipo.length} asesor${equipo.length === 1 ? '' : 'es'} disponible${equipo.length === 1 ? '' : 's'}`;
