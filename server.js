@@ -35,7 +35,8 @@ const ROUTE_ALIASES = {
   '/detalle-propiedad': 'property-detail.html',
   '/propiedad': 'property-detail.html',
   '/property-detail': 'property-detail.html',
-  '/llegada': 'llegada.html' // Fase 3: QR de llegada a la visita
+  '/llegada': 'llegada.html', // Fase 3: QR de llegada a la visita
+  '/coleccion': 'coleccion.html' // Enlace / QR de una colección de inmuebles (sin cuenta)
 };
 
 const LEGACY_REDIRECTS = {

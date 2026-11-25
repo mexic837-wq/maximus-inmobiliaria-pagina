@@ -50,6 +50,7 @@
     <script src="js/cargar-inmueble-ui.js?v=1.2"></script>
     <script src="js/busqueda-voz.js?v=1.0"></script>
     <script src="js/mi-asesor.js?v=1.0"></script>
+    <script src="js/colecciones-cliente.js?v=1.0"></script>
     <script src="js/qr-maximus.js?v=1.3"></script>
     <script src="js/favoritos.js?v=1.2"></script>
     <script src="js/bandeja-leads.js?v=1.1"></script>
@@ -1286,6 +1287,13 @@
                     <span class="sidebar-tooltip">Mi asesor</span>
                 </a>
 
+                <!-- Mis colecciones (selecciones de inmuebles que el asesor prepara al cliente) -->
+                <a href="#" data-target="view-mis-colecciones" class="nav-link cliente-only text-gray-500 hover:bg-gray-50 hover:text-maximus-dark flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group" title="Mis colecciones">
+                    <i class="ph ph-folder-star text-xl text-amber-500 flex-shrink-0"></i>
+                    <span class="sidebar-label">Mis colecciones</span>
+                    <span class="sidebar-tooltip">Mis colecciones</span>
+                </a>
+
                 <!-- Reseñas (Exclusivo Clientes / Usuarios Normales) -->
                 <a href="javascript:void(0)" onclick="abrirModalDejarResena(); if(window.innerWidth < 1024) toggleMobileDrawer(false);" class="nav-link cliente-only text-gray-500 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-[#0D2822] dark:hover:text-emerald-400 flex items-center gap-3 px-4 py-3.5 text-[15px] font-semibold rounded-2xl transition-all relative group cursor-pointer" title="Subir Reseña a MAXIMUS">
                     <i class="ph-fill ph-star text-xl text-amber-500 flex-shrink-0"></i>
@@ -1485,6 +1493,10 @@
                     <a href="#" data-target="view-mi-asesor" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
                         <i class="ph ph-handshake text-base text-emerald-600"></i>
                         <span>Mi asesor</span>
+                    </a>
+                    <a href="#" data-target="view-mis-colecciones" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
+                        <i class="ph ph-folder-star text-base text-amber-500"></i>
+                        <span>Mis colecciones</span>
                     </a>
                     <a href="#" data-target="view-perfil" class="client-nav-pill flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all duration-200 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-[#0D2822]">
                         <i class="ph ph-user-circle text-base text-emerald-600"></i>
@@ -5524,6 +5536,9 @@
                     </div>
                 </div>
 
+                <!-- Aviso de conexión (sin datos de prueba) -->
+                <div id="colecciones-aviso" class="hidden"></div>
+
                 <!-- Grilla de Tarjetas de Colección -->
                 <div id="grilla-colecciones-vip" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                     <!-- Generado dinámicamente por JavaScript -->
@@ -6132,11 +6147,25 @@
                             <div id="mi-asesor-citas" class="space-y-2"><p class="text-sm text-gray-400">Cargando…</p></div>
                         </div>
                         <div class="bg-white dark:bg-[#0A1F1B] rounded-2xl border border-gray-200/70 dark:border-emerald-950/60 shadow-sm p-5">
-                            <h2 class="text-sm font-extrabold text-maximus-dark dark:text-white mb-3">Inmuebles que tu asesor eligió para ti</h2>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <h2 class="text-sm font-extrabold text-maximus-dark dark:text-white">Inmuebles que tu asesor eligió para ti</h2>
+                                <button type="button" onclick="activateTab('view-mis-colecciones')" class="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer shrink-0">Ver todas →</button>
+                            </div>
                             <div id="mi-asesor-colecciones" class="space-y-3"><p class="text-sm text-gray-400">Cargando…</p></div>
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <!-- ==========================================
+                 L0b. VISTA "MIS COLECCIONES" (solo clientes). Lógica en js/colecciones-cliente.js
+                 ========================================== -->
+            <section id="view-mis-colecciones" class="view-section max-w-3xl mx-auto space-y-5 pb-24 sm:pb-12">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-maximus-dark dark:text-white tracking-tight">Mis colecciones</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Las selecciones de inmuebles que tu asesor preparó para ti. Marca cuáles te interesan y se lo avisamos.</p>
+                </div>
+                <div id="mis-colecciones-lista" class="space-y-4"><p class="text-sm text-gray-400">Cargando…</p></div>
             </section>
 
             <!-- ==========================================
@@ -7076,6 +7105,14 @@
 
             <!-- Form Body -->
             <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+                <!-- Cliente del CRM (liga la colección a su ficha y a su bitácora) -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Cliente de «Mis clientes» <span class="font-medium text-gray-400">(opcional: llena los datos y liga la colección a su ficha)</span></label>
+                    <select id="form-col-lead" onchange="elegirLeadColeccion()" class="w-full text-xs font-medium px-3.5 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none transition-all bg-white">
+                        <option value="">Cliente nuevo (escribir los datos abajo)</option>
+                    </select>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Nombre del Cliente *</label>
@@ -9642,7 +9679,7 @@
             // (el equipo de la portada sale solo de los asesores del sistema)
             if (['view-admin-equipo-web', 'view-admin-oficinas', 'view-admin-faqs'].includes(targetId)) targetId = 'view-resumen';
             // Fase 2: "Mi asesor" es solo para clientes
-            if (targetId === 'view-mi-asesor' && currentUserRole !== 'cliente') {
+            if ((targetId === 'view-mi-asesor' || targetId === 'view-mis-colecciones') && currentUserRole !== 'cliente') {
                 targetId = 'view-resumen';
             }
 
@@ -9799,6 +9836,7 @@
                 if (typeof cargarDatosVistaPerfil === 'function') cargarDatosVistaPerfil();
             }
             if (targetId === 'view-mi-asesor' && window.MiAsesor) MiAsesor.cargar();
+            if (targetId === 'view-mis-colecciones' && window.ColeccionesCliente) ColeccionesCliente.cargar();
             if (targetId === 'view-bandeja-leads' && window.BandejaLeads) BandejaLeads.cargar();
             if (targetId === 'view-favoritos' && window.FavoritosComparador) FavoritosComparador.cargar();
             if (targetId === 'view-admin-usuarios') {
@@ -12087,6 +12125,8 @@
 
         function obtenerColeccionesFiltradasPorRol(lista) {
             const arr = Array.isArray(lista) ? lista : coleccionesVipList;
+            // Con Supabase real, la base de datos ya entrega solo lo que le corresponde a cada rol
+            if (typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA) return arr;
             let currentUser = null;
             try {
                 currentUser = JSON.parse(localStorage.getItem('maximus_user'));
@@ -12126,9 +12166,15 @@
             } catch (e) {}
 
             const esAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'director');
+            const real = typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA;
 
             try {
-                if (window.ColeccionesVipService) {
+                if (real && window.ColeccionesVipService) {
+                    // Solo lo que hay en Supabase (sin colecciones de demostración); si falla, se avisa
+                    const res = await ColeccionesVipService.getAll({});
+                    coleccionesVipList = res.data || [];
+                    renderAvisoColecciones(res);
+                } else if (window.ColeccionesVipService) {
                     const filtros = {};
                     if (!esAdmin && currentUser) {
                         filtros.asesor_id = currentUser.id;
@@ -12146,9 +12192,34 @@
                 }
             } catch (e) {
                 console.warn('Error al cargar colecciones VIP:', e);
-                coleccionesVipList = [...COLECCIONES_VIP_DEFAULTS];
+                coleccionesVipList = real ? [] : [...COLECCIONES_VIP_DEFAULTS];
             }
             renderColeccionesVIP();
+        }
+
+        function renderAvisoColecciones(res) {
+            const box = document.getElementById('colecciones-aviso');
+            if (!box) return;
+            if (res && res.sinConexion) {
+                const motivo = res.error && res.error.message ? ` (${escHist(res.error.message)})` : '';
+                box.innerHTML = `<div class="flex items-start gap-3 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold"><i class="ph-fill ph-warning-circle text-lg shrink-0"></i><span>No se pudieron cargar las colecciones desde Supabase${motivo}. No se muestran datos de prueba. Revisa tu conexión y que el SQL de colecciones esté aplicado.</span></div>`;
+                box.classList.remove('hidden');
+            } else {
+                box.innerHTML = '';
+                box.classList.add('hidden');
+            }
+        }
+
+        // Estado de la colección para el asesor: borrador → enviada → vista
+        function estadoColeccion(col) {
+            if (Number(col.vistas || 0) > 0) return { txt: 'Vista por el cliente', cls: 'text-emerald-800 bg-emerald-50 border-emerald-200', icono: 'ph-eye' };
+            if (col.enviada_at) return { txt: 'Enviada', cls: 'text-blue-800 bg-blue-50 border-blue-200', icono: 'ph-paper-plane-tilt' };
+            return { txt: 'Sin enviar', cls: 'text-gray-600 bg-gray-100 border-gray-200', icono: 'ph-pencil-simple' };
+        }
+
+        function resumenReaccionesColeccion(col) {
+            const r = col.reacciones && typeof col.reacciones === 'object' ? Object.values(col.reacciones) : [];
+            return { si: r.filter(x => x && x.r === 'me_interesa').length, no: r.filter(x => x && x.r === 'no_me_interesa').length };
         }
 
         function renderColeccionesVIP(itemsToRender) {
@@ -12208,8 +12279,9 @@
                     const img = (p.fotos && p.fotos[0]) || '';
                     photosHtml += `
                         <div class="relative flex-1 h-20 sm:h-24 rounded-xl overflow-hidden bg-gray-100 border border-gray-200/60 shadow-xs">
-                            <img src="${img}" class="w-full h-full object-cover">
+                            <img src="${img}" class="w-full h-full object-cover ${['vendido', 'alquilado'].includes(String(p.estatus || '').toLowerCase()) ? 'grayscale opacity-70' : ''}">
                             <span class="absolute bottom-1 right-1 text-[8px] font-black bg-black/70 text-white px-1.5 py-0.5 rounded">${p.codigo}</span>
+                            ${['vendido', 'alquilado'].includes(String(p.estatus || '').toLowerCase()) ? `<span class="absolute top-1 left-1 text-[8px] font-black bg-red-600 text-white px-1.5 py-0.5 rounded uppercase">${String(p.estatus).toLowerCase() === 'alquilado' ? 'Alquilado' : 'Vendido'}</span>` : ''}
                         </div>
                     `;
                 });
@@ -12235,7 +12307,7 @@
                                             </span>
                                         ` : ''}
                                     </div>
-                                    <h4 class="font-extrabold text-sm text-maximus-dark line-clamp-1 mt-0.5 truncate" title="${col.cliente}">${col.cliente}</h4>
+                                    <h4 class="font-extrabold text-sm text-maximus-dark line-clamp-1 mt-0.5 truncate" title="${escHist(col.cliente)}">${escHist(col.cliente)}</h4>
                                 </div>
                             </div>
                             <button onclick="eliminarColeccionVIP('${col.id}')" class="text-gray-300 hover:text-red-500 transition-colors p-1" title="Eliminar Colección">
@@ -12244,13 +12316,26 @@
                         </div>
 
                         <!-- Título y Nota -->
-                        <h3 class="font-black text-sm sm:text-base text-maximus-dark mb-1 leading-tight group-hover:text-emerald-700 transition-colors line-clamp-1" title="${col.titulo}">${col.titulo}</h3>
-                        <p class="text-xs text-gray-500 line-clamp-2 italic mb-3">"${col.nota || 'Selección personalizada de propiedades.'}"</p>
+                        <h3 class="font-black text-sm sm:text-base text-maximus-dark mb-1 leading-tight group-hover:text-emerald-700 transition-colors line-clamp-1" title="${escHist(col.titulo)}">${escHist(col.titulo)}</h3>
+                        <p class="text-xs text-gray-500 line-clamp-2 italic mb-3">"${escHist(col.nota || 'Selección personalizada de propiedades.')}"</p>
 
                         <!-- Strip de Fotos de los Inmuebles -->
                         <div class="flex gap-2 mb-3">
                             ${photosHtml}
                         </div>
+
+                        <!-- Estado de la colección: sin enviar / enviada / vista + respuestas del cliente -->
+                        ${(() => {
+                            const est = estadoColeccion(col);
+                            const rr = resumenReaccionesColeccion(col);
+                            const noDisp = props.filter(p => ['vendido', 'alquilado'].includes(String(p.estatus || '').toLowerCase())).length;
+                            return `<div class="flex flex-wrap items-center gap-1.5 mb-3">
+                                <span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border ${est.cls}"><i class="ph-bold ${est.icono}"></i> ${est.txt}${Number(col.vistas || 0) > 0 ? ' · ' + Number(col.vistas) + 'x' : ''}</span>
+                                ${rr.si ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border text-emerald-800 bg-emerald-50 border-emerald-200" title="Inmuebles que le interesan"><i class="ph-fill ph-heart"></i> ${rr.si} le interesa${rr.si === 1 ? '' : 'n'}</span>` : ''}
+                                ${rr.no ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border text-gray-600 bg-gray-100 border-gray-200" title="Inmuebles descartados"><i class="ph-bold ph-x"></i> ${rr.no} descartado${rr.no === 1 ? '' : 's'}</span>` : ''}
+                                ${noDisp ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border text-red-700 bg-red-50 border-red-200" title="Ya no están disponibles"><i class="ph-bold ph-warning"></i> ${noDisp} ya no disponible${noDisp === 1 ? '' : 's'}</span>` : ''}
+                            </div>`;
+                        })()}
 
                         <!-- Métricas del Portafolio -->
                         <div class="p-2.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between text-xs mb-4">
@@ -12292,12 +12377,16 @@
             document.getElementById('form-col-telefono').value = '';
             document.getElementById('form-col-titulo').value = '';
             document.getElementById('form-col-nota').value = '';
+            window._colLeadId = null;
+            cargarLeadsParaColeccion();
 
             // Renderizar selector de propiedades con checkboxes
             const container = document.getElementById('form-col-prop-selector');
             if (container) {
                 container.innerHTML = '';
                 Object.values(INMUEBLES_DETALLE_DATA).forEach(prop => {
+                    // Un inmueble ya vendido o alquilado no se ofrece en colecciones nuevas
+                    if (['vendido', 'alquilado'].includes(String(prop.estatus || '').toLowerCase())) return;
                     const item = document.createElement('label');
                     item.className = 'flex items-center gap-2.5 p-2 rounded-xl bg-white border border-gray-200/80 hover:border-emerald-500 transition-all cursor-pointer shadow-xs select-none';
                     item.innerHTML = `
@@ -12398,31 +12487,78 @@
                 asesor: advisorName,
                 asesor_email: advisorEmail,
                 creado_por: advisorId,
+                lead_id: window._colLeadId || null,
                 _skipN8nDossier: true
             };
 
-            if (window.ColeccionesVipService) {
+            const real = typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA;
+            let creada = null;
+
+            if (real && window.ColeccionesVipService) {
+                // Si Supabase la rechaza se avisa con el motivo; ya no se guarda "a medias" en el navegador
+                const res = await ColeccionesVipService.create(nuevaColeccion);
+                if (res && res.error) {
+                    MaxDialog.alert({ titulo: 'No se pudo crear la colección', mensaje: 'Supabase respondió: ' + (res.error.message || res.error.code || String(res.error)) + '\n\nNo se guardó nada. Revisa que el SQL de colecciones esté aplicado y que tu rol pueda crear colecciones.' });
+                    return;
+                }
+                creada = res.data;
+                const lista = await ColeccionesVipService.getAll({});
+                coleccionesVipList = lista.data || [];
+                renderAvisoColecciones(lista);
+            } else if (window.ColeccionesVipService) {
                 await ColeccionesVipService.create(nuevaColeccion);
                 const { data } = await ColeccionesVipService.getAll();
-                if (data && data.length > 0) {
-                    coleccionesVipList = data;
-                } else {
-                    coleccionesVipList.unshift(nuevaColeccion);
-                }
+                coleccionesVipList = (data && data.length > 0) ? data : [nuevaColeccion, ...coleccionesVipList];
+                creada = nuevaColeccion;
             } else {
                 coleccionesVipList.unshift(nuevaColeccion);
+                creada = nuevaColeccion;
                 try {
                     localStorage.setItem('maximus_colecciones_vip', JSON.stringify(coleccionesVipList));
                 } catch(e) {}
             }
 
-            if (window.N8nService && typeof window.N8nService.enviarDossierVip === 'function') {
-                await window.N8nService.enviarDossierVip(nuevaColeccion);
+            // Crear ya no envía nada: el asesor elige cómo compartirla (enlace/QR, WhatsApp o correo)
+            if (creada && creada.lead_id && window.LeadService) {
+                try { await LeadService.addActividad(creada.lead_id, { tipo: 'nota', titulo: 'Colección preparada', descripcion: `Se preparó la colección «${titulo}» con ${selectedProps.length} inmueble(s).`, autor: advisorName }); } catch (_) {}
             }
-
+            window._colLeadId = null;
             renderColeccionesVIP();
             cerrarModalCrearColeccion();
-            mostrarToastNotificacion(email ? `📁 Dossier creado y enviado a ${email}` : `📁 Colección para "${cliente}" creada con éxito`);
+            mostrarToastNotificacion(`📁 Colección para "${cliente}" creada. Elige cómo compartirla.`);
+            if (creada && creada.id && window.QrMaximus) QrMaximus.coleccion(creada.id);
+        }
+
+        // Cliente del CRM en el formulario de colección
+        async function cargarLeadsParaColeccion() {
+            const sel = document.getElementById('form-col-lead');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Cliente nuevo (escribir los datos abajo)</option>';
+            if (!window.LeadService) return;
+            try {
+                const r = await LeadService.getAll({});
+                const leads = (r.data || []).filter(l => l && l.id && l.estatus !== 'descartado');
+                window._colLeadsCache = leads;
+                leads.forEach(l => {
+                    const o = document.createElement('option');
+                    o.value = l.id;
+                    o.textContent = `${l.nombre || 'Cliente'}${l.telefono ? ' · ' + l.telefono : ''}`;
+                    sel.appendChild(o);
+                });
+            } catch (_) {}
+        }
+
+        function elegirLeadColeccion() {
+            const id = document.getElementById('form-col-lead')?.value;
+            const l = (window._colLeadsCache || []).find(x => String(x.id) === String(id));
+            window._colLeadId = l ? l.id : null;
+            if (!l) return;
+            const set = (el, v) => { const n = document.getElementById(el); if (n && v != null) n.value = v; };
+            set('form-col-cliente', l.nombre || '');
+            set('form-col-email', l.email || '');
+            set('form-col-telefono', l.telefono || '');
+            const t = document.getElementById('form-col-titulo');
+            if (t && !t.value.trim()) t.value = `Selección para ${l.nombre || 'ti'}`;
         }
 
         function abrirModalVerDossier(id) {
@@ -12485,6 +12621,16 @@
                                     <span>•</span>
                                     <span><i class="ph-bold ph-car text-gray-400"></i> ${prop.estacionamientos}</span>
                                 </div>
+                                ${(() => {
+                                    const r = (col.reacciones || {})[String(prop.id)];
+                                    const nd = ['vendido', 'alquilado'].includes(String(prop.estatus || '').toLowerCase());
+                                    if (!r && !nd) return '';
+                                    return `<div class="mt-2 space-y-1">
+                                        ${nd ? `<p class="text-[11px] font-extrabold text-red-700 bg-red-50 border border-red-200 rounded-lg px-2.5 py-1 inline-flex items-center gap-1"><i class="ph-bold ph-warning"></i> Ya no está disponible</p>` : ''}
+                                        ${r ? `<p class="text-[11px] font-extrabold rounded-lg px-2.5 py-1 inline-flex items-center gap-1 ${r.r === 'me_interesa' ? 'text-emerald-800 bg-emerald-50 border border-emerald-200' : 'text-gray-600 bg-gray-100 border border-gray-200'}">${r.r === 'me_interesa' ? '<i class="ph-fill ph-heart"></i> Al cliente le interesa' : '<i class="ph-bold ph-x"></i> Lo descartó'}</p>` : ''}
+                                        ${r && r.c ? `<p class="text-xs text-gray-600 italic">“${escHist(r.c)}”</p>` : ''}
+                                    </div>`;
+                                })()}
                             </div>
                             <div class="pt-3 flex justify-end">
                                 <button onclick="cerrarModalVerDossier(); abrirDetalleInmuebleAirbnb('${prop.id}')" class="px-3.5 py-1.5 rounded-xl bg-gray-100 hover:bg-maximus-dark hover:text-white text-gray-700 font-extrabold text-xs transition-colors flex items-center gap-1.5 cursor-pointer">
@@ -12525,6 +12671,9 @@
             txt += `👤 *Preparado especialmente para:* ${col.cliente}\n`;
             txt += `📁 *Colección:* ${col.titulo}\n`;
             txt += `🤝 *Asesor Responsable:* ${advisorName} (${advisorPhone})\n\n`;
+            if (col.token) {
+                txt += `🔗 *Mira tu selección con fotos y dime cuáles te interesan:*\n${location.origin}/coleccion?c=${encodeURIComponent(col.id)}&t=${encodeURIComponent(col.token)}\n\n`;
+            }
 
             if (col.nota) {
                 txt += `📝 *Mensaje:*\n"${col.nota}"\n\n`;
@@ -12558,6 +12707,14 @@
                 ? `https://api.whatsapp.com/send?phone=${tel}&text=${encodeURIComponent(txt)}`
                 : `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
             window.open(url, '_blank');
+            marcarColeccionEnviada(col);
+        }
+
+        // Borrador → enviada, la primera vez que el asesor la comparte
+        function marcarColeccionEnviada(col) {
+            if (!col || col.enviada_at || !window.ColeccionesVipService || typeof ColeccionesVipService.marcarEnviada !== 'function') return;
+            col.enviada_at = new Date().toISOString();
+            Promise.resolve(ColeccionesVipService.marcarEnviada(col.id)).then(() => renderColeccionesVIP()).catch(() => {});
         }
 
         function compartirDossierWhatsApp() {
@@ -12598,10 +12755,13 @@
                 await window.N8nService.enviarDossierVip({
                     ...col,
                     cliente_email: emailDestino,
-                    inmuebles_detalle: props
+                    inmuebles_detalle: props,
+                    // El correo incluye un botón con el enlace de la colección (reacciones en línea)
+                    url_coleccion: col.token ? `${location.origin}/coleccion?c=${encodeURIComponent(col.id)}&t=${encodeURIComponent(col.token)}` : ''
                 });
             }
 
+            marcarColeccionEnviada(col);
             mostrarToastNotificacion(`✉️ Dossier VIP enviado a ${emailDestino}`);
         }
 
@@ -12616,13 +12776,13 @@
         async function eliminarColeccionVIP(id) {
             if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-trash', titulo: '¿Eliminar esta colección?', mensaje: 'El cliente ya no podrá ver esta selección de inmuebles.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
             if (window.ColeccionesVipService) {
-                await ColeccionesVipService.delete(id);
-                const { data } = await ColeccionesVipService.getAll();
-                if (data) {
-                    coleccionesVipList = data;
-                } else {
-                    coleccionesVipList = coleccionesVipList.filter(c => c.id !== id);
+                const rDel = await ColeccionesVipService.delete(id);
+                if (rDel && rDel.error) {
+                    MaxDialog.alert({ titulo: 'No se pudo eliminar', mensaje: rDel.error.message || String(rDel.error) });
+                    return;
                 }
+                const lista = await ColeccionesVipService.getAll();
+                coleccionesVipList = lista.data || coleccionesVipList.filter(c => c.id !== id);
             } else {
                 coleccionesVipList = coleccionesVipList.filter(c => c.id !== id);
                 try {
