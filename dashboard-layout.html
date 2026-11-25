@@ -51,6 +51,7 @@
     <script src="js/busqueda-voz.js?v=1.0"></script>
     <script src="js/mi-asesor.js?v=1.0"></script>
     <script src="js/colecciones-cliente.js?v=1.0"></script>
+    <script src="js/galeria-plantilla.js?v=1.0"></script>
     <script src="js/qr-maximus.js?v=1.3"></script>
     <script src="js/favoritos.js?v=1.2"></script>
     <script src="js/bandeja-leads.js?v=1.1"></script>
@@ -11510,6 +11511,11 @@
                         wrapperEl.style.display = 'none';
                     }
                 }
+            }
+
+            // La portada «plantilla» (16:10, con el precio impreso) se muestra completa, sin recortar
+            if (window.GaleriaPlantilla) {
+                GaleriaPlantilla.preparar(document.getElementById('airbnb-galeria-container'), document.getElementById('airbnb-img-0'), totalFotos);
             }
 
             // 3. Asesor / Anfitrión
