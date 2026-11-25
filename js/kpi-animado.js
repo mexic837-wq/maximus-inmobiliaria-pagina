@@ -10,13 +10,15 @@
  *
  *   · No hace falta cambiar el código que escribe los números: se detecta el cambio solo.
  *   · Si después el dato cambia (se actualiza en vivo), el número se desliza al nuevo valor.
- *   · Si un indicador visible no recibe datos en ~4 s, se muestra tal cual (sin quedarse cargando).
+ *   · Si un indicador visible no recibe datos en ~15 s se muestra un guion (nunca el número de ejemplo).
  *   · Con «reducir movimiento» activado en el sistema no hay animación, solo el número.
  */
 (function () {
     'use strict';
 
-    const ESPERA_MAX_MS = 4000;
+    // Cuánto espera un indicador visible antes de rendirse. Debe ser largo: algunos datos (el catálogo de
+    // inmuebles) tardan varios segundos, y rendirse antes mostraba el número de ejemplo.
+    const ESPERA_MAX_MS = 15000;
     const DURACION_PRIMERA = 1000;
     const DURACION_CAMBIO = 600;
     const reducirMovimiento = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -125,7 +127,11 @@
                 pendientes++;
                 if (!visible(el)) { el._kpiDesde = null; return; }
                 if (!el._kpiDesde) el._kpiDesde = ahora;
-                if (ahora - el._kpiDesde > ESPERA_MAX_MS) marcarListo(el);
+                if (ahora - el._kpiDesde > ESPERA_MAX_MS) {
+                    // Nunca se muestra el número de ejemplo: si no llegó dato, un guion
+                    if (el.textContent === el.getAttribute('data-kpi-ph')) { escribir(el, '–'); el._kpiValor = null; }
+                    marcarListo(el);
+                }
             });
             if (!pendientes && !document.querySelector('[data-kpi-estado="cargando"]')) clearInterval(reloj);
         }, 1000);
