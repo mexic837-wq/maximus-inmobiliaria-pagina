@@ -2951,42 +2951,54 @@ const AsesorMaximusService = {
         return res;
     },
 
+    // Columnas reales de asesores_maximus. Antes se mandaba todo lo que traía el formulario (incluida la
+    // contraseña) y la base rechazaba el cambio con «400 Bad Request» sin que nadie se enterara.
+    _COLUMNAS_EDITABLES: ['nombre', 'cargo', 'especialidad', 'email', 'telefono', 'whatsapp', 'avatar', 'foto_url',
+        'rating', 'cierres', 'badge_texto', 'destacado', 'activo', 'orden', 'bio'],
+
     async update(id, updates) {
         const targetIdStr = String(id || '').trim();
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetIdStr);
 
-        // 1. Siempre actualizar localmente primero para reactividad instantánea
+        // Con Supabase real se guarda PRIMERO en la base de datos: si falla, se devuelve el error y no se
+        // toca la copia local (así el panel no dice «guardado» cuando no lo está).
+        let confirmado = null;
+        if (!APP_CONFIG.USE_MOCK_DATA && isUUID) {
+            const fila = {};
+            this._COLUMNAS_EDITABLES.forEach(k => { if (updates[k] !== undefined) fila[k] = updates[k]; });
+            if (fila.especialidad === null) fila.especialidad = '';     // la columna es NOT NULL
+            try {
+                const sb = getSupabase();
+                const sbRes = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).update(fila).eq('id', targetIdStr).select().maybeSingle();
+                if (sbRes && sbRes.error) {
+                    console.warn('AsesorMaximusService.update: Supabase rechazó el cambio (' + (sbRes.error.message || sbRes.error.code) + ').');
+                    return { data: null, error: sbRes.error };
+                }
+                if (!sbRes || !sbRes.data) {
+                    return { data: null, error: { message: 'No se actualizó: el asesor no existe o tu cuenta no tiene permiso para editarlo.' } };
+                }
+                confirmado = sbRes.data;
+            } catch (err) {
+                return { data: null, error: err };
+            }
+        }
+
+        // Copia local (y lista en memoria) con lo que confirmó la base de datos
+        const aplicar = confirmado || updates;
         let list = this._getLocal();
         const idx = list.findIndex(a => String(a.id || '').trim() === targetIdStr);
         if (idx !== -1) {
-            list[idx] = { ...list[idx], ...updates, updated_at: new Date().toISOString() };
+            list[idx] = { ...list[idx], ...aplicar, updated_at: new Date().toISOString() };
             this._saveLocal(list);
         }
         if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
             const mIdx = ASESORES_MAXIMUS_DATA.findIndex(a => String(a.id || '').trim() === targetIdStr);
             if (mIdx !== -1) {
-                ASESORES_MAXIMUS_DATA[mIdx] = { ...ASESORES_MAXIMUS_DATA[mIdx], ...updates };
+                ASESORES_MAXIMUS_DATA[mIdx] = { ...ASESORES_MAXIMUS_DATA[mIdx], ...aplicar };
             }
         }
 
-        // 2. Si no es mock data y es un UUID válido de Supabase, actualizar en la base de datos
-        if (!APP_CONFIG.USE_MOCK_DATA) {
-            try {
-                const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetIdStr);
-                if (isUUID) {
-                    const sb = getSupabase();
-                    const sanitized = { ...updates };
-                    delete sanitized._skipN8nBienvenida;
-                    delete sanitized.captacionesActivas;
-                    delete sanitized.split_comision;
-                    delete sanitized.tipo_cuenta;
-                    const sbRes = await sb.from(APP_CONFIG.TABLES.ASESORES_MAXIMUS).update(sanitized).eq('id', targetIdStr).select().single();
-                    if (sbRes && sbRes.data) return sbRes;
-                }
-            } catch (err) {
-                console.warn('AsesorMaximusService.update: Aviso de Supabase, guardado localmente');
-            }
-        }
-
+        if (confirmado) return { data: confirmado, error: null };
         return { data: idx !== -1 ? list[idx] : null, error: null };
     },
 

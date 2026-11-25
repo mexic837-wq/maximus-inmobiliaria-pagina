@@ -3971,7 +3971,7 @@
                 <!-- Selector de Pestañas: Directorio vs Registrar Nuevo -->
                 <div class="flex items-center gap-2 border-b border-gray-200 pb-3">
                     <button id="tab-btn-asesores-lista" onclick="cambiarTabAdminAsesores('lista')" class="px-5 py-2.5 rounded-xl font-extrabold text-sm transition-all bg-maximus-dark text-white shadow-sm flex items-center gap-2">
-                        <i class="ph-bold ph-list-dashes"></i> <span class="whitespace-nowrap">Directorio (<span id="tab-count-asesores">4</span>)</span>
+                        <i class="ph-bold ph-list-dashes"></i> <span class="whitespace-nowrap">Directorio (<span id="tab-count-asesores" data-kpi-estado="cargando" data-kpi-ph="4">4</span>)</span>
                     </button>
                     <button id="tab-btn-asesores-nuevo" onclick="cambiarTabAdminAsesores('nuevo')" class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-2">
                         <i class="ph-bold ph-user-plus"></i> <span class="whitespace-nowrap">Nuevo asesor</span>
@@ -14155,6 +14155,12 @@
                         ASESORES_MAXIMUS_DATA = res.data;
                         return res.data;
                     }
+                    // Con Supabase real, un directorio vacío es un directorio vacío: no se rellena con los
+                    // 4 asesores de demostración que trae el código (antes se veían como si fueran reales).
+                    if (res && Array.isArray(res.data) && typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA) {
+                        ASESORES_MAXIMUS_DATA = [];
+                        return [];
+                    }
                 } catch (e) {
                     console.warn('Aviso al consultar asesores de Supabase:', e);
                 }
@@ -15816,10 +15822,22 @@
         // ==========================================
         // GESTIÓN ADMINISTRATIVA DE ASESORES (PANEL ADMIN)
         // ==========================================
+        let _gestionAsesoresToken = 0;
         async function inicializarGestionAsesoresAdmin() {
-            // Sincronizar catálogo completo desde DB / localStorage antes de calcular
-            await sincronizarInmueblesDesdeDB(true);
+            // En dos tiempos: lo rápido (la lista de asesores y su total) sale en cuanto llega, y el conteo de
+            // captaciones espera al catálogo completo de inmuebles, que tarda más. Antes todo esperaba al catálogo.
+            const miToken = ++_gestionAsesoresToken;
             const asesores = await obtenerAsesoresMaximusActuales();
+            if (miToken !== _gestionAsesoresToken) return;           // llegó otra carga más reciente
+
+            const kpiTotalRapido = document.getElementById('kpi-admin-total-asesores');
+            if (kpiTotalRapido) kpiTotalRapido.textContent = asesores.length;
+            const tabCountRapido = document.getElementById('tab-count-asesores');
+            if (tabCountRapido) tabCountRapido.textContent = asesores.length;
+            renderTablaAdminAsesores(asesores);
+
+            await sincronizarInmueblesDesdeDB(true);
+            if (miToken !== _gestionAsesoresToken) return;
             const allProps = Object.values(INMUEBLES_DETALLE_DATA);
 
             // Calcular captaciones reales por asesor
@@ -15908,7 +15926,7 @@
                     </td>
                                         <td class="py-3 px-4 text-center">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 font-extrabold text-xs hover:bg-emerald-100 transition-colors shadow-sm">
-                            <i class="ph-bold ph-buildings text-emerald-600 text-sm"></i> <span>${asesor.captacionesActivas || 0}</span>
+                            <i class="ph-bold ph-buildings text-emerald-600 text-sm"></i> <span>${asesor.captacionesActivas === undefined ? '<span class="inline-block w-4 h-3.5 rounded bg-emerald-300/60 animate-pulse align-middle"></span>' : asesor.captacionesActivas}</span>
                         </span>
                     </td>
                     <td class="py-3 px-4 text-center">
@@ -16250,7 +16268,8 @@
                     email: document.getElementById('edit-asesor-email').value.trim(),
                     bio: document.getElementById('edit-asesor-bio').value.trim()
                 };
-                if (password) updates.password = password;
+                // La contraseña NO va en los datos del asesor (esa tabla no tiene esa columna y la base rechazaba el
+                // guardado con «400 Bad Request»); solo se usa más abajo para el acceso local.
 
                 // Foto nueva (opcional): se reduce y se guarda dentro del registro, así también sale en la página principal
                 const fotoNueva = document.getElementById('edit-asesor-avatar-file')?.files[0];
@@ -16287,7 +16306,12 @@
                 }
 
                 if (typeof AsesorMaximusService !== 'undefined') {
-                    await AsesorMaximusService.update(id, updates);
+                    const rUp = await AsesorMaximusService.update(id, updates);
+                    if (rUp && rUp.error) {
+                        // Antes decía «actualizado con éxito» aunque Supabase hubiera rechazado el cambio
+                        MaxDialog.alert({ titulo: 'No se guardaron los cambios', mensaje: 'Supabase respondió: ' + (rUp.error.message || rUp.error.code || String(rUp.error)) + '\n\nNo se modificó nada. Si el mensaje habla de permisos, revisa que tu cuenta sea administradora.' });
+                        return;
+                    }
                 }
                 if (typeof ASESORES_MAXIMUS_DATA !== 'undefined' && Array.isArray(ASESORES_MAXIMUS_DATA)) {
                     const idx = ASESORES_MAXIMUS_DATA.findIndex(a => String(a.id) === String(id));
