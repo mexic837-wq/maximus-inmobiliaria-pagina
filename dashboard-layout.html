@@ -3271,6 +3271,9 @@
                     </div>
                 </div>
 
+                <!-- Gráfica mensual de comisiones (se dibuja con lo que se está filtrando) -->
+                <div id="historico-grafica-wrap" class="hidden bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-maximus-silver/20"></div>
+
                 <!-- Aviso de conexión / cierres que quedaron solo en este equipo -->
                 <div id="historico-aviso" class="hidden"></div>
 
@@ -3334,7 +3337,7 @@
                     <div class="flex items-center justify-between border-b border-gray-100 pb-4">
                         <div>
                             <span class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full uppercase tracking-wider">Transacción Oficial</span>
-                            <h3 class="text-2xl font-extrabold text-maximus-dark mt-1">Registrar Cierre & Liquidación</h3>
+                            <h3 id="cierre-modal-titulo" class="text-2xl font-extrabold text-maximus-dark mt-1">Registrar Cierre & Liquidación</h3>
                         </div>
                         <button onclick="cerrarModalNuevoCierre()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-maximus-dark flex items-center justify-center transition cursor-pointer">
                             <i class="ph-bold ph-x text-base"></i>
@@ -3469,7 +3472,7 @@
                             </button>
                             <button type="submit" class="px-7 py-3 rounded-xl bg-maximus-dark hover:bg-[#07362e] text-white text-sm font-bold shadow-lg transition hover:-translate-y-0.5 cursor-pointer flex items-center gap-2">
                                 <i class="ph-bold ph-floppy-disk text-base"></i>
-                                <span>Guardar Cierre</span>
+                                <span id="cierre-modal-submit-texto">Guardar Cierre</span>
                             </button>
                         </div>
                     </form>
@@ -5552,6 +5555,13 @@
                     </div>
 
                     <div class="flex items-center gap-1.5 shrink-0">
+                        <!-- Estado comercial del inmueble: solo admin y asesores MAXIMUS (la base de datos también lo exige) -->
+                        <button type="button" id="btn-marcar-vendido" onclick="marcarInmuebleVendido()" class="asesor-maximus-only staff-only flex items-center justify-center gap-1.5 text-xs font-extrabold text-white px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all cursor-pointer" title="Marcar este inmueble como vendido o alquilado">
+                            <i class="ph-bold ph-seal-check text-sm"></i> <span id="btn-marcar-vendido-texto" class="hidden sm:inline">Marcar como vendido</span>
+                        </button>
+                        <button type="button" id="btn-reactivar-inmueble" onclick="reactivarInmuebleDisponible()" style="display:none" class="asesor-maximus-only staff-only items-center justify-center gap-1.5 text-xs font-extrabold text-amber-800 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 shadow-sm transition-all cursor-pointer" title="Volver a publicar este inmueble como disponible">
+                            <i class="ph-bold ph-arrow-counter-clockwise text-sm"></i> <span class="hidden sm:inline">Volver a disponible</span>
+                        </button>
                         <!-- Fase 3: QR del letrero (solo equipo) -->
                         <button type="button" onclick="QrMaximus.inmueble()" class="staff-only flex items-center justify-center gap-1.5 text-xs font-bold text-gray-600 hover:text-maximus-dark px-3 py-1.5 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 shadow-sm transition-all cursor-pointer" title="QR para el letrero">
                             <i class="ph-bold ph-qr-code text-sm text-emerald-600"></i> <span class="hidden sm:inline">QR letrero</span>
@@ -5573,6 +5583,7 @@
                             </span>
                             <span id="airbnb-modal-badge-operacion" class="bg-maximus-accent text-white text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm">VENTA</span>
                             <span id="airbnb-modal-badge-tipo" class="bg-emerald-50 text-maximus-accent border border-emerald-200 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">CASA</span>
+                            <span id="airbnb-modal-badge-estatus" style="display:none" class="bg-red-600 text-white text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm">VENDIDO</span>
                         </div>
                         <h1 id="airbnb-modal-title" class="text-base sm:text-lg md:text-xl font-extrabold text-maximus-dark tracking-tight leading-snug break-words">Quinta moderna con piscina y jardín</h1>
                         <div class="flex flex-wrap items-center gap-2 text-xs text-gray-500 font-semibold min-w-0">
@@ -11413,6 +11424,7 @@
 
             const badgeTipo = document.getElementById('airbnb-modal-badge-tipo');
             if (badgeTipo) badgeTipo.textContent = data.badgeTipo;
+            actualizarEstadoComercialInmueble(data);
 
             // 2. Poblar Fotos en la Galería de 5
             lightboxFotosActuales = (data.fotos && data.fotos.length > 0) ? data.fotos : [
@@ -12362,7 +12374,7 @@
                     id: p.id,
                     codigo: p.codigo,
                     titulo: p.titulo,
-                    precio: `${(Number(p.precio) || 0).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
+                    precio: `${precioInmuebleNum(p).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
                     ubicacion: p.ubicacion,
                     m2: p.m2,
                     habitaciones: p.habitaciones,
@@ -12573,7 +12585,7 @@
                     id: p.id,
                     codigo: p.codigo,
                     titulo: p.titulo,
-                    precio: `${(Number(p.precio) || 0).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
+                    precio: `${precioInmuebleNum(p).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
                     ubicacion: p.ubicacion,
                     m2: p.m2,
                     habitaciones: p.habitaciones,
@@ -13280,7 +13292,7 @@
             // Calcular afinidad
             const scoredProps = properties.map(p => {
                 let score = 60; // Base score
-                const pPrice = Number(p.precio) || 0;
+                const pPrice = precioInmuebleNum(p);
                 
                 // Afinidad por precio
                 const diff = Math.abs(pPrice - pTarget) / (pTarget || 1);
@@ -13330,7 +13342,7 @@
 
                     <div>
                         <div class="flex items-center justify-between text-xs mb-0.5">
-                            <span class="font-black text-emerald-700 dark:text-emerald-400">$${(Number(prop.precio) || 0).toLocaleString()} USD</span>
+                            <span class="font-black text-emerald-700 dark:text-emerald-400">$${precioInmuebleNum(prop).toLocaleString('en-US')} USD</span>
                             <span class="text-[10px] text-gray-400 font-bold uppercase">${prop.operacion || 'Venta'}</span>
                         </div>
                         <h5 class="font-extrabold text-xs text-maximus-dark dark:text-white line-clamp-1" title="${prop.titulo}">
@@ -13549,7 +13561,7 @@
                 id: p.id,
                 codigo: p.codigo,
                 titulo: p.titulo,
-                precio: `${(Number(p.precio) || 0).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
+                precio: `${precioInmuebleNum(p).toLocaleString('en-US')} ${p.moneda || 'USD'}`,
                 ubicacion: p.ubicacion,
                 m2: p.m2,
                 habitaciones: p.habitaciones,
@@ -14054,6 +14066,7 @@
                                 agenteId: inm.agente_id || existing.agenteId || null,
                                 asesorRefId: inm.asesor_id || existing.asesorRefId || null,
                                 origenCaptura: inm.origen_captura || existing.origenCaptura || null,
+                                estatus: inm.estatus || existing.estatus || 'disponible',
                                 creadoEn: inm.created_at || existing.creadoEn || null,
                                 asesor: asesorData,
                                 aspectosDestacados: inm.aspectos_destacados || existing.aspectosDestacados || (esMaximus ? [
@@ -16592,6 +16605,14 @@
             }
         }
 
+        // El catálogo guarda el precio como texto con formato ("$45,000"): se convierte a número
+        function precioInmuebleNum(p) {
+            if (!p) return 0;
+            const v = p.precio;
+            if (typeof v === 'number') return v;
+            return parseFloat(String(v == null ? '' : v).replace(/[^0-9.]/g, '')) || 0;
+        }
+
         function formatUSD(num) {
             const val = parseFloat(num) || 0;
             return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -17117,6 +17138,7 @@
             window._historicoActual = cierres;
 
             renderAvisoHistorico(resCierres);
+            renderGraficaMensualHistorico(cierres);
             renderMetricasHistorico(metricas);
             renderTablaCierres(cierres);
             renderRankingAsesores(metricas.ranking_asesores || []);
@@ -17236,10 +17258,317 @@
             const set = (el, v) => { const n = document.getElementById(el); if (n && v != null) n.value = v; };
             set('cierre-inmueble-titulo', p.titulo);
             set('cierre-ubicacion', p.ubicacion);
-            if (p.precio) set('cierre-precio', Number(p.precio) || '');
+            if (p.precio) set('cierre-precio', precioInmuebleNum(p) || '');
             const op = String(p.operacion || '').toLowerCase();
             if (op === 'venta' || op === 'alquiler') set('cierre-tipo-operacion', op);
             calcularComisionesEnVivoModal();
+        }
+
+        // ========================================================
+        // HISTÓRICO FASE 2: inmueble vendido, editar cierre, recibo PDF y gráfica mensual
+        // ========================================================
+        function rolActualPanel() {
+            const u = (typeof getUsuarioActualCRM === 'function') ? getUsuarioActualCRM() : null;
+            return (u && u.role) || '';
+        }
+
+        // Botón "Marcar como vendido" / "Volver a disponible" y la etiqueta VENDIDO (solo admin y asesor MAXIMUS ven los botones)
+        function actualizarEstadoComercialInmueble(data) {
+            const estatus = String((data && data.estatus) || 'disponible').toLowerCase();
+            const cerrado = estatus === 'vendido' || estatus === 'alquilado';
+            const puede = ['admin', 'asesor_maximus'].includes(rolActualPanel());
+            const esAlquiler = String((data && data.operacion) || '').toUpperCase() === 'ALQUILER';
+
+            const badge = document.getElementById('airbnb-modal-badge-estatus');
+            if (badge) {
+                badge.style.display = cerrado ? 'inline-block' : 'none';
+                badge.textContent = estatus === 'alquilado' ? 'ALQUILADO' : 'VENDIDO';
+            }
+            const btnVender = document.getElementById('btn-marcar-vendido');
+            const txtVender = document.getElementById('btn-marcar-vendido-texto');
+            const btnReactivar = document.getElementById('btn-reactivar-inmueble');
+            if (btnVender) btnVender.style.display = (puede && !cerrado) ? 'flex' : 'none';
+            if (txtVender) txtVender.textContent = esAlquiler ? 'Marcar como alquilado' : 'Marcar como vendido';
+            if (btnReactivar) btnReactivar.style.display = (puede && cerrado) ? 'flex' : 'none';
+        }
+
+        function mensajeErrorEstadoInmueble(err) {
+            const m = String((err && (err.message || err.code)) || err || '');
+            if (/marcar_inmueble_estatus|function|schema cache|404/i.test(m)) {
+                return 'Falta ejecutar en Supabase el SQL de la fase 2 del histórico (sql/migration-cierres-fase2.sql).';
+            }
+            if (/LIMITE_INMUEBLES/.test(m)) return 'El plan del asesor ya está en su tope de inmuebles disponibles.';
+            return m || 'Error desconocido';
+        }
+
+        async function marcarInmuebleVendido() {
+            const d = (typeof currentInmuebleAirbnb !== 'undefined') ? currentInmuebleAirbnb : null;
+            if (!d || !d.id || !window.InmuebleService) return;
+            const esAlquiler = String(d.operacion || '').toUpperCase() === 'ALQUILER';
+            const nuevo = esAlquiler ? 'alquilado' : 'vendido';
+            const ok = await MaxDialog.confirm({
+                icono: 'ph-seal-check',
+                titulo: `¿Marcar como ${nuevo}?`,
+                mensaje: `«${d.titulo}» dejará de aparecer en el catálogo público. Enseguida se abre el formulario de cierre para registrar la comisión.`,
+                aceptar: `Sí, marcar como ${nuevo}`, cancelar: 'Cancelar'
+            });
+            if (!ok) return;
+
+            const r = await InmuebleService.marcarEstatus(d.id, nuevo);
+            if (r && r.error) {
+                MaxDialog.alert({ titulo: 'No se pudo cambiar el estado', mensaje: mensajeErrorEstadoInmueble(r.error) });
+                return;
+            }
+            d.estatus = nuevo;
+            if (INMUEBLES_DETALLE_DATA[d.id]) INMUEBLES_DETALLE_DATA[d.id].estatus = nuevo;
+            actualizarEstadoComercialInmueble(d);
+            mostrarToastNotificacion(`✅ Inmueble marcado como ${nuevo}`);
+
+            // Registrar el cierre con los datos del inmueble ya llenos
+            abrirModalNuevoCierre();
+            await popularFiltrosAsesoresHistorico();
+            poblarInmueblesCierre();
+            const sel = document.getElementById('cierre-inmueble-select');
+            if (sel && [...sel.options].some(o => o.value === String(d.id))) {
+                sel.value = String(d.id);
+                elegirInmuebleCierre();
+            }
+        }
+
+        async function reactivarInmuebleDisponible() {
+            const d = (typeof currentInmuebleAirbnb !== 'undefined') ? currentInmuebleAirbnb : null;
+            if (!d || !d.id || !window.InmuebleService) return;
+            const ok = await MaxDialog.confirm({
+                icono: 'ph-arrow-counter-clockwise',
+                titulo: '¿Volver a publicar como disponible?',
+                mensaje: `«${d.titulo}» volverá a salir en el catálogo público. El cierre que ya se registró no se borra.`,
+                aceptar: 'Sí, volver a disponible', cancelar: 'Cancelar'
+            });
+            if (!ok) return;
+            const r = await InmuebleService.marcarEstatus(d.id, 'disponible');
+            if (r && r.error) {
+                MaxDialog.alert({ titulo: 'No se pudo cambiar el estado', mensaje: mensajeErrorEstadoInmueble(r.error) });
+                return;
+            }
+            d.estatus = 'disponible';
+            if (INMUEBLES_DETALLE_DATA[d.id]) INMUEBLES_DETALLE_DATA[d.id].estatus = 'disponible';
+            actualizarEstadoComercialInmueble(d);
+            mostrarToastNotificacion('✅ Inmueble disponible otra vez');
+        }
+
+        // ---------- Editar un cierre ----------
+        function restablecerModalCierre() {
+            window._cierreEditandoId = null;
+            window._cierreEditandoInmuebleId = null;
+            const t = document.getElementById('cierre-modal-titulo');
+            if (t) t.textContent = 'Registrar Cierre & Liquidación';
+            const b = document.getElementById('cierre-modal-submit-texto');
+            if (b) b.textContent = 'Guardar Cierre';
+        }
+
+        async function abrirEditarCierre(id) {
+            const c = (window._historicoActual || []).find(x => String(x.id) === String(id));
+            if (!c) return;
+            abrirModalNuevoCierre();
+            await popularFiltrosAsesoresHistorico();
+            poblarInmueblesCierre();
+
+            window._cierreEditandoId = c.id;
+            window._cierreEditandoInmuebleId = c.inmueble_id || null;
+            const set = (el, v) => { const n = document.getElementById(el); if (n) n.value = (v == null ? '' : v); };
+            const asesorSel = document.getElementById('cierre-asesor-id');
+            if (asesorSel && c.asesor_id && [...asesorSel.options].some(o => o.value === String(c.asesor_id))) asesorSel.value = String(c.asesor_id);
+            const inmSel = document.getElementById('cierre-inmueble-select');
+            if (inmSel && c.inmueble_id && [...inmSel.options].some(o => o.value === String(c.inmueble_id))) inmSel.value = String(c.inmueble_id);
+            set('cierre-tipo-operacion', c.tipo_operacion);
+            set('cierre-inmueble-titulo', c.inmueble_titulo);
+            set('cierre-ubicacion', c.ubicacion);
+            set('cierre-fecha', c.fecha_cierre);
+            set('cierre-precio', c.precio_final);
+            set('cierre-porcentaje-bruta', c.comision_bruta_porcentaje);
+            set('cierre-porcentaje-asesor', c.asesor_porcentaje_neto);
+            set('cierre-cliente-comprador', c.cliente_comprador);
+            set('cierre-cliente-vendedor', c.cliente_vendedor);
+            set('cierre-estatus-comision', c.estatus_comision === 'liquidada' ? 'liquidada' : 'en_tramite');
+            set('cierre-notas', c.notas);
+
+            const t = document.getElementById('cierre-modal-titulo');
+            if (t) t.textContent = 'Editar Cierre' + (c.numero_recibo ? ' · ' + c.numero_recibo : '');
+            const b = document.getElementById('cierre-modal-submit-texto');
+            if (b) b.textContent = 'Guardar Cambios';
+            calcularComisionesEnVivoModal();
+        }
+
+        // ---------- Recibo en PDF (ventana de impresión: "Guardar como PDF") ----------
+        function imprimirReciboCierre(id) {
+            const c = (window._historicoActual || []).find(x => String(x.id) === String(id));
+            if (!c) return;
+            const e = escHist;
+            const fechaLarga = (d) => d ? new Date(String(d).slice(0, 10) + 'T00:00:00').toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/D';
+            const liquidada = c.estatus_comision === 'liquidada';
+            const esAlquiler = c.tipo_operacion === 'alquiler';
+            const recibo = c.numero_recibo || ('S/N-' + String(c.id).slice(0, 8).toUpperCase());
+            const logo = location.origin + '/assets/email/logo-maximus-email.png';
+            const fila = (k, v, fuerte) => `<tr><td class="k">${k}</td><td class="v${fuerte ? ' f' : ''}">${v}</td></tr>`;
+
+            const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Recibo ${e(recibo)} · MAXIMUS</title>
+<style>
+  @page { size: A4; margin: 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .top { height: 6px; background: linear-gradient(90deg, #0B4A3F, #10B981, #CBD5E1); }
+  .head { display: flex; justify-content: space-between; align-items: center; padding: 22px 0 16px; border-bottom: 2px solid #10B981; }
+  .head img { height: 54px; }
+  .marca b { font-size: 22px; letter-spacing: 2px; color: #0B4A3F; }
+  .marca span { display: block; font-size: 10px; letter-spacing: 4px; color: #64748b; font-weight: 700; margin-top: 2px; }
+  .num { text-align: right; }
+  .num small { display: block; font-size: 10px; letter-spacing: 2px; color: #64748b; font-weight: 700; text-transform: uppercase; }
+  .num b { font-size: 20px; color: #0B4A3F; font-family: monospace; }
+  h1 { font-size: 18px; margin: 22px 0 4px; color: #0B4A3F; }
+  .sub { font-size: 12px; color: #64748b; margin: 0 0 16px; }
+  .estado { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; background: ${liquidada ? '#ecfdf5' : '#fffbeb'}; color: ${liquidada ? '#065f46' : '#92400e'}; border: 1px solid ${liquidada ? '#a7f3d0' : '#fde68a'}; }
+  h2 { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #0B4A3F; margin: 22px 0 6px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 13px; vertical-align: top; }
+  td.k { width: 38%; color: #64748b; }
+  td.v { font-weight: 600; }
+  td.f { font-weight: 800; font-size: 15px; color: #0B4A3F; }
+  .totales { margin-top: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #10B981; border-radius: 10px; padding: 6px 16px; }
+  .firmas { display: flex; gap: 40px; margin-top: 70px; }
+  .firmas div { flex: 1; border-top: 1px solid #94a3b8; padding-top: 6px; text-align: center; font-size: 11px; color: #475569; }
+  .pie { margin-top: 36px; font-size: 10px; color: #94a3b8; text-align: center; line-height: 1.5; }
+  .barra { position: fixed; top: 0; left: 0; right: 0; background: #0B4A3F; color: #fff; padding: 10px 16px; font-size: 13px; display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+  .barra button { background: #10B981; color: #fff; border: 0; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  @media print { .barra { display: none; } }
+  @media screen { body { padding: 70px 40px 40px; max-width: 820px; margin: 0 auto; } }
+</style></head><body>
+<div class="barra"><span>Para guardar como PDF elige «Guardar como PDF» como impresora.</span><button onclick="window.print()">Imprimir / Guardar PDF</button></div>
+<div class="top"></div>
+<div class="head">
+  <div style="display:flex;align-items:center;gap:12px"><img src="${logo}" alt="" onerror="this.style.display='none'"><div class="marca"><b>MAXIMUS.</b><span>INMOBILIARIA</span></div></div>
+  <div class="num"><small>Recibo de comisión</small><b>${e(recibo)}</b></div>
+</div>
+<h1>Recibo de cierre de ${esAlquiler ? 'alquiler' : 'venta'}</h1>
+<p class="sub">Emitido el ${fechaLarga(new Date().toISOString())} · Estado de la comisión: <span class="estado">${liquidada ? 'Liquidada' : 'En trámite'}</span></p>
+
+<h2>Operación</h2>
+<table>
+  ${fila('Inmueble', e(c.inmueble_titulo))}
+  ${fila('Ubicación', e(c.ubicacion || 'N/D'))}
+  ${fila('Tipo de operación', esAlquiler ? 'Alquiler' : 'Venta')}
+  ${fila('Fecha de cierre', e(fechaLarga(c.fecha_cierre)))}
+  ${fila('Comprador / Arrendatario', e(c.cliente_comprador || 'N/D'))}
+  ${fila('Propietario', e(c.cliente_vendedor || 'N/D'))}
+  ${fila(esAlquiler ? 'Canon pactado' : 'Precio final', e(formatUSD(c.precio_final)), true)}
+</table>
+
+<h2>Desglose de comisiones</h2>
+<div class="totales"><table>
+  ${fila(`Comisión bruta (${e(c.comision_bruta_porcentaje)}%)`, e(formatUSD(c.comision_bruta_monto)), true)}
+  ${fila(`Asesor: ${e(c.asesor_nombre)} (${e(c.asesor_porcentaje_neto)}%)`, e(formatUSD(c.comision_neta_asesor)))}
+  ${fila('Retención oficina MAXIMUS', e(formatUSD(c.comision_oficina_monto)))}
+</table></div>
+
+${(c.metodo_pago || c.referencia_pago || c.notas) ? `<h2>Pago y observaciones</h2><table>
+  ${c.metodo_pago ? fila('Método de pago', e(c.metodo_pago)) : ''}
+  ${c.referencia_pago ? fila('Referencia', e(c.referencia_pago)) : ''}
+  ${liquidada && c.liquidada_at ? fila('Liquidada el', e(fechaLarga(c.liquidada_at))) : ''}
+  ${c.notas ? fila('Notas', e(c.notas)) : ''}
+</table>` : ''}
+
+<div class="firmas"><div>Administración MAXIMUS Inmobiliaria</div><div>${e(c.asesor_nombre)}<br>Asesor responsable</div></div>
+<p class="pie">MAXIMUS Inmobiliaria · San Cristóbal, Estado Táchira · Venezuela<br>Documento generado desde el panel de MAXIMUS. Conserva este recibo como respaldo de la operación.</p>
+<script>window.onload = function () { setTimeout(function () { window.print(); }, 400); };<\/script>
+</body></html>`;
+
+            const w = window.open('', '_blank');
+            if (!w) {
+                MaxDialog.alert({ titulo: 'Ventana bloqueada', mensaje: 'Tu navegador bloqueó la ventana del recibo. Permite las ventanas emergentes para este sitio y vuelve a intentarlo.' });
+                return;
+            }
+            w.document.open();
+            w.document.write(html);
+            w.document.close();
+        }
+
+        // ---------- Gráfica mensual (SVG, sin librerías) ----------
+        function renderGraficaMensualHistorico(lista) {
+            const wrap = document.getElementById('historico-grafica-wrap');
+            if (!wrap) return;
+            const por = {};
+            (lista || []).forEach(c => {
+                const k = String(c.fecha_cierre || '').slice(0, 7);
+                if (!/^\d{4}-\d{2}$/.test(k)) return;
+                const m = por[k] || (por[k] = { neta: 0, oficina: 0, bruta: 0, n: 0 });
+                m.neta += parseFloat(c.comision_neta_asesor) || 0;
+                m.oficina += parseFloat(c.comision_oficina_monto) || 0;
+                m.bruta += parseFloat(c.comision_bruta_monto) || 0;
+                m.n++;
+            });
+            const keys = Object.keys(por).sort();
+            if (!keys.length) { wrap.classList.add('hidden'); wrap.innerHTML = ''; return; }
+
+            // Ventana de hasta 12 meses que termina en el último mes con cierres (mínimo 6 para que se lea bien)
+            const [ey, em] = keys[keys.length - 1].split('-').map(Number);
+            const ventana = [];
+            for (let i = 11; i >= 0; i--) {
+                const d = new Date(ey, em - 1 - i, 1);
+                ventana.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+            }
+            let serie = ventana.filter(k => k >= keys[0]);
+            if (serie.length < 6) serie = ventana.slice(-6);
+
+            const corto = (v) => v >= 1000 ? '$' + (v / 1000).toFixed(v >= 10000 ? 0 : 1).replace('.0', '') + 'k' : '$' + Math.round(v);
+            const max = Math.max(...serie.map(k => (por[k] ? por[k].bruta : 0)), 1);
+            const W = 720, H = 230, pl = 46, pr = 10, pt = 22, pb = 30;
+            const pw = W - pl - pr, ph = H - pt - pb;
+            const paso = pw / serie.length, ancho = Math.min(46, paso * 0.58);
+
+            let svg = `<svg viewBox="0 0 ${W} ${H}" class="w-full h-auto" role="img" aria-label="Comisiones por mes">`;
+            [0, 0.5, 1].forEach(f => {
+                const y = pt + ph - ph * f;
+                svg += `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="#e5e7eb" stroke-width="1" ${f === 0 ? '' : 'stroke-dasharray="3 4"'}/>`;
+                svg += `<text x="${pl - 6}" y="${y + 3}" text-anchor="end" font-size="10" fill="#9ca3af">${corto(max * f)}</text>`;
+            });
+            serie.forEach((k, i) => {
+                const m = por[k] || { neta: 0, oficina: 0, bruta: 0, n: 0 };
+                const x = pl + paso * i + (paso - ancho) / 2;
+                const hN = ph * (m.neta / max), hO = ph * (m.oficina / max);
+                const yN = pt + ph - hN, yO = yN - hO;
+                const [yy, mm] = k.split('-').map(Number);
+                const etiqueta = new Date(yy, mm - 1, 1).toLocaleDateString('es-ES', { month: 'short', year: '2-digit' }).replace('.', '');
+                const tip = `${etiqueta}: ${m.n} cierre(s) · bruta ${formatUSD(m.bruta)} · asesores ${formatUSD(m.neta)} · oficina ${formatUSD(m.oficina)}`;
+                svg += `<g><title>${escHist(tip)}</title>`;
+                if (m.bruta > 0) {
+                    svg += `<rect x="${x}" y="${yN}" width="${ancho}" height="${Math.max(hN, 0)}" fill="#059669" rx="3"/>`;
+                    svg += `<rect x="${x}" y="${yO}" width="${ancho}" height="${Math.max(hO, 0)}" fill="#3b82f6" rx="3"/>`;
+                    svg += `<text x="${x + ancho / 2}" y="${yO - 5}" text-anchor="middle" font-size="10" font-weight="700" fill="#374151">${corto(m.bruta)}</text>`;
+                } else {
+                    svg += `<rect x="${x}" y="${pt + ph - 2}" width="${ancho}" height="2" fill="#e5e7eb"/>`;
+                }
+                svg += `<text x="${x + ancho / 2}" y="${H - 10}" text-anchor="middle" font-size="10" fill="#6b7280">${escHist(etiqueta)}</text></g>`;
+            });
+            svg += '</svg>';
+
+            const totalBruta = serie.reduce((s, k) => s + (por[k] ? por[k].bruta : 0), 0);
+            const totalCierres = serie.reduce((s, k) => s + (por[k] ? por[k].n : 0), 0);
+            const mejor = serie.reduce((a, k) => ((por[k] ? por[k].bruta : 0) > (por[a] ? por[a].bruta : 0) ? k : a), serie[0]);
+            const [my, mm2] = mejor.split('-').map(Number);
+            const mejorTxt = new Date(my, mm2 - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+
+            wrap.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
+                    <div>
+                        <h3 class="text-sm sm:text-base font-extrabold text-maximus-dark">Comisiones por mes</h3>
+                        <p class="text-[11px] text-gray-400 font-medium">Últimos ${serie.length} meses · ${totalCierres} cierre(s) · ${formatUSD(totalBruta)} en comisión bruta${por[mejor] ? ` · mejor mes: <b class="text-gray-600">${escHist(mejorTxt)}</b>` : ''}</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-[11px] font-bold text-gray-500">
+                        <span class="flex items-center gap-1.5"><span style="width:10px;height:10px;border-radius:3px;background:#059669;display:inline-block"></span>Asesores</span>
+                        <span class="flex items-center gap-1.5"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block"></span>Oficina MAXIMUS</span>
+                    </div>
+                </div>
+                ${svg}`;
+            wrap.classList.remove('hidden');
         }
 
         function poblarInmueblesCierre() {
@@ -17337,6 +17666,14 @@
                             ${puedeGestionar && c.estatus_comision !== 'liquidada' ? `
                             <button onclick="liquidarCierreHistorico('${c.id}')" title="Marcar comisión como liquidada" class="w-8 h-8 rounded-lg bg-amber-50 hover:bg-emerald-50 text-amber-600 hover:text-emerald-700 flex items-center justify-center transition cursor-pointer">
                                 <i class="ph-bold ph-check-circle text-base"></i>
+                            </button>
+                            ` : ''}
+                            <button onclick="imprimirReciboCierre('${c.id}')" title="Recibo en PDF" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-emerald-50 text-gray-600 hover:text-emerald-700 flex items-center justify-center transition cursor-pointer">
+                                <i class="ph-bold ph-file-pdf text-base"></i>
+                            </button>
+                            ${puedeGestionar ? `
+                            <button onclick="abrirEditarCierre('${c.id}')" title="Editar este cierre" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-700 flex items-center justify-center transition cursor-pointer">
+                                <i class="ph-bold ph-pencil-simple text-base"></i>
                             </button>
                             ` : ''}
                             <button onclick="verComprobanteCierre('${c.id}')" title="Ver Detalle y Recibo" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-emerald-50 text-gray-600 hover:text-emerald-700 flex items-center justify-center transition cursor-pointer">
@@ -17459,6 +17796,9 @@
         function abrirModalNuevoCierre() {
             const modal = document.getElementById('modalNuevoCierre');
             if (!modal) return;
+            // Si venía de editar un cierre, se limpia el formulario y vuelve a ser "nuevo cierre"
+            if (window._cierreEditandoId) document.getElementById('form-nuevo-cierre')?.reset();
+            restablecerModalCierre();
             modal.classList.remove('hidden');
             // Asesores reales e inmuebles del catálogo (el modal también se abre desde la Ficha 360°)
             popularFiltrosAsesoresHistorico();
@@ -17476,6 +17816,7 @@
             const modal = document.getElementById('modalNuevoCierre');
             if (modal) modal.classList.add('hidden');
             window._cierreLeadId = null;
+            if (window._cierreEditandoId) { document.getElementById('form-nuevo-cierre')?.reset(); restablecerModalCierre(); }
         }
 
         function actualizarPorcentajeSegunAsesor() {
@@ -17562,11 +17903,24 @@
                 cliente_vendedor,
                 estatus_comision,
                 notas,
-                inmueble_id: inmuebleCatalogo || null,
+                inmueble_id: inmuebleCatalogo || (window._cierreEditandoId ? window._cierreEditandoInmuebleId : null) || null,
                 lead_id: window._cierreLeadId || null,
                 registrado_por: yo.id || null,
                 foto: fotoCatalogo || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'
             };
+
+            // Editando un cierre ya registrado: se actualiza (no se crea otro ni se avisa a nadie)
+            if (window._cierreEditandoId && window.CierreVentaService) {
+                const r = await window.CierreVentaService.update(window._cierreEditandoId, cierreData);
+                if (r && r.error) {
+                    MaxDialog.alert({ titulo: 'No se pudo guardar los cambios', mensaje: (r.error.message || r.error.code || String(r.error)) });
+                    return;
+                }
+                cerrarModalNuevoCierre();
+                mostrarToastNotificacion('✅ Cierre actualizado');
+                await filtrarHistoricoCierres();
+                return;
+            }
 
             if (window.CierreVentaService) {
                 const res = await window.CierreVentaService.create(cierreData);

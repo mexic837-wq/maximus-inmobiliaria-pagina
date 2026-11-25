@@ -239,6 +239,24 @@ const InmuebleService = {
         return { data: idx !== -1 ? list[idx] : null, error: null };
     },
 
+    // Vendido / alquilado / disponible. Lo hace una función de la base de datos que comprueba el rol
+    // (solo admin y asesor MAXIMUS); al quedar "vendido" deja de salir en el catálogo público.
+    async marcarEstatus(id, estatus) {
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const r = await this.update(id, { estatus });
+            return { data: r.data, error: null };
+        }
+        try {
+            const sb = getSupabase();
+            const res = await sb.rpc('marcar_inmueble_estatus', { p_id: id, p_estatus: estatus });
+            if (res && res.error) return { data: null, error: res.error };
+            const list = this._getLocal();
+            const i = list.findIndex(x => String(x.id) === String(id));
+            if (i !== -1) { list[i] = { ...list[i], estatus }; this._saveLocal(list); }
+            return { data: res.data, error: null };
+        } catch (err) { return { data: null, error: err }; }
+    },
+
     async delete(id) {
         let list = this._getLocal();
         list = list.filter(i => String(i.id) !== String(id));
@@ -1566,6 +1584,50 @@ const CierreVentaService = {
         }
         if (!fallos) this.descartarLocales();
         return { ok, fallos };
+    },
+
+    // Editar un cierre ya registrado. La base de datos recalcula las comisiones y anota quién lo editó.
+    async update(id, cambios) {
+        const precio = parseFloat(cambios.precio_final) || 0;
+        const brutaPct = parseFloat(cambios.comision_bruta_porcentaje);
+        const netoPct = parseFloat(cambios.asesor_porcentaje_neto);
+        const bruta = Math.round(precio * ((isNaN(brutaPct) ? 5 : brutaPct) / 100));
+        const neta = Math.round(bruta * ((isNaN(netoPct) ? 70 : netoPct) / 100));
+        const esUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+        const fila = {
+            inmueble_id: esUuid(cambios.inmueble_id) ? cambios.inmueble_id : null,
+            inmueble_titulo: cambios.inmueble_titulo,
+            ubicacion: cambios.ubicacion,
+            asesor_id: esUuid(cambios.asesor_id) ? cambios.asesor_id : null,
+            asesor_nombre: cambios.asesor_nombre,
+            asesor_tipo: cambios.asesor_tipo === 'externo' ? 'externo' : 'maximus',
+            tipo_operacion: cambios.tipo_operacion,
+            precio_final: precio,
+            comision_bruta_porcentaje: isNaN(brutaPct) ? 5 : brutaPct,
+            comision_bruta_monto: bruta,
+            asesor_porcentaje_neto: isNaN(netoPct) ? 70 : netoPct,
+            comision_neta_asesor: neta,
+            comision_oficina_monto: bruta - neta,
+            estatus_comision: cambios.estatus_comision,
+            fecha_cierre: cambios.fecha_cierre,
+            cliente_comprador: cambios.cliente_comprador || null,
+            cliente_vendedor: cambios.cliente_vendedor || null,
+            notas: cambios.notas || null,
+        };
+        if (APP_CONFIG.USE_MOCK_DATA) {
+            const cierres = this._getStoredCierres();
+            const i = cierres.findIndex(x => x.id === id);
+            if (i !== -1) { cierres[i] = { ...cierres[i], ...fila }; this._saveStoredCierres(cierres); }
+            return { data: i !== -1 ? cierres[i] : null, error: null };
+        }
+        try {
+            const sb = getSupabase();
+            const res = await sb.from(APP_CONFIG.TABLES.CIERRES_VENTAS).update(fila).eq('id', id).select().maybeSingle();
+            if (res && !res.error && !res.data) {
+                return { data: null, error: { message: 'No tienes permiso para editar este cierre (solo admin y asesores MAXIMUS).' } };
+            }
+            return res;
+        } catch (err) { return { data: null, error: err }; }
     },
 
     async updateEstatus(id, estatus) {
