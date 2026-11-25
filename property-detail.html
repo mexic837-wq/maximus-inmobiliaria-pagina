@@ -528,6 +528,7 @@
 
     <!-- Scripts de la Aplicación -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/galeria-plantilla.js?v=1.0"></script>
     <script src="js/security.js"></script>
     <script src="js/native-bridge.js"></script>
     <script src="js/config.js?v=4.7"></script>
@@ -1104,6 +1105,10 @@
                             this.src = fallbackFoto;
                         };
                     }
+                }
+                // La portada «plantilla» (16:10, con el precio impreso) se muestra completa, sin recortar
+                if (window.GaleriaPlantilla) {
+                    GaleriaPlantilla.preparar(document.getElementById('detail-galeria-container'), document.getElementById('detail-img-0'), lightboxFotos.length);
                 }
 
                 // 4. Tarjeta del Asesor
