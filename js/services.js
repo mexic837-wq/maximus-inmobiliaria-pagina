@@ -734,18 +734,24 @@ const LeadService = {
     },
 
     async delete(id) {
+        // Con Supabase real, primero se borra en la base de datos: si falla (permisos, conexión) se avisa
+        // y NO se quita de la copia local, para no mostrar como borrado algo que sigue existiendo.
+        const esUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id));
+        if (!APP_CONFIG.USE_MOCK_DATA && esUuid) {
+            try {
+                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+                if (!sb) return { error: { message: 'Sin conexión con la base de datos' } };
+                // .select() para detectar si los permisos no dejaron borrar nada (0 filas)
+                const res = await sb.from(APP_CONFIG.TABLES.LEADS).delete().eq('id', id).select('id');
+                if (res && res.error) return { error: res.error };
+                if (!res || !Array.isArray(res.data) || res.data.length === 0) {
+                    return { error: { message: 'No se pudo eliminar: el lead no existe o no tienes permiso.' } };
+                }
+            } catch (err) { return { error: err }; }
+        }
         let leads = this._getStoredLeads();
         leads = leads.filter(l => String(l.id) !== String(id));
         this._saveStoredLeads(leads);
-
-        if (!APP_CONFIG.USE_MOCK_DATA) {
-            try {
-                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
-                if (sb) {
-                    await sb.from(APP_CONFIG.TABLES.LEADS).delete().eq('id', id);
-                }
-            } catch (err) {}
-        }
         return { error: null };
     },
 };

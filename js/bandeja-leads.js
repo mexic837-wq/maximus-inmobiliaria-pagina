@@ -142,6 +142,7 @@
                 <button type="button" data-accion="atendido" class="h-9 px-3.5 rounded-xl border border-gray-200 dark:border-emerald-900 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-[#0D2822] text-xs font-bold flex items-center gap-1.5" title="Ya le respondiste por otro medio"><i class="ph-bold ph-check"></i> Ya lo atendí</button>
                 <button type="button" data-accion="ficha" class="h-9 w-9 rounded-xl border border-gray-200 dark:border-emerald-900 text-gray-500 hover:text-maximus-dark hover:bg-gray-50 dark:hover:bg-[#0D2822] flex items-center justify-center" title="Ver ficha del cliente" aria-label="Ver ficha del cliente"><i class="ph-bold ph-identification-card"></i></button>
                 ${admin ? selectorReasignar(l) : ''}
+                ${admin || esMio(l) ? `<button type="button" data-accion="eliminar" class="h-9 w-9 rounded-xl border border-gray-200 dark:border-emerald-900 text-gray-400 hover:text-red-600 hover:border-red-300 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center justify-center" title="Eliminar este lead" aria-label="Eliminar este lead"><i class="ph-bold ph-trash"></i></button>` : ''}
             </div>
         </article>`;
     }
@@ -309,6 +310,34 @@
             if (typeof activateTab === 'function') activateTab('view-mis-clientes', true);
             if (typeof abrirModalFichaCliente360 === 'function') setTimeout(() => abrirModalFichaCliente360(id), 150);
         }
+        if (tipo === 'eliminar') {
+            return eliminar(id, l);
+        }
+    }
+
+    // Borra el lead (y su bitácora) de Supabase. Solo el admin o el asesor al que está asignado.
+    async function eliminar(id, l) {
+        if (!(esAdmin() || esMio(l))) return;
+        const nombre = l.nombre || 'este lead';
+        const ok = await MaxDialog.confirm({
+            peligro: true, icono: 'ph-trash',
+            titulo: '¿Eliminar a ' + nombre + '?',
+            mensaje: 'Se borra el lead junto con sus notas y actividades. Si solo ya lo atendiste, usa «Ya lo atendí». Esto no se puede deshacer.',
+            aceptar: 'Sí, eliminar', cancelar: 'Volver'
+        });
+        if (!ok) return;
+        let r;
+        try { r = await LeadService.delete(id); } catch (e) { r = { error: e }; }
+        if (r && r.error) {
+            MaxDialog.alert({ titulo: 'No se pudo eliminar', mensaje: r.error.message || String(r.error) });
+            return;
+        }
+        leads = leads.filter(x => String(x.id) !== String(id));
+        if (vistos) vistos.delete(String(id));
+        // La cartera de «Mis clientes» también deja de mostrarlo
+        try { if (typeof crmLeadsList !== 'undefined') crmLeadsList = crmLeadsList.filter(x => String(x.id) !== String(id)); } catch (_) {}
+        pintar();
+        if (typeof mostrarToastNotificacion === 'function') mostrarToastNotificacion('🗑️ Lead eliminado');
     }
 
     async function reasignar(select) {
