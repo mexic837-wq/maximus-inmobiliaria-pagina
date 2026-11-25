@@ -15979,9 +15979,7 @@
                     // Antes se guardaba una dirección temporal del navegador (blob:) que dejaba de existir al
                     // recargar y nunca se veía en la página. Ahora la foto se reduce y se guarda dentro del registro.
                     try {
-                        avatar = (typeof optimizarImagenAvatarCanvas === 'function')
-                            ? await optimizarImagenAvatarCanvas(file, 400, 0.88)
-                            : await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+                        avatar = await subirFotoAsesor(file);
                     } catch (_) {
                         avatar = '';
                         mostrarToastNotificacion('⚠️ No se pudo procesar la foto; se guardará sin foto.');
@@ -16215,9 +16213,7 @@
                 const fotoNueva = document.getElementById('edit-asesor-avatar-file')?.files[0];
                 if (fotoNueva) {
                     try {
-                        updates.avatar = (typeof optimizarImagenAvatarCanvas === 'function')
-                            ? await optimizarImagenAvatarCanvas(fotoNueva, 400, 0.88)
-                            : await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(fotoNueva); });
+                        updates.avatar = await subirFotoAsesor(fotoNueva);
                     } catch (_) {
                         mostrarToastNotificacion('⚠️ No se pudo procesar la foto; se guardan los demás cambios.');
                     }
@@ -18813,6 +18809,30 @@ ${(c.metodo_pago || c.referencia_pago || c.notas) ? `<h2>Pago y observaciones</h
             if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 manejarSubidaArchivoAvatar(e.dataTransfer.files);
             }
+        }
+
+        // Foto de un asesor: se reduce (400 px) y se sube al bucket público «avatars» de Supabase Storage;
+        // en la base solo queda su dirección. Si la subida falla (por ejemplo, falta la política del bucket),
+        // se guarda la imagen reducida dentro del registro como respaldo, para no perder la foto.
+        async function subirFotoAsesor(file) {
+            const dataUrl = (typeof optimizarImagenAvatarCanvas === 'function')
+                ? await optimizarImagenAvatarCanvas(file, 400, 0.88)
+                : await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+            try {
+                if (typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA && typeof getSupabase === 'function') {
+                    const sb = getSupabase();
+                    if (sb && sb.storage) {
+                        const blob = await (await fetch(dataUrl)).blob();
+                        const ruta = `asesores/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+                        const { error } = await sb.storage.from('avatars').upload(ruta, blob, { contentType: 'image/jpeg', cacheControl: '31536000', upsert: false });
+                        if (!error) return sb.storage.from('avatars').getPublicUrl(ruta).data.publicUrl;
+                        console.warn('Foto de asesor: no se pudo subir al bucket avatars (' + error.message + '); se guarda dentro del registro.');
+                    }
+                }
+            } catch (err) {
+                console.warn('Foto de asesor: error al subir al bucket avatars; se guarda dentro del registro.', err);
+            }
+            return dataUrl;
         }
 
         function optimizarImagenAvatarCanvas(file, maxDimension = 320, calidad = 0.85) {
