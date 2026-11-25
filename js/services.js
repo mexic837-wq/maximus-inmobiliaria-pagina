@@ -2909,7 +2909,7 @@ const AsesorMaximusService = {
                 const payloadDB = {
                     nombre: asesorData.nombre,
                     cargo: asesorData.cargo,
-                    especialidad: asesorData.especialidad,
+                    especialidad: asesorData.especialidad || '',   // la columna es NOT NULL: vacío si no se escribió
                     email: asesorData.email || null,
                     telefono: asesorData.telefono || null,
                     whatsapp: asesorData.whatsapp || (asesorData.telefono ? asesorData.telefono.replace(/\D/g, '') : null),

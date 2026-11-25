@@ -4014,7 +4014,7 @@
                                     <input type="text" id="asesor-cargo" placeholder="Ej: Especialista en Inversiones" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Especialidad de Mercado *</label>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Especialidad de Mercado <span class="font-medium normal-case tracking-normal text-gray-400">(opcional)</span></label>
                                     <input type="text" id="asesor-especialidad" placeholder="Ej: Penthouses & Terrenos" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-maximus-dark outline-none focus:border-maximus-accent">
                                 </div>
                                 <div>
@@ -15868,7 +15868,7 @@
                     </td>
                     <td class="py-3 px-4">
                         <p class="font-bold text-gray-800 text-xs">${asesor.cargo}</p>
-                        <span class="inline-block mt-0.5 text-[10px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">${asesor.especialidad}</span>
+                        ${asesor.especialidad ? `<span class="inline-block mt-0.5 text-[10px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md">${asesor.especialidad}</span>` : ''}
                     </td>
                     <td class="py-3 px-4">
                         <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
@@ -15964,8 +15964,9 @@
                 const fileInput = document.getElementById('asesor-avatar-file');
                 const file = fileInput?.files[0];
 
-                if (!nombre || !cargo || !especialidad || !numTel) {
-                    mostrarToastNotificacion('⚠️ Por favor completa los campos requeridos (Nombre, Cargo, Especialidad y Teléfono).');
+                // La especialidad es opcional (la tabla la guarda como texto, vacío si no se escribe)
+                if (!nombre || !cargo || !numTel) {
+                    mostrarToastNotificacion('⚠️ Por favor completa los campos requeridos (Nombre, Cargo y Teléfono).');
                     return;
                 }
 
