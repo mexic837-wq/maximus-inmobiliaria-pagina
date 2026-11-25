@@ -14093,7 +14093,11 @@
             if (!(await MaxDialog.confirm({ peligro: true, icono: 'ph-user-minus', titulo: '¿Eliminar a ' + (lead ? lead.nombre : 'este cliente') + '?', mensaje: 'Saldrá de tu cartera comercial junto con su historial. No se puede deshacer.', aceptar: 'Sí, eliminar', cancelar: 'Volver' }))) return;
 
             if (window.LeadService) {
-                await LeadService.delete(leadId);
+                const rDel = await LeadService.delete(leadId);
+                if (rDel && rDel.error) {
+                    MaxDialog.alert({ titulo: 'No se pudo eliminar', mensaje: rDel.error.message || String(rDel.error) });
+                    return;
+                }
                 const res = await LeadService.getAll();
                 if (res && res.data) crmLeadsList = res.data;
             } else {
