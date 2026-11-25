@@ -1895,7 +1895,96 @@ const ColeccionesVipService = {
         }
     },
 
+    // ---------- Supabase real ----------
+    // Antes, si Supabase devolvía 0 filas o un error, se mostraban colecciones de demostración y copias del
+    // navegador como si fueran reales, y al crear una colección rechazada se decía "creada". Ahora solo
+    // cuenta lo que hay en la base de datos (que además filtra por rol: cada asesor ve solo las suyas).
+    _esUuid(v) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || '')); },
+
+    async _getAllReal(filtros) {
+        try {
+            const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
+            if (!sb) return { data: [], error: { message: 'Sin conexión con la base de datos' }, sinConexion: true };
+            let query = sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).select('*');
+            if (filtros.busqueda) {
+                const q = String(filtros.busqueda).replace(/[%,()*]/g, ' ').trim();
+                if (q) query = query.or(`cliente.ilike.%${q}%,titulo.ilike.%${q}%`);
+            }
+            query = query.order('created_at', { ascending: false });
+            const res = await query;
+            if (res && res.error) {
+                console.warn('⚠️ ColeccionesVipService: Supabase no devolvió las colecciones (' + (res.error.message || res.error.code) + ').');
+                return { data: [], error: res.error, sinConexion: true };
+            }
+            return { data: res.data || [], error: null };
+        } catch (err) {
+            console.warn('⚠️ ColeccionesVipService: error de conexión con Supabase:', err);
+            return { data: [], error: err, sinConexion: true };
+        }
+    },
+
+    async _createReal(c) {
+        try {
+            const sb = getSupabase();
+            if (!sb) return { data: null, error: { message: 'Sin conexión con la base de datos' } };
+            // El id real del usuario (el del panel no siempre coincide con usuarios.id)
+            let usuarioId = null;
+            try { const r = await sb.rpc('maximus_usuario_id'); if (r && !r.error && this._esUuid(r.data)) usuarioId = r.data; } catch (_) {}
+            const fila = {
+                id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : ('col-' + Date.now()),
+                cliente: c.cliente,
+                email: (c.email || c.cliente_email || '') ? String(c.email || c.cliente_email).trim().toLowerCase() : null,
+                telefono: c.telefono || null,
+                titulo: c.titulo,
+                nota: c.nota || null,
+                fecha: c.fecha || null,
+                inmuebles: c.inmuebles || [],
+                inmuebles_detalle: c.inmuebles_detalle || [],
+                asesor_id: usuarioId || (this._esUuid(c.asesor_id) ? c.asesor_id : null),
+                asesor: c.asesor || null,
+                asesor_nombre: c.asesor || null,
+                asesor_email: c.asesor_email ? String(c.asesor_email).trim().toLowerCase() : null,
+                creado_por: usuarioId || (this._esUuid(c.creado_por) ? c.creado_por : null),
+            };
+            if (this._esUuid(c.lead_id)) fila.lead_id = c.lead_id;
+            let res;
+            // Si la base todavía no tiene alguna columna nueva (lead_id), se guarda sin ella
+            for (let intento = 0; intento < 3; intento++) {
+                res = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).insert(fila).select().single();
+                const err = res && res.error;
+                if (!err) break;
+                const m = (String(err.message || '') + ' ' + String(err.details || '')).match(/'([a-z0-9_]+)' column/i);
+                if (m && m[1] in fila && ['lead_id'].includes(m[1])) { delete fila[m[1]]; continue; }
+                break;
+            }
+            if (res && res.error) {
+                console.warn('ColeccionesVipService.create: Supabase no guardó la colección (' + (res.error.message || res.error.code) + ').');
+                return { data: null, error: res.error };
+            }
+            return res;
+        } catch (err) { return { data: null, error: err }; }
+    },
+
+    // Para saber que el asesor ya la compartió (borrador → enviada)
+    async marcarEnviada(id) {
+        if (APP_CONFIG.USE_MOCK_DATA) return { error: null };
+        try {
+            const sb = getSupabase();
+            return await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).update({ enviada_at: new Date().toISOString() }).eq('id', id).is('enviada_at', null).select('id');
+        } catch (err) { return { error: err }; }
+    },
+
+    // Nuevo enlace secreto: el anterior deja de funcionar
+    async renovarToken(id) {
+        try {
+            const sb = getSupabase();
+            return await sb.rpc('renovar_token_coleccion', { p_id: String(id) });
+        } catch (err) { return { data: null, error: err }; }
+    },
+
     async getAll(filtros = {}) {
+        if (!APP_CONFIG.USE_MOCK_DATA) return this._getAllReal(filtros);
+
         let colecciones = null;
 
         // Intentar consultar Supabase si está en modo producción
@@ -1961,6 +2050,8 @@ const ColeccionesVipService = {
     },
 
     async create(coleccionData) {
+        if (!APP_CONFIG.USE_MOCK_DATA) return this._createReal(coleccionData);
+
         const nueva = {
             id: coleccionData.id || ('col-' + Date.now()),
             ...coleccionData,
@@ -2038,21 +2129,22 @@ const ColeccionesVipService = {
     },
 
     async delete(id) {
+        if (!APP_CONFIG.USE_MOCK_DATA) {
+            try {
+                const sb = getSupabase();
+                // .select() para detectar si los permisos no dejaron borrar nada
+                const res = await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).delete().eq('id', id).select('id');
+                if (res && res.error) return { error: res.error };
+                if (!res || !Array.isArray(res.data) || res.data.length === 0) {
+                    return { error: { message: 'No se pudo eliminar: la colección no existe o no es tuya.' } };
+                }
+                return { error: null };
+            } catch (e) { return { error: e }; }
+        }
+
         let cols = this._getStoredColecciones();
         cols = cols.filter(c => c.id !== id);
         this._saveStoredColecciones(cols);
-
-        if (!APP_CONFIG.USE_MOCK_DATA) {
-            try {
-                const sb = (typeof getSupabase === 'function') ? getSupabase() : null;
-                if (sb) {
-                    await sb.from(APP_CONFIG.TABLES.COLECCIONES_VIP).delete().eq('id', id);
-                }
-            } catch(e) {
-                console.warn('⚠️ Error eliminando coleccion de Supabase:', e);
-            }
-        }
-
         return { error: null };
     }
 };

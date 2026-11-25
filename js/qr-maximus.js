@@ -135,7 +135,7 @@
         cuerpo.innerHTML = `<div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 text-sm leading-relaxed"><i class="ph-fill ph-warning"></i> ${esc(texto)}</div>`;
     }
 
-    async function pintarQr(cuerpo, { url, cartel, archivo, compartirTexto, telefono, extraHtml }) {
+    async function pintarQr(cuerpo, { url, cartel, archivo, compartirTexto, telefono, extraHtml, alCompartir }) {
         try { await cargarQr(); } catch (e) { return mostrarError(cuerpo, e.message); }
         const wa = String(telefono || '').replace(/\D/g, '');
         const waUrl = `https://wa.me/${wa}?text=${encodeURIComponent((compartirTexto ? compartirTexto + '\n' : '') + url)}`;
@@ -172,6 +172,12 @@
             catch (_) { MaxDialog.copiar({ titulo: 'Copia este enlace', texto: url }); }
             setTimeout(() => { span.textContent = 'Copiar enlace'; }, 1800);
         });
+        // Aviso opcional cuando el asesor lo comparte (copiar, WhatsApp o descargar el cartel)
+        if (typeof alCompartir === 'function') {
+            cuerpo.querySelectorAll('[data-copiar], [data-descargar], a[href^="https://wa.me"]').forEach(b => {
+                b.addEventListener('click', () => { try { alCompartir(); } catch (_) {} });
+            });
+        }
     }
 
     function asesorNombre() {
@@ -256,14 +262,65 @@
         });
     }
 
-    function coleccion(id) {
+    // Enlace directo / QR de la colección: el cliente la ve sin cuenta (página /coleccion) y marca
+    // «Me interesa». Desde aquí también se puede invitarlo al portal o renovar el enlace.
+    async function coleccion(id) {
         const col = (typeof coleccionesVipList !== 'undefined') ? coleccionesVipList.find(c => String(c.id) === String(id)) : null;
         if (!col) return;
-        return invitar({
-            email: col.email || col.cliente_email, nombre: col.cliente, telefono: col.telefono,
-            titulo: 'QR de la colección', subtitulo: col.titulo || 'Selección de inmuebles',
-            cartelTitulo: 'Tu selección de inmuebles'
+        const cuerpo = abrirModal({ titulo: 'Enlace y QR de la colección', subtitulo: col.titulo || 'Selección de inmuebles', cargando: 'Preparando el enlace…' });
+        if (!col.token) {
+            return mostrarError(cuerpo, 'Esta colección todavía no tiene enlace. Falta ejecutar en Supabase el SQL de colecciones del portal (sql/migration-colecciones-portal.sql) y recargar el panel.');
+        }
+        const url = `${origen()}/coleccion?c=${encodeURIComponent(col.id)}&t=${encodeURIComponent(col.token)}`;
+        const vistas = Number(col.vistas || 0);
+        const respuestas = col.reacciones && typeof col.reacciones === 'object' ? Object.keys(col.reacciones).length : 0;
+        const primer = String(col.cliente || '').split(' ')[0];
+        const extra = `
+            <div class="mt-3 grid grid-cols-2 gap-2 text-center">
+                <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40"><p class="text-lg font-extrabold text-emerald-800 dark:text-emerald-200">${vistas}</p><p class="text-[10px] text-gray-500">veces abierta</p></div>
+                <div class="p-2 rounded-xl bg-gray-50 dark:bg-[#0D2822]"><p class="text-lg font-extrabold text-maximus-dark dark:text-white">${respuestas}</p><p class="text-[10px] text-gray-500">inmuebles con respuesta</p></div>
+            </div>
+            <p class="mt-3 text-[11px] text-center text-gray-500">Quien tenga este enlace la ve <strong>sin crear cuenta</strong> y puede marcar «Me interesa». Si lo compartiste por error, renuévalo.</p>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+                <button type="button" data-invitar class="h-10 rounded-xl border border-gray-200 dark:border-emerald-950 text-gray-700 dark:text-gray-200 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-gray-50 dark:hover:bg-[#0D2822]"><i class="ph-bold ph-user-plus"></i> Invitar al portal</button>
+                <button type="button" data-renovar class="h-10 rounded-xl border border-gray-200 dark:border-emerald-950 text-gray-700 dark:text-gray-200 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-gray-50 dark:hover:bg-[#0D2822]"><i class="ph-bold ph-arrows-clockwise"></i> Renovar enlace</button>
+            </div>`;
+        await pintarQr(cuerpo, {
+            url,
+            cartel: { titulo: 'Tu selección de inmuebles', linea1: col.cliente ? `Para ${col.cliente}` : (col.titulo || 'Selección MAXIMUS'), linea2: `La preparó ${asesorNombre()}` },
+            archivo: nombreArchivo('coleccion-' + (col.cliente || col.titulo)),
+            compartirTexto: `Hola${primer ? ' ' + primer : ''}, preparé una selección de inmuebles para ti. Ábrela con fotos y dime cuáles te interesan:`,
+            telefono: col.telefono,
+            extraHtml: extra,
+            alCompartir: () => marcarEnviada(col)
         });
+
+        const btnInv = cuerpo.querySelector('[data-invitar]');
+        if (btnInv) btnInv.addEventListener('click', () => invitar({
+            email: col.email || col.cliente_email, nombre: col.cliente, telefono: col.telefono,
+            destino: 'view-mis-colecciones', titulo: 'Invitar al portal',
+            subtitulo: 'Crea su cuenta y verá sus colecciones ahí.', cartelTitulo: 'Tu portal MAXIMUS'
+        }));
+        const btnRen = cuerpo.querySelector('[data-renovar]');
+        if (btnRen) btnRen.addEventListener('click', async () => {
+            const ok = await MaxDialog.confirm({ peligro: true, icono: 'ph-arrows-clockwise', titulo: '¿Renovar el enlace?', mensaje: 'El enlace y el QR anteriores dejan de funcionar. Tendrás que enviarle el nuevo al cliente.', aceptar: 'Sí, renovar', cancelar: 'Cancelar' });
+            if (!ok) return;
+            const r = await window.ColeccionesVipService.renovarToken(col.id);
+            if (!r || r.error || !r.data) {
+                return MaxDialog.alert({ titulo: 'No se pudo renovar', mensaje: (r && r.error && r.error.message) || 'Revisa que el SQL de colecciones esté aplicado.' });
+            }
+            col.token = r.data;
+            coleccion(id);
+        });
+    }
+
+    // Borrador → enviada, la primera vez que el asesor la comparte
+    function marcarEnviada(col) {
+        if (!col || col.enviada_at || !window.ColeccionesVipService) return;
+        col.enviada_at = new Date().toISOString();
+        Promise.resolve(window.ColeccionesVipService.marcarEnviada(col.id)).then(() => {
+            if (typeof renderColeccionesVIP === 'function') renderColeccionesVIP();
+        }).catch(() => {});
     }
 
     // ---------- 4. Llegada a la visita ----------

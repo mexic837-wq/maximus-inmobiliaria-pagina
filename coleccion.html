@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0B4A3F">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Tu selección de inmuebles | MAXIMUS Inmobiliaria</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="/js/config.js"></script>
+    <style>
+        :root { --dark: #0B4A3F; --deep: #0B2B25; --accent: #10B981; --bg: #EEF3F1; --txt: #1f2937; --mut: #6b7280; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-text-size-adjust: 100%; }
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; }
+        a { color: inherit; text-decoration: none; }
+        button { font-family: inherit; cursor: pointer; }
+        .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 48px; }
+        .hero { background: linear-gradient(135deg, var(--deep), var(--dark)); color: #fff; padding: 26px 16px 70px; }
+        .hero .in { max-width: 720px; margin: 0 auto; }
+        .marca { font-size: 22px; font-weight: 800; letter-spacing: -.5px; }
+        .marca span { color: var(--accent); }
+        .hero small { display: block; margin-top: 22px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #a7f3d0; }
+        .hero h1 { margin-top: 6px; font-size: 26px; line-height: 1.2; font-weight: 800; }
+        .nota { margin-top: 12px; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.85); font-style: italic; }
+        .asesor { position: relative; margin: -46px 0 18px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(11,74,63,.15); padding: 16px; display: flex; gap: 14px; align-items: center; }
+        .av { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #10B981, var(--dark)); color: #fff; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; object-fit: cover; flex-shrink: 0; }
+        .asesor .t { flex: 1; min-width: 0; }
+        .asesor .t p:first-child { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #059669; }
+        .asesor .t p:nth-child(2) { font-size: 16px; font-weight: 800; color: var(--deep); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .asesor .t p:nth-child(3) { font-size: 12px; color: var(--mut); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 12px; font-size: 13px; font-weight: 700; padding: 0 14px; height: 42px; transition: .15s; }
+        .btn-wa { background: #22c55e; color: #fff; }
+        .btn-wa:hover { background: #16a34a; }
+        .cuenta { font-size: 12px; color: var(--mut); margin: 4px 2px 14px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .card { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.06); margin-bottom: 16px; }
+        .foto { position: relative; aspect-ratio: 16/10; background: #e5e7eb; }
+        .foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .tags { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; background: rgba(11,43,37,.85); color: #fff; }
+        .tag.rojo { background: #dc2626; }
+        .tag.ambar { background: #d97706; }
+        .cuerpo { padding: 16px; }
+        .cod { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: #059669; text-transform: uppercase; }
+        .cuerpo h2 { font-size: 17px; font-weight: 800; color: var(--deep); margin: 3px 0 4px; line-height: 1.3; }
+        .precio { font-size: 22px; font-weight: 800; color: var(--dark); }
+        .precio small { font-size: 12px; color: var(--mut); font-weight: 600; }
+        .ubi { font-size: 12.5px; color: var(--mut); margin-top: 4px; }
+        .specs { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9; font-size: 12.5px; font-weight: 700; color: #4b5563; }
+        .acc { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+        .r { background: #f3f4f6; color: #374151; height: 44px; border: 2px solid transparent; border-radius: 12px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .r:hover { background: #e5e7eb; }
+        .r.si.on { background: #ecfdf5; border-color: #10B981; color: #065f46; }
+        .r.no.on { background: #fef2f2; border-color: #f87171; color: #991b1b; }
+        .r:disabled { opacity: .5; cursor: not-allowed; }
+        .com { margin-top: 10px; display: none; }
+        .com.abierto { display: block; }
+        .com textarea { width: 100%; min-height: 64px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; font-family: inherit; font-size: 13px; resize: vertical; outline: none; }
+        .com textarea:focus { border-color: var(--accent); }
+        .com .fila { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; gap: 8px; }
+        .com .ok { font-size: 12px; color: #059669; font-weight: 700; }
+        .btn-chico { background: var(--dark); color: #fff; height: 34px; font-size: 12px; padding: 0 12px; }
+        .enlaces { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+        .enlaces a { flex: 1; min-width: 140px; height: 40px; border-radius: 11px; border: 1px solid #e5e7eb; font-size: 12.5px; font-weight: 700; color: #374151; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .enlaces a:hover { background: #f9fafb; }
+        .nodisp .foto img { filter: grayscale(.85); opacity: .75; }
+        .pie { text-align: center; font-size: 12px; color: var(--mut); margin-top: 24px; line-height: 1.7; }
+        .pie a { color: #059669; font-weight: 700; }
+        .centro { max-width: 380px; margin: 14vh auto 0; background: #fff; border-radius: 24px; padding: 32px 24px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+        .centro i { font-size: 34px; color: #d97706; }
+        .centro h1 { font-size: 20px; font-weight: 800; color: var(--deep); margin: 10px 0 6px; }
+        .centro p { font-size: 14px; color: var(--mut); line-height: 1.6; }
+        .spin { animation: gira 1s linear infinite; display: inline-block; color: var(--accent) !important; }
+        @keyframes gira { to { transform: rotate(360deg); } }
+        #toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px); background: #111827; color: #fff; font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 12px; opacity: 0; pointer-events: none; transition: .25s; z-index: 50; }
+        #toast.v { opacity: 1; transform: translateX(-50%); }
+        .hidden { display: none !important; }
+        @media (prefers-reduced-motion: reduce) { .spin { animation: none; } * { transition: none !important; } }
+    </style>
+</head>
+<body>
+
+<div id="estado-cargando" class="centro">
+    <i class="ph ph-circle-notch spin"></i>
+    <p style="margin-top:10px">Preparando tu selección…</p>
+</div>
+
+<div id="estado-error" class="centro hidden">
+    <i class="ph-fill ph-warning"></i>
+    <h1>No pudimos abrir esta selección</h1>
+    <p>El enlace no es válido o tu asesor lo renovó. Pídele que te envíe el enlace nuevo y la verás enseguida.</p>
+</div>
+
+<div id="contenido" class="hidden">
+    <header class="hero">
+        <div class="in">
+            <div class="marca">MAXIMUS<span>.</span></div>
+            <small id="saludo">Selección para ti</small>
+            <h1 id="titulo"></h1>
+            <p id="nota" class="nota hidden"></p>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="asesor" id="asesor"></section>
+        <p class="cuenta"><span id="resumen"></span><span>Toca «Me interesa» en los que te gusten</span></p>
+        <div id="lista"></div>
+        <p class="pie">
+            ¿Ya tienes cuenta en MAXIMUS? <a href="/login">Entra a tu portal</a><br>
+            MAXIMUS Inmobiliaria · San Cristóbal, Táchira · Venezuela
+        </p>
+    </main>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const esc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    const q = new URLSearchParams(location.search);
+    const ID = (q.get('c') || '').slice(0, 100);
+    const TOKEN = (q.get('t') || '').replace(/[^a-f0-9]/gi, '').slice(0, 64);
+    const URL_API = ((window.APP_CONFIG && APP_CONFIG.SUPABASE_URL) || '').replace(/\/$/, '');
+    const KEY = window.APP_CONFIG && APP_CONFIG.SUPABASE_ANON_KEY;
+
+    let datos = null;
+
+    function mostrar(cual) {
+        ['cargando', 'error'].forEach(k => $('estado-' + k).classList.toggle('hidden', k !== cual));
+        $('contenido').classList.toggle('hidden', cual !== 'contenido');
+    }
+
+    async function rpc(nombre, args) {
+        const r = await fetch(URL_API + '/rest/v1/rpc/' + nombre, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', apikey: KEY, Authorization: 'Bearer ' + KEY },
+            body: JSON.stringify(args)
+        });
+        if (!r.ok) throw new Error('http ' + r.status);
+        return r.json();
+    }
+
+    let temporizador;
+    function aviso(texto) {
+        const t = $('toast');
+        t.textContent = texto; t.classList.add('v');
+        clearTimeout(temporizador);
+        temporizador = setTimeout(() => t.classList.remove('v'), 2200);
+    }
+
+    function precioTxt(p) {
+        const n = Number(p.precio);
+        if (!isFinite(n) || n <= 0) return 'Consultar';
+        const base = (p.moneda && p.moneda !== 'USD' ? p.moneda + ' ' : 'US$ ') + n.toLocaleString('en-US');
+        return base + (String(p.operacion).toLowerCase() === 'alquiler' ? ' <small>/ mes</small>' : '');
+    }
+
+    function pintarAsesor(a) {
+        const nombre = (a && a.nombre) || 'Tu asesor MAXIMUS';
+        const ini = nombre.split(/\s+/).slice(0, 2).map(s => s.charAt(0)).join('').toUpperCase();
+        const foto = a && a.avatar ? `<img class="av" src="${esc(a.avatar)}" alt="" onerror="this.outerHTML='<div class=&quot;av&quot;>${esc(ini)}</div>'">` : `<div class="av">${esc(ini)}</div>`;
+        const tel = String((a && a.telefono) || '').replace(/\D/g, '');
+        const texto = encodeURIComponent(`Hola ${nombre.split(' ')[0]}, vi la selección "${datos.titulo || ''}" que preparaste para mí.`);
+        $('asesor').innerHTML = `${foto}
+            <div class="t"><p>Tu asesor</p><p>${esc(nombre)}</p><p>${esc((a && a.titulo) || 'Asesor MAXIMUS')}</p></div>
+            ${tel ? `<a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(tel)}?text=${texto}"><i class="ph-fill ph-whatsapp-logo"></i> Escribir</a>` : ''}`;
+    }
+
+    function tarjeta(p) {
+        const idp = String(p.id);
+        const r = (datos.reacciones || {})[idp] || null;
+        const estatus = String(p.estatus || 'disponible').toLowerCase();
+        const noDisp = estatus === 'vendido' || estatus === 'alquilado';
+        const tel = String((datos.asesor && datos.asesor.telefono) || '').replace(/\D/g, '');
+        const wa = tel ? `https://wa.me/${tel}?text=${encodeURIComponent('Hola, me interesa "' + (p.titulo || '') + '"' + (p.codigo ? ' (' + p.codigo + ')' : '') + ' de mi selección.')}` : '';
+        const specs = [
+            p.habitaciones != null && p.habitaciones !== '' ? `<span><i class="ph-bold ph-bed"></i> ${esc(p.habitaciones)} hab.</span>` : '',
+            p.banos != null && p.banos !== '' ? `<span><i class="ph-bold ph-shower"></i> ${esc(Number(p.banos))} baños</span>` : '',
+            Number(p.m2) > 0 ? `<span><i class="ph-bold ph-ruler"></i> ${esc(Number(p.m2))} m²</span>` : '',
+            Number(p.estacionamientos) > 0 ? `<span><i class="ph-bold ph-car"></i> ${esc(p.estacionamientos)}</span>` : ''
+        ].join('');
+        const el = document.createElement('article');
+        el.className = 'card' + (noDisp ? ' nodisp' : '');
+        el.dataset.id = idp;
+        el.innerHTML = `
+            <div class="foto">
+                ${p.foto ? `<img src="${esc(p.foto)}" alt="" loading="lazy" onerror="this.style.display='none'">` : ''}
+                <div class="tags">
+                    <span class="tag">${String(p.operacion).toLowerCase() === 'alquiler' ? 'Alquiler' : 'Venta'}</span>
+                    ${noDisp ? `<span class="tag rojo">Ya no disponible</span>` : (estatus === 'reservado' ? '<span class="tag ambar">Reservado</span>' : '')}
+                </div>
+            </div>
+            <div class="cuerpo">
+                ${p.codigo ? `<p class="cod">${esc(p.codigo)}</p>` : ''}
+                <h2>${esc(p.titulo || 'Inmueble MAXIMUS')}</h2>
+                <p class="precio">${precioTxt(p)}</p>
+                ${p.ubicacion ? `<p class="ubi"><i class="ph-fill ph-map-pin" style="color:#059669"></i> ${esc(p.ubicacion)}</p>` : ''}
+                ${specs ? `<div class="specs">${specs}</div>` : ''}
+                <div class="acc">
+                    <button type="button" class="r si${r && r.r === 'me_interesa' ? ' on' : ''}" data-r="me_interesa" ${noDisp ? 'disabled' : ''}><i class="ph-fill ph-heart"></i> Me interesa</button>
+                    <button type="button" class="r no${r && r.r === 'no_me_interesa' ? ' on' : ''}" data-r="no_me_interesa" ${noDisp ? 'disabled' : ''}><i class="ph-bold ph-x"></i> No me interesa</button>
+                </div>
+                <div class="com${r ? ' abierto' : ''}">
+                    <textarea maxlength="500" placeholder="¿Quieres agregar algo? (opcional): zona, precio, lo que te gustó o no…">${esc((r && r.c) || '')}</textarea>
+                    <div class="fila"><span class="ok"></span><button type="button" class="btn btn-chico" data-enviar-com>Enviar comentario</button></div>
+                </div>
+                <div class="enlaces">
+                    <a href="/detalle-propiedad?id=${encodeURIComponent(idp)}" target="_blank" rel="noopener"><i class="ph-bold ph-arrow-square-out"></i> Ver ficha completa</a>
+                    ${wa ? `<a href="${esc(wa)}" target="_blank" rel="noopener"><i class="ph-fill ph-whatsapp-logo" style="color:#16a34a"></i> Preguntar por este</a>` : ''}
+                </div>
+            </div>`;
+        return el;
+    }
+
+    async function reaccionar(el, reaccion, comentario) {
+        const idp = el.dataset.id;
+        const antes = (datos.reacciones || {})[idp] || null;
+        const nuevaAccion = (antes && antes.r === reaccion && comentario === undefined) ? 'quitar' : reaccion;
+        const com = comentario !== undefined ? comentario : ((antes && antes.c) || '');
+        // Se muestra al instante y, si falla, se vuelve atrás
+        datos.reacciones = datos.reacciones || {};
+        if (nuevaAccion === 'quitar') delete datos.reacciones[idp];
+        else datos.reacciones[idp] = { r: nuevaAccion, c: com || null };
+        sincronizar(el);
+        try {
+            const d = await rpc('reaccionar_coleccion', { p_id: ID, p_token: TOKEN, p_inmueble: idp, p_reaccion: nuevaAccion, p_comentario: com || null });
+            if (!d || !d.ok) throw new Error('no ok');
+            datos.reacciones = d.reacciones || datos.reacciones;
+            aviso(nuevaAccion === 'quitar' ? 'Quitamos tu respuesta' : (comentario !== undefined ? 'Comentario enviado a tu asesor' : '¡Listo! Tu asesor lo verá'));
+        } catch (_) {
+            if (antes) datos.reacciones[idp] = antes; else delete datos.reacciones[idp];
+            aviso('No se pudo guardar. Inténtalo de nuevo.');
+        }
+        sincronizar(el);
+    }
+
+    function sincronizar(el) {
+        const r = (datos.reacciones || {})[el.dataset.id] || null;
+        el.querySelector('.si').classList.toggle('on', !!r && r.r === 'me_interesa');
+        el.querySelector('.no').classList.toggle('on', !!r && r.r === 'no_me_interesa');
+        el.querySelector('.com').classList.toggle('abierto', !!r);
+        const total = Object.keys(datos.reacciones || {}).length;
+        $('resumen').textContent = `${(datos.inmuebles || []).length} inmueble${(datos.inmuebles || []).length === 1 ? '' : 's'} · ${total} con tu respuesta`;
+    }
+
+    function pintar() {
+        $('saludo').textContent = datos.cliente ? `Selección para ti, ${datos.cliente}` : 'Selección para ti';
+        $('titulo').textContent = datos.titulo || 'Tu selección de inmuebles';
+        if (datos.nota) { $('nota').textContent = '“' + datos.nota + '”'; $('nota').classList.remove('hidden'); }
+        document.title = (datos.titulo || 'Tu selección') + ' | MAXIMUS Inmobiliaria';
+        pintarAsesor(datos.asesor);
+        const lista = $('lista');
+        lista.innerHTML = '';
+        const inm = Array.isArray(datos.inmuebles) ? datos.inmuebles : [];
+        if (!inm.length) lista.innerHTML = '<p class="pie">Tu asesor está terminando de preparar los inmuebles. Vuelve en unos minutos.</p>';
+        inm.forEach(p => lista.appendChild(tarjeta(p)));
+        $('resumen').textContent = `${inm.length} inmueble${inm.length === 1 ? '' : 's'} · ${Object.keys(datos.reacciones || {}).length} con tu respuesta`;
+        lista.addEventListener('click', (e) => {
+            const card = e.target.closest('.card'); if (!card) return;
+            const b = e.target.closest('button[data-r]');
+            if (b && !b.disabled) return reaccionar(card, b.dataset.r);
+            if (e.target.closest('[data-enviar-com]')) {
+                const ta = card.querySelector('textarea');
+                const r = (datos.reacciones || {})[card.dataset.id];
+                if (!r) return aviso('Primero elige «Me interesa» o «No me interesa»');
+                return reaccionar(card, r.r, ta.value.trim());
+            }
+        });
+    }
+
+    async function iniciar() {
+        if (!ID || !TOKEN || !URL_API || !KEY) return mostrar('error');
+        try {
+            const d = await rpc('ver_coleccion_publica', { p_id: ID, p_token: TOKEN });
+            if (!d || !d.ok) return mostrar('error');
+            datos = d;
+        } catch (_) { return mostrar('error'); }
+        pintar();
+        mostrar('contenido');
+    }
+    iniciar();
+})();
+</script>
+</body>
+</html>
