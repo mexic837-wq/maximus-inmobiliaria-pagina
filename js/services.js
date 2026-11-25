@@ -2929,9 +2929,15 @@ const AsesorMaximusService = {
                         list[idx] = { ...list[idx], ...sbRes.data };
                         this._saveLocal(list);
                     }
+                } else {
+                    // Antes quedaba guardado solo en este navegador (aparecía en el directorio del panel pero
+                    // no en la página): ahora se quita de la copia local y se devuelve el error real.
+                    this._saveLocal(list.filter(a => a.id !== nuevo.id));
+                    return { data: null, error: (sbRes && sbRes.error) || { message: 'Supabase no guardó al asesor' } };
                 }
             } catch (e) {
-                console.warn('AsesorMaximusService.create: Fallback local activo tras aviso de Supabase');
+                this._saveLocal(list.filter(a => a.id !== nuevo.id));
+                return { data: null, error: e };
             }
         }
 

@@ -4112,6 +4112,10 @@
                                 <input type="hidden" id="edit-asesor-password">
                             </div>
                             <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Foto de perfil <span class="font-medium normal-case tracking-normal text-gray-400">(opcional: se ve en la página principal)</span></label>
+                                <input type="file" id="edit-asesor-avatar-file" accept="image/*" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-[11px] file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer outline-none focus:border-maximus-accent">
+                            </div>
+                            <div class="sm:col-span-2">
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Trayectoria / Bio</label>
                                 <textarea id="edit-asesor-bio" rows="2" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-medium outline-none focus:border-maximus-accent"></textarea>
                             </div>
@@ -15859,7 +15863,7 @@
                 tr.innerHTML = `
                     <td class="py-3 px-4 sm:px-6">
                         <div class="flex items-center gap-3">
-                            <img src="${asesor.avatar}" class="w-10 h-10 rounded-xl object-cover shadow-sm ring-1 ring-gray-200">
+                            <img src="${asesor.avatar || ''}" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent(${JSON.stringify(String(asesor.nombre || 'M')).replace(/"/g, '&quot;')}) + '&background=0B4A3F&color=fff&bold=true'" class="w-10 h-10 rounded-xl object-cover shadow-sm ring-1 ring-gray-200">
                             <div>
                                 <p class="font-extrabold text-maximus-dark text-sm">${asesor.nombre}</p>
                                 <p class="text-[10px] text-gray-400 font-mono">${asesor.email || 'Sin email registrado'}</p>
@@ -15972,8 +15976,18 @@
 
                 let avatar = '';
                 if (file) {
-                    avatar = URL.createObjectURL(file);
-                } else {
+                    // Antes se guardaba una dirección temporal del navegador (blob:) que dejaba de existir al
+                    // recargar y nunca se veía en la página. Ahora la foto se reduce y se guarda dentro del registro.
+                    try {
+                        avatar = (typeof optimizarImagenAvatarCanvas === 'function')
+                            ? await optimizarImagenAvatarCanvas(file, 400, 0.88)
+                            : await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
+                    } catch (_) {
+                        avatar = '';
+                        mostrarToastNotificacion('⚠️ No se pudo procesar la foto; se guardará sin foto.');
+                    }
+                }
+                if (!avatar) {
                     const nombreFormateado = nombre.replace(/\s+/g, '+');
                     avatar = `https://ui-avatars.com/api/?name=${nombreFormateado}&background=0B4A3F&color=fff&bold=true`;
                 }
@@ -16063,7 +16077,11 @@
                 }
 
                 if (typeof AsesorMaximusService !== 'undefined') {
-                    await AsesorMaximusService.create(nuevoAsesor);
+                    const rCrear = await AsesorMaximusService.create(nuevoAsesor);
+                    if (rCrear && rCrear.error) {
+                        MaxDialog.alert({ titulo: 'No se guardó en el directorio', mensaje: 'Supabase respondió: ' + (rCrear.error.message || rCrear.error.code || String(rCrear.error)) + '\n\nNo aparecerá en la página principal hasta que se guarde. ' + (avisoCuentaSupabase || 'Revisa que tu cuenta sea administradora y vuelve a intentarlo.') });
+                        return;
+                    }
                 } else {
                     nuevoAsesor.id = 'asesor-' + Date.now();
                     ASESORES_MAXIMUS_DATA.push(nuevoAsesor);
@@ -16107,7 +16125,9 @@
             document.getElementById('edit-asesor-nombre').value = asesor.nombre || '';
             document.getElementById('edit-asesor-cargo').value = asesor.cargo || '';
             document.getElementById('edit-asesor-especialidad').value = asesor.especialidad || '';
-            
+            const fotoEdit = document.getElementById('edit-asesor-avatar-file');
+            if (fotoEdit) fotoEdit.value = '';
+
             // Separar prefijo y número
             const telRaw = (asesor.telefono || '').trim();
             let prefijo = '+58';
@@ -16191,7 +16211,19 @@
                 };
                 if (password) updates.password = password;
 
-                const avatarUrl = asesorActual.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.nombre)}&background=0B4A3F&color=fff&bold=true`;
+                // Foto nueva (opcional): se reduce y se guarda dentro del registro, así también sale en la página principal
+                const fotoNueva = document.getElementById('edit-asesor-avatar-file')?.files[0];
+                if (fotoNueva) {
+                    try {
+                        updates.avatar = (typeof optimizarImagenAvatarCanvas === 'function')
+                            ? await optimizarImagenAvatarCanvas(fotoNueva, 400, 0.88)
+                            : await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(fotoNueva); });
+                    } catch (_) {
+                        mostrarToastNotificacion('⚠️ No se pudo procesar la foto; se guardan los demás cambios.');
+                    }
+                }
+
+                const avatarUrl = updates.avatar || asesorActual.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.nombre)}&background=0B4A3F&color=fff&bold=true`;
 
                 // Sincronizar credencial con maximus_registered_users para permitir login inmediato
                 const cleanEm = (updates.email || '').toLowerCase().trim();
