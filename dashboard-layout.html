@@ -18883,7 +18883,8 @@ ${(c.metodo_pago || c.referencia_pago || c.notas) ? `<h2>Pago y observaciones</h
         // se guarda la imagen reducida dentro del registro como respaldo, para no perder la foto.
         async function subirFotoAsesor(file) {
             const dataUrl = (typeof optimizarImagenAvatarCanvas === 'function')
-                ? await optimizarImagenAvatarCanvas(file, 400, 0.88)
+                // 1200 px: la foto se ve en grande en la portada (tarjeta del Broker y del equipo) y en pantallas de alta densidad
+                ? await optimizarImagenAvatarCanvas(file, 1200, 0.9)
                 : await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = no; r.readAsDataURL(file); });
             try {
                 if (typeof APP_CONFIG !== 'undefined' && !APP_CONFIG.USE_MOCK_DATA && typeof getSupabase === 'function') {
@@ -18914,14 +18915,16 @@ ${(c.metodo_pago || c.referencia_pago || c.notas) ? `<h2>Pago y observaciones</h
                             const startX = (img.width - minSide) / 2;
                             const startY = (img.height - minSide) / 2;
 
-                            canvas.width = maxDimension;
-                            canvas.height = maxDimension;
+                            // Nunca se agranda: si la foto es más chica que el máximo, se conserva su tamaño
+                            const lado = Math.max(1, Math.min(maxDimension, Math.round(minSide)));
+                            canvas.width = lado;
+                            canvas.height = lado;
                             const ctx = canvas.getContext('2d');
                             ctx.imageSmoothingEnabled = true;
                             ctx.imageSmoothingQuality = 'high';
 
                             // Recorte cuadrado centrado y redimensionado para un avatar perfecto y ultra liviano
-                            ctx.drawImage(img, startX, startY, minSide, minSide, 0, 0, maxDimension, maxDimension);
+                            ctx.drawImage(img, startX, startY, minSide, minSide, 0, 0, lado, lado);
                             const dataUrl = canvas.toDataURL('image/jpeg', calidad);
                             resolve(dataUrl);
                         } catch(err) {
